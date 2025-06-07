@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT QUANTUM SYSTEM</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #9333EA, #4F46E5);
+            --quantum-glow: 0 0 20px rgba(147, 51, 234, 0.5);
+            --bg-dark: #0A0118;
+            --card-bg: rgba(30, 10, 60, 0.4);
+            --text-primary: #E2E8F0;
+            --text-secondary: #94A3B8;
+            --accent-purple: #9333EA;
+            --border-glow: rgba(147, 51, 234, 0.3);
+        }
+
+        @keyframes quantumPulse {
+            0% { text-shadow: 0 0 10px rgba(147, 51, 234, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(147, 51, 234, 0.8); }
+            100% { text-shadow: 0 0 10px rgba(147, 51, 234, 0.5); }
+        }
+
+        @keyframes borderGlow {
+            0% { border-color: rgba(147, 51, 234, 0.3); }
+            50% { border-color: rgba(147, 51, 234, 0.8); }
+            100% { border-color: rgba(147, 51, 234, 0.3); }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(147, 51, 234, 0.15) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(45deg,
+                    rgba(255,255,255,0.05) 0px,
+                    rgba(255,255,255,0.05) 2px,
+                    transparent 2px,
+                    transparent 4px);
+        }
+
+        .brand {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #E9D5FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--quantum-glow);
+            animation: quantumPulse 3s infinite;
+            letter-spacing: 0.1em;
+        }
+
+        .brand p {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.9);
+            margin: 1rem 0;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .model-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin: 4rem 0;
+        }
+
+        .model-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glow);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            animation: borderGlow 3s infinite;
+        }
+
+        .model-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--quantum-glow);
+        }
+
+        .model-card h2 {
+            color: #fff;
+            font-size: 2.2rem;
+            margin: 0 0 1.5rem 0;
+            text-shadow: var(--quantum-glow);
+        }
+
+        .model-card p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: block;
+            margin: 1rem;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 1rem;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--quantum-glow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(147, 51, 234, 0.7);
+        }
+
+        .guide-section {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid var(--border-glow);
+        }
+
+        .guide-section h2 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin: 0 0 2rem 0;
+            text-shadow: var(--quantum-glow);
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .guide-card {
+            padding: 2rem;
+            background: rgba(147, 51, 234, 0.1);
+            border-radius: 1rem;
+            border: 1px solid rgba(147, 51, 234, 0.2);
+        }
+
+        .guide-card h3 {
+            color: #fff;
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+            text-shadow: 0 0 10px rgba(147, 51, 234, 0.5);
+        }
+
+        .guide-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .guide-card li {
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .guide-card li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--accent-purple);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(147, 51, 234, 0.2);
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+        }
+
+        .quantum-heart {
+            display: inline-block;
+            color: #9333EA;
+            animation: quantumPulse 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .brand h1 {
+                font-size: 3rem;
+            }
+
+            .model-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            background: rgba(147, 51, 234, 0.2);
+            color: #9333EA;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(147, 51, 234, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(147, 51, 234, 0.5); }
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: linear-gradient(135deg, #6B7280, #4B5563);
+            box-shadow: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="brand">
+            <div class="title-container">
+                <h1>
+                    <span class="karma">KARMA</span>
+                    <span class="stat">STAT</span>
+                </h1>
+                <div class="subtitle">EPIDEM<span class="blink">IO</span>LOGIC</div>
+            </div>
+            <p class="description">Advanced Quantum Disease Modeling & Analysis Engine</p>
+            <style>
+                .title-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .karma {
+                    font-size: 5rem;
+                    font-weight: 900;
+                    color: #FFFFFF;
+                    text-shadow:
+                        0 0 20px rgba(255,255,255,1),
+                        0 0 40px rgba(255,255,255,0.8),
+                        0 0 60px rgba(255,255,255,0.6);
+                    letter-spacing: 0.15em;
+                    animation: karmaGlow 3s infinite;
+                }
+
+                .stat {
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    color: rgba(255,255,255,0.9);
+                    letter-spacing: 0.3em;
+                    position: relative;
+                    top: -1rem;
+                    text-shadow:
+                        0 0 10px rgba(255,255,255,0.8),
+                        0 0 20px rgba(255,255,255,0.4);
+                }
+
+                .subtitle {
+                    font-size: 1.8rem;
+                    font-weight: 600;
+                    color: rgba(255,255,255,0.85);
+                    letter-spacing: 0.5em;
+                    text-transform: uppercase;
+                    margin-top: 1rem;
+                    position: relative;
+                }
+
+                .blink {
+                    animation: blinkEffect 2s infinite;
+                    color: #9333EA;
+                }
+
+                .description {
+                    font-size: 1.2rem;
+                    margin-top: 2rem;
+                    color: rgba(255,255,255,0.7);
+                    letter-spacing: 0.1em;
+                }
+
+                @keyframes karmaGlow {
+                    0%, 100% {
+                        text-shadow:
+                            0 0 20px rgba(255,255,255,1),
+                            0 0 40px rgba(255,255,255,0.8),
+                            0 0 60px rgba(255,255,255,0.6);
+                    }
+                    50% {
+                        text-shadow:
+                            0 0 30px rgba(255,255,255,1),
+                            0 0 60px rgba(255,255,255,0.8),
+                            0 0 90px rgba(255,255,255,0.6);
+                    }
+                }
+
+                @keyframes blinkEffect {
+                    0%, 100% {
+                        opacity: 1;
+                        text-shadow: 0 0 20px rgba(147, 51, 234, 0.8);
+                    }
+                    50% {
+                        opacity: 0.3;
+                        text-shadow: none;
+                    }
+                }
+            </style>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="model-cards">
+            <div class="model-card">
+                <h2>Standard Analysis System</h2>
+                <p>Fundamental epidemiological modeling platform with intuitive controls and real-time visualization. Perfect for educational and research applications.</p>
+                <a href="/infectious-disease-modelling/standard-disease-model.html" class="btn">Access Standard System</a>
+            </div>
+            </div>
+
+            <div class="model-card">
+                <h2>NEXUS Quantum Engine</h2>
+                <p>Advanced quantum epidemiological modeling with comprehensive parameters, environmental factors, and predictive analytics.</p>
+                <a href="/infectious-disease-modelling/advanced-disease-model.html" class="btn">Launch NEXUS Engine</a>
+            </div>
+            </div>
+        </section>
+
+        <section class="guide-section">
+            <h2>User Documentation</h2>
+            <div class="booklet-card">
+                <div class="booklet-content">
+                    <h3>Comprehensive User Guide</h3>
+                    <p>Access detailed documentation covering model parameters, analysis techniques, and best practices for both Standard and NEXUS systems.</p>
+                    <div class="booklet-actions">
+                        <a href="/infectious-disease-modelling/KARMASTAT_BOOKLET.pdf" class="btn booklet-btn">Download Guide</a>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .guide-section {
+                    text-align: center;
+                    background: rgba(30, 10, 60, 0.4);
+                    backdrop-filter: blur(10px);
+                }
+                .booklet-card {
+                    max-width: 600px;
+                    margin: 2rem auto;
+                    padding: 2rem;
+                    background: rgba(147, 51, 234, 0.1);
+                    border-radius: 1rem;
+                    border: 1px solid rgba(147, 51, 234, 0.2);
+                }
+                .booklet-content h3 {
+                    color: #fff;
+                    font-size: 1.5rem;
+                    margin-bottom: 1rem;
+                    text-shadow: 0 0 10px rgba(147, 51, 234, 0.5);
+                }
+                .booklet-content p {
+                    color: var(--text-secondary);
+                    margin-bottom: 1.5rem;
+                }
+                .booklet-btn {
+                    width: auto;
+                    padding: 1rem 3rem;
+                    margin-top: 1rem;
+                }
+            </style>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Made with <span class="quantum-heart">♥</span> by Karmayogi</p>
+    </footer>
+</body>
+</html>

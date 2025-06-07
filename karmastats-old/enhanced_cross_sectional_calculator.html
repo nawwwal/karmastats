@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT - Cross-Sectional Study Sample Size Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Enhanced CSS Variables */
+        :root {
+            --primary: #FF8C42;
+            --primary-dark: #E67A2F;
+            --primary-light: #FFB570;
+            --secondary: #2C5282;
+            --accent: #F6AD55;
+            --success: #38A169;
+            --warning: #D69E2E;
+            --danger: #E53E3E;
+            --info: #3182CE;
+            
+            /* Light theme colors */
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F7FAFC;
+            --bg-card: #FFFFFF;
+            --text-primary: #2D3748;
+            --text-secondary: #4A5568;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.15);
+            
+            /* Enhanced gradients */
+            --gradient-primary: linear-gradient(135deg, #FF8C42, #F6AD55, #FFB570);
+            --gradient-secondary: linear-gradient(135deg, #2C5282, #3182CE, #4299E1);
+            --gradient-bg: linear-gradient(135deg, #FFF5F0, #FEEBC8, #FED7AA);
+            --gradient-card: linear-gradient(145deg, #FFFFFF, #F7FAFC);
+            --gradient-magic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-primary: #1A202C;
+            --bg-secondary: #2D3748;
+            --bg-card: #2D3748;
+            --text-primary: #F7FAFC;
+            --text-secondary: #E2E8F0;
+            --text-muted: #A0AEC0;
+            --border-color: #4A5568;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.4);
+            --gradient-bg: linear-gradient(135deg, #1A202C, #2D3748, #4A5568);
+            --gradient-card: linear-gradient(145deg, #2D3748, #4A5568);
+        }
+
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            min-height: 100vh;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Header Design */
+        .header {
+            background: var(--gradient-card);
+            border-radius: var(--radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 140, 66, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: white;
+            font-weight: 800;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            filter: blur(20px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            background: var(--gradient-card);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .calculator-section:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Enhanced Formula Display */
+        .formula-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .formula-toggle {
+            display: flex;
+            align-items: center;
+            padding: 1.25rem;
+            cursor: pointer;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .formula-toggle:hover {
+            background: var(--bg-secondary);
+        }
+
+        .formula-toggle-icon {
+            margin-right: 1rem;
+            transition: transform 0.3s ease;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .formula-toggle.active .formula-toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .formula-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .formula-content.active {
+            max-height: 600px;
+        }
+
+        .formula-display {
+            background: var(--bg-primary);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1.5rem;
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-weight: bold;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .formula-explanation {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .formula-explanation h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .formula-explanation ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .formula-explanation li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .formula-explanation li:last-child {
+            border-bottom: none;
+        }
+
+        .formula-var {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: var(--primary);
+            min-width: 60px;
+        }
+
+        .formula-desc {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+
+        /* Enhanced PDF Upload */
+        .pdf-upload-section {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
+            padding: 3rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .pdf-upload-section:hover {
+            border-color: var(--primary);
+            background: rgba(255, 140, 66, 0.03);
+        }
+
+        .pdf-upload-section.dragover {
+            border-color: var(--primary);
+            background: rgba(255, 140, 66, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-magic);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .pdf-upload-section:hover .upload-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .upload-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Advanced Magical Analysis Display */
+        .magical-analysis-container {
+            display: none;
+            margin-top: 2rem;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .magical-analysis-header {
+            background: var(--gradient-magic);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .magical-analysis-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .processing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .magical-analysis-content {
+            padding: 2rem;
+        }
+
+        .parameter-extraction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .parameter-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .parameter-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .parameter-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .parameter-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .parameter-confidence {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--bg-primary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--gradient-magic);
+            transition: width 0.5s ease;
+        }
+
+        .parameter-source {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        /* Enhanced Form Styles */
+        .form-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-section h4 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-help {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        /* DEFF Information Box */
+        .deff-info {
+            background: linear-gradient(135deg, rgba(255, 140, 66, 0.1), rgba(246, 173, 85, 0.1));
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .deff-info h5 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deff-info p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .deff-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .deff-example {
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .deff-example strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Advanced Options Toggle */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: var(--transition);
+            border-radius: 25px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 19px;
+            width: 19px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(25px);
+        }
+
+        .toggle-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* Enhanced Results Section */
+        .results-section {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .result-card {
+            background: var(--gradient-card);
+            border-radius: var(--radius);
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .result-main {
+            font-size: 4rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .result-label {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .detail-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: left;
+        }
+
+        .detail-card h4 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .detail-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 1rem 2rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1.25rem 2rem;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .logo {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .theme-toggle {
+                position: static;
+                margin-top: 1rem;
+                align-self: center;
+            }
+            
+            .parameter-extraction-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-main {
+                font-size: 3rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .deff-examples {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <!-- Enhanced Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">K</div>
+                    <div>
+                        <h1>KARMASTAT</h1>
+                        <p class="subtitle">Magical Cross-Sectional Study Sample Size Calculator with Advanced Parameter Extraction</p>
+                    </div>
+                </div>
+            </div>
+            <div class="theme-toggle" id="themeToggle">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Dark Mode</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Cross-Sectional Study Calculator -->
+            <div class="calculator-section">
+                <div class="section-header">
+                    <div class="section-icon">📊</div>
+                    <h3>Cross-Sectional Study Sample Size Calculator</h3>
+                </div>
+
+                <!-- Enhanced Formula Display -->
+                <div class="formula-container">
+                    <div class="formula-toggle" id="formulaToggle">
+                        <span class="formula-toggle-icon">▶</span>
+                        <strong>Statistical Formula & Methodology</strong>
+                    </div>
+                    <div class="formula-content" id="formulaContent">
+                        <div class="formula-display">
+                            n = (z²α/2 × p × (1-p)) / d² × DEFF
+                        </div>
+                        <div class="formula-explanation">
+                            <h4>Parameter Definitions:</h4>
+                            <ul>
+                                <li>
+                                    <span class="formula-var">n</span>
+                                    <span class="formula-desc">Required sample size for statistical power</span>
+                                </li>
+                                <li>
+                                    <span class="formula-var">z²α/2</span>
+                                    <span class="formula-desc">Critical value for specified confidence interval (e.g., 1.96 for 95%)</span>
+                                </li>
+                                <li>
+                                    <span class="formula-var">p</span>
+                                    <span class="formula-desc">Expected population proportion or prevalence</span>
+                                </li>
+                                <li>
+                                    <span class="formula-var">d</span>
+                                    <span class="formula-desc">Desired precision (margin of error)</span>
+                                </li>
+                                <li>
+                                    <span class="formula-var">DEFF</span>
+                                    <span class="formula-desc">Design effect for complex sampling methodologies</span>
+                                </li>
+                            </ul>
+                            <div class="formula-display" style="margin-top: 1.5rem;">
+                                n' = (N × n) / (N + n - 1)
+                            </div>
+                            <p><strong>Finite Population Correction</strong> where N = total population size</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced PDF Upload with Magical Analysis -->
+                <div class="pdf-upload-section" id="pdfUploadSection">
+                    <input type="file" id="pdfFileInput" class="file-input" accept=".pdf">
+                    <label for="pdfFileInput">
+                        <div class="upload-icon">🔮</div>
+                        <div class="upload-text">Magical Research Paper Analysis</div>
+                        <div class="upload-subtext">Upload your research paper for automated parameter extraction using advanced magical algorithms</div>
+                    </label>
+                </div>
+
+                <!-- Magical Analysis Results -->
+                <div class="magical-analysis-container" id="magicalAnalysisContainer">
+                    <div class="magical-analysis-header">
+                        <div class="magical-analysis-title">
+                            <span>✨</span>
+                            <span>Magical Parameter Extraction</span>
+                        </div>
+                        <div class="processing-indicator" id="processingIndicator">
+                            <div class="spinner"></div>
+                            <span>Analyzing...</span>
+                        </div>
+                    </div>
+                    <div class="magical-analysis-content">
+                        <div class="parameter-extraction-grid" id="parameterGrid">
+                            <!-- Parameters will be populated here -->
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-primary" id="applyParametersBtn">
+                                <span>✓</span>
+                                Apply Extracted Parameters
+                            </button>
+                            <button class="btn-secondary" id="reviewExtractionBtn">
+                                <span>📋</span>
+                                Review Extraction Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Form -->
+                <form id="calculatorForm">
+                    <div class="form-section">
+                        <h4>📈 Study Parameters</h4>
+                        
+                        <div class="input-group">
+                            <label for="prevalence">Expected Prevalence/Proportion (%)</label>
+                            <input type="number" id="prevalence" class="input-field" 
+                                   min="0.1" max="99.9" step="0.1" required>
+                            <div class="input-help">Population prevalence of the condition or characteristic under investigation</div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="marginOfError">Precision/Margin of Error (%)</label>
+                            <input type="number" id="marginOfError" class="input-field" 
+                                   min="0.1" max="20" step="0.1" required>
+                            <div class="input-help">Acceptable deviation from true population parameter (typically 1-10%)</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="confidenceLevel">Statistical Confidence Level</label>
+                            <select id="confidenceLevel" class="input-field" required>
+                                <option value="90">90% (α = 0.10)</option>
+                                <option value="95" selected>95% (α = 0.05)</option>
+                                <option value="97.5">97.5% (α = 0.025)</option>
+                                <option value="99">99% (α = 0.01)</option>
+                                <option value="99.5">99.5% (α = 0.005)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="designEffect">Design Effect (DEFF)</label>
+                            <input type="number" id="designEffect" class="input-field" 
+                                   min="1" step="0.1" value="1" required>
+                            <div class="input-help">Adjustment for complex sampling design (1.0 = simple random sampling)</div>
+                            
+                            <div class="deff-info">
+                                <h5>
+                                    <span>💡</span>
+                                    Understanding Design Effect (DEFF)
+                                </h5>
+                                <p>Design Effect accounts for the loss of precision due to complex sampling designs compared to simple random sampling.</p>
+                                <div class="deff-examples">
+                                    <div class="deff-example">
+                                        <strong>DEFF = 1.0</strong>
+                                        Simple random sampling
+                                    </div>
+                                    <div class="deff-example">
+                                        <strong>DEFF = 1.5-2.0</strong>
+                                        Cluster sampling
+                                    </div>
+                                    <div class="deff-example">
+                                        <strong>DEFF = 1.2-1.5</strong>
+                                        Stratified sampling
+                                    </div>
+                                    <div class="deff-example">
+                                        <strong>DEFF = 2.0-3.0</strong>
+                                        Multi-stage sampling
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="populationSize">Finite Population Size (N)</label>
+                            <input type="number" id="populationSize" class="input-field" 
+                                   min="1" step="1">
+                            <div class="input-help">Total population size (leave blank for infinite population assumption)</div>
+                        </div>
+                        
+                        <!-- Advanced Options Toggle -->
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="advancedToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label">Advanced Statistical Adjustments</span>
+                        </div>
+                        
+                        <!-- Advanced Options -->
+                        <div id="advancedOptions" style="display: none;">
+                            <div class="input-group">
+                                <label for="nonResponseRate">Non-Response Rate (%)</label>
+                                <input type="number" id="nonResponseRate" class="input-field" 
+                                       min="0" max="50" step="1" value="10">
+                                <div class="input-help">Expected proportion of non-respondents requiring sample size inflation</div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="clusteringEffect">Intracluster Correlation (ICC)</label>
+                                <input type="number" id="clusteringEffect" class="input-field" 
+                                       min="0" max="1" step="0.01" value="0">
+                                <div class="input-help">Correlation between subjects within same cluster (0 = no clustering)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="calculate-btn">
+                        <span>🧮</span>
+                        Calculate Sample Size
+                    </button>
+                </form>
+            </div>
+
+            <!-- Enhanced Results Section -->
+            <div class="results-section" id="resultsSection">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class EnhancedCrossSectionalCalculator {
+            constructor() {
+                this.extractedParams = {};
+                this.currentTheme = 'light';
+                this.mlAnalysisEngine = new MagicalAnalysisEngine();
+                this.init();
+            }
+
+            init() {
+                console.log('🚀 Initializing Enhanced Cross-Sectional Calculator...');
+                
+                // Initialize PDF.js
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 
+                    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+                
+                this.setupEventListeners();
+                this.loadSavedTheme();
+                
+                console.log('✅ Cross-Sectional Calculator initialized successfully');
+            }
+
+            setupEventListeners() {
+                // Theme toggle
+                document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+                
+                // Formula toggle
+                document.getElementById('formulaToggle').addEventListener('click', () => this.toggleFormula());
+                
+                // PDF upload
+                document.getElementById('pdfFileInput').addEventListener('change', (e) => this.handlePdfUpload(e));
+                this.setupDragAndDrop();
+                
+                // Parameter application
+                document.getElementById('applyParametersBtn').addEventListener('click', () => this.applyExtractedParameters());
+                document.getElementById('reviewExtractionBtn').addEventListener('click', () => this.reviewExtractionDetails());
+                
+                // Advanced toggle
+                document.getElementById('advancedToggle').addEventListener('change', (e) => this.toggleAdvancedOptions(e));
+                
+                // Form submission
+                document.getElementById('calculatorForm').addEventListener('submit', (e) => this.handleFormSubmission(e));
+            }
+
+            setupDragAndDrop() {
+                const uploadSection = document.getElementById('pdfUploadSection');
+                
+                uploadSection.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadSection.classList.add('dragover');
+                });
+                
+                uploadSection.addEventListener('dragleave', () => {
+                    uploadSection.classList.remove('dragover');
+                });
+                
+                uploadSection.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadSection.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0 && files[0].type === 'application/pdf') {
+                        document.getElementById('pdfFileInput').files = files;
+                        this.handlePdfUpload({ target: { files: files } });
+                    }
+                });
+            }
+
+            toggleTheme() {
+                this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+                document.body.setAttribute('data-theme', this.currentTheme);
+                
+                const themeIcon = document.getElementById('themeIcon');
+                const themeText = document.getElementById('themeText');
+                
+                if (this.currentTheme === 'dark') {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = 'Light Mode';
+                } else {
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = 'Dark Mode';
+                }
+                
+                localStorage.setItem('karmastat-theme', this.currentTheme);
+            }
+
+            loadSavedTheme() {
+                const savedTheme = localStorage.getItem('karmastat-theme');
+                if (savedTheme && savedTheme !== this.currentTheme) {
+                    this.toggleTheme();
+                }
+            }
+
+            toggleFormula() {
+                const formulaToggle = document.getElementById('formulaToggle');
+                const formulaContent = document.getElementById('formulaContent');
+                
+                formulaToggle.classList.toggle('active');
+                formulaContent.classList.toggle('active');
+            }
+
+            toggleAdvancedOptions(event) {
+                const advancedOptions = document.getElementById('advancedOptions');
+                advancedOptions.style.display = event.target.checked ? 'block' : 'none';
+            }
+
+            async handlePdfUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const magicalAnalysisContainer = document.getElementById('magicalAnalysisContainer');
+                const processingIndicator = document.getElementById('processingIndicator');
+                
+                // Show analysis container
+                magicalAnalysisContainer.style.display = 'block';
+                processingIndicator.style.display = 'flex';
+                
+                try {
+                    // Process PDF with enhanced magical analysis
+                    const extractedData = await this.mlAnalysisEngine.analyzePDF(file);
+                    
+                    // Hide processing indicator
+                    processingIndicator.style.display = 'none';
+                    
+                    // Display results
+                    this.displayExtractionResults(extractedData);
+                    this.extractedParams = extractedData;
+                    
+                } catch (error) {
+                    console.error('PDF analysis error:', error);
+                    processingIndicator.innerHTML = '<span style="color: #E53E3E;">❌ Analysis failed</span>';
+                }
+            }
+
+            displayExtractionResults(data) {
+                const parameterGrid = document.getElementById('parameterGrid');
+                parameterGrid.innerHTML = '';
+
+                const parameterLabels = {
+                    prevalence: 'Prevalence/Proportion',
+                    marginOfError: 'Margin of Error',
+                    confidenceLevel: 'Confidence Level',
+                    sampleSize: 'Sample Size',
+                    populationSize: 'Population Size',
+                    designEffect: 'Design Effect'
+                };
+
+                Object.entries(data.parameters || {}).forEach(([param, value]) => {
+                    const source = data.sources?.[param] || {};
+                    const confidence = source.confidence || 70;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'parameter-card';
+                    
+                    let displayValue = value;
+                    if (['prevalence', 'marginOfError', 'confidenceLevel'].includes(param)) {
+                        displayValue = `${value}%`;
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="parameter-label">${parameterLabels[param] || param}</div>
+                        <div class="parameter-value">${displayValue}</div>
+                        <div class="parameter-confidence">
+                            <span>Confidence: ${confidence}%</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${confidence}%"></div>
+                            </div>
+                        </div>
+                        <div class="parameter-source">
+                            ${source.section || 'Document'} • Page ${source.page || 'N/A'}
+                        </div>
+                    `;
+                    
+                    parameterGrid.appendChild(card);
+                });
+            }
+
+            applyExtractedParameters() {
+                const params = this.extractedParams.parameters || {};
+                
+                // Apply parameters to form fields
+                Object.entries(params).forEach(([param, value]) => {
+                    const field = document.getElementById(param);
+                    if (field) {
+                        field.value = value;
+                    }
+                });
+                
+                // Show success message
+                const processingIndicator = document.getElementById('processingIndicator');
+                processingIndicator.innerHTML = '<span style="color: #38A169;">✅ Parameters applied successfully</span>';
+                processingIndicator.style.display = 'flex';
+                
+                setTimeout(() => {
+                    processingIndicator.style.display = 'none';
+                }, 3000);
+            }
+
+            reviewExtractionDetails() {
+                const sources = this.extractedParams.sources || {};
+                let detailsText = 'Magical Extraction Analysis:\n\n';
+                
+                Object.entries(sources).forEach(([param, source]) => {
+                    detailsText += `${param}:\n`;
+                    detailsText += `  Value: ${this.extractedParams.parameters[param]}\n`;
+                    detailsText += `  Confidence: ${source.confidence}%\n`;
+                    detailsText += `  Source: Page ${source.page}, ${source.section} section\n`;
+                    detailsText += `  Context: "${source.context}"\n\n`;
+                });
+                
+                alert(detailsText);
+            }
+
+            handleFormSubmission(event) {
+                event.preventDefault();
+                
+                try {
+                    const formData = this.collectFormData();
+                    const results = this.calculateSampleSize(formData);
+                    this.displayResults(results);
+                } catch (error) {
+                    console.error('Calculation error:', error);
+                    alert('Error calculating sample size: ' + error.message);
+                }
+            }
+
+            collectFormData() {
+                const advancedToggle = document.getElementById('advancedToggle');
+                
+                const data = {
+                    prevalence: parseFloat(document.getElementById('prevalence').value) / 100,
+                    marginOfError: parseFloat(document.getElementById('marginOfError').value) / 100,
+                    confidenceLevel: parseFloat(document.getElementById('confidenceLevel').value),
+                    designEffect: parseFloat(document.getElementById('designEffect').value),
+                    populationSize: document.getElementById('populationSize').value ? 
+                                   parseInt(document.getElementById('populationSize').value) : null
+                };
+
+                if (advancedToggle.checked) {
+                    data.nonResponseRate = parseFloat(document.getElementById('nonResponseRate').value) / 100;
+                    data.clusteringEffect = parseFloat(document.getElementById('clusteringEffect').value);
+                } else {
+                    data.nonResponseRate = 0.1; // Default 10%
+                    data.clusteringEffect = 0;
+                }
+
+                return data;
+            }
+
+            calculateSampleSize(params) {
+                // Enhanced sample size calculation with proper statistical methodology
+                const zScore = this.getZScore(params.confidenceLevel);
+                
+                // Base sample size calculation
+                const baseSize = (Math.pow(zScore, 2) * params.prevalence * (1 - params.prevalence)) / 
+                                Math.pow(params.marginOfError, 2);
+                
+                // Apply design effect
+                const designAdjustedSize = baseSize * params.designEffect;
+                
+                // Apply finite population correction if applicable
+                let populationAdjustedSize = designAdjustedSize;
+                if (params.populationSize) {
+                    populationAdjustedSize = (params.populationSize * designAdjustedSize) / 
+                                           (params.populationSize + designAdjustedSize - 1);
+                }
+                
+                // Apply clustering effect if applicable
+                let clusterAdjustedSize = populationAdjustedSize;
+                if (params.clusteringEffect > 0) {
+                    // Simple clustering adjustment: n' = n * (1 + (m-1) * ICC)
+                    // Assuming average cluster size of 10 for demonstration
+                    const avgClusterSize = 10;
+                    clusterAdjustedSize = populationAdjustedSize * (1 + (avgClusterSize - 1) * params.clusteringEffect);
+                }
+                
+                // Apply non-response adjustment
+                const finalSize = clusterAdjustedSize / (1 - params.nonResponseRate);
+                
+                return {
+                    baseSize: Math.ceil(baseSize),
+                    designAdjustedSize: Math.ceil(designAdjustedSize),
+                    populationAdjustedSize: Math.ceil(populationAdjustedSize),
+                    clusterAdjustedSize: Math.ceil(clusterAdjustedSize),
+                    finalSize: Math.ceil(finalSize),
+                    parameters: params,
+                    zScore: zScore
+                };
+            }
+
+            displayResults(results) {
+                const resultsSection = document.getElementById('resultsSection');
+                
+                // Build calculation steps
+                let calculationSteps = [
+                    { label: '1. Base Sample Size', value: results.baseSize }
+                ];
+                
+                if (results.parameters.designEffect !== 1) {
+                    calculationSteps.push({ label: '2. Design Effect Adjusted', value: results.designAdjustedSize });
+                }
+                
+                if (results.parameters.populationSize) {
+                    calculationSteps.push({ label: '3. Population Corrected', value: results.populationAdjustedSize });
+                }
+                
+                if (results.parameters.clusteringEffect > 0) {
+                    calculationSteps.push({ label: '4. Clustering Adjusted', value: results.clusterAdjustedSize });
+                }
+                
+                calculationSteps.push({ label: `${calculationSteps.length + 1}. Final (Non-response)`, value: results.finalSize });
+                
+                const html = `
+                    <div class="result-card">
+                        <div class="result-main">${results.finalSize.toLocaleString()}</div>
+                        <div class="result-label">Required Sample Size</div>
+                        
+                        <div class="result-details">
+                            <div class="detail-card">
+                                <h4>📊 Study Parameters</h4>
+                                <ul class="detail-list">
+                                    <li>
+                                        <span class="detail-label">Expected Prevalence:</span>
+                                        <span class="detail-value">${(results.parameters.prevalence * 100).toFixed(1)}%</span>
+                                    </li>
+                                    <li>
+                                        <span class="detail-label">Margin of Error:</span>
+                                        <span class="detail-value">±${(results.parameters.marginOfError * 100).toFixed(1)}%</span>
+                                    </li>
+                                    <li>
+                                        <span class="detail-label">Confidence Level:</span>
+                                        <span class="detail-value">${results.parameters.confidenceLevel}%</span>
+                                    </li>
+                                    <li>
+                                        <span class="detail-label">Z-Score:</span>
+                                        <span class="detail-value">${results.zScore.toFixed(3)}</span>
+                                    </li>
+                                    <li>
+                                        <span class="detail-label">Design Effect:</span>
+                                        <span class="detail-value">${results.parameters.designEffect}</span>
+                                    </li>
+                                    ${results.parameters.populationSize ? `
+                                    <li>
+                                        <span class="detail-label">Population Size:</span>
+                                        <span class="detail-value">${results.parameters.populationSize.toLocaleString()}</span>
+                                    </li>
+                                    ` : ''}
+                                </ul>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h4>🧮 Calculation Steps</h4>
+                                <ul class="detail-list">
+                                    ${calculationSteps.map(step => `
+                                        <li>
+                                            <span class="detail-label">${step.label}:</span>
+                                            <span class="detail-value">${step.value.toLocaleString()}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h4>📋 Recommendations</h4>
+                                <ul class="detail-list">
+                                    <li>
+                                        <span class="detail-label">Sampling Method:</span>
+                                        <span class="detail-value">Random Sampling</span>
+                                    </li>
+                                    <li>
+                                        <span class="detail-label">Power Analysis:</span>
+                                        <span class="detail-value">Document Assumptions</span>
+                                    </li>
+                                    <li>
+                                        <span class="detail-label">Validation:</span>
+                                        <span class="detail-value">Pilot Study Recommended</span>
+                                    </li>
+                                    ${results.parameters.designEffect > 2 ? `
+                                    <li>
+                                        <span class="detail-label">Design Effect:</span>
+                                        <span class="detail-value">Consider Simpler Design</span>
+                                    </li>
+                                    ` : ''}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn-primary" onclick="calculator.exportToPDF(${JSON.stringify(results).replace(/"/g, '&quot;')})">
+                                <span>📄</span>
+                                Export to PDF
+                            </button>
+                            <button class="btn-secondary" onclick="calculator.newCalculation()">
+                                <span>🔄</span>
+                                New Calculation
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                resultsSection.innerHTML = html;
+                resultsSection.classList.add('show');
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            exportToPDF(results) {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    // Enhanced PDF generation
+                    doc.setFontSize(24);
+                    doc.setTextColor(255, 140, 66);
+                    doc.text('KARMASTAT', 105, 25, { align: 'center' });
+                    
+                    doc.setFontSize(16);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Cross-Sectional Study Sample Size Calculation', 105, 35, { align: 'center' });
+                    
+                    // Main result
+                    doc.setFontSize(28);
+                    doc.setTextColor(255, 140, 66);
+                    doc.text(`Required Sample Size: ${results.finalSize.toLocaleString()}`, 105, 55, { align: 'center' });
+                    
+                    // Parameters
+                    doc.setFontSize(14);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Study Parameters:', 20, 80);
+                    
+                    let y = 90;
+                    const parameters = [
+                        `Expected Prevalence: ${(results.parameters.prevalence * 100).toFixed(1)}%`,
+                        `Margin of Error: ±${(results.parameters.marginOfError * 100).toFixed(1)}%`,
+                        `Confidence Level: ${results.parameters.confidenceLevel}%`,
+                        `Z-Score: ${results.zScore.toFixed(3)}`,
+                        `Design Effect: ${results.parameters.designEffect}`,
+                        `Non-response Rate: ${(results.parameters.nonResponseRate * 100).toFixed(0)}%`
+                    ];
+                    
+                    if (results.parameters.populationSize) {
+                        parameters.push(`Population Size: ${results.parameters.populationSize.toLocaleString()}`);
+                    }
+                    
+                    parameters.forEach(param => {
+                        doc.text(`• ${param}`, 25, y);
+                        y += 8;
+                    });
+                    
+                    // Calculation steps
+                    doc.text('Calculation Steps:', 20, y + 10);
+                    y += 20;
+                    
+                    const steps = [
+                        `1. Base sample size: ${results.baseSize.toLocaleString()}`,
+                        `2. Design effect adjusted: ${results.designAdjustedSize.toLocaleString()}`,
+                        results.parameters.populationSize ? 
+                            `3. Population corrected: ${results.populationAdjustedSize.toLocaleString()}` : null,
+                        results.parameters.clusteringEffect > 0 ?
+                            `4. Clustering adjusted: ${results.clusterAdjustedSize.toLocaleString()}` : null,
+                        `Final size (with non-response): ${results.finalSize.toLocaleString()}`
+                    ].filter(Boolean);
+                    
+                    steps.forEach(step => {
+                        doc.text(step, 25, y);
+                        y += 8;
+                    });
+                    
+                    // Footer
+                    doc.setFontSize(10);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text('Generated by KARMASTAT - Magical Sample Size Calculator', 105, 270, { align: 'center' });
+                    doc.text(`${new Date().toLocaleDateString()} • ${new Date().toLocaleTimeString()}`, 105, 280, { align: 'center' });
+                    
+                    doc.save(`KARMASTAT-Cross-Sectional-${new Date().toISOString().split('T')[0]}.pdf`);
+                    
+                } catch (error) {
+                    console.error('PDF export error:', error);
+                    alert('Error exporting PDF. Please try again.');
+                }
+            }
+
+            newCalculation() {
+                // Reset form
+                document.getElementById('calculatorForm').reset();
+                document.getElementById('resultsSection').classList.remove('show');
+                document.getElementById('magicalAnalysisContainer').style.display = 'none';
+                document.getElementById('advancedOptions').style.display = 'none';
+                document.getElementById('advancedToggle').checked = false;
+                
+                // Reset design effect to default
+                document.getElementById('designEffect').value = '1';
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            getZScore(confidence) {
+                const zScores = {
+                    80: 1.282, 85: 1.440, 90: 1.645, 95: 1.960,
+                    97.5: 2.240, 99: 2.576, 99.5: 2.807, 99.9: 3.291
+                };
+                
+                return zScores[confidence] || zScores[95];
+            }
+        }
+
+        // Enhanced Magical Analysis Engine
+        class MagicalAnalysisEngine {
+            constructor() {
+                this.patterns = this.initializePatterns();
+            }
+
+            initializePatterns() {
+                return {
+                    prevalence: [
+                        /(?:prevalence|proportion)(?:\s+(?:was|is|of))?\s*(?::|=)?\s*(\d+\.?\d*)\s*(?:%|percent)/gi,
+                        /(\d+\.?\d*)\s*(?:%|percent)\s+(?:prevalence|proportion)/gi,
+                        /prevalence.*?(\d+\.?\d*)\s*(?:\(\s*\d+\.?\d*\s*[-–]\s*\d+\.?\d*\s*\))?/gi,
+                        /p\s*=\s*0\.(\d+)/gi
+                    ],
+                    marginOfError: [
+                        /(?:margin\s+of\s+error|precision|accuracy)(?:\s+(?:was|is|of))?\s*(?::|=)?\s*(?:±\s*)?(\d+\.?\d*)\s*(?:%|percent)/gi,
+                        /(?:±\s*)?(\d+\.?\d*)\s*(?:%|percent)\s+(?:margin|precision|error)/gi,
+                        /precision.*?(\d+\.?\d*)\s*(?:%|percent)/gi
+                    ],
+                    confidenceLevel: [
+                        /(?:confidence\s+(?:interval|level)|CI)(?:\s+(?:was|is|of))?\s*(?::|=)?\s*(\d+\.?\d*)\s*(?:%|percent)/gi,
+                        /(\d+\.?\d*)\s*(?:%|percent)\s+(?:confidence|CI)/gi,
+                        /α\s*=\s*0\.(\d+)/gi,
+                        /alpha\s*=\s*0\.(\d+)/gi
+                    ],
+                    sampleSize: [
+                        /(?:sample\s+size|n\s*=|participants)(?:\s+(?:was|is|of))?\s*(?::|=)?\s*(\d+)/gi,
+                        /(\d+)\s+(?:subjects|participants|patients|individuals)/gi,
+                        /total\s+(?:of\s+)?(\d+)\s+(?:subjects|participants)/gi,
+                        /n\s*=\s*(\d+)/gi
+                    ],
+                    populationSize: [
+                        /(?:population\s+size|total\s+population|N\s*=)(?:\s+(?:was|is|of))?\s*(?::|=)?\s*(\d+)/gi,
+                        /population.*?(\d{4,})/gi
+                    ],
+                    designEffect: [
+                        /(?:design\s+effect|DEFF|cluster\s+effect)(?:\s+(?:was|is|of))?\s*(?::|=)?\s*(\d+\.?\d*)/gi,
+                        /DEFF\s*=\s*(\d+\.?\d*)/gi
+                    ]
+                };
+            }
+
+            async analyzePDF(file) {
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    
+                    const extractedData = {
+                        parameters: {},
+                        sources: {},
+                        confidence: 0,
+                        extractionDate: new Date().toISOString()
+                    };
+                    
+                    // Enhanced extraction with magical processing
+                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                        const page = await pdf.getPage(pageNum);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        
+                        // Determine section type
+                        const sectionType = this.classifySection(pageText);
+                        
+                        // Extract parameters with context awareness
+                        this.extractParametersFromText(pageText, pageNum, sectionType, extractedData);
+                    }
+                    
+                    // Calculate overall confidence
+                    const confidenceValues = Object.values(extractedData.sources).map(s => s.confidence);
+                    extractedData.confidence = confidenceValues.length > 0 
+                        ? Math.round(confidenceValues.reduce((a, b) => a + b, 0) / confidenceValues.length)
+                        : 0;
+                    
+                    return extractedData;
+                    
+                } catch (error) {
+                    console.error('PDF analysis error:', error);
+                    throw new Error('Failed to analyze PDF: ' + error.message);
+                }
+            }
+
+            classifySection(text) {
+                const lowerText = text.toLowerCase();
+                
+                if (lowerText.includes('method') || lowerText.includes('design') || lowerText.includes('statistical')) {
+                    return 'Methods';
+                } else if (lowerText.includes('result') || lowerText.includes('finding')) {
+                    return 'Results';
+                } else if (lowerText.includes('table') || lowerText.includes('figure')) {
+                    return 'Table/Figure';
+                } else {
+                    return 'Other';
+                }
+            }
+
+            extractParametersFromText(text, pageNum, sectionType, extractedData) {
+                Object.entries(this.patterns).forEach(([paramName, patterns]) => {
+                    patterns.forEach(pattern => {
+                        const matches = [...text.matchAll(pattern)];
+                        
+                        matches.forEach(match => {
+                            if (match[1]) {
+                                let value = parseFloat(match[1]);
+                                
+                                // Special handling for different parameter types
+                                if (paramName === 'confidenceLevel' && pattern.toString().includes('α')) {
+                                    value = (1 - value) * 100; // Convert alpha to confidence level
+                                }
+                                
+                                if (paramName === 'prevalence' && pattern.toString().includes('p\\s*=\\s*0\\.')) {
+                                    value = value; // Already a decimal proportion
+                                } else if (paramName === 'prevalence' && value < 1) {
+                                    value = value * 100; // Convert to percentage
+                                }
+                                
+                                // Validate parameter value
+                                if (this.validateParameter(paramName, value)) {
+                                    // Calculate confidence based on context
+                                    let confidence = 60; // Base confidence
+                                    
+                                    if (sectionType === 'Methods') confidence += 25;
+                                    if (sectionType === 'Results') confidence += 15;
+                                    if (sectionType === 'Table/Figure') confidence += 10;
+                                    
+                                    // Update if higher confidence or first occurrence
+                                    if (!extractedData.parameters[paramName] || 
+                                        confidence > (extractedData.sources[paramName]?.confidence || 0)) {
+                                        
+                                        extractedData.parameters[paramName] = value;
+                                        extractedData.sources[paramName] = {
+                                            confidence: Math.min(confidence, 95),
+                                            page: pageNum,
+                                            context: match[0].substring(0, 100),
+                                            section: sectionType
+                                        };
+                                    }
+                                }
+                            }
+                        });
+                    });
+                });
+            }
+
+            validateParameter(paramName, value) {
+                const validationRules = {
+                    prevalence: v => v >= 0.1 && v <= 100,
+                    marginOfError: v => v >= 0.1 && v <= 50,
+                    confidenceLevel: v => v >= 50 && v <= 99.99,
+                    sampleSize: v => v >= 10 && v <= 1000000,
+                    populationSize: v => v >= 100 && v <= 10000000,
+                    designEffect: v => v >= 1 && v <= 10
+                };
+                
+                return validationRules[paramName] ? validationRules[paramName](value) : true;
+            }
+        }
+
+        // Initialize the enhanced calculator
+        const calculator = new EnhancedCrossSectionalCalculator();
+        
+        // Make globally available for PDF export
+        window.calculator = calculator;
+    </script>
+</body>
+</html>

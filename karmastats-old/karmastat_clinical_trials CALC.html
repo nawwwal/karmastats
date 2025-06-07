@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT - Clinical Trials Sample Size Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #FF8C42;
+            --primary-dark: #E67A2F;
+            --secondary: #2C5282;
+            --success: #38A169;
+            --danger: #E53E3E;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F7FAFC;
+            --text-primary: #2D3748;
+            --text-secondary: #4A5568;
+            --border-color: #E2E8F0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1A202C;
+            --bg-secondary: #2D3748;
+            --text-primary: #F7FAFC;
+            --text-secondary: #E2E8F0;
+            --border-color: #4A5568;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #FFF5F0, #FEEBC8);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            background: var(--bg-primary);
+            padding: 3rem 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .study-selector {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .study-selector h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        .study-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .study-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .study-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .study-card.active {
+            border-color: var(--primary);
+            background: rgba(255, 140, 66, 0.1);
+        }
+
+        .study-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .study-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .calculator-section {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .calculator-section.active {
+            display: block;
+        }
+
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-main {
+            text-align: center;
+            font-size: 3rem;
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .result-label {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detail-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-card h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .detail-list {
+            list-style: none;
+        }
+
+        .detail-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-value {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .error {
+            background: #FED7D7;
+            color: #C53030;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+            border: 1px solid #E53E3E;
+        }
+
+        .formula-section {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .formula-title {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .formula-content {
+            display: none;
+        }
+
+        .formula-content.show {
+            display: block;
+        }
+
+        .formula-display {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .theme-toggle {
+                position: static;
+                margin-top: 1rem;
+            }
+            
+            .study-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>KARMASTAT</h1>
+            <p>Advanced Clinical Trials & Randomized Controlled Trial Sample Size Calculator</p>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </div>
+        </div>
+
+        <!-- Study Type Selection -->
+        <div class="study-selector">
+            <h2>Select Clinical Trial Design</h2>
+            <div class="study-grid">
+                <div class="study-card" onclick="selectStudyType('superiority')" data-study="superiority">
+                    <h3>🥇 Superiority Trial</h3>
+                    <p>Demonstrate that one treatment is better than another. Used to establish treatment efficacy with statistical superiority.</p>
+                </div>
+                
+                <div class="study-card" onclick="selectStudyType('non-inferiority')" data-study="non-inferiority">
+                    <h3>🚫 Non-inferiority Trial</h3>
+                    <p>Show that a new treatment is not unacceptably worse than standard care. Used for regulatory approval of alternative treatments.</p>
+                </div>
+                
+                <div class="study-card" onclick="selectStudyType('equivalence')" data-study="equivalence">
+                    <h3>⚖️ Equivalence Trial</h3>
+                    <p>Demonstrate that two treatments are therapeutically equivalent. Used for biosimilar and generic drug approval.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Superiority Trial Calculator -->
+        <div class="calculator-section" id="superiority-calculator">
+            <h2 class="section-title">Superiority Trial Sample Size Calculator</h2>
+            
+            <!-- Formula Section -->
+            <div class="formula-section">
+                <div class="formula-title" onclick="toggleFormula('superiority-formula')">
+                    <span>▶</span> Statistical Formula & Methodology
+                </div>
+                <div class="formula-content" id="superiority-formula">
+                    <div class="formula-display">
+                        Binary: n = 2(z(α/2) + z(β))²p̄q̄ / (p₁ - p₀)²<br>
+                        Continuous: n = 2(z(α/2) + z(β))²σ² / δ²
+                    </div>
+                    <p><strong>Where:</strong> n = sample size per group, z(α/2) = critical value for significance, z(β) = critical value for power, p₁ = treatment proportion, p₀ = control proportion, σ = standard deviation, δ = mean difference</p>
+                </div>
+            </div>
+
+            <form id="superiority-form" onsubmit="calculateSuperiority(event)">
+                <div class="form-group">
+                    <label for="sup-outcome-type">Outcome Type</label>
+                    <select id="sup-outcome-type" class="form-control" onchange="updateSuperiorityInputs()" required>
+                        <option value="">Select outcome type</option>
+                        <option value="binary">Binary (Success/Failure)</option>
+                        <option value="continuous">Continuous (Mean difference)</option>
+                    </select>
+                </div>
+
+                <!-- Binary inputs -->
+                <div id="sup-binary-inputs" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sup-control-rate">Control Success Rate (%)</label>
+                            <input type="number" id="sup-control-rate" class="form-control" min="0.1" max="99.9" step="0.1" value="30">
+                            <div class="form-help">Expected success rate in control group</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sup-treatment-rate">Treatment Success Rate (%)</label>
+                            <input type="number" id="sup-treatment-rate" class="form-control" min="0.1" max="99.9" step="0.1" value="45">
+                            <div class="form-help">Expected success rate in treatment group</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Continuous inputs -->
+                <div id="sup-continuous-inputs" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sup-mean-diff">Mean Difference</label>
+                            <input type="number" id="sup-mean-diff" class="form-control" step="any" value="5">
+                            <div class="form-help">Expected difference between groups</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sup-std-dev">Standard Deviation</label>
+                            <input type="number" id="sup-std-dev" class="form-control" min="0.1" step="any" value="12">
+                            <div class="form-help">Expected standard deviation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sup-alpha">Significance Level (α)</label>
+                        <select id="sup-alpha" class="form-control" required>
+                            <option value="0.05">5% (Two-sided)</option>
+                            <option value="0.01">1% (Two-sided)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sup-power">Statistical Power</label>
+                        <select id="sup-power" class="form-control" required>
+                            <option value="0.80">80%</option>
+                            <option value="0.85">85%</option>
+                            <option value="0.90">90%</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sup-allocation">Allocation Ratio</label>
+                        <select id="sup-allocation" class="form-control" required>
+                            <option value="1">1:1 (Equal)</option>
+                            <option value="2">2:1 (More Treatment)</option>
+                            <option value="0.5">1:2 (More Control)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sup-dropout">Dropout Rate (%)</label>
+                        <input type="number" id="sup-dropout" class="form-control" min="0" max="50" value="10">
+                        <div class="form-help">Expected loss to follow-up</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Calculate Superiority Sample Size</button>
+            </form>
+        </div>
+
+        <!-- Non-inferiority Trial Calculator -->
+        <div class="calculator-section" id="non-inferiority-calculator">
+            <h2 class="section-title">Non-inferiority Trial Sample Size Calculator</h2>
+            
+            <!-- Formula Section -->
+            <div class="formula-section">
+                <div class="formula-title" onclick="toggleFormula('ni-formula')">
+                    <span>▶</span> Statistical Formula & Methodology
+                </div>
+                <div class="formula-content" id="ni-formula">
+                    <div class="formula-display">
+                        n = 2(z(α) + z(β))²p̄q̄ / (d + Δ)²
+                    </div>
+                    <p><strong>Where:</strong> Δ = non-inferiority margin, d = expected true difference, α = one-sided significance level</p>
+                </div>
+            </div>
+
+            <form id="ni-form" onsubmit="calculateNonInferiority(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ni-control-rate">Active Control Rate (%)</label>
+                        <input type="number" id="ni-control-rate" class="form-control" min="0.1" max="99.9" step="0.1" value="85" required>
+                        <div class="form-help">Expected success rate with active control</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ni-treatment-rate">New Treatment Rate (%)</label>
+                        <input type="number" id="ni-treatment-rate" class="form-control" min="0.1" max="99.9" step="0.1" value="83" required>
+                        <div class="form-help">Expected success rate with new treatment</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="ni-margin">Non-inferiority Margin (%)</label>
+                    <input type="number" id="ni-margin" class="form-control" min="0.1" max="20" step="0.1" value="5" required>
+                    <div class="form-help">Maximum acceptable difference (new treatment can be up to this much worse)</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ni-alpha">Significance Level (α)</label>
+                        <select id="ni-alpha" class="form-control" required>
+                            <option value="0.025">2.5% (One-sided)</option>
+                            <option value="0.05">5% (One-sided)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ni-power">Statistical Power</label>
+                        <select id="ni-power" class="form-control" required>
+                            <option value="0.80">80%</option>
+                            <option value="0.85">85%</option>
+                            <option value="0.90">90%</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ni-allocation">Allocation Ratio</label>
+                        <select id="ni-allocation" class="form-control" required>
+                            <option value="1">1:1</option>
+                            <option value="2">2:1</option>
+                            <option value="0.5">1:2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ni-dropout">Dropout Rate (%)</label>
+                        <input type="number" id="ni-dropout" class="form-control" min="0" max="50" value="15">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Calculate Non-inferiority Sample Size</button>
+            </form>
+        </div>
+
+        <!-- Equivalence Trial Calculator -->
+        <div class="calculator-section" id="equivalence-calculator">
+            <h2 class="section-title">Equivalence Trial Sample Size Calculator</h2>
+            
+            <!-- Formula Section -->
+            <div class="formula-section">
+                <div class="formula-title" onclick="toggleFormula('eq-formula')">
+                    <span>▶</span> Statistical Formula & Methodology
+                </div>
+                <div class="formula-content" id="eq-formula">
+                    <div class="formula-display">
+                        n = 2(z(α/2) + z(β))²p̄q̄ / (Δ - |d|)²
+                    </div>
+                    <p><strong>Where:</strong> Δ = equivalence margin, |d| = absolute expected true difference, α = two-sided significance level</p>
+                </div>
+            </div>
+
+            <form id="eq-form" onsubmit="calculateEquivalence(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eq-reference-rate">Reference Rate (%)</label>
+                        <input type="number" id="eq-reference-rate" class="form-control" min="0.1" max="99.9" step="0.1" value="80" required>
+                        <div class="form-help">Expected success rate with reference treatment</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eq-test-rate">Test Rate (%)</label>
+                        <input type="number" id="eq-test-rate" class="form-control" min="0.1" max="99.9" step="0.1" value="80" required>
+                        <div class="form-help">Expected success rate with test treatment</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="eq-margin">Equivalence Margin (%)</label>
+                    <input type="number" id="eq-margin" class="form-control" min="0.1" max="30" step="0.1" value="10" required>
+                    <div class="form-help">Maximum acceptable difference for equivalence (±Δ)</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eq-alpha">Significance Level (α)</label>
+                        <select id="eq-alpha" class="form-control" required>
+                            <option value="0.05">5% (Two-sided)</option>
+                            <option value="0.01">1% (Two-sided)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eq-power">Statistical Power</label>
+                        <select id="eq-power" class="form-control" required>
+                            <option value="0.80">80%</option>
+                            <option value="0.85">85%</option>
+                            <option value="0.90">90%</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eq-allocation">Allocation Ratio</label>
+                        <select id="eq-allocation" class="form-control" required>
+                            <option value="1">1:1</option>
+                            <option value="2">2:1</option>
+                            <option value="0.5">1:2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eq-dropout">Dropout Rate (%)</label>
+                        <input type="number" id="eq-dropout" class="form-control" min="0" max="50" value="5">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Calculate Equivalence Sample Size</button>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results" id="results">
+            <!-- Results will be populated here -->
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentTheme = 'light';
+        let currentStudyType = null;
+
+        // Theme toggle
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', currentTheme);
+            
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (currentTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark Mode';
+            }
+            
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const saved = localStorage.getItem('theme');
+            if (saved && saved !== currentTheme) {
+                toggleTheme();
+            }
+        }
+
+        // Study type selection
+        function selectStudyType(type) {
+            console.log('Selecting study type:', type);
+            
+            // Clear active states
+            document.querySelectorAll('.study-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Hide all calculators
+            document.querySelectorAll('.calculator-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Activate selected card
+            document.querySelector(`[data-study="${type}"]`).classList.add('active');
+            
+            // Show selected calculator
+            const calculator = document.getElementById(`${type}-calculator`);
+            if (calculator) {
+                calculator.classList.add('active');
+                currentStudyType = type;
+                
+                // Scroll to calculator
+                setTimeout(() => {
+                    calculator.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+            
+            hideResults();
+        }
+
+        // Toggle formula display
+        function toggleFormula(id) {
+            const content = document.getElementById(id);
+            const icon = content.previousElementSibling.querySelector('span');
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                icon.textContent = '▶';
+            } else {
+                content.classList.add('show');
+                icon.textContent = '▼';
+            }
+        }
+
+        // Update superiority inputs based on outcome type
+        function updateSuperiorityInputs() {
+            const outcomeType = document.getElementById('sup-outcome-type').value;
+            const binaryInputs = document.getElementById('sup-binary-inputs');
+            const continuousInputs = document.getElementById('sup-continuous-inputs');
+            
+            if (outcomeType === 'binary') {
+                binaryInputs.style.display = 'block';
+                continuousInputs.style.display = 'none';
+            } else if (outcomeType === 'continuous') {
+                binaryInputs.style.display = 'none';
+                continuousInputs.style.display = 'block';
+            } else {
+                binaryInputs.style.display = 'none';
+                continuousInputs.style.display = 'none';
+            }
+        }
+
+        // Z-score lookup table
+        function getZScore(confidence) {
+            const zScores = {
+                50: 0.000, 80: 0.842, 85: 1.036, 90: 1.282, 95: 1.645, 
+                97.5: 1.960, 99: 2.326, 99.5: 2.576
+            };
+            return zScores[confidence] || zScores[95];
+        }
+
+        // Calculate superiority trial
+        function calculateSuperiority(event) {
+            event.preventDefault();
+            console.log('Calculating superiority trial');
+            
+            try {
+                const outcomeType = document.getElementById('sup-outcome-type').value;
+                const alpha = parseFloat(document.getElementById('sup-alpha').value);
+                const power = parseFloat(document.getElementById('sup-power').value);
+                const allocation = parseFloat(document.getElementById('sup-allocation').value);
+                const dropout = parseFloat(document.getElementById('sup-dropout').value) / 100;
+                
+                const zAlpha = getZScore((1 - alpha/2) * 100);
+                const zBeta = getZScore(power * 100);
+                
+                let baseSize;
+                let parameters = {};
+                
+                if (outcomeType === 'binary') {
+                    const p1 = parseFloat(document.getElementById('sup-treatment-rate').value) / 100;
+                    const p0 = parseFloat(document.getElementById('sup-control-rate').value) / 100;
+                    
+                    if (p1 <= p0) {
+                        throw new Error('Treatment rate must be higher than control rate for superiority');
+                    }
+                    
+                    const pBar = (p1 + p0 * allocation) / (1 + allocation);
+                    const qBar = 1 - pBar;
+                    
+                    baseSize = Math.pow(
+                        zAlpha * Math.sqrt((1 + 1/allocation) * pBar * qBar) + 
+                        zBeta * Math.sqrt(p1 * (1-p1) + p0 * (1-p0) / allocation), 2
+                    ) / Math.pow(p1 - p0, 2);
+                    
+                    parameters = {
+                        controlRate: p0 * 100,
+                        treatmentRate: p1 * 100,
+                        absoluteDifference: (p1 - p0) * 100,
+                        relativeDifference: ((p1 - p0) / p0) * 100,
+                        nnt: 1 / (p1 - p0)
+                    };
+                    
+                } else if (outcomeType === 'continuous') {
+                    const meanDiff = parseFloat(document.getElementById('sup-mean-diff').value);
+                    const stdDev = parseFloat(document.getElementById('sup-std-dev').value);
+                    
+                    if (meanDiff === 0) {
+                        throw new Error('Mean difference must be non-zero for superiority');
+                    }
+                    
+                    baseSize = 2 * Math.pow((zAlpha + zBeta) * stdDev / meanDiff, 2) * (1 + 1/allocation);
+                    
+                    parameters = {
+                        meanDifference: meanDiff,
+                        standardDeviation: stdDev,
+                        effectSize: Math.abs(meanDiff) / stdDev
+                    };
+                } else {
+                    throw new Error('Please select an outcome type');
+                }
+                
+                // Adjust for dropouts
+                const adjustedSize = baseSize / (1 - dropout);
+                const nTreatment = Math.ceil(adjustedSize);
+                const nControl = Math.ceil(adjustedSize * allocation);
+                
+                const results = {
+                    studyType: 'superiority',
+                    outcomeType,
+                    treatmentSize: nTreatment,
+                    controlSize: nControl,
+                    totalSize: nTreatment + nControl,
+                    baseSize: Math.ceil(baseSize),
+                    parameters: {
+                        ...parameters,
+                        alpha: alpha * 100,
+                        power: power * 100,
+                        allocation,
+                        dropout: dropout * 100
+                    }
+                };
+                
+                displayResults(results);
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Calculate non-inferiority trial
+        function calculateNonInferiority(event) {
+            event.preventDefault();
+            console.log('Calculating non-inferiority trial');
+            
+            try {
+                const p0 = parseFloat(document.getElementById('ni-control-rate').value) / 100;
+                const p1 = parseFloat(document.getElementById('ni-treatment-rate').value) / 100;
+                const margin = parseFloat(document.getElementById('ni-margin').value) / 100;
+                const alpha = parseFloat(document.getElementById('ni-alpha').value);
+                const power = parseFloat(document.getElementById('ni-power').value);
+                const allocation = parseFloat(document.getElementById('ni-allocation').value);
+                const dropout = parseFloat(document.getElementById('ni-dropout').value) / 100;
+                
+                const zAlpha = getZScore((1 - alpha) * 100); // One-sided
+                const zBeta = getZScore(power * 100);
+                
+                const pBar = (p1 + p0 * allocation) / (1 + allocation);
+                const qBar = 1 - pBar;
+                const trueDiff = p1 - p0;
+                
+                const baseSize = Math.pow(
+                    zAlpha * Math.sqrt((1 + 1/allocation) * pBar * qBar) + 
+                    zBeta * Math.sqrt(p1 * (1-p1) + p0 * (1-p0) / allocation), 2
+                ) / Math.pow(trueDiff + margin, 2);
+                
+                // Adjust for dropouts
+                const adjustedSize = baseSize / (1 - dropout);
+                const nTreatment = Math.ceil(adjustedSize);
+                const nControl = Math.ceil(adjustedSize * allocation);
+                
+                const results = {
+                    studyType: 'non-inferiority',
+                    treatmentSize: nTreatment,
+                    controlSize: nControl,
+                    totalSize: nTreatment + nControl,
+                    baseSize: Math.ceil(baseSize),
+                    parameters: {
+                        controlRate: p0 * 100,
+                        treatmentRate: p1 * 100,
+                        margin: margin * 100,
+                        alpha: alpha * 100,
+                        power: power * 100,
+                        allocation,
+                        dropout: dropout * 100
+                    }
+                };
+                
+                displayResults(results);
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Calculate equivalence trial
+        function calculateEquivalence(event) {
+            event.preventDefault();
+            console.log('Calculating equivalence trial');
+            
+            try {
+                const pRef = parseFloat(document.getElementById('eq-reference-rate').value) / 100;
+                const pTest = parseFloat(document.getElementById('eq-test-rate').value) / 100;
+                const margin = parseFloat(document.getElementById('eq-margin').value) / 100;
+                const alpha = parseFloat(document.getElementById('eq-alpha').value);
+                const power = parseFloat(document.getElementById('eq-power').value);
+                const allocation = parseFloat(document.getElementById('eq-allocation').value);
+                const dropout = parseFloat(document.getElementById('eq-dropout').value) / 100;
+                
+                const zAlpha = getZScore((1 - alpha/2) * 100); // Two-sided
+                const zBeta = getZScore(power * 100);
+                
+                const pBar = (pTest + pRef * allocation) / (1 + allocation);
+                const qBar = 1 - pBar;
+                const trueDiff = Math.abs(pTest - pRef);
+                
+                if (margin <= trueDiff) {
+                    throw new Error('Equivalence margin must be larger than the expected difference');
+                }
+                
+                const baseSize = Math.pow(
+                    zAlpha * Math.sqrt((1 + 1/allocation) * pBar * qBar) + 
+                    zBeta * Math.sqrt(pTest * (1-pTest) + pRef * (1-pRef) / allocation), 2
+                ) / Math.pow(margin - trueDiff, 2);
+                
+                // Adjust for dropouts
+                const adjustedSize = baseSize / (1 - dropout);
+                const nTest = Math.ceil(adjustedSize);
+                const nReference = Math.ceil(adjustedSize * allocation);
+                
+                const results = {
+                    studyType: 'equivalence',
+                    testSize: nTest,
+                    referenceSize: nReference,
+                    totalSize: nTest + nReference,
+                    baseSize: Math.ceil(baseSize),
+                    parameters: {
+                        referenceRate: pRef * 100,
+                        testRate: pTest * 100,
+                        margin: margin * 100,
+                        alpha: alpha * 100,
+                        power: power * 100,
+                        allocation,
+                        dropout: dropout * 100
+                    }
+                };
+                
+                displayResults(results);
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // Display results
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="result-main">${results.totalSize.toLocaleString()}</div>
+                <div class="result-label">Total Required Sample Size</div>
+                
+                <div class="result-details">
+                    <div class="detail-card">
+                        <h4>Study Design</h4>
+                        <ul class="detail-list">
+                            <li><span>Study Type:</span><span class="detail-value">${formatStudyType(results.studyType)}</span></li>
+            `;
+            
+            if (results.studyType === 'superiority') {
+                html += `
+                    <li><span>Treatment Group:</span><span class="detail-value">${results.treatmentSize.toLocaleString()}</span></li>
+                    <li><span>Control Group:</span><span class="detail-value">${results.controlSize.toLocaleString()}</span></li>
+                `;
+            } else if (results.studyType === 'non-inferiority') {
+                html += `
+                    <li><span>New Treatment:</span><span class="detail-value">${results.treatmentSize.toLocaleString()}</span></li>
+                    <li><span>Active Control:</span><span class="detail-value">${results.controlSize.toLocaleString()}</span></li>
+                `;
+            } else {
+                html += `
+                    <li><span>Test Group:</span><span class="detail-value">${results.testSize.toLocaleString()}</span></li>
+                    <li><span>Reference Group:</span><span class="detail-value">${results.referenceSize.toLocaleString()}</span></li>
+                `;
+            }
+            
+            html += `
+                            <li><span>Allocation Ratio:</span><span class="detail-value">${results.parameters.allocation}:1</span></li>
+                            <li><span>Statistical Power:</span><span class="detail-value">${results.parameters.power}%</span></li>
+                            <li><span>Significance Level:</span><span class="detail-value">${results.parameters.alpha}%</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4>Study Parameters</h4>
+                        <ul class="detail-list">
+            `;
+            
+            if (results.studyType === 'superiority') {
+                if (results.outcomeType === 'binary') {
+                    html += `
+                        <li><span>Control Rate:</span><span class="detail-value">${results.parameters.controlRate.toFixed(1)}%</span></li>
+                        <li><span>Treatment Rate:</span><span class="detail-value">${results.parameters.treatmentRate.toFixed(1)}%</span></li>
+                        <li><span>Absolute Difference:</span><span class="detail-value">${results.parameters.absoluteDifference.toFixed(1)}%</span></li>
+                        <li><span>Number Needed to Treat:</span><span class="detail-value">${results.parameters.nnt.toFixed(1)}</span></li>
+                    `;
+                } else {
+                    html += `
+                        <li><span>Mean Difference:</span><span class="detail-value">${results.parameters.meanDifference}</span></li>
+                        <li><span>Standard Deviation:</span><span class="detail-value">${results.parameters.standardDeviation}</span></li>
+                        <li><span>Effect Size:</span><span class="detail-value">${results.parameters.effectSize.toFixed(3)}</span></li>
+                    `;
+                }
+            } else if (results.studyType === 'non-inferiority') {
+                html += `
+                    <li><span>Active Control Rate:</span><span class="detail-value">${results.parameters.controlRate.toFixed(1)}%</span></li>
+                    <li><span>New Treatment Rate:</span><span class="detail-value">${results.parameters.treatmentRate.toFixed(1)}%</span></li>
+                    <li><span>Non-inferiority Margin:</span><span class="detail-value">${results.parameters.margin.toFixed(1)}%</span></li>
+                `;
+            } else {
+                html += `
+                    <li><span>Reference Rate:</span><span class="detail-value">${results.parameters.referenceRate.toFixed(1)}%</span></li>
+                    <li><span>Test Rate:</span><span class="detail-value">${results.parameters.testRate.toFixed(1)}%</span></li>
+                    <li><span>Equivalence Margin:</span><span class="detail-value">±${results.parameters.margin.toFixed(1)}%</span></li>
+                `;
+            }
+            
+            html += `
+                            <li><span>Dropout Rate:</span><span class="detail-value">${results.parameters.dropout}%</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4>Recommendations</h4>
+                        <ul class="detail-list">
+                            <li><span>FDA Compliance:</span><span class="detail-value">ICH E9 Guidelines</span></li>
+                            <li><span>Analysis Population:</span><span class="detail-value">Intention-to-Treat</span></li>
+                            <li><span>Interim Analysis:</span><span class="detail-value">Plan α-spending</span></li>
+                            <li><span>Missing Data:</span><span class="detail-value">Pre-specify Strategy</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" onclick="exportToPDF()">📄 Export to PDF</button>
+                    <button class="btn btn-secondary" onclick="newCalculation()">🔄 New Calculation</button>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Utility functions
+        function formatStudyType(type) {
+            const types = {
+                'superiority': 'Superiority Trial',
+                'non-inferiority': 'Non-inferiority Trial',
+                'equivalence': 'Equivalence Trial'
+            };
+            return types[type] || type;
+        }
+
+        function hideResults() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.remove('show');
+        }
+
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="error">
+                    <h3>⚠️ Calculation Error</h3>
+                    <p>${message}</p>
+                    <button class="btn" onclick="hideResults()" style="margin-top: 1rem;">Close</button>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exportToPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('KARMASTAT Clinical Trial Calculator', 105, 25, { align: 'center' });
+                
+                doc.setFontSize(14);
+                doc.text('Sample Size Calculation Report', 105, 35, { align: 'center' });
+                
+                // Get results data
+                const resultMain = document.querySelector('.result-main').textContent;
+                const resultLabel = document.querySelector('.result-label').textContent;
+                
+                doc.setFontSize(24);
+                doc.text(resultMain, 105, 55, { align: 'center' });
+                
+                doc.setFontSize(12);
+                doc.text(resultLabel, 105, 65, { align: 'center' });
+                
+                // Parameters
+                doc.setFontSize(14);
+                doc.text('Study Parameters:', 20, 85);
+                
+                let y = 95;
+                const detailLists = document.querySelectorAll('.detail-list');
+                
+                detailLists.forEach(list => {
+                    const items = list.querySelectorAll('li');
+                    items.forEach(item => {
+                        if (y > 260) {
+                            doc.addPage();
+                            y = 25;
+                        }
+                        const text = item.textContent;
+                        doc.setFontSize(10);
+                        doc.text(`• ${text}`, 25, y);
+                        y += 8;
+                    });
+                    y += 5;
+                });
+                
+                // Footer
+                doc.setFontSize(8);
+                doc.text(`Generated by KARMASTAT on ${new Date().toLocaleDateString()}`, 105, 280, { align: 'center' });
+                
+                doc.save(`KARMASTAT-Clinical-Trial-${new Date().toISOString().split('T')[0]}.pdf`);
+                
+            } catch (error) {
+                alert('Error generating PDF. Please try again.');
+                console.error('PDF Error:', error);
+            }
+        }
+
+        function newCalculation() {
+            // Reset all forms
+            document.querySelectorAll('form').forEach(form => form.reset());
+            
+            // Clear selections
+            document.querySelectorAll('.study-card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.calculator-section').forEach(section => section.classList.remove('active'));
+            
+            // Hide results
+            hideResults();
+            
+            // Reset state
+            currentStudyType = null;
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('KARMASTAT Clinical Trials Calculator loaded');
+            loadTheme();
+        });
+    </script>
+</body>
+</html>

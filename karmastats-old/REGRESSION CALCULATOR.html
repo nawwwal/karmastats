@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regression Analysis Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #93c5fd;
+            --secondary: #64748b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark);
+            background-color: var(--light);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        h1, h2, h3, h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5em;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 0.3rem;
+            margin-top: 1.5rem;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 1.2rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        
+        .sample-btn {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .sample-btn:hover {
+            background-color: #e2e8f0;
+        }
+        
+        .sample-buttons {
+            margin-bottom: 1rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+        
+        .result-section {
+            margin-top: 2rem;
+            background-color: #f8fafc;
+            border-radius: 6px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .result-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .result-value {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+        }
+        
+        .info-box {
+            background-color: #e0f2fe;
+            border-left: 4px solid var(--info);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        .chart-tabs {
+            display: flex;
+            margin: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .chart-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: var(--secondary);
+            transition: all 0.2s ease;
+        }
+        
+        .chart-tab:hover {
+            color: var(--primary);
+        }
+        
+        .chart-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .chart-content {
+            display: none;
+        }
+        
+        .chart-content.active {
+            display: block;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            color: var(--secondary);
+        }
+        
+        .log {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-msg {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .log-msg:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .log-time {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Regression Analysis Calculator</h1>
+            <p>Department of Community Medicine, B J Medical College Ahmedabad</p>
+            <p>Developed by DR. RUCHIT NAWAL</p>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('linearRegression')">Linear Regression</div>
+            <div class="tab" onclick="openTab('multipleRegression')">Multiple Regression</div>
+            <div class="tab" onclick="openTab('about')">About Regression</div>
+        </div>
+        
+        <div id="linearRegression" class="tab-content active">
+            <div class="card">
+                <h2>Simple Linear Regression</h2>
+                <p>Analyze the relationship between one independent variable (X) and one dependent variable (Y).</p>
+                
+                <div class="info-box">
+                    <p>Enter X and Y values separated by commas, spaces, or new lines. For example: 1, 2, 3 for X and 2, 4, 6 for Y.</p>
+                </div>
+                
+                <div class="sample-buttons">
+                    <button class="sample-btn" onclick="loadLinearSample(1)">Sample: Height vs Weight</button>
+                    <button class="sample-btn" onclick="loadLinearSample(2)">Sample: Age vs Blood Pressure</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="xValues">X Values (Independent Variable):</label>
+                    <textarea id="xValues" placeholder="Enter X values separated by commas, spaces, or new lines (e.g., 1, 2, 3, 4, 5)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="yValues">Y Values (Dependent Variable):</label>
+                    <textarea id="yValues" placeholder="Enter Y values separated by commas, spaces, or new lines (e.g., 2, 4, 6, 8, 10)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="xLabel">X-Axis Label (optional):</label>
+                    <input type="text" id="xLabel" placeholder="e.g., Age (years)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="yLabel">Y-Axis Label (optional):</label>
+                    <input type="text" id="yLabel" placeholder="e.g., Blood Pressure (mmHg)">
+                </div>
+                
+                <button id="calculateLinear" class="btn btn-block">Calculate Linear Regression</button>
+                
+                <div id="linearResults" class="result-section" style="display: none;">
+                    <h3>Regression Results</h3>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Regression Equation:</div>
+                        <div class="result-value" id="linearEquation"></div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Slope (β₁):</div>
+                        <div class="result-value" id="slope"></div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Intercept (β₀):</div>
+                        <div class="result-value" id="intercept"></div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">R-squared (R²):</div>
+                        <div class="result-value" id="rSquared"></div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Correlation Coefficient (r):</div>
+                        <div class="result-value" id="correlation"></div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Standard Error:</div>
+                        <div class="result-value" id="stdError"></div>
+                    </div>
+                    
+                    <div class="chart-tabs">
+                        <div class="chart-tab active" onclick="switchLinearChart('scatterChart')">Scatter Plot</div>
+                        <div class="chart-tab" onclick="switchLinearChart('residualChart')">Residual Plot</div>
+                    </div>
+                    
+                    <div id="scatterChart" class="chart-content active">
+                        <div class="chart-container">
+                            <canvas id="linearScatterPlot"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div id="residualChart" class="chart-content">
+                        <div class="chart-container">
+                            <canvas id="linearResidualPlot"></canvas>
+                        </div>
+                    </div>
+                    
+                    <h3>Prediction Tool</h3>
+                    <div class="form-group">
+                        <label for="linearPredictor">Enter X value to predict Y:</label>
+                        <input type="number" id="linearPredictor" placeholder="Enter a value for X">
+                    </div>
+                    
+                    <button id="linearPredict" class="btn">Predict Y Value</button>
+                    
+                    <div class="result-item" style="margin-top: 1rem;">
+                        <div class="result-label">Predicted Y Value:</div>
+                        <div class="result-value" id="linearPredicted">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="multipleRegression" class="tab-content">
+            <div class="card">
+                <h2>Multiple Regression</h2>
+                <p>Analyze the relationship between multiple independent variables (X₁, X₂, ...) and one dependent variable (Y).</p>
+                
+                <div class="info-box">
+                    <p>Enter your data as comma-separated values with each row on a new line. The first column is Y (dependent variable) and remaining columns are X₁, X₂, etc. (independent variables).</p>
+                </div>
+                
+                <div class="sample-buttons">
+                    <button class="sample-btn" onclick="loadMultipleSample(1)">Sample: Health Metrics</button>
+                    <button class="sample-btn" onclick="loadMultipleSample(2)">Sample: Hospital Stay</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dataMatrix">Data Matrix:</label>
+                    <textarea id="dataMatrix" placeholder="Enter your data matrix, with first column as Y and remaining columns as X values:
+Y1, X1_1, X2_1, ...
+Y2, X1_2, X2_2, ...
+Example:
+10, 1, 5
+15, 2, 6
+20, 3, 7"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="variableNames">Variable Names (comma-separated):</label>
+                    <input type="text" id="variableNames" placeholder="e.g., Blood Pressure, Age, BMI, Cholesterol">
+                </div>
+                
+                <button id="calculateMultiple" class="btn btn-block">Calculate Multiple Regression</button>
+                
+                <div id="multipleResults" class="result-section" style="display: none;">
+                    <h3>Multiple Regression Results</h3>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Regression Equation:</div>
+                        <div class="result-value" id="multipleEquation"></div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Coefficients:</div>
+                        <div id="coefficientsTable"></div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Model Summary:</div>
+                        <div id="modelSummary"></div>
+                    </div>
+                    
+                    <div class="chart-tabs">
+                        <div class="chart-tab active" onclick="switchMultipleChart('actualPredictedChart')">Actual vs Predicted</div>
+                        <div class="chart-tab" onclick="switchMultipleChart('multipleResidualChart')">Residual Plot</div>
+                    </div>
+                    
+                    <div id="actualPredictedChart" class="chart-content active">
+                        <div class="chart-container">
+                            <canvas id="actualVsPredictedPlot"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div id="multipleResidualChart" class="chart-content">
+                        <div class="chart-container">
+                            <canvas id="multipleResidualPlot"></canvas>
+                        </div>
+                    </div>
+                    
+                    <h3>Prediction Tool</h3>
+                    <div id="predictorInputs"></div>
+                    
+                    <button id="multiplePredict" class="btn">Predict Y Value</button>
+                    
+                    <div class="result-item" style="margin-top: 1rem;">
+                        <div class="result-label">Predicted Y Value:</div>
+                        <div class="result-value" id="multiplePredicted">-</div>
+                    </div>
+                </div>
+                
+                <div id="log" class="log" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div id="about" class="tab-content">
+            <div class="card">
+                <h2>About Regression Analysis</h2>
+                <p>Regression analysis is a statistical method that examines the relationship between dependent variables (outcomes) and independent variables (predictors).</p>
+                
+                <h3>Simple Linear Regression</h3>
+                <p>Examines the relationship between one dependent variable (Y) and one independent variable (X).</p>
+                <div class="info-box">
+                    <strong>Equation:</strong> Y = β₀ + β₁X + ε
+                    <ul>
+                        <li>β₀ = Intercept (Y-value when X=0)</li>
+                        <li>β₁ = Slope (change in Y for a 1-unit change in X)</li>
+                        <li>ε = Error term</li>
+                    </ul>
+                </div>
+                
+                <h3>Multiple Regression</h3>
+                <p>Examines the relationship between one dependent variable (Y) and multiple independent variables (X₁, X₂, etc.).</p>
+                <div class="info-box">
+                    <strong>Equation:</strong> Y = β₀ + β₁X₁ + β₂X₂ + ... + βₙXₙ + ε
+                    <ul>
+                        <li>β₀ = Intercept</li>
+                        <li>β₁, β₂, ..., βₙ = Coefficients for each independent variable</li>
+                        <li>ε = Error term</li>
+                    </ul>
+                </div>
+                
+                <h3>Key Statistics</h3>
+                <table>
+                    <tr>
+                        <th>Statistic</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>R-squared (R²)</td>
+                        <td>Proportion of variance in Y explained by X (ranges from 0 to 1)</td>
+                    </tr>
+                    <tr>
+                        <td>Adjusted R²</td>
+                        <td>R² adjusted for the number of predictors</td>
+                    </tr>
+                    <tr>
+                        <td>Coefficient</td>
+                        <td>Change in Y for a 1-unit change in X</td>
+                    </tr>
+                    <tr>
+                        <td>p-value</td>
+                        <td>Statistical significance of the coefficient</td>
+                    </tr>
+                    <tr>
+                        <td>Standard Error</td>
+                        <td>Precision of the coefficient estimate</td>
+                    </tr>
+                </table>
+                
+                <h3>Applications in Medical Research</h3>
+                <ul>
+                    <li>Identifying risk factors for diseases</li>
+                    <li>Predicting patient outcomes</li>
+                    <li>Analyzing dose-response relationships</li>
+                    <li>Adjusting for confounding variables</li>
+                    <li>Developing clinical prediction rules</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Department of Community Medicine</p>
+            <p>B J Medical College Ahmedabad</p>
+            <p>Developed by DR. RUCHIT NAWAL</p>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables to store regression results
+        let linearRegression = null;
+        let multipleRegression = null;
+        
+        // Logger function
+        function logMessage(message) {
+            const logDiv = document.getElementById('log');
+            if (!logDiv.style.display || logDiv.style.display === 'none') {
+                logDiv.style.display = 'block';
+            }
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'log-msg';
+            msgDiv.innerHTML = `<span class="log-time">[${timeString}]</span> ${message}`;
+            logDiv.appendChild(msgDiv);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        // Tab functionality
+        function openTab(tabName) {
+            // Hide all tab content
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to the clicked tab
+            for (let i = 0; i < tabs.length; i++) {
+                if (tabs[i].getAttribute('onclick').includes(tabName)) {
+                    tabs[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+        
+        // Linear regression chart tab switching
+        function switchLinearChart(chartId) {
+            // Hide all chart content
+            const chartContents = document.querySelectorAll('#linearResults .chart-content');
+            for (let i = 0; i < chartContents.length; i++) {
+                chartContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all chart tabs
+            const chartTabs = document.querySelectorAll('#linearResults .chart-tab');
+            for (let i = 0; i < chartTabs.length; i++) {
+                chartTabs[i].classList.remove('active');
+            }
+            
+            // Show the selected chart content
+            document.getElementById(chartId).classList.add('active');
+            
+            // Add active class to the clicked chart tab
+            for (let i = 0; i < chartTabs.length; i++) {
+                if (chartTabs[i].getAttribute('onclick').includes(chartId)) {
+                    chartTabs[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+        
+        // Multiple regression chart tab switching
+        function switchMultipleChart(chartId) {
+            // Hide all chart content
+            const chartContents = document.querySelectorAll('#multipleResults .chart-content');
+            for (let i = 0; i < chartContents.length; i++) {
+                chartContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all chart tabs
+            const chartTabs = document.querySelectorAll('#multipleResults .chart-tab');
+            for (let i = 0; i < chartTabs.length; i++) {
+                chartTabs[i].classList.remove('active');
+            }
+            
+            // Show the selected chart content
+            document.getElementById(chartId).classList.add('active');
+            
+            // Add active class to the clicked chart tab
+            for (let i = 0; i < chartTabs.length; i++) {
+                if (chartTabs[i].getAttribute('onclick').includes(chartId)) {
+                    chartTabs[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+        
+        // Load sample data for linear regression
+        function loadLinearSample(sampleId) {
+            let xValues, yValues, xLabel, yLabel;
+            
+            if (sampleId === 1) {
+                // Height vs Weight sample
+                xValues = "160, 162, 165, 168, 170, 173, 175, 178, 180, 183";
+                yValues = "52, 53, 57, 59, 63, 65, 69, 72, 75, 78";
+                xLabel = "Height (cm)";
+                yLabel = "Weight (kg)";
+            } else if (sampleId === 2) {
+                // Age vs Blood Pressure sample
+                xValues = "25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75";
+                yValues = "115, 118, 120, 124, 126, 129, 132, 135, 140, 142, 145";
+                xLabel = "Age (years)";
+                yLabel = "Systolic Blood Pressure (mmHg)";
+            }
+            
+            document.getElementById('xValues').value = xValues;
+            document.getElementById('yValues').value = yValues;
+            document.getElementById('xLabel').value = xLabel;
+            document.getElementById('yLabel').value = yLabel;
+        }
+        
+        // Load sample data for multiple regression
+        function loadMultipleSample(sampleId) {
+            let dataMatrix, variableNames;
+            
+            if (sampleId === 1) {
+                // Health Metrics sample
+                dataMatrix = "120, 45, 25, 205\n128, 50, 27, 220\n130, 55, 29, 240\n135, 60, 30, 250\n137, 65, 32, 265\n140, 70, 35, 280\n145, 75, 37, 290\n150, 80, 40, 300";
+                variableNames = "Blood Pressure, Age, BMI, Cholesterol";
+            } else if (sampleId === 2) {
+                // Hospital Stay sample
+                dataMatrix = "5, 65, 2, 38.5\n8, 72, 4, 39.2\n3, 48, 1, 37.8\n9, 80, 5, 39.5\n6, 65, 3, 38.9\n4, 50, 2, 38.2\n7, 70, 4, 39.0\n10, 85, 6, 39.8";
+                variableNames = "Hospital Stay (days), Age, Comorbidities, Temperature (°C)";
+            }
+            
+            document.getElementById('dataMatrix').value = dataMatrix;
+            document.getElementById('variableNames').value = variableNames;
+        }
+        
+        // Parse input data from text area
+        function parseData(text) {
+            text = text.trim();
+            const parts = text.split(/[\s,\n]+/);
+            return parts.map(part => parseFloat(part)).filter(num => !isNaN(num));
+        }
+        
+        // Parse data matrix for multiple regression
+        function parseDataMatrix(text) {
+            try {
+                const rows = text.trim().split(/\n+/);
+                const data = rows.map(row => {
+                    return row.split(',').map(value => parseFloat(value.trim())).filter(num => !isNaN(num));
+                }).filter(row => row.length > 1);
+                
+                if (data.length === 0) {
+                    return { error: "No valid data found" };
+                }
+                
+                // Check if all rows have the same number of columns
+                const columnCount = data[0].length;
+                const allSameLength = data.every(row => row.length === columnCount);
+                
+                if (!allSameLength) {
+                    return { error: "All rows must have the same number of columns" };
+                }
+                
+                // Extract Y values (first column)
+                const y = data.map(row => row[0]);
+                
+                // Extract X values (remaining columns)
+                const X = data.map(row => row.slice(1));
+                
+                return { y, X, data };
+            } catch (err) {
+                return { error: "Error parsing data: " + err.message };
+            }
+        }
+        
+        // Calculate simple linear regression
+        function calculateLinearRegression(xValues, yValues) {
+            if (xValues.length !== yValues.length || xValues.length < 2) {
+                return { error: "Input data must have at least 2 data points and equal number of X and Y values." };
+            }
+            
+            const n = xValues.length;
+            
+            // Calculate means
+            const meanX = xValues.reduce((sum, x) => sum + x, 0) / n;
+            const meanY = yValues.reduce((sum, y) => sum + y, 0) / n;
+            
+            // Calculate sum of squares
+            let ssXY = 0, ssXX = 0, ssYY = 0;
+            
+            for (let i = 0; i < n; i++) {
+                const diffX = xValues[i] - meanX;
+                const diffY = yValues[i] - meanY;
+                
+                ssXY += diffX * diffY;
+                ssXX += diffX * diffX;
+                ssYY += diffY * diffY;
+            }
+            
+            // Calculate slope and intercept
+            const slope = ssXY / ssXX;
+            const intercept = meanY - (slope * meanX);
+            
+            // Calculate R-squared
+            const rSquared = Math.pow(ssXY, 2) / (ssXX * ssYY);
+            
+            // Calculate correlation coefficient
+            const r = Math.sqrt(rSquared) * (slope >= 0 ? 1 : -1);
+            
+            // Calculate predicted Y values
+            const predictedY = xValues.map(x => intercept + slope * x);
+            
+            // Calculate residuals
+            const residuals = yValues.map((y, i) => y - predictedY[i]);
+            
+            // Calculate standard error of the estimate
+            const sumResidualSquares = residuals.reduce((sum, res) => sum + res * res, 0);
+            const standardError = Math.sqrt(sumResidualSquares / (n - 2));
+            
+            return {
+                slope,
+                intercept,
+                rSquared,
+                correlation: r,
+                predictedY,
+                residuals,
+                standardError,
+                xValues,
+                yValues
+            };
+        }
+        
+        // Direct calculation method for multiple regression
+        function directMultipleRegression(y, X) {
+            try {
+                logMessage("Starting multiple regression calculation...");
+                
+                if (y.length < 2 || X.length < 2 || X[0].length < 1) {
+                    return { error: "Input data must have at least 2 observations and at least 1 independent variable" };
+                }
+                
+                const n = y.length; // Number of observations
+                const p = X[0].length; // Number of independent variables
+                
+                logMessage(`Data: ${n} observations, ${p} independent variables`);
+                
+                // Add a column of 1s to X for the intercept
+                const X1 = X.map(row => [1, ...row]);
+                
+                // Transpose of X1
+                const X1T = transpose(X1);
+                
+                // Calculate X1T * X1
+                const X1TX1 = matrixMultiply(X1T, X1);
+                
+                // Calculate inverse of X1TX1
+                const X1TX1_inv = invertMatrix(X1TX1);
+                
+                if (!X1TX1_inv) {
+                    return { error: "Matrix inversion failed. Data might be perfectly collinear or ill-conditioned." };
+                }
+                
+                // Calculate X1T * y
+                const X1Ty = [];
+                for (let i = 0; i < X1T.length; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < n; j++) {
+                        sum += X1T[i][j] * y[j];
+                    }
+                    X1Ty.push(sum);
+                }
+                
+                // Calculate coefficients: β = (X1T * X1)^(-1) * X1T * y
+                const coefficients = [];
+                for (let i = 0; i < p + 1; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < p + 1; j++) {
+                        sum += X1TX1_inv[i][j] * X1Ty[j];
+                    }
+                    coefficients.push(sum);
+                }
+                
+                logMessage(`Calculated coefficients: ${coefficients.map(c => c.toFixed(4)).join(', ')}`);
+                
+                // Calculate predicted values
+                const predictedY = [];
+                for (let i = 0; i < n; i++) {
+                    let pred = coefficients[0]; // Intercept
+                    for (let j = 0; j < p; j++) {
+                        pred += coefficients[j + 1] * X[i][j];
+                    }
+                    predictedY.push(pred);
+                }
+                
+                // Calculate residuals
+                const residuals = y.map((actual, i) => actual - predictedY[i]);
+                
+                // Calculate mean of y
+                const yMean = y.reduce((sum, val) => sum + val, 0) / n;
+                
+                // Calculate sum of squares
+                let SST = 0; // Total sum of squares
+                let SSR = 0; // Regression sum of squares
+                let SSE = 0; // Error sum of squares
+                
+                for (let i = 0; i < n; i++) {
+                    SST += Math.pow(y[i] - yMean, 2);
+                    SSR += Math.pow(predictedY[i] - yMean, 2);
+                    SSE += Math.pow(residuals[i], 2);
+                }
+                
+                // Calculate R-squared and adjusted R-squared
+                const rSquared = SSR / SST;
+                const adjustedRSquared = 1 - ((1 - rSquared) * (n - 1) / (n - p - 1));
+                
+                // Calculate standard errors of coefficients
+                const MSE = SSE / (n - p - 1); // Mean squared error
+                const stdErrors = [];
+                for (let i = 0; i < p + 1; i++) {
+                    stdErrors.push(Math.sqrt(MSE * X1TX1_inv[i][i]));
+                }
+                
+                // Calculate t-statistics
+                const tStats = coefficients.map((coef, i) => coef / stdErrors[i]);
+                
+                // Calculate p-values using t-distribution approximation
+                const pValues = tStats.map(t => {
+                    const df = n - p - 1; // Degrees of freedom
+                    return 2 * (1 - tcdf(Math.abs(t), df));
+                });
+                
+                // Calculate F-statistic
+                const F = (SSR / p) / (SSE / (n - p - 1));
+                
+                // Calculate p-value for F-statistic using F-distribution approximation
+                const fPValue = 1 - fcdf(F, p, n - p - 1);
+                
+                logMessage("Multiple regression calculation completed successfully");
+                
+                return {
+                    coefficients,
+                    rSquared,
+                    adjustedRSquared,
+                    residuals,
+                    predictedY,
+                    stdErrors,
+                    tStats,
+                    pValues,
+                    F,
+                    fPValue,
+                    n,
+                    p,
+                    X,
+                    y
+                };
+            } catch (err) {
+                logMessage(`Error in multiple regression calculation: ${err.message}`);
+                console.error(err);
+                return { error: "Error in multiple regression calculation: " + err.message };
+            }
+        }
+        
+        // Helper function: Matrix transpose
+        function transpose(matrix) {
+            const rows = matrix.length;
+            const cols = matrix[0].length;
+            const result = Array(cols).fill().map(() => Array(rows).fill(0));
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    result[j][i] = matrix[i][j];
+                }
+            }
+            
+            return result;
+        }
+        
+        // Helper function: Matrix multiplication
+        function matrixMultiply(a, b) {
+            const aRows = a.length;
+            const aCols = a[0].length;
+            const bRows = b.length;
+            const bCols = b[0].length;
+            
+            if (aCols !== bRows) {
+                throw new Error(`Cannot multiply matrices: dimensions don't match (${aRows}x${aCols} * ${bRows}x${bCols})`);
+            }
+            
+            const result = Array(aRows).fill().map(() => Array(bCols).fill(0));
+            
+            for (let i = 0; i < aRows; i++) {
+                for (let j = 0; j < bCols; j++) {
+                    for (let k = 0; k < aCols; k++) {
+                        result[i][j] += a[i][k] * b[k][j];
+                    }
+                }
+            }
+            
+            return result;
+        }
+        
+        // Helper function: Matrix inversion using Gauss-Jordan elimination
+        function invertMatrix(matrix) {
+            try {
+                const n = matrix.length;
+                
+                if (n !== matrix[0].length) {
+                    throw new Error("Matrix must be square");
+                }
+                
+                // Create augmented matrix [A|I]
+                const augmented = [];
+                for (let i = 0; i < n; i++) {
+                    augmented[i] = [...matrix[i]];
+                    for (let j = 0; j < n; j++) {
+                        augmented[i].push(i === j ? 1 : 0);
+                    }
+                }
+                
+                // Forward elimination
+                for (let i = 0; i < n; i++) {
+                    // Find pivot
+                    let maxRow = i;
+                    for (let j = i + 1; j < n; j++) {
+                        if (Math.abs(augmented[j][i]) > Math.abs(augmented[maxRow][i])) {
+                            maxRow = j;
+                        }
+                    }
+                    
+                    // Swap rows if needed
+                    if (maxRow !== i) {
+                        [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
+                    }
+                    
+                    // Check for singular matrix
+                    if (Math.abs(augmented[i][i]) < 1e-10) {
+                        logMessage("Matrix is singular or nearly singular");
+                        return null;
+                    }
+                    
+                    // Scale pivot row
+                    const pivot = augmented[i][i];
+                    for (let j = i; j < 2 * n; j++) {
+                        augmented[i][j] /= pivot;
+                    }
+                    
+                    // Eliminate other rows
+                    for (let j = 0; j < n; j++) {
+                        if (j !== i) {
+                            const factor = augmented[j][i];
+                            for (let k = i; k < 2 * n; k++) {
+                                augmented[j][k] -= factor * augmented[i][k];
+                            }
+                        }
+                    }
+                }
+                
+                // Extract inverse matrix
+                const inverse = [];
+                for (let i = 0; i < n; i++) {
+                    inverse[i] = augmented[i].slice(n);
+                }
+                
+                return inverse;
+            } catch (err) {
+                logMessage(`Matrix inversion error: ${err.message}`);
+                return null;
+            }
+        }
+        
+        // Helper function: t-distribution CDF approximation
+        function tcdf(t, df) {
+            // Approximation using incomplete beta function
+            const x = df / (df + t * t);
+            return 0.5 * (1 + (1 - x) * (df % 2 === 0 ? 1 : Math.sign(t)));
+        }
+        
+        // Helper function: F-distribution CDF approximation
+        function fcdf(F, df1, df2) {
+            // Crude approximation
+            return 1 - 1 / (1 + F);
+        }
+        
+        // Format number for display
+        function formatNumber(num, decimals = 4) {
+            if (Math.abs(num) < Math.pow(10, -decimals)) {
+                return num.toExponential(decimals);
+            }
+            return num.toFixed(decimals);
+        }
+        
+        // Get significance stars based on p-value
+        function getSignificance(pValue) {
+            if (pValue < 0.001) return '***';
+            if (pValue < 0.01) return '**';
+            if (pValue < 0.05) return '*';
+            if (pValue < 0.1) return '.';
+            return '';
+        }
+        
+        // Create linear regression scatter plot
+        function createLinearScatterPlot(result, xLabel, yLabel) {
+            const ctx = document.getElementById('linearScatterPlot').getContext('2d');
+            
+            // Destroy previous chart if it exists
+            if (window.linearScatterChart) {
+                window.linearScatterChart.destroy();
+            }
+            
+            // Data points
+            const scatterData = result.xValues.map((x, i) => ({ x, y: result.yValues[i] }));
+            
+            // Regression line
+            const minX = Math.min(...result.xValues);
+            const maxX = Math.max(...result.xValues);
+            const padding = (maxX - minX) * 0.1;
+            
+            const lineData = [
+                { x: minX - padding, y: result.intercept + result.slope * (minX - padding) },
+                { x: maxX + padding, y: result.intercept + result.slope * (maxX + padding) }
+            ];
+            
+            window.linearScatterChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Data Points',
+                            data: scatterData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            pointRadius: 8,
+                            pointHoverRadius: 10
+                        },
+                        {
+                            label: 'Regression Line',
+                            data: lineData,
+                            type: 'line',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: xLabel || 'X Values',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: yLabel || 'Y Values',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Scatter Plot with Regression Line',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `X: ${context.parsed.x.toFixed(2)}, Y: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create linear regression residual plot
+        function createLinearResidualPlot(result, xLabel) {
+            const ctx = document.getElementById('linearResidualPlot').getContext('2d');
+            
+            // Destroy previous chart if it exists
+            if (window.linearResidualChart) {
+                window.linearResidualChart.destroy();
+            }
+            
+            // Residual data points
+            const residualData = result.xValues.map((x, i) => ({ x, y: result.residuals[i] }));
+            
+            // Zero line
+            const minX = Math.min(...result.xValues);
+            const maxX = Math.max(...result.xValues);
+            const padding = (maxX - minX) * 0.1;
+            
+            window.linearResidualChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Residuals',
+                            data: residualData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                            pointRadius: 8,
+                            pointHoverRadius: 10
+                        },
+                        {
+                            label: 'Zero Line',
+                            data: [
+                                { x: minX - padding, y: 0 },
+                                { x: maxX + padding, y: 0 }
+                            ],
+                            type: 'line',
+                            borderColor: 'rgba(128, 128, 128, 0.7)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: xLabel || 'X Values',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Residuals',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Residual Plot',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `X: ${context.parsed.x.toFixed(2)}, Residual: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create actual vs predicted plot for multiple regression
+        function createActualVsPredictedPlot(result, yLabel) {
+            try {
+                logMessage("Creating actual vs predicted plot...");
+                
+                const ctx = document.getElementById('actualVsPredictedPlot').getContext('2d');
+                
+                // Destroy previous chart if it exists
+                if (window.actualVsPredictedChart) {
+                    window.actualVsPredictedChart.destroy();
+                }
+                
+                // Data points
+                const plotData = result.predictedY.map((pred, i) => ({ x: pred, y: result.y[i] }));
+                
+                // Reference line (perfect prediction)
+                const allValues = [...result.predictedY, ...result.y];
+                const min = Math.min(...allValues);
+                const max = Math.max(...allValues);
+                const padding = (max - min) * 0.1;
+                
+                window.actualVsPredictedChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Data Points',
+                                data: plotData,
+                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                pointRadius: 8,
+                                pointHoverRadius: 10
+                            },
+                            {
+                                label: 'Perfect Prediction',
+                                data: [
+                                    { x: min - padding, y: min - padding },
+                                    { x: max + padding, y: max + padding }
+                                ],
+                                type: 'line',
+                                borderColor: 'rgba(255, 99, 132, 0.7)',
+                                borderWidth: 2,
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: `Predicted ${yLabel || 'Y'}`,
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: `Actual ${yLabel || 'Y'}`,
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Actual vs Predicted Values',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Predicted: ${context.parsed.x.toFixed(2)}, Actual: ${context.parsed.y.toFixed(2)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                logMessage("Actual vs predicted plot created successfully");
+                return { success: true };
+            } catch (err) {
+                logMessage(`Error creating actual vs predicted plot: ${err.message}`);
+                return { error: "Error creating actual vs predicted plot: " + err.message };
+            }
+        }
+        
+        // Create residual plot for multiple regression
+        function createMultipleResidualPlot(result) {
+            try {
+                logMessage("Creating residual plot...");
+                
+                const ctx = document.getElementById('multipleResidualPlot').getContext('2d');
+                
+                // Destroy previous chart if it exists
+                if (window.multipleResidualChart) {
+                    window.multipleResidualChart.destroy();
+                }
+                
+                // Data points
+                const plotData = result.predictedY.map((pred, i) => ({ x: pred, y: result.residuals[i] }));
+                
+                // Zero line
+                const min = Math.min(...result.predictedY);
+                const max = Math.max(...result.predictedY);
+                const padding = (max - min) * 0.1;
+                
+                window.multipleResidualChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Residuals',
+                                data: plotData,
+                                backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                                pointRadius: 8,
+                                pointHoverRadius: 10
+                            },
+                            {
+                                label: 'Zero Line',
+                                data: [
+                                    { x: min - padding, y: 0 },
+                                    { x: max + padding, y: 0 }
+                                ],
+                                type: 'line',
+                                borderColor: 'rgba(128, 128, 128, 0.7)',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Predicted Values',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Residuals',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Residual Plot',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Predicted: ${context.parsed.x.toFixed(2)}, Residual: ${context.parsed.y.toFixed(2)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                logMessage("Residual plot created successfully");
+                return { success: true };
+            } catch (err) {
+                logMessage(`Error creating residual plot: ${err.message}`);
+                return { error: "Error creating residual plot: " + err.message };
+            }
+        }
+        
+        // Linear regression calculation handler
+        document.getElementById('calculateLinear').addEventListener('click', function() {
+            const xValues = parseData(document.getElementById('xValues').value);
+            const yValues = parseData(document.getElementById('yValues').value);
+            const xLabel = document.getElementById('xLabel').value;
+            const yLabel = document.getElementById('yLabel').value;
+            
+            if (xValues.length === 0 || yValues.length === 0) {
+                alert("Please enter valid X and Y values.");
+                return;
+            }
+            
+            if (xValues.length !== yValues.length) {
+                alert("The number of X values must equal the number of Y values.");
+                return;
+            }
+            
+            const result = calculateLinearRegression(xValues, yValues);
+            
+            if (result.error) {
+                alert(result.error);
+                return;
+            }
+            
+            // Store result globally
+            linearRegression = result;
+            
+            // Display results
+            document.getElementById('linearResults').style.display = 'block';
+            
+            // Format equation
+            const sign = result.slope >= 0 ? '+' : '';
+            document.getElementById('linearEquation').textContent = 
+                `${yLabel || 'Y'} = ${formatNumber(result.intercept)} ${sign} ${formatNumber(result.slope)} × (${xLabel || 'X'})`;
+            
+            // Display other statistics
+            document.getElementById('slope').textContent = formatNumber(result.slope);
+            document.getElementById('intercept').textContent = formatNumber(result.intercept);
+            document.getElementById('rSquared').textContent = `${formatNumber(result.rSquared)} (${(result.rSquared * 100).toFixed(2)}%)`;
+            document.getElementById('correlation').textContent = formatNumber(result.correlation);
+            document.getElementById('stdError').textContent = formatNumber(result.standardError);
+            
+            // Reset prediction
+            document.getElementById('linearPredicted').textContent = '-';
+            
+            // Create visualizations
+            createLinearScatterPlot(result, xLabel, yLabel);
+            createLinearResidualPlot(result, xLabel);
+        });
+        
+        // Linear regression prediction handler
+        document.getElementById('linearPredict').addEventListener('click', function() {
+            if (!linearRegression) {
+                alert("Please calculate the regression first.");
+                return;
+            }
+            
+            const xValue = parseFloat(document.getElementById('linearPredictor').value);
+            
+            if (isNaN(xValue)) {
+                alert("Please enter a valid X value.");
+                return;
+            }
+            
+            const predicted = linearRegression.intercept + linearRegression.slope * xValue;
+            document.getElementById('linearPredicted').textContent = formatNumber(predicted);
+        });
+        
+        // Multiple regression calculation handler
+        document.getElementById('calculateMultiple').addEventListener('click', function() {
+            try {
+                // Clear any previous log
+                document.getElementById('log').textContent = '';
+                document.getElementById('log').style.display = 'none';
+                
+                logMessage("Starting multiple regression analysis...");
+                
+                const dataMatrixText = document.getElementById('dataMatrix').value;
+                const variableNamesText = document.getElementById('variableNames').value;
+                
+                if (!dataMatrixText.trim()) {
+                    alert("Please enter data for analysis.");
+                    return;
+                }
+                
+                logMessage("Parsing data matrix");
+                const parsedData = parseDataMatrix(dataMatrixText);
+                
+                if (parsedData.error) {
+                    alert(parsedData.error);
+                    return;
+                }
+                
+                const { y, X, data } = parsedData;
+                logMessage(`Parsed data: ${y.length} observations, ${X[0].length} variables`);
+                
+                // Use direct calculation method for multiple regression
+                const result = directMultipleRegression(y, X);
+                
+                if (result.error) {
+                    alert(result.error);
+                    return;
+                }
+                
+                // Process variable names
+                let variableNames = [];
+                if (variableNamesText.trim()) {
+                    variableNames = variableNamesText.split(',').map(name => name.trim());
+                    // Ensure we have enough names
+                    if (variableNames.length < X[0].length + 1) {
+                        for (let i = variableNames.length; i <= X[0].length; i++) {
+                            if (i === 0) {
+                                variableNames.push('Y');
+                            } else {
+                                variableNames.push(`X${i}`);
+                            }
+                        }
+                    }
+                } else {
+                    variableNames = ['Y', ...Array.from({ length: X[0].length }, (_, i) => `X${i+1}`)];
+                }
+                
+                // Store result globally with variable names
+                multipleRegression = { ...result, variableNames };
+                
+                // Display results
+                document.getElementById('multipleResults').style.display = 'block';
+                
+                // Format equation
+                let equation = `${variableNames[0]} = ${formatNumber(result.coefficients[0])}`;
+                for (let i = 1; i <= X[0].length; i++) {
+                    const sign = result.coefficients[i] >= 0 ? '+' : '';
+                    equation += ` ${sign} ${formatNumber(result.coefficients[i])} × ${variableNames[i]}`;
+                }
+                
+                document.getElementById('multipleEquation').textContent = equation;
+                
+                // Create coefficients table
+                let coefficientsHtml = `
+                <table>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Coefficient</th>
+                        <th>Std. Error</th>
+                        <th>t-statistic</th>
+                        <th>p-value</th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <td>Intercept</td>
+                        <td>${formatNumber(result.coefficients[0])}</td>
+                        <td>${formatNumber(result.stdErrors[0])}</td>
+                        <td>${formatNumber(result.tStats[0])}</td>
+                        <td>${formatNumber(result.pValues[0])}</td>
+                        <td>${getSignificance(result.pValues[0])}</td>
+                    </tr>
+                `;
+                
+                for (let i = 1; i <= X[0].length; i++) {
+                    coefficientsHtml += `
+                    <tr>
+                        <td>${variableNames[i]}</td>
+                        <td>${formatNumber(result.coefficients[i])}</td>
+                        <td>${formatNumber(result.stdErrors[i])}</td>
+                        <td>${formatNumber(result.tStats[i])}</td>
+                        <td>${formatNumber(result.pValues[i])}</td>
+                        <td>${getSignificance(result.pValues[i])}</td>
+                    </tr>
+                    `;
+                }
+                
+                coefficientsHtml += `</table>`;
+                document.getElementById('coefficientsTable').innerHTML = coefficientsHtml;
+                
+                // Create model summary
+                const modelSummaryHtml = `
+                <table>
+                    <tr>
+                        <th>Statistic</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>R-squared</td>
+                        <td>${formatNumber(result.rSquared)} (${(result.rSquared * 100).toFixed(2)}%)</td>
+                    </tr>
+                    <tr>
+                        <td>Adjusted R-squared</td>
+                        <td>${formatNumber(result.adjustedRSquared)} (${(result.adjustedRSquared * 100).toFixed(2)}%)</td>
+                    </tr>
+                    <tr>
+                        <td>F-statistic</td>
+                        <td>${formatNumber(result.F)}</td>
+                    </tr>
+                    <tr>
+                        <td>p-value (F-statistic)</td>
+                        <td>${formatNumber(result.fPValue)} ${getSignificance(result.fPValue)}</td>
+                    </tr>
+                    <tr>
+                        <td>Observations</td>
+                        <td>${result.n}</td>
+                    </tr>
+                    <tr>
+                        <td>Predictors</td>
+                        <td>${result.p}</td>
+                    </tr>
+                </table>
+                `;
+                
+                document.getElementById('modelSummary').innerHTML = modelSummaryHtml;
+                
+                // Create charts
+                createActualVsPredictedPlot(result, variableNames[0]);
+                createMultipleResidualPlot(result);
+                
+                // Create prediction inputs
+                let predictorInputsHtml = '';
+                for (let i = 1; i <= X[0].length; i++) {
+                    predictorInputsHtml += `
+                    <div class="form-group">
+                        <label for="multiplePredictor${i}">${variableNames[i]}:</label>
+                        <input type="number" id="multiplePredictor${i}" placeholder="Enter value for ${variableNames[i]}">
+                    </div>
+                    `;
+                }
+                
+                document.getElementById('predictorInputs').innerHTML = predictorInputsHtml;
+                
+                // Reset prediction
+                document.getElementById('multiplePredicted').textContent = '-';
+                
+                logMessage("Multiple regression analysis completed successfully");
+            } catch (err) {
+                logMessage(`Unhandled error in multiple regression: ${err.message}`);
+                console.error(err);
+                alert("An unexpected error occurred: " + err.message);
+            }
+        });
+        
+        // Multiple regression prediction handler
+        document.getElementById('multiplePredict').addEventListener('click', function() {
+            try {
+                if (!multipleRegression) {
+                    alert("Please calculate the regression first.");
+                    return;
+                }
+                
+                const predictorValues = [];
+                
+                for (let i = 1; i <= multipleRegression.p; i++) {
+                    const value = parseFloat(document.getElementById(`multiplePredictor${i}`).value);
+                    if (isNaN(value)) {
+                        alert(`Please enter a valid value for ${multipleRegression.variableNames[i]}.`);
+                        return;
+                    }
+                    predictorValues.push(value);
+                }
+                
+                // Calculate predicted value
+                let predicted = multipleRegression.coefficients[0]; // Intercept
+                for (let i = 0; i < predictorValues.length; i++) {
+                    predicted += multipleRegression.coefficients[i + 1] * predictorValues[i];
+                }
+                
+                document.getElementById('multiplePredicted').textContent = formatNumber(predicted);
+            } catch (err) {
+                logMessage(`Error in prediction: ${err.message}`);
+                alert("An error occurred during prediction: " + err.message);
+            }
+        });
+    </script>
+</body>
+</html>

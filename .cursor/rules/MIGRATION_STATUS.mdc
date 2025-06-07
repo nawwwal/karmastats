@@ -1,0 +1,141 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# KARMASTAT — Next.js 15 App Router Migration ✨
+
+## 0. Why this document exists
+
+Unify all siloed HTML tools into **one opinion‑ated, maintainable Next.js application** that shares brand, UX, and code, while preserving every statistical function.
+
+---
+
+## 1. Migration Status & Audit Tracker
+
+| Calculator Module        | Legacy File(s)                                | New Lib/Component                            | Status                | Notes                                                                                             |
+| ------------------------ | --------------------------------------------- | -------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
+| **Infectious Disease**   | `advanced-disease-model.html`                 | `lib/infectious.ts`, `components/disease-math/` | ✅ Complete            | Refactored to full SEIRDV model. UI and logic now in sync.                                        |
+| **Regression**           | `REGRESSION CALCULATOR.html`                  | `lib/regression.ts`, `components/regression/`   | ✅ Complete            | Backend logic ported (Linear, Poly, Logistic). UI components created for all regression types.    |
+| **Sample Size**          |                                               |                                              | 🟡 In Progress         | This is a group of 7 calculators. Layout created.                                                 |
+| ├─ Study Detector       | `intelligent_study_detector.html`             | `lib/studyDetector.ts`                       | ✅ Complete            | UI and logic ported.                                                                              |
+| ├─ Survival Analysis    | `karmastat_survival_analysis.html`            | `lib/survivalAnalysis.ts`                    | ✅ Complete            | UI and logic ported for all 3 modes.                                                              |
+| ├─ Comparative Study    | `karmastat_comparative_fixed.html`            | `lib/comparativeStudy.ts`                    | ✅ Complete            | UI and logic ported for Case-Control and Cohort studies.                                          |
+| ├─ T-Test                | `karmastat_basic_tests.html`                  | `lib/math/sample-size/tTest.ts`              | ✅ Complete            | Core logic and UI ported. PDF features pending.                                                   |
+| ├─ Diagnostic Study     | `karmastat_diagnostic_calculator (1).html`    | `lib/diagnosticTest.ts`                      | ✅ Complete            | UI and logic ported for all 3 modes (Single, Comparative, ROC). Missing PDF features.             |
+| ├─ Clinical Trials      | `karmastat_clinical_trials CALC.html`         | `lib/clinicalTrial.ts`                       | ✅ Complete            | UI and logic ported for all 3 modes (Superiority, Non-Inferiority, Equivalence). Missing PDF features. |
+| ├─ Cross-sectional     | `enhanced_cross_sectional_calculator.html`    | `lib/crossSectional.ts`                      | ✅ Complete            | UI and logic ported with advanced options. Missing PDF features.                                  |
+| **Family Study**         | *Not found in legacy files*                   | `app/(calc)/family-study/`                   | ❓ Blocked             | No clear legacy file. Needs clarification.                                                        |
+| **CMD-OPD**              | `cmd-opd/`                                    | *Not found in new structure*                 | ❓ Blocked             | Legacy folder exists, but not in scope/map. Needs clarification.                                  |
+
+---
+
+## 2. Scope & Non‑Goals
+
+|                                         | In Scope | Out of Scope     |
+| --- | ----- | ---- |
+| Port JS formulas (TypeScript wrappers)  | ✅        |                  |
+| Shared UI system (Tailwind + shadcn/ui) | ✅        |                  |
+| SSR/DB/Auth                             |          | ❌ not needed yet |
+| Unit tests for calculators              | ✅        |                  |
+| Visual polish & brand tokens            | ✅        |                  |
+
+---
+
+## 3. Project Folder Layout (proposed)
+
+```txt
+/karmastat        # ✨ new Next.js 15 project root
+│
+├─ app            # App Router pages/layouts
+│  ├─ (site)      # Public routes
+│  │  ├─ page.tsx # Home (mission statement)
+│  │  └─ ...      # each module folder below
+│  └─ (calc)      # Segmented routes for calculators
+│     ├─ disease-math/+page.tsx
+│     ├─ sample‑size/+layout.tsx
+│     ├─ sample‑size/…           # sub‑routes 1.2.1‑1.2.7
+│     └─ regression/+page.tsx
+│
+├─ lib            # Pure TS utilities — math lifted from /karmastats-old
+│  ├─ infectious.ts
+│  ├─ sampleSize.ts
+│  └─ …
+│
+├─ components     # Presentational React (stateless)
+├─ ui             # shadcn/ui re‑exports + custom tokens
+├─ styles         # tailwind.config, globals.css
+└─ tests          # vitest + testing‑library/react
+
+/karmastats-old   # 📦 legacy HTML files (unchanged)
+```
+
+---
+
+## 4. Routing & Navigation Map
+
+```mermaid
+flowchart TD
+  home((Home)) --> idm[Infectious Disease]
+  home --> ssc[Sample Size]
+  home --> reg[Regression]
+  home --> fam[Family Study]
+
+  ssc --> ist(Intelligent Study Detector)
+  ssc --> surv(Survival Analysis)
+  ssc --> comp(Comparative Study)
+  ssc --> ttest(T‑Test)
+  ssc --> diag(Diagnostic Study)
+  ssc --> ct(Clinical Trials)
+  ssc --> desc(Cross‑sectional / Descriptive)
+```
+
+---
+
+## 5. Brand & UI Tokens (Tailwind preset)
+
+```ts
+export const karmaTheme = {
+  primary: '#146C94',
+  secondary: '#19A7CE',
+  accent: '#F8FDCF',
+  neutral: '#F6F1F1',
+}
+```
+
+* Use **Inter** for text, **Space Mono** for code/math.
+* Shared `<CalcCard>` component for each calculator landing tile.
+
+---
+
+## 6. Porting Workflow
+
+1. **Audit** each HTML file in `/karmastats-old` – isolate pure math JS.
+2. **Wrap** formulas into named TS functions inside `lib/` with JSDoc + unit tests.
+3. **Replace** HTML UI with React components using shadcn/ui primitives.
+4. **Connect** input fields to math via Zod‑validated forms.
+5. **Snapshot tests** to guard regressions.
+
+---
+
+## 7. Tooling
+
+* **Next.js 15** (App Router, React 19, Turbopack)
+* **TypeScript 5.4**
+* **Tailwind 4 + shadcn/ui**
+* **Zod** for runtime validation
+* **Vitest** + **Testing Library** for unit/UI tests
+
+---
+
+## 8. Milestones & Estimates
+
+| Phase     | Task                         | Owner | Est.      |
+| --- | ---- | ----- | --- |
+| 1         | Repo bootstrap + CI          | you   | 0.5 d     |
+| 2         | Infectious Disease port      | you   | 1 d       |
+| 3         | Sample Size shell + detector | you   | 1.5 d     |
+| 4         | Remaining 6 calc pages       | you   | 3 d       |
+| 5         | Regression & Family Study    | you   | 1.5 d     |
+| 6         | Visual QA & tests            | you   | 1 d       |
+| **Total** |                              |       | **8‑9 d** |

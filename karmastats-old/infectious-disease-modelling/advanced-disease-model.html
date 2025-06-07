@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Epidemiological Modeling System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash/4.17.21/lodash.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #7C3AED;
+            --secondary-color: #5B21B6;
+            --success-color: #059669;
+            --warning-color: #D97706;
+            --danger-color: #DC2626;
+            --background-color: #0F172A;
+            --card-bg: #1E293B;
+            --text-primary: #E2E8F0;
+            --text-secondary: #94A3B8;
+            --border-color: #2D3B55;
+            --hover-color: #2D3B55;
+        }
+
+        .navigation {
+            background: rgba(30, 10, 60, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.5rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(147, 51, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(147, 51, 234, 0.3);
+            box-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--background-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #7C3AED, #3730A3);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.15);
+            text-align: center;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #c4b5fd);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            color: #c4b5fd;
+            font-size: 1.2rem;
+            margin: 1rem 0 0 0;
+            font-weight: 400;
+        }
+
+        .header .version {
+            font-size: 0.9rem;
+            color: rgba(196, 181, 253, 0.8);
+            margin-top: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(124, 58, 237, 0.15);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #A78BFA;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237C3AED'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="range"] {
+            flex: 1;
+        }
+
+        .range-value {
+            min-width: 3rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .button:hover {
+            background: var(--secondary-color);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            opacity: 0.8;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #A78BFA;
+            margin: 0.5rem 0;
+            text-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+            height: 500px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            background: #1e293b;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>KARMASTAT NEXUS</h1>
+            <p>Advanced Quantum Epidemiological Modeling & Analysis System</p>
+            <div class="version">Version 2.0 • Powered by Advanced Bio-Statistical Analytics</div>
+        </header>
+
+        <nav class="navigation">
+            <div class="nav-container">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">🏠</span>
+                    Home
+                </a>
+                <a href="/infectious-disease-modelling/standard-disease-model.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Standard Model
+                </a>
+                <a href="/infectious-disease-modelling/advanced-disease-model.html" class="nav-link">
+                    <span class="nav-icon">🔬</span>
+                    Advanced Model
+                </a>
+            </div>
+        </nav>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('basic')">Basic Parameters</div>
+            <div class="tab" onclick="switchTab('advanced')">Advanced Settings</div>
+            <div class="tab" onclick="switchTab('interventions')">Interventions</div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Disease Configuration</h2>
+                <div class="form-group">
+                    <label>Disease Type</label>
+                    <select id="diseaseType" onchange="updateDiseaseParams()">
+                        <option value="respiratory">Respiratory Disease</option>
+                        <option value="vector">Vector-borne Disease</option>
+                        <option value="contact">Contact Disease</option>
+                        <option value="custom">Custom Disease</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        Transmission Rate (β)
+                        <span class="tooltip" data-tooltip="Rate of disease spread per contact">ℹ️</span>
+                    </label>
+                    <div class="range-container">
+                        <input type="range" id="beta" min="0" max="2" step="0.1" value="0.3"
+                               oninput="updateRangeValue(this, 'betaValue')">
+                        <span id="betaValue" class="range-value">0.3</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Population Parameters</h2>
+                <div class="form-group">
+                    <label>Total Population</label>
+                    <input type="number" id="population" value="1000000" min="1000">
+                </div>
+                <div class="form-group">
+                    <label>Initial Cases</label>
+                    <input type="number" id="initialCases" value="100" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Healthcare Capacity</label>
+                    <input type="number" id="healthcareCapacity" value="10000" min="100">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Disease Progression</h2>
+                <div class="form-group">
+                    <label>Incubation Period (days)</label>
+                    <input type="number" id="incubationPeriod" value="5" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Recovery Period (days)</label>
+                    <input type="number" id="recoveryPeriod" value="14" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Mortality Rate (%)</label>
+                    <input type="number" id="mortalityRate" value="2" min="0" max="100" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid" id="advancedParams" style="display: none;">
+            <div class="card">
+                <h2>Environmental Factors</h2>
+                <div class="form-group">
+                    <label>Seasonality Impact</label>
+                    <div class="range-container">
+                        <input type="range" id="seasonality" min="0" max="1" step="0.1" value="0.2"
+                               oninput="updateRangeValue(this, 'seasonalityValue')">
+                        <span id="seasonalityValue" class="range-value">0.2</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Temperature Sensitivity</label>
+                    <div class="range-container">
+                        <input type="range" id="tempSensitivity" min="0" max="1" step="0.1" value="0.3"
+                               oninput="updateRangeValue(this, 'tempValue')">
+                        <span id="tempValue" class="range-value">0.3</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Population Dynamics</h2>
+                <div class="form-group">
+                    <label>Age Structure</label>
+                    <select id="ageStructure">
+                        <option value="uniform">Uniform</option>
+                        <option value="young">Young Population</option>
+                        <option value="aged">Aged Population</option>
+                        <option value="custom">Custom Structure</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Population Density Factor</label>
+                    <input type="number" id="densityFactor" value="1" min="0.1" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid" id="interventionParams" style="display: none;">
+            <div class="card">
+                <h2>Vaccination Strategy</h2>
+                <div class="form-group">
+                    <label>Vaccination Rate (%/day)</label>
+                    <input type="number" id="vaccinationRate" value="0.5" min="0" max="100" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Vaccine Effectiveness (%)</label>
+                    <input type="number" id="vaccineEffectiveness" value="85" min="0" max="100">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Social Measures</h2>
+                <div class="form-group">
+                    <label>Social Distancing Effect</label>
+                    <div class="range-container">
+                        <input type="range" id="socialDistance" min="0" max="1" step="0.1" value="0.5"
+                               oninput="updateRangeValue(this, 'socialValue')">
+                        <span id="socialValue" class="range-value">0.5</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Mask Usage Effect</label>
+                    <div class="range-container">
+                        <input type="range" id="maskUsage" min="0" max="1" step="0.1" value="0.3"
+                               oninput="updateRangeValue(this, 'maskValue')">
+                        <span id="maskValue" class="range-value">0.3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="button" onclick="runSimulation()">Run Simulation</button>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Basic Reproduction Number (R₀)</div>
+                <div class="metric-value" id="r0">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Peak Cases</div>
+                <div class="metric-value" id="peakCases">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Cases</div>
+                <div class="metric-value" id="totalCases">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Healthcare Utilization</div>
+                <div class="metric-value" id="healthcareUtil">-</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="modelChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let currentChart = null;
+        let currentTab = 'basic';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab:nth-child(${tab === 'basic' ? 1 : tab === 'advanced' ? 2 : 3})`).classList.add('active');
+
+            document.getElementById('advancedParams').style.display = tab === 'advanced' ? 'grid' : 'none';
+            document.getElementById('interventionParams').style.display = tab === 'interventions' ? 'grid' : 'none';
+        }
+
+        function updateRangeValue(input, valueId) {
+            document.getElementById(valueId).textContent = input.value;
+        }
+
+        const diseasePresets = {
+            respiratory: {
+                beta: 0.3,
+                incubation: 5,
+                recovery: 14,
+                mortality: 2,
+                seasonality: 0.2
+            },
+            vector: {
+                beta: 0.2,
+                incubation: 8,
+                recovery: 21,
+                mortality: 1,
+                seasonality: 0.4
+            },
+            contact: {
+                beta: 0.4,
+                incubation: 3,
+                recovery: 10,
+                mortality: 0.5,
+                seasonality: 0.1
+            }
+        };
+
+        function updateDiseaseParams() {
+            const diseaseType = document.getElementById('diseaseType').value;
+            if (diseaseType !== 'custom') {
+                const preset = diseasePresets[diseaseType];
+                document.getElementById('beta').value = preset.beta;
+                document.getElementById('betaValue').textContent = preset.beta;
+                document.getElementById('incubationPeriod').value = preset.incubation;
+                document.getElementById('recoveryPeriod').value = preset.recovery;
+                document.getElementById('mortalityRate').value = preset.mortality;
+                document.getElementById('seasonality').value = preset.seasonality;
+                document.getElementById('seasonalityValue').textContent = preset.seasonality;
+            }
+        }
+
+        function formatNumber(num, isDecimal = false) {
+            if (isDecimal) {
+                return parseFloat(num).toFixed(2);
+            }
+            return new Intl.NumberFormat().format(Math.round(num));
+        }
+
+        function animateValue(element, start, end, duration, isDecimal = false) {
+            if (start === end) {
+                element.textContent = isDecimal ? formatNumber(end, true) : formatNumber(end);
+                return;
+            }
+
+            const startTime = performance.now();
+            const endTime = startTime + duration;
+            const range = end - start;
+
+            function update() {
+                const now = performance.now();
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function for smoother animation
+                const easeOutQuad = 1 - Math.pow(1 - progress, 2);
+                const current = start + (range * easeOutQuad);
+
+                if (isDecimal) {
+                    element.textContent = formatNumber(current, true);
+                } else {
+                    element.textContent = formatNumber(current);
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    // Ensure we end exactly on the target number
+                    element.textContent = isDecimal ? formatNumber(end, true) : formatNumber(end);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function runSimulation() {
+            const params = {
+                population: Number(document.getElementById('population').value),
+                initialCases: Number(document.getElementById('initialCases').value),
+                beta: Number(document.getElementById('beta').value),
+                incubation: Number(document.getElementById('incubationPeriod').value),
+                recovery: Number(document.getElementById('recoveryPeriod').value),
+                mortality: Number(document.getElementById('mortalityRate').value) / 100,
+                seasonality: Number(document.getElementById('seasonality').value),
+                socialDistance: Number(document.getElementById('socialDistance').value),
+                maskUsage: Number(document.getElementById('maskUsage').value),
+                vaccinationRate: Number(document.getElementById('vaccinationRate').value) / 100,
+                vaccineEffectiveness: Number(document.getElementById('vaccineEffectiveness').value) / 100,
+                healthcareCapacity: Number(document.getElementById('healthcareCapacity').value)
+            };
+
+            const results = simulateDisease(params);
+            updateCharts(results, params);
+            updateMetrics(results, params);
+        }
+
+        function simulateDisease(params) {
+            const days = 365;
+            const S = new Array(days).fill(0);  // Susceptible
+            const E = new Array(days).fill(0);  // Exposed
+            const I = new Array(days).fill(0);  // Infectious
+            const R = new Array(days).fill(0);  // Recovered
+            const D = new Array(days).fill(0);  // Deceased
+            const V = new Array(days).fill(0);  // Vaccinated
+
+            // Initial conditions
+            S[0] = params.population - params.initialCases;
+            E[0] = params.initialCases;
+            I[0] = 0;
+            R[0] = 0;
+            D[0] = 0;
+            V[0] = 0;
+
+            // Model parameters
+            const sigma = 1 / params.incubation;  // Rate of progression from exposed to infectious
+            const gamma = 1 / params.recovery;    // Recovery rate
+            const mu = params.mortality;          // Mortality rate
+            const baseTransmission = params.beta * (1 - params.socialDistance) * (1 - 0.5 * params.maskUsage);
+
+            // Run simulation
+            for (let t = 0; t < days - 1; t++) {
+                // Calculate seasonal effect
+                const seasonality = 1 + params.seasonality * Math.sin(2 * Math.PI * t / 365);
+                const beta = baseTransmission * seasonality;
+
+                // Calculate vaccination effect
+                const newVaccinated = Math.min(
+                    params.vaccinationRate * S[t],
+                    S[t]
+                );
+
+                // Calculate transitions
+                const newExposed = beta * S[t] * I[t] / params.population;
+                const newInfectious = sigma * E[t];
+                const newRecovered = gamma * I[t] * (1 - mu);
+                const newDeceased = gamma * I[t] * mu;
+
+                // Update populations
+                S[t + 1] = S[t] - newExposed - newVaccinated;
+                E[t + 1] = E[t] + newExposed - newInfectious;
+                I[t + 1] = I[t] + newInfectious - newRecovered - newDeceased;
+                R[t + 1] = R[t] + newRecovered;
+                D[t + 1] = D[t] + newDeceased;
+                V[t + 1] = V[t] + newVaccinated;
+
+                // Ensure non-negative values
+                [S[t + 1], E[t + 1], I[t + 1], R[t + 1], D[t + 1], V[t + 1]] =
+                    [S[t + 1], E[t + 1], I[t + 1], R[t + 1], D[t + 1], V[t + 1]].map(v => Math.max(0, v));
+            }
+
+            return { S, E, I, R, D, V };
+        }
+
+        function updateCharts(results, params) {
+            const ctx = document.getElementById('modelChart').getContext('2d');
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            const data = Array.from({ length: results.S.length }, (_, i) => ({
+                day: i,
+                Susceptible: results.S[i],
+                Exposed: results.E[i],
+                Infectious: results.I[i],
+                Recovered: results.R[i],
+                Deceased: results.D[i],
+                Vaccinated: results.V[i]
+            }));
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.day),
+                    datasets: [
+                        {
+                            label: 'Susceptible',
+                            data: data.map(d => d.Susceptible),
+                            borderColor: '#3b82f6',
+                            fill: false
+                        },
+                        {
+                            label: 'Exposed',
+                            data: data.map(d => d.Exposed),
+                            borderColor: '#f59e0b',
+                            fill: false
+                        },
+                        {
+                            label: 'Infectious',
+                            data: data.map(d => d.Infectious),
+                            borderColor: '#ef4444',
+                            fill: false
+                        },
+                        {
+                            label: 'Recovered',
+                            data: data.map(d => d.Recovered),
+                            borderColor: '#22c55e',
+                            fill: false
+                        },
+                        {
+                            label: 'Deceased',
+                            data: data.map(d => d.Deceased),
+                            borderColor: '#64748b',
+                            fill: false
+                        },
+                        {
+                            label: 'Vaccinated',
+                            data: data.map(d => d.Vaccinated),
+                            borderColor: '#a855f7',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Days'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Population'
+                            },
+                            ticks: {
+                                callback: value => formatNumber(value)
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${formatNumber(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMetrics(results, params) {
+            // Get current values before update
+            const currentR0 = parseFloat(document.getElementById('r0').textContent) || 0;
+            const currentPeakCases = parseInt(document.getElementById('peakCases').textContent.replace(/,/g, '')) || 0;
+            const currentTotalCases = parseInt(document.getElementById('totalCases').textContent.replace(/,/g, '')) || 0;
+            const currentHealthcareUtil = parseFloat(document.getElementById('healthcareUtil').textContent) || 0;
+
+            // Calculate new metrics
+            const r0 = params.beta * params.recovery;
+            const peakCases = Math.max(...results.I);
+            const totalCases = params.population - results.S[results.S.length - 1] - results.V[results.V.length - 1];
+            const healthcareUtil = (peakCases / params.healthcareCapacity * 100);
+
+            // Animate metrics update with proper decimal handling
+            animateValue(document.getElementById('r0'), currentR0, parseFloat(r0.toFixed(2)), 1500, true);
+            animateValue(document.getElementById('peakCases'), currentPeakCases, peakCases, 1500, false);
+            animateValue(document.getElementById('totalCases'), currentTotalCases, totalCases, 1500, false);
+            animateValue(document.getElementById('healthcareUtil'), currentHealthcareUtil, parseFloat(healthcareUtil.toFixed(1)), 1500, true);
+        }
+
+        // Initialize simulation on page load
+        document.addEventListener('DOMContentLoaded', runSimulation);
+
+        // Add this at the beginning of your script section
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
