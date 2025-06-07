@@ -5,8 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { jsPDF } from "jspdf";
-import * as pdfjs from "pdfjs-dist/build/pdf";
-import "pdfjs-dist/build/pdf.worker.entry";
+import * as pdfjs from "pdfjs-dist";
 
 import {
     SingleTestSchema, calculateSingleTestSampleSize, SingleTestOutput,
@@ -32,6 +31,9 @@ const FormSchema = z.intersection(
   ComparativeTestSchema.partial()
 ).and(ROCAnalysisSchema.partial());
 
+if (typeof window !== "undefined" && pdfjs.GlobalWorkerOptions) {
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+}
 
 export default function DiagnosticTestPage() {
     const [activeTab, setActiveTab] = useState<'single' | 'comparative' | 'roc'>('single');
