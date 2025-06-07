@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const spaceMono = Space_Mono({
@@ -8,6 +10,8 @@ const spaceMono = Space_Mono({
   weight: "400",
   variable: "--font-mono"
 });
+
+<><SpeedInsights /><Analytics /></>
 
 export const metadata: Metadata = {
   title: "Karmastat - Statistical Calculators for Medical Research",
