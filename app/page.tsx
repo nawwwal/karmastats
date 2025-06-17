@@ -1,7 +1,5 @@
-'use client';
 
 import React from 'react';
-import { Layout } from '@/components/layout/layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -60,7 +58,11 @@ const CalcCard = ({ title, description, href, icon }) => (
   </Link>
 );
 
-export default function HomePage() {
+export default function HomePage({
+  searchParams
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="text-white text-center p-12 bg-blue-800">

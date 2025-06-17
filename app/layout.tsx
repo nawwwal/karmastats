@@ -12,7 +12,12 @@ const spaceMono = Space_Mono({
   variable: "--font-mono"
 });
 
-<><SpeedInsights /><Analytics /></>
+export const SpeedInsightsAnalytics = () => (
+  <>
+    <SpeedInsights />
+    <Analytics />
+  </>
+);
 
 export const metadata: Metadata = {
   title: "Karmastat - Statistical Calculators for Medical Research",
@@ -35,6 +40,7 @@ export default function RootLayout({
         >
           <div className="min-h-screen bg-background">
             {children}
+            <SpeedInsightsAnalytics />
           </div>
         </ThemeProvider>
       </body>
