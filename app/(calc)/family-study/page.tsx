@@ -492,33 +492,33 @@ export default function FamilyStudyPage() {
     <div className="container mx-auto p-4">
       <Card className="mb-6">
         <CardHeader className="bg-gradient-to-r from-primary to-success text-primary-foreground">
-          <CardTitle className="heading-1">Professional Family Health Study Assessment</CardTitle>
-          <CardDescription className="body-small text-muted-foreground">Based on ICMR-NIN Guidelines 2020 | IFCT 2017 | Community Medicine Standards</CardDescription>
+          <CardTitle className="text-4xl md:text-5xl font-bold tracking-tight">Professional Family Health Study Assessment</CardTitle>
+          <CardDescription className="text-sm text-muted-foreground">Based on ICMR-NIN Guidelines 2020 | IFCT 2017 | Community Medicine Standards</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card>
               <CardContent className="p-4">
                 <h4 className="font-semibold text-primary mb-2">🏛️ ICMR-NIN 2020 Guidelines</h4>
-                <p className="body-small text-muted-foreground">Latest Recommended Dietary Allowances with consumption unit calculation based on 2110 kcal reference male sedentary worker</p>
+                <p className="text-sm text-muted-foreground">Latest Recommended Dietary Allowances with consumption unit calculation based on 2110 kcal reference male sedentary worker</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
                 <h4 className="font-semibold text-primary mb-2">📊 IFCT 2017 Database</h4>
-                <p className="body-small text-muted-foreground">528 Indian foods with comprehensive nutritional analysis across 151 nutrients</p>
+                <p className="text-sm text-muted-foreground">528 Indian foods with comprehensive nutritional analysis across 151 nutrients</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
                 <h4 className="font-semibold text-primary mb-2">⚕️ Medical Standards</h4>
-                <p className="body-small text-muted-foreground">WHO, IAP, and national health program compliance with real-time calculations</p>
+                <p className="text-sm text-muted-foreground">WHO, IAP, and national health program compliance with real-time calculations</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
                 <h4 className="font-semibold text-primary mb-2">💾 Data Management</h4>
-                <p className="body-small text-muted-foreground">Export capabilities, automatic calculations, and comprehensive reporting system</p>
+                <p className="text-sm text-muted-foreground">Export capabilities, automatic calculations, and comprehensive reporting system</p>
               </CardContent>
             </Card>
           </div>
@@ -532,7 +532,7 @@ export default function FamilyStudyPage() {
                 }`}>
                   {step}
                 </div>
-                <span className="caption-text mt-1">
+                <span className="text-xs font-medium tracking-wide mt-1">
                   {step === 1 ? 'General' :
                    step === 2 ? 'Socio-Economic' :
                    step === 3 ? 'Environment' :
@@ -813,7 +813,7 @@ export default function FamilyStudyPage() {
 
                   <Card className="mb-6">
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>💹</span> Income Analysis
                       </CardTitle>
                     </CardHeader>
@@ -875,7 +875,7 @@ export default function FamilyStudyPage() {
 
                   <Card className="mb-6">
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>💸</span> Monthly Expenditure Pattern
                       </CardTitle>
                     </CardHeader>
@@ -922,7 +922,7 @@ export default function FamilyStudyPage() {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>🏛️</span> Government Schemes & Social Security
                       </CardTitle>
                     </CardHeader>
@@ -996,7 +996,7 @@ export default function FamilyStudyPage() {
                 <CardContent>
                   <Card className="mb-6">
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>🧠</span> Psychological Environment
                       </CardTitle>
                     </CardHeader>
@@ -1105,7 +1105,7 @@ export default function FamilyStudyPage() {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>🏠</span> Housing and Physical Environment
                       </CardTitle>
                     </CardHeader>
@@ -1176,7 +1176,7 @@ export default function FamilyStudyPage() {
 
                       <Card className="mb-6">
                         <CardHeader>
-                          <CardTitle className="heading-4 flex items-center gap-2">
+                          <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                             <span>📏</span> Overcrowding Analysis
                           </CardTitle>
                         </CardHeader>
@@ -1631,7 +1631,7 @@ export default function FamilyStudyPage() {
 
                   <Card className="mb-6 bg-gradient-to-r from-warning/10 to-warning/5 border-warning/30">
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2 text-warning">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2 text-warning">
                         <span>⚖️</span> Consumption Units (CU) Calculator
                       </CardTitle>
                     </CardHeader>
@@ -1651,7 +1651,7 @@ export default function FamilyStudyPage() {
                       {showCuResults && (
                         <Card className="mb-4">
                           <CardHeader>
-                            <CardTitle className="heading-4 flex items-center gap-2">
+                            <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                               <span>📊</span> Consumption Units Summary
                             </CardTitle>
                           </CardHeader>
@@ -1753,14 +1753,14 @@ export default function FamilyStudyPage() {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>🍽️</span> 24-Hour Dietary Recall
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <Card className="mb-6 bg-gradient-to-r from-accent/10 to-info/10 border-info/30">
                         <CardHeader>
-                          <CardTitle className="heading-4 flex items-center gap-2 text-info">
+                          <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2 text-info">
                             <span>🔍</span> IFCT 2017 Food Database Search
                           </CardTitle>
                         </CardHeader>
@@ -1876,7 +1876,7 @@ export default function FamilyStudyPage() {
                       {showNutritionalAnalysis && (
                         <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success">
                           <CardHeader>
-                            <CardTitle className="heading-4 flex items-center gap-2 text-success">
+                            <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2 text-success">
                               <span>📊</span> Nutritional Status Analysis
                             </CardTitle>
                           </CardHeader>
@@ -2043,7 +2043,7 @@ export default function FamilyStudyPage() {
 
                   <Card className="mb-6">
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>💉</span> Immunization Status
                       </CardTitle>
                     </CardHeader>
@@ -2126,7 +2126,7 @@ export default function FamilyStudyPage() {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="heading-4 flex items-center gap-2">
+                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
                         <span>🏥</span> Medical History & Health Status
                       </CardTitle>
                     </CardHeader>

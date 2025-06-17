@@ -158,7 +158,7 @@ export function LinearRegressionTab() {
   return (
     <div className="space-y-6">
       <Card className="p-6 mb-4">
-        <h2 className="heading-2 mb-4">Simple Linear Regression</h2>
+        <h2 className="text-3xl font-semibold tracking-tight mb-4">Simple Linear Regression</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
@@ -190,30 +190,30 @@ export function LinearRegressionTab() {
             <Button onClick={handleCalculate} className="w-full">
               Calculate Linear Regression
             </Button>
-            {error && <div className="error-text mt-2">{error}</div>}
+            {error && <div className="text-red-600 font-medium mt-2">{error}</div>}
           </div>
           {result && (
             <div className="space-y-4">
               <div>
-                <div className="label-text">Regression Equation:</div>
+                <div className="text-sm font-medium">Regression Equation:</div>
                 <div>
                   Y = {result.intercept.toFixed(4)} + {result.slope.toFixed(4)} × X
                 </div>
               </div>
               <div>
-                <span className="label-text">Slope (β₁):</span> {result.slope.toFixed(4)}
+                <span className="text-sm font-medium">Slope (β₁):</span> {result.slope.toFixed(4)}
               </div>
               <div>
-                <span className="label-text">Intercept (β₀):</span> {result.intercept.toFixed(4)}
+                <span className="text-sm font-medium">Intercept (β₀):</span> {result.intercept.toFixed(4)}
               </div>
               <div>
-                <span className="label-text">R²:</span> {result.rSquared.toFixed(4)}
+                <span className="text-sm font-medium">R²:</span> {result.rSquared.toFixed(4)}
               </div>
               <div>
-                <span className="label-text">Correlation (r):</span> {result.correlation.toFixed(4)}
+                <span className="text-sm font-medium">Correlation (r):</span> {result.correlation.toFixed(4)}
               </div>
               <div>
-                <span className="label-text">Standard Error:</span> {result.standardError.toFixed(4)}
+                <span className="text-sm font-medium">Standard Error:</span> {result.standardError.toFixed(4)}
               </div>
             </div>
           )}

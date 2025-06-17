@@ -156,7 +156,7 @@ export default function CrossSectionalPage() {
         <Form {...(form as any)}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="text-center">
-                    <h1 className="heading-1">Cross-Sectional Study Calculator</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Cross-Sectional Study Calculator</h1>
                     <p className="text-muted-foreground mt-2">Estimate sample size for prevalence studies.</p>
                 </div>
 

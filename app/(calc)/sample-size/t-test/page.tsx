@@ -156,7 +156,7 @@ export default function TTestPage() {
                         ))}
                     </TableBody>
                 </Table>
-                 <div className="mt-6 body-small text-muted-foreground">
+                 <div className="mt-6 text-sm text-muted-foreground">
                     <p><strong>Methodological Recommendations:</strong></p>
                     <ul className="list-disc pl-5 mt-2">
                         <li>Ensure data meets normality assumptions or consider non-parametric alternatives (e.g., Wilcoxon test).</li>
@@ -172,7 +172,7 @@ export default function TTestPage() {
   return (
     <Form {...form}>
       <div className="container mx-auto py-8">
-        <h1 className="heading-1 mb-2">T-Test Sample Size Calculator</h1>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">T-Test Sample Size Calculator</h1>
         <p className="text-muted-foreground mb-8">Calculate sample size for Independent, Paired, and One-Sample T-Tests.</p>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">

@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { LineChart } from './LineChart';
 import { MetricsDisplay } from './MetricsDisplay';
-import { simulateStandardModel } from '@/lib/infectious';
+import { DiseaseModel, DiseaseModelParams, InterventionParams } from '@/lib/infectious';
 
 interface Parameters {
   population: number;
@@ -38,8 +38,44 @@ export function StandardModel() {
   const runSimulation = async () => {
     setIsLoading(true);
     try {
-      const simulationResults = simulateStandardModel(params);
-      setResults(simulationResults);
+      const diseaseParams: DiseaseModelParams = {
+        populationSize: params.population,
+        initialCases: params.initialInfected,
+        transmissionRate: params.transmissionRate,
+        incubationPeriod: 1 / params.incubationRate, // Convert rate to days
+        recoveryRate: params.recoveryRate,
+        mortalityRate: 0.01, // Default mortality rate
+        simulationDays: params.days,
+        seasonality: 0.1, // Default seasonality
+      };
+
+      const interventionParams: InterventionParams = {
+        socialDistancing: 0,
+        maskEffectiveness: 0,
+        vaccinationRate: 0,
+        vaccineEffectiveness: 0,
+      };
+
+      const model = new DiseaseModel(diseaseParams, interventionParams);
+      const simulationResults = model.calculate();
+
+      // Transform results to match the expected format
+      const transformedResults = {
+        susceptible: simulationResults.susceptible,
+        infected: simulationResults.infected,
+        recovered: simulationResults.recovered,
+        deceased: simulationResults.deceased,
+        metrics: {
+          peakInfected: simulationResults.peakInfection,
+          peakDay: simulationResults.peakDay,
+          totalDeaths: simulationResults.totalDeaths,
+          attackRate: simulationResults.totalCases / params.population,
+          r0: simulationResults.r0,
+          herdImmunityThreshold: 1 - (1 / simulationResults.r0),
+        }
+      };
+
+      setResults(transformedResults);
     } catch (error) {
       console.error('Simulation failed:', error);
     } finally {
@@ -49,7 +85,7 @@ export function StandardModel() {
 
   useEffect(() => {
     runSimulation();
-  }, []);
+  }, [params]);
 
   return (
     <div className="space-y-6">

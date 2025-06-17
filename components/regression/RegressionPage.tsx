@@ -7,7 +7,7 @@ export function RegressionPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="heading-1 mb-2">Regression Analysis</h1>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Regression Analysis</h1>
         <p className="text-muted-foreground">
           Perform linear and multiple regression analysis with visualization.
         </p>

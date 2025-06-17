@@ -46,7 +46,7 @@ export function AdvancedModel() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h2 className="heading-3 mb-4">Model Parameters</h2>
+          <h2 className="text-2xl font-semibold tracking-tight mb-4">Model Parameters</h2>
           <div className="space-y-4">
             <div>
               <Label htmlFor="population">Population Size</Label>
@@ -131,7 +131,7 @@ export function AdvancedModel() {
                     max={100}
                     step={1}
                 />
-                <p className="helper-text mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                     {Math.round(params.seasonality * 100)}% seasonal variation
                 </p>
             </div>
@@ -150,7 +150,7 @@ export function AdvancedModel() {
         </Card>
 
         <Card className="p-6">
-          <h2 className="heading-3 mb-4">Intervention Parameters</h2>
+          <h2 className="text-2xl font-semibold tracking-tight mb-4">Intervention Parameters</h2>
           <div className="space-y-6">
             <div>
               <Label>Social Distancing Effectiveness</Label>
@@ -165,7 +165,7 @@ export function AdvancedModel() {
                 max={100}
                 step={1}
               />
-              <p className="helper-text mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {Math.round(interventions.socialDistancing * 100)}% reduction
               </p>
             </div>
@@ -183,7 +183,7 @@ export function AdvancedModel() {
                 max={100} // Represents 10%
                 step={1}
               />
-              <p className="helper-text mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {(interventions.vaccinationRate * 100).toFixed(2)}% of susceptibles per day
               </p>
             </div>
@@ -201,7 +201,7 @@ export function AdvancedModel() {
                     max={100}
                     step={1}
                 />
-                <p className="helper-text mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                     {Math.round(interventions.vaccineEffectiveness * 100)}% effective
                 </p>
             </div>
@@ -219,7 +219,7 @@ export function AdvancedModel() {
                 max={100}
                 step={1}
               />
-              <p className="helper-text mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {Math.round(interventions.maskEffectiveness * 100)}% reduction
               </p>
             </div>
@@ -234,14 +234,14 @@ export function AdvancedModel() {
       {results && (
         <>
           <Card className="p-6">
-            <h2 className="heading-3 mb-4">
+            <h2 className="text-2xl font-semibold tracking-tight mb-4">
               Results
             </h2>
             <MetricsDisplay results={results} />
           </Card>
 
           <Card className="p-6">
-            <h2 className="heading-3 mb-4">
+            <h2 className="text-2xl font-semibold tracking-tight mb-4">
               Disease Spread Over Time
             </h2>
             <div className="h-[400px]">
