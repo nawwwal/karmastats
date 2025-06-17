@@ -11,23 +11,35 @@ interface LayoutWrapperProps {
 
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
   // Don't show sidebar on home page for clean hero experience
   const isHomePage = pathname === '/';
 
-  // Persist sidebar state in localStorage
+  // Set client flag to prevent SSR issues
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Persist sidebar state in localStorage (only on client)
+  useEffect(() => {
+    if (!isClient) return;
+
     const saved = localStorage.getItem('sidebar-collapsed');
     if (saved !== null) {
       setIsSidebarCollapsed(JSON.parse(saved));
     }
-  }, []);
+  }, [isClient]);
 
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
-    localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
+
+    // Only access localStorage on client side
+    if (isClient) {
+      localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
+    }
   };
 
   if (isHomePage) {

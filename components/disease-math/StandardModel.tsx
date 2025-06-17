@@ -238,7 +238,7 @@ export function StandardModel() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <LineChart data={rawResults} />
+              <LineChart results={rawResults} />
             </CardContent>
           </Card>
         </div>
