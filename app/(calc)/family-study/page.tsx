@@ -491,7 +491,7 @@ export default function FamilyStudyPage() {
   return (
     <div className="container mx-auto p-4">
       <Card className="mb-6">
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-green-600 text-white">
+        <CardHeader className="bg-gradient-to-r from-primary to-success text-primary-foreground">
           <CardTitle className="text-3xl font-bold">Professional Family Health Study Assessment</CardTitle>
           <CardDescription className="text-white/90">Based on ICMR-NIN Guidelines 2020 | IFCT 2017 | Community Medicine Standards</CardDescription>
         </CardHeader>
@@ -527,7 +527,7 @@ export default function FamilyStudyPage() {
             {[1, 2, 3, 4, 5, 6, 7].map((step) => (
               <div key={step} className="flex flex-col items-center">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${
-                  step < currentStep ? 'bg-green-500' :
+                  step < currentStep ? 'bg-success' :
                   step === currentStep ? 'bg-primary' : 'bg-gray-300'
                 }`}>
                   {step}
@@ -1560,9 +1560,9 @@ export default function FamilyStudyPage() {
                   )}
 
                   {showFamilyAnalysis && (
-                    <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-500">
+                    <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-green-700">
+                        <CardTitle className="flex items-center gap-2 text-success">
                           <span>📊</span> Detailed Family Analysis
                         </CardTitle>
                       </CardHeader>
@@ -1629,14 +1629,14 @@ export default function FamilyStudyPage() {
                     </AlertDescription>
                   </Alert>
 
-                  <Card className="mb-6 bg-gradient-to-r from-orange-50 to-pink-50 border-orange-200">
+                  <Card className="mb-6 bg-gradient-to-r from-warning/10 to-warning/5 border-warning/30">
                     <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2 text-orange-700">
+                      <CardTitle className="text-lg flex items-center gap-2 text-warning">
                         <span>⚖️</span> Consumption Units (CU) Calculator
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="bg-white p-4 rounded-md mb-4 border border-orange-100">
+                      <div className="bg-card p-4 rounded-md mb-4 border border-warning/20">
                         <p className="mb-2"><strong>Reference:</strong> Adult sedentary male (19-50 years) = 1.0 CU = 2110 kcal</p>
                         <p><strong>Auto-calculation:</strong> CU values will be automatically calculated based on family member data</p>
                       </div>
@@ -1758,9 +1758,9 @@ export default function FamilyStudyPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <Card className="mb-6 bg-gradient-to-r from-purple-50 to-blue-50 border-blue-200">
+                      <Card className="mb-6 bg-gradient-to-r from-accent/10 to-info/10 border-info/30">
                         <CardHeader>
-                          <CardTitle className="text-lg flex items-center gap-2 text-blue-700">
+                          <CardTitle className="text-lg flex items-center gap-2 text-info">
                             <span>🔍</span> IFCT 2017 Food Database Search
                           </CardTitle>
                         </CardHeader>
@@ -1874,9 +1874,9 @@ export default function FamilyStudyPage() {
                       </Button>
 
                       {showNutritionalAnalysis && (
-                        <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-500">
+                        <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success">
                           <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-green-700">
+                            <CardTitle className="flex items-center gap-2 text-success">
                               <span>📊</span> Nutritional Status Analysis
                             </CardTitle>
                           </CardHeader>
@@ -1885,16 +1885,16 @@ export default function FamilyStudyPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                               <Card>
                                 <CardContent className="p-4 text-center">
-                                  <div className="text-3xl font-bold text-green-600">85.2%</div>
+                                  <div className="text-3xl font-bold text-success">85.2%</div>
                                   <div className="text-sm">Energy Adequacy</div>
-                                  <Badge className="mt-2" variant="outline">Adequate</Badge>
+                                  <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
                                 </CardContent>
                               </Card>
                               <Card>
                                 <CardContent className="p-4 text-center">
-                                  <div className="text-3xl font-bold text-green-600">92.5%</div>
+                                  <div className="text-3xl font-bold text-success">92.5%</div>
                                   <div className="text-sm">Protein Adequacy</div>
-                                  <Badge className="mt-2" variant="outline">Adequate</Badge>
+                                  <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
                                 </CardContent>
                               </Card>
                             </div>
@@ -1917,7 +1917,7 @@ export default function FamilyStudyPage() {
                                   <TableCell>2110</TableCell>
                                   <TableCell>85.2%</TableCell>
                                   <TableCell>
-                                    <Badge variant="outline" className="bg-green-100">Adequate</Badge>
+                                    <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
                                   </TableCell>
                                 </TableRow>
                                 <TableRow>
@@ -1926,7 +1926,7 @@ export default function FamilyStudyPage() {
                                   <TableCell>54.0</TableCell>
                                   <TableCell>92.5%</TableCell>
                                   <TableCell>
-                                    <Badge variant="outline" className="bg-green-100">Adequate</Badge>
+                                    <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
                                   </TableCell>
                                 </TableRow>
                               </TableBody>
@@ -2180,9 +2180,9 @@ export default function FamilyStudyPage() {
                   </Button>
 
                   {showComprehensiveReport && (
-                    <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-500 mb-6">
+                    <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success mb-6">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-green-700">
+                        <CardTitle className="flex items-center gap-2 text-success">
                           <span>📊</span> Family Health Study Report
                         </CardTitle>
                       </CardHeader>

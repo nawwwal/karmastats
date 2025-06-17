@@ -42,8 +42,8 @@ export function HealthRecordTable({ records, members, onUpdate, onRemove }: Heal
           {records.map((record, index) => (
             <TableRow key={record.id}>
               <TableCell>
-                <Select 
-                  value={record.name} 
+                <Select
+                  value={record.name}
                   onValueChange={(value) => {
                     const member = members.find(m => m.name === value);
                     if (member) {
@@ -64,25 +64,25 @@ export function HealthRecordTable({ records, members, onUpdate, onRemove }: Heal
                 </Select>
               </TableCell>
               <TableCell>
-                <Input 
-                  value={record.age || ''} 
-                  readOnly 
+                <Input
+                  value={record.age || ''}
+                  readOnly
                 />
               </TableCell>
               <TableCell>
-                <Input 
-                  type="number" 
-                  value={record.height || ''} 
+                <Input
+                  type="number"
+                  value={record.height || ''}
                   onChange={(e) => {
                     const height = parseFloat(e.target.value);
                     onUpdate(index, 'height', height);
-                    
+
                     // Calculate BMI if both height and weight are available
                     if (height > 0 && record.weight) {
                       const heightInMeters = height / 100;
                       const bmi = record.weight / (heightInMeters * heightInMeters);
                       onUpdate(index, 'bmi', bmi);
-                      
+
                       // Determine BMI category
                       let category;
                       if (bmi < 18.5) {
@@ -96,25 +96,25 @@ export function HealthRecordTable({ records, members, onUpdate, onRemove }: Heal
                       }
                       onUpdate(index, 'bmiCategory', category);
                     }
-                  }} 
-                  min={0} 
-                  step={0.1} 
+                  }}
+                  min={0}
+                  step={0.1}
                 />
               </TableCell>
               <TableCell>
-                <Input 
-                  type="number" 
-                  value={record.weight || ''} 
+                <Input
+                  type="number"
+                  value={record.weight || ''}
                   onChange={(e) => {
                     const weight = parseFloat(e.target.value);
                     onUpdate(index, 'weight', weight);
-                    
+
                     // Calculate BMI if both height and weight are available
                     if (weight > 0 && record.height) {
                       const heightInMeters = record.height / 100;
                       const bmi = weight / (heightInMeters * heightInMeters);
                       onUpdate(index, 'bmi', bmi);
-                      
+
                       // Determine BMI category
                       let category;
                       if (bmi < 18.5) {
@@ -128,46 +128,46 @@ export function HealthRecordTable({ records, members, onUpdate, onRemove }: Heal
                       }
                       onUpdate(index, 'bmiCategory', category);
                     }
-                  }} 
-                  min={0} 
-                  step={0.1} 
+                  }}
+                  min={0}
+                  step={0.1}
                 />
               </TableCell>
               <TableCell>
-                <Input 
-                  value={record.bmi ? record.bmi.toFixed(1) : ''} 
-                  readOnly 
+                <Input
+                  value={record.bmi ? record.bmi.toFixed(1) : ''}
+                  readOnly
                 />
               </TableCell>
               <TableCell>
                 <Badge variant="outline" className={
-                  record.bmiCategory === 'Normal' ? 'bg-green-100' : 
-                  record.bmiCategory === 'Underweight' ? 'bg-yellow-100' : 
-                  record.bmiCategory === 'Overweight' ? 'bg-orange-100' : 
-                  record.bmiCategory === 'Obese' ? 'bg-red-100' : ''
+                  record.bmiCategory === 'Normal' ? 'bg-success/10 text-success' :
+                  record.bmiCategory === 'Underweight' ? 'bg-warning/10 text-warning' :
+                  record.bmiCategory === 'Overweight' ? 'bg-warning/15 text-warning' :
+                  record.bmiCategory === 'Obese' ? 'bg-destructive/10 text-destructive' : ''
                 }>
                   {record.bmiCategory || '-'}
                 </Badge>
               </TableCell>
               <TableCell>
-                <Input 
-                  value={record.bloodPressure || ''} 
-                  onChange={(e) => onUpdate(index, 'bloodPressure', e.target.value)} 
-                  placeholder="120/80" 
+                <Input
+                  value={record.bloodPressure || ''}
+                  onChange={(e) => onUpdate(index, 'bloodPressure', e.target.value)}
+                  placeholder="120/80"
                 />
               </TableCell>
               <TableCell>
-                <Textarea 
-                  value={record.healthIssues || ''} 
-                  onChange={(e) => onUpdate(index, 'healthIssues', e.target.value)} 
-                  rows={2} 
-                  placeholder="Any health problems" 
+                <Textarea
+                  value={record.healthIssues || ''}
+                  onChange={(e) => onUpdate(index, 'healthIssues', e.target.value)}
+                  rows={2}
+                  placeholder="Any health problems"
                 />
               </TableCell>
               <TableCell>
-                <Button 
-                  variant="destructive" 
-                  size="sm" 
+                <Button
+                  variant="destructive"
+                  size="sm"
                   onClick={() => onRemove(record.id)}
                 >
                   🗑️ Remove
