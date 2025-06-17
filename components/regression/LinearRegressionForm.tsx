@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { karmaTheme } from "@/lib/theme";
 
 import {
   Chart as ChartJS,
@@ -62,13 +63,13 @@ export function LinearRegressionForm() {
       {
         label: "Data Points",
         data: result.xValues.map((val, i) => ({ x: val, y: result.yValues[i] })),
-        backgroundColor: "rgba(25, 167, 206, 0.5)",
+        backgroundColor: "hsl(var(--secondary) / 0.5)",
       },
       {
         label: "Regression Line",
         data: result.xValues.map((val) => ({ x: val, y: result.intercept + result.slope * val })),
         type: 'line' as const,
-        borderColor: "#146C94",
+        borderColor: "hsl(var(--primary))",
         borderWidth: 2,
         fill: false,
         pointRadius: 0,
@@ -124,7 +125,7 @@ export function LinearRegressionForm() {
       </div>
       <Button onClick={handleCalculate} className="w-full">Calculate</Button>
 
-      {error && <div className="text-red-500">{error}</div>}
+      {error && <div className="text-destructive">{error}</div>}
 
       {result && (
         <Card>

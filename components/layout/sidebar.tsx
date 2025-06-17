@@ -410,8 +410,8 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                         title={item.title}
                         description={item.description}
                         isActive={item.isActive}
-                        isOpen={openCategories[item.key]}
-                        toggleOpen={() => toggleCategory(item.key)}
+                        isOpen={openCategories[item.key || '']}
+                        toggleOpen={() => toggleCategory(item.key || '')}
                         badge={item.badge}
                         isCollapsed={isCollapsed}
                       >
