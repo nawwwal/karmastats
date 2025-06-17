@@ -262,7 +262,6 @@ export default function ClinicalTrialsPage() {
 
     return (
         <Form {...form}>
-            <div>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="text-center">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Clinical Trials Sample Size Calculator</h1>
@@ -333,7 +332,6 @@ export default function ClinicalTrialsPage() {
                 {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
                 {results && <div className="mt-8">{renderResults()}</div>}
             </form>
-            </div>
         </Form>
     );
 }

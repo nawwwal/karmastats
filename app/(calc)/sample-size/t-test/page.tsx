@@ -171,18 +171,18 @@ export default function TTestPage() {
 
   return (
     <Form {...form}>
-      <div className="container mx-auto py-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">T-Test Sample Size Calculator</h1>
-        <p className="text-muted-foreground mb-8">Calculate sample size for Independent, Paired, and One-Sample T-Tests.</p>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="container mx-auto py-8">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">T-Test Sample Size Calculator</h1>
+          <p className="text-muted-foreground mb-8">Calculate sample size for Independent, Paired, and One-Sample T-Tests.</p>
 
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="independent">Independent Samples</TabsTrigger>
-            <TabsTrigger value="paired">Paired Samples</TabsTrigger>
-            <TabsTrigger value="one-sample">One-Sample</TabsTrigger>
-          </TabsList>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="independent">Independent Samples</TabsTrigger>
+              <TabsTrigger value="paired">Paired Samples</TabsTrigger>
+              <TabsTrigger value="one-sample">One-Sample</TabsTrigger>
+            </TabsList>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <TabsContent value="independent">
               <Card>
                 <CardHeader>
@@ -241,18 +241,18 @@ export default function TTestPage() {
              <div className="flex justify-center">
                 <Button type="submit">Calculate Sample Size</Button>
              </div>
-          </form>
-        </Tabs>
+          </Tabs>
 
-        {error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+          {error && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-        {results && renderResults()}
-      </div>
+          {results && renderResults()}
+        </div>
+      </form>
     </Form>
   );
 }
