@@ -43,7 +43,7 @@ export const SingleTestSchema = z.object({
     expectedSpecificity: z.number().min(0.1).max(99.9),
     diseasePrevalence: z.number().min(0.1).max(99.9),
     marginOfError: z.number().min(0.1).max(50),
-    confidenceLevel: z.enum(['80', '90', '95', '99']).transform(val => Number(val)),
+    confidenceLevel: z.number().refine(val => [80, 90, 95, 99].includes(val)),
     dropoutRate: z.number().min(0).max(100),
 });
 
@@ -91,8 +91,8 @@ export const ComparativeTestSchema = z.object({
     test2Performance: z.number().min(0.1).max(99.9),
     diseasePrevalence: z.number().min(0.1).max(99.9),
     testCorrelation: z.number().min(-1).max(1).optional(),
-    significanceLevel: z.enum(['1', '5', '10']).transform(val => Number(val)),
-    power: z.enum(['80', '85', '90', '95']).transform(val => Number(val)),
+    significanceLevel: z.number().refine(val => [1, 5, 10].includes(val)),
+    power: z.number().refine(val => [80, 85, 90, 95].includes(val)),
     dropoutRate: z.number().min(0).max(100),
 }).refine(data => data.studyDesign === 'unpaired' || data.testCorrelation !== undefined, {
     message: "Test correlation is required for paired designs",
@@ -139,10 +139,10 @@ export function calculateComparativeTestSampleSize(params: ComparativeTestInput)
 // 3. ROC Analysis
 export const ROCAnalysisSchema = z.object({
     expectedAUC: z.number().min(0.5).max(1.0),
-    nullAUC: z.number().min(0.0).max(1.0).default(0.5),
-    negativePositiveRatio: z.number().min(0.1).default(1),
-    significanceLevel: z.enum(['1', '5', '10']).transform(val => Number(val)),
-    power: z.enum(['80', '85', '90', '95']).transform(val => Number(val)),
+    nullAUC: z.number().min(0.0).max(1.0),
+    negativePositiveRatio: z.number().min(0.1),
+    significanceLevel: z.number().refine(val => [1, 5, 10].includes(val)),
+    power: z.number().refine(val => [80, 85, 90, 95].includes(val)),
 });
 
 export type ROCAnalysisInput = z.infer<typeof ROCAnalysisSchema>;

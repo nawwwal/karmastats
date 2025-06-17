@@ -26,10 +26,28 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 type Results = SingleTestOutput | ComparativeTestOutput | ROCAnalysisOutput;
 
-const FormSchema = z.intersection(
-  SingleTestSchema.partial(),
-  ComparativeTestSchema.partial()
-).and(ROCAnalysisSchema.partial());
+// Create a simplified combined schema for the form
+const FormSchema = z.object({
+    // Single Test
+    expectedSensitivity: z.number().optional(),
+    expectedSpecificity: z.number().optional(),
+    diseasePrevalence: z.number().optional(),
+    marginOfError: z.number().optional(),
+    confidenceLevel: z.number().optional(),
+    dropoutRate: z.number().optional(),
+    // Comparative
+    studyDesign: z.enum(['paired', 'unpaired']).optional(),
+    comparisonMetric: z.enum(['sensitivity', 'specificity']).optional(),
+    test1Performance: z.number().optional(),
+    test2Performance: z.number().optional(),
+    testCorrelation: z.number().optional(),
+    significanceLevel: z.number().optional(),
+    power: z.number().optional(),
+    // ROC
+    expectedAUC: z.number().optional(),
+    nullAUC: z.number().optional(),
+    negativePositiveRatio: z.number().optional(),
+});
 
 if (typeof window !== "undefined" && pdfjs.GlobalWorkerOptions) {
   pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -108,7 +126,7 @@ export default function DiagnosticTestPage() {
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const text = await page.getTextContent();
-                    textContent += text.items.map(s => s.str).join(' ');
+                    textContent += text.items.map(s => 'str' in s ? s.str : '').join(' ');
                 }
 
                 // Simplified regex - a robust solution is complex

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -28,7 +28,6 @@ interface LineChartProps {
 }
 
 export function LineChart({ results }: LineChartProps) {
-  const chartRef = useRef<ChartJS>(null);
 
   const data = {
     labels: Array.from({ length: results.susceptible.length }, (_, i) => `Day ${i}`),
@@ -102,5 +101,5 @@ export function LineChart({ results }: LineChartProps) {
     },
   };
 
-  return <Line ref={chartRef} data={data} options={options} />;
+  return <Line data={data} options={options} />;
 }
