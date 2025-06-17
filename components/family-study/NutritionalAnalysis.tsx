@@ -10,11 +10,11 @@ interface NutritionalAnalysisProps {
   perCUProtein: number;
 }
 
-export function NutritionalAnalysis({ 
-  calorieAdequacy, 
-  proteinAdequacy, 
-  perCUCalories, 
-  perCUProtein 
+export function NutritionalAnalysis({
+  calorieAdequacy,
+  proteinAdequacy,
+  perCUCalories,
+  perCUProtein
 }: NutritionalAnalysisProps) {
   // Helper functions
   const getAdequacyColor = (percentage: number) => {
@@ -54,7 +54,7 @@ export function NutritionalAnalysis({
 
   const generateNutritionalRecommendations = (calorie: number, protein: number) => {
     let recommendations = [];
-    
+
     if (calorie < 70) {
       recommendations.push('• Increase overall food intake to meet energy requirements');
       recommendations.push('• Include energy-dense foods like nuts, oils, and cereals');
@@ -62,19 +62,19 @@ export function NutritionalAnalysis({
       recommendations.push('• Reduce portion sizes to prevent excess caloric intake');
       recommendations.push('• Focus on nutrient-dense, low-calorie foods');
     }
-    
+
     if (protein < 70) {
       recommendations.push('• Increase protein-rich foods like pulses, dairy, eggs, and meat');
       recommendations.push('• Include protein in every major meal');
     } else if (protein > 130) {
       recommendations.push('• Balance protein intake with other macronutrients');
     }
-    
+
     recommendations.push('• Follow ICMR My Plate guidelines for balanced nutrition');
     recommendations.push('• Include variety in food choices across all food groups');
     recommendations.push('• Ensure adequate intake of fruits and vegetables');
     recommendations.push('• Monitor family nutritional status regularly');
-    
+
     return recommendations;
   };
 
@@ -92,7 +92,7 @@ export function NutritionalAnalysis({
               {calorieAdequacy.toFixed(1)}%
             </div>
             <div className="text-sm">Energy Adequacy</div>
-            <Badge className="mt-2" variant="outline" className={getAdequacyStatus(calorieAdequacy)}>
+            <Badge variant="outline" className={`mt-2 ${getAdequacyStatus(calorieAdequacy)}`}>
               {getAdequacyText(calorieAdequacy)}
             </Badge>
           </CardContent>
@@ -109,7 +109,7 @@ export function NutritionalAnalysis({
           </CardContent>
         </Card>
       </div>
-      
+
       <h4 className="font-semibold text-lg mb-4">📋 Detailed Nutritional Assessment</h4>
       <Table>
         <TableHeader>
@@ -146,7 +146,7 @@ export function NutritionalAnalysis({
           </TableRow>
         </TableBody>
       </Table>
-      
+
       <h4 className="font-semibold text-lg mt-6 mb-4">🏥 Health Risk Assessment</h4>
       <Alert variant={getOverallNutritionalVariant(calorieAdequacy, proteinAdequacy)}>
         <AlertTitle>Nutritional Status</AlertTitle>
@@ -154,7 +154,7 @@ export function NutritionalAnalysis({
           {getOverallNutritionalMessage(calorieAdequacy, proteinAdequacy)}
         </AlertDescription>
       </Alert>
-      
+
       <h4 className="font-semibold text-lg mt-6 mb-4">💡 Recommendations</h4>
       <div className="bg-white p-4 rounded-md border">
         <ul className="space-y-2">

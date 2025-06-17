@@ -246,12 +246,12 @@ export const darkTheme = {
   secondaryForeground: 'oklch(0.985 0 0)', // Nearly white
   muted: 'oklch(0.274 0.006 286.033)', // Dark gray
   mutedForeground: 'oklch(0.705 0.015 286.067)', // Light gray
-  accent: 'oklch(0.274 0.006 286.033)', // Dark gray
+  accent: 'oklch(0.32 0.01 286.033)', // Mid gray for hover / accent backgrounds
   accentForeground: 'oklch(0.985 0 0)', // Nearly white
   destructive: 'oklch(0.704 0.191 22.216)', // Red
   destructiveForeground: 'oklch(0.985 0 0)', // Nearly white
-  border: 'oklch(1 0 0 / 10%)', // Transparent white
-  input: 'oklch(1 0 0 / 15%)', // Transparent white
+  border: 'oklch(0.37 0.02 285.938)', // Visible gray for outlines
+  input: 'oklch(0.37 0.02 285.938)', // Visible gray for inputs
   ring: 'oklch(0.552 0.016 285.938)', // Medium gray
   success: 'oklch(0.649 0.169 152.511)', // Green
   warning: 'oklch(0.832 0.199 95.677)', // Yellow
