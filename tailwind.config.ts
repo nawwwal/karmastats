@@ -88,7 +88,7 @@ const config = {
         mono: ["var(--font-mono)", ...karmaTheme.typography.fontFamily.secondary],
         heading: ["var(--font-heading)", ...karmaTheme.typography.fontFamily.heading],
       },
-      fontSize: karmaTheme.typography.fontSize,
+      // fontSize: karmaTheme.typography.fontSize, // Commented out due to type issues
       fontWeight: karmaTheme.typography.fontWeight,
       lineHeight: karmaTheme.typography.lineHeight,
       letterSpacing: karmaTheme.typography.letterSpacing,

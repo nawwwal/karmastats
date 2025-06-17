@@ -70,6 +70,14 @@ export function linearRegression(xValues: number[], yValues: number[]): LinearRe
     ssXX += diffX * diffX;
     ssYY += diffY * diffY;
   }
+  // Check for division by zero
+  if (ssXX === 0) {
+    return { error: "All X values are identical - cannot calculate slope." };
+  }
+  if (ssYY === 0) {
+    return { error: "All Y values are identical - R-squared undefined." };
+  }
+
   const slope = ssXY / ssXX;
   const intercept = meanY - (slope * meanX);
   const rSquared = Math.pow(ssXY, 2) / (ssXX * ssYY);
