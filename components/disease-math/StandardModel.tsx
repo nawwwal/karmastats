@@ -1,36 +1,53 @@
 'use client';
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { DiseaseModel, DiseaseModelParams, DiseaseModelResult } from "@/lib/infectious";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  DiseaseModel,
+  DiseaseModelResult,
+  DiseaseModelParamsSchema,
+  DiseaseModelInput
+} from "@/lib/infectious";
 import { LineChart } from "./LineChart";
 import { MetricsDisplay } from "./MetricsDisplay";
 
 export function StandardModel() {
-  const [params, setParams] = useState<DiseaseModelParams>({
-    populationSize: 1000000,
-    initialCases: 100,
-    transmissionRate: 0.3,
-    incubationPeriod: 5,
-    recoveryRate: 0.1,
-    mortalityRate: 0.02,
-    simulationDays: 100,
-    seasonality: 0.1,
-  });
-
   const [results, setResults] = useState<DiseaseModelResult | null>(null);
 
-  const handleCalculate = () => {
+  const form = useForm<DiseaseModelInput>({
+    resolver: zodResolver(DiseaseModelParamsSchema),
+    defaultValues: {
+      populationSize: 1000000,
+      initialCases: 100,
+      transmissionRate: 0.3,
+      incubationPeriod: 5,
+      recoveryRate: 0.1,
+      mortalityRate: 0.02,
+      simulationDays: 100,
+      seasonality: 0.1,
+    },
+  });
+
+  const onSubmit = (data: DiseaseModelInput) => {
     const interventions = {
       socialDistancing: 0,
       maskEffectiveness: 0,
       vaccinationRate: 0,
       vaccineEffectiveness: 0,
     };
-    const model = new DiseaseModel(params, interventions);
+    const model = new DiseaseModel(data, interventions);
     const result = model.calculate();
     setResults(result);
   };
@@ -40,106 +57,164 @@ export function StandardModel() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-4">Model Parameters</h2>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="population">Population Size</Label>
-              <Input
-                id="population"
-                type="number"
-                value={params.populationSize}
-                onChange={(e) =>
-                  setParams({ ...params, populationSize: Number(e.target.value) })
-                }
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="populationSize"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Population Size</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="initialCases">Initial Cases</Label>
-              <Input
-                id="initialCases"
-                type="number"
-                value={params.initialCases}
-                onChange={(e) =>
-                  setParams({ ...params, initialCases: Number(e.target.value) })
-                }
+
+              <FormField
+                control={form.control}
+                name="initialCases"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Initial Cases</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="transmissionRate">Transmission Rate</Label>
-              <Input
-                id="transmissionRate"
-                type="number"
-                step="0.01"
-                value={params.transmissionRate}
-                onChange={(e) =>
-                  setParams({ ...params, transmissionRate: Number(e.target.value) })
-                }
+
+              <FormField
+                control={form.control}
+                name="transmissionRate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Transmission Rate</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="incubationPeriod">Incubation Period (days)</Label>
-              <Input
-                id="incubationPeriod"
-                type="number"
-                step="0.1"
-                value={params.incubationPeriod}
-                onChange={(e) =>
-                  setParams({ ...params, incubationPeriod: Number(e.target.value) })
-                }
+
+              <FormField
+                control={form.control}
+                name="incubationPeriod"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Incubation Period (days)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="recoveryRate">Recovery Rate</Label>
-              <Input
-                id="recoveryRate"
-                type="number"
-                step="0.01"
-                value={params.recoveryRate}
-                onChange={(e) =>
-                  setParams({ ...params, recoveryRate: Number(e.target.value) })
-                }
+
+              <FormField
+                control={form.control}
+                name="recoveryRate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Recovery Rate</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="mortalityRate">Mortality Rate</Label>
-              <Input
-                id="mortalityRate"
-                type="number"
-                step="0.01"
-                value={params.mortalityRate}
-                onChange={(e) =>
-                  setParams({ ...params, mortalityRate: Number(e.target.value) })
-                }
+
+              <FormField
+                control={form.control}
+                name="mortalityRate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mortality Rate</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="simulationDays">Simulation Days</Label>
-              <Input
-                id="simulationDays"
-                type="number"
-                value={params.simulationDays}
-                onChange={(e) =>
-                  setParams({ ...params, simulationDays: Number(e.target.value) })
-                }
+
+              <FormField
+                control={form.control}
+                name="simulationDays"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Simulation Days</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="seasonality">Seasonality (0-1)</Label>
-              <Input
-                id="seasonality"
-                type="number"
-                step="0.01"
-                min="0"
-                max="1"
-                value={params.seasonality}
-                onChange={(e) =>
-                  setParams({ ...params, seasonality: Number(e.target.value) })
-                }
+
+              <FormField
+                control={form.control}
+                name="seasonality"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Seasonality (0-1)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="1"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <Button onClick={handleCalculate} className="w-full">
-              Calculate
-            </Button>
-          </div>
+
+              <Button type="submit" className="w-full">
+                Calculate
+              </Button>
+            </form>
+          </Form>
         </Card>
 
         {results && (

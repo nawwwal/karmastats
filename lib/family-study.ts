@@ -1,4 +1,69 @@
 // Family Study Types and Utilities
+import { z } from 'zod';
+
+// Zod validation schemas
+export const FamilyMemberSchema = z.object({
+  id: z.number().int().positive('ID must be a positive integer'),
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
+  age: z.number().int().min(0).max(120, 'Age must be between 0 and 120 years'),
+  sex: z.enum(['Male', 'Female', 'Other'], {
+    errorMap: () => ({ message: 'Sex must be Male, Female, or Other' })
+  }),
+  relation: z.string().min(1, 'Relation is required').max(50, 'Relation must be less than 50 characters'),
+  marital: z.enum(['Single', 'Married', 'Divorced', 'Widowed', 'Separated'], {
+    errorMap: () => ({ message: 'Invalid marital status' })
+  }),
+  education: z.string().min(1, 'Education is required').max(100, 'Education must be less than 100 characters'),
+  occupation: z.string().min(1, 'Occupation is required').max(100, 'Occupation must be less than 100 characters'),
+  income: z.number().min(0, 'Income must be non-negative'),
+  activity: z.enum(['Sedentary', 'Moderate', 'Heavy'], {
+    errorMap: () => ({ message: 'Activity must be Sedentary, Moderate, or Heavy' })
+  }),
+});
+
+export const DietaryItemSchema = z.object({
+  meal: z.enum(['Breakfast', 'Lunch', 'Dinner', 'Snacks'], {
+    errorMap: () => ({ message: 'Meal must be Breakfast, Lunch, Dinner, or Snacks' })
+  }),
+  foodName: z.string().min(1, 'Food name is required').max(100, 'Food name must be less than 100 characters'),
+  quantity: z.number().positive('Quantity must be positive'),
+  energy: z.number().min(0, 'Energy must be non-negative'),
+  protein: z.number().min(0, 'Protein must be non-negative'),
+  carbs: z.number().min(0, 'Carbohydrates must be non-negative'),
+  fat: z.number().min(0, 'Fat must be non-negative'),
+  fiber: z.number().min(0, 'Fiber must be non-negative'),
+});
+
+export const HealthRecordSchema = z.object({
+  id: z.number().int().positive('ID must be a positive integer'),
+  memberId: z.number().int().positive('Member ID must be a positive integer').optional(),
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be less than 100 characters').optional(),
+  age: z.number().int().min(0).max(120, 'Age must be between 0 and 120 years').optional(),
+  height: z.number().min(30).max(300, 'Height must be between 30 and 300 cm').optional(),
+  weight: z.number().min(1).max(500, 'Weight must be between 1 and 500 kg').optional(),
+  bmi: z.number().min(5).max(80, 'BMI must be between 5 and 80').optional(),
+  bmiCategory: z.string().max(50, 'BMI category must be less than 50 characters').optional(),
+  bloodPressure: z.string().max(20, 'Blood pressure must be less than 20 characters').optional(),
+  healthIssues: z.string().max(500, 'Health issues must be less than 500 characters').optional(),
+});
+
+export const ImmunizationRecordSchema = z.object({
+  id: z.number().int().positive('ID must be a positive integer'),
+  memberId: z.number().int().positive('Member ID must be a positive integer').optional(),
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be less than 100 characters').optional(),
+  age: z.number().int().min(0).max(120, 'Age must be between 0 and 120 years').optional(),
+  bcg: z.boolean().optional(),
+  opv: z.boolean().optional(),
+  dpt: z.boolean().optional(),
+  hepB: z.boolean().optional(),
+  mmr: z.boolean().optional(),
+  covid: z.boolean().optional(),
+});
+
+export type FamilyMemberInput = z.infer<typeof FamilyMemberSchema>;
+export type DietaryItemInput = z.infer<typeof DietaryItemSchema>;
+export type HealthRecordInput = z.infer<typeof HealthRecordSchema>;
+export type ImmunizationRecordInput = z.infer<typeof ImmunizationRecordSchema>;
 
 export interface FamilyMember {
   id: number;
@@ -62,7 +127,7 @@ export const consumptionUnits = {
   adolescent_10_12y_female: 0.83,
   adolescent_13_18y_male: 0.97,
   adolescent_13_18y_female: 0.93,
-  
+
   // Adult activity-based CU factors
   adult_sedentary_male: 1.0,
   adult_sedentary_female: 0.83,
@@ -70,11 +135,11 @@ export const consumptionUnits = {
   adult_moderate_female: 1.0,
   adult_heavy_male: 1.6,
   adult_heavy_female: 1.4,
-  
+
   // Elderly CU factors
   elderly_male: 0.83,
   elderly_female: 0.79,
-  
+
   // Pregnancy and lactation additional CU
   pregnant_2nd_trimester: 0.29,
   pregnant_3rd_trimester: 0.46,
@@ -129,7 +194,7 @@ export const foodDatabase = {
   "Bajra": { energy: 361, protein: 11.6, carbs: 67.5, fat: 5.0, fiber: 11.5 },
   "Ragi": { energy: 336, protein: 7.3, carbs: 72.0, fat: 1.3, fiber: 11.2 },
   "Maize": { energy: 342, protein: 11.1, carbs: 66.2, fat: 3.9, fiber: 12.2 },
-  
+
   // Pulses and Legumes (per 100g)
   "Arhar dal (toor)": { energy: 335, protein: 22.3, carbs: 57.6, fat: 1.7, fiber: 5.1 },
   "Moong dal": { energy: 348, protein: 24.0, carbs: 59.9, fat: 1.3, fiber: 4.8 },
@@ -138,7 +203,7 @@ export const foodDatabase = {
   "Chana dal": { energy: 360, protein: 22.0, carbs: 57.0, fat: 4.5, fiber: 12.8 },
   "Rajma": { energy: 346, protein: 22.9, carbs: 60.6, fat: 1.3, fiber: 25.0 },
   "Black gram, whole": { energy: 341, protein: 24.0, carbs: 58.4, fat: 1.9, fiber: 7.6 },
-  
+
   // Vegetables (per 100g)
   "Potato": { energy: 97, protein: 2.0, carbs: 22.6, fat: 0.1, fiber: 2.2 },
   "Sweet potato": { energy: 120, protein: 1.2, carbs: 28.2, fat: 0.3, fiber: 3.0 },
@@ -152,7 +217,7 @@ export const foodDatabase = {
   "Brinjal": { energy: 24, protein: 1.1, carbs: 5.7, fat: 0.2, fiber: 3.0 },
   "Okra": { energy: 33, protein: 2.0, carbs: 7.6, fat: 0.1, fiber: 3.2 },
   "Green beans": { energy: 31, protein: 1.8, carbs: 7.1, fat: 0.2, fiber: 2.7 },
-  
+
   // Fruits (per 100g)
   "Apple": { energy: 52, protein: 0.3, carbs: 13.8, fat: 0.2, fiber: 2.4 },
   "Banana": { energy: 89, protein: 1.1, carbs: 22.8, fat: 0.3, fiber: 2.6 },
@@ -161,7 +226,7 @@ export const foodDatabase = {
   "Papaya": { energy: 43, protein: 0.6, carbs: 10.8, fat: 0.1, fiber: 2.5 },
   "Guava": { energy: 68, protein: 2.6, carbs: 14.3, fat: 0.9, fiber: 5.4 },
   "Pomegranate": { energy: 83, protein: 1.7, carbs: 18.7, fat: 1.2, fiber: 4.0 },
-  
+
   // Animal Products (per 100g)
   "Milk, cow": { energy: 67, protein: 3.2, carbs: 4.8, fat: 4.0, fiber: 0 },
   "Milk, buffalo": { energy: 117, protein: 4.3, carbs: 5.0, fat: 6.5, fiber: 0 },
@@ -172,19 +237,19 @@ export const foodDatabase = {
   "Mutton": { energy: 194, protein: 18.5, carbs: 0, fat: 13.3, fiber: 0 },
   "Fish, rohu": { energy: 97, protein: 16.6, carbs: 0, fat: 2.2, fiber: 0 },
   "Fish, pomfret": { energy: 96, protein: 18.8, carbs: 0, fat: 1.8, fiber: 0 },
-  
+
   // Oils and Fats (per 100g)
   "Mustard oil": { energy: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
   "Sunflower oil": { energy: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
   "Coconut oil": { energy: 900, protein: 0, carbs: 0, fat: 99.8, fiber: 0 },
   "Ghee, cow": { energy: 900, protein: 0, carbs: 0, fat: 99.8, fiber: 0 },
   "Butter": { energy: 717, protein: 0.9, carbs: 0.1, fat: 81.0, fiber: 0 },
-  
+
   // Nuts and Seeds (per 100g)
   "Groundnut": { energy: 567, protein: 25.3, carbs: 16.1, fat: 50.0, fiber: 8.5 },
   "Coconut, fresh": { energy: 354, protein: 3.3, carbs: 15.2, fat: 33.0, fiber: 9.0 },
   "Sesame seeds": { energy: 563, protein: 17.7, carbs: 23.4, fat: 49.7, fiber: 11.8 },
-  
+
   // Sugars (per 100g)
   "Sugar": { energy: 398, protein: 0, carbs: 99.5, fat: 0, fiber: 0 },
   "Jaggery": { energy: 383, protein: 0.4, carbs: 95.0, fat: 0.1, fiber: 0 }
@@ -195,10 +260,10 @@ export function calculateBMI(height: number, weight: number): { bmi: number, cat
   if (height <= 0 || weight <= 0) {
     return { bmi: 0, category: '-' };
   }
-  
+
   const heightInMeters = height / 100;
   const bmi = weight / (heightInMeters * heightInMeters);
-  
+
   let category;
   if (bmi < 18.5) {
     category = 'Underweight';
@@ -209,14 +274,14 @@ export function calculateBMI(height: number, weight: number): { bmi: number, cat
   } else {
     category = 'Obese';
   }
-  
+
   return { bmi, category };
 }
 
 export function calculateConsumptionUnit(member: FamilyMember): { cu: number, category: string } {
   let cu = 0;
   let category = '';
-  
+
   if (member.age < 0.5) {
     cu = consumptionUnits.infant_0_6m;
     category = 'Infant (0-6 months)';
@@ -258,7 +323,7 @@ export function calculateConsumptionUnit(member: FamilyMember): { cu: number, ca
     cu = member.sex === 'male' ? consumptionUnits.elderly_male : consumptionUnits.elderly_female;
     category = 'Elderly (≥60 years)';
   }
-  
+
   return { cu, category };
 }
 
@@ -270,14 +335,14 @@ export function calculateNutritionalAdequacy(perCUCalories: number, perCUProtein
   // ICMR-NIN 2020 Recommendations per CU
   const recommendedCalories = 2110; // kcal per CU
   const recommendedProtein = 0.83 * 65; // 54g protein per CU (0.83g/kg for 65kg reference male)
-  
+
   // Calculate adequacy percentages
   const calorieAdequacy = (perCUCalories / recommendedCalories) * 100;
   const proteinAdequacy = (perCUProtein / recommendedProtein) * 100;
-  
+
   let overallStatus;
   const avgAdequacy = (calorieAdequacy + proteinAdequacy) / 2;
-  
+
   if (avgAdequacy >= 85) {
     overallStatus = 'Adequate nutrition';
   } else if (avgAdequacy >= 70) {
@@ -285,7 +350,7 @@ export function calculateNutritionalAdequacy(perCUCalories: number, perCUProtein
   } else {
     overallStatus = 'Poor nutrition - requires immediate intervention';
   }
-  
+
   return { calorieAdequacy, proteinAdequacy, overallStatus };
 }
 
@@ -294,7 +359,7 @@ export function getSESClass(perCapitaIncome: number, method: string): {
   color: string
 } {
   const classification = sesClassifications[method as keyof typeof sesClassifications];
-  
+
   for (const cls of classification.classes) {
     if (perCapitaIncome >= cls.min && (!cls.max || perCapitaIncome <= cls.max)) {
       return {
@@ -303,7 +368,7 @@ export function getSESClass(perCapitaIncome: number, method: string): {
       };
     }
   }
-  
+
   return {
     class: 'Not classified',
     color: 'warning'
