@@ -17,7 +17,7 @@ const montserrat = Montserrat({
   variable: "--font-heading"
 });
 
-export const SpeedInsightsAnalytics = () => (
+const SpeedInsightsAnalytics = () => (
   <>
     <SpeedInsights />
     <Analytics />

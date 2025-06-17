@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from './sidebar';
 import { cn } from '@/lib/utils';
@@ -16,8 +16,18 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   // Don't show sidebar on home page for clean hero experience
   const isHomePage = pathname === '/';
 
+  // Persist sidebar state in localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebar-collapsed');
+    if (saved !== null) {
+      setIsSidebarCollapsed(JSON.parse(saved));
+    }
+  }, []);
+
   const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
+    const newState = !isSidebarCollapsed;
+    setIsSidebarCollapsed(newState);
+    localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
   };
 
   if (isHomePage) {
@@ -34,7 +44,9 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
       <main
         className={cn(
           "flex-1 transition-all duration-300 ease-in-out overflow-auto",
-          "min-h-screen"
+          "min-h-screen",
+          // Add responsive margin for mobile
+          isSidebarCollapsed ? "ml-0" : "ml-0"
         )}
       >
         <div className="container mx-auto p-6 max-w-none">

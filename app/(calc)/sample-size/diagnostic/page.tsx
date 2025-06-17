@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -15,7 +15,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -227,7 +227,8 @@ export default function DiagnosticTestPage() {
     };
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="text-center">
                 <h1 className="text-4xl font-bold">Diagnostic Test Accuracy Calculator</h1>
                 <p className="text-muted-foreground mt-2">Calculate sample size for diagnostic test studies.</p>
@@ -255,8 +256,8 @@ export default function DiagnosticTestPage() {
                 <TabsContent value="comparative">
                     <Card><CardHeader><CardTitle>Comparative Test Study</CardTitle><CardDescription>Calculate sample size for comparing the performance of two diagnostic tests.</CardDescription></CardHeader>
                         <CardContent className="grid md:grid-cols-2 gap-4">
-                            <FormField name="studyDesign" render={({ field }) => (<FormItem><FormLabel>Study Design</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="paired">Paired</SelectItem><SelectItem value="unpaired">Unpaired</SelectContent></Select></FormItem>)} />
-                            <FormField name="comparisonMetric" render={({ field }) => (<FormItem><FormLabel>Metric to Compare</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="sensitivity">Sensitivity</SelectItem><SelectItem value="specificity">Specificity</SelectContent></Select></FormItem>)} />
+                            <FormField name="studyDesign" render={({ field }) => (<FormItem><FormLabel>Study Design</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="paired">Paired</SelectItem><SelectItem value="unpaired">Unpaired</SelectItem></SelectContent></Select></FormItem>)} />
+                            <FormField name="comparisonMetric" render={({ field }) => (<FormItem><FormLabel>Metric to Compare</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="sensitivity">Sensitivity</SelectItem><SelectItem value="specificity">Specificity</SelectItem></SelectContent></Select></FormItem>)} />
                             <FormField name="test1Performance" render={({ field }) => (<FormItem><FormLabel>Test 1 Performance (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
                             <FormField name="test2Performance" render={({ field }) => (<FormItem><FormLabel>Test 2 Performance (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
                             <FormField name="diseasePrevalence" render={({ field }) => (<FormItem><FormLabel>Disease Prevalence (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
@@ -303,5 +304,6 @@ export default function DiagnosticTestPage() {
             {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
             {results && <div className="mt-8">{renderResults()}</div>}
         </form>
+        </Form>
     );
 }

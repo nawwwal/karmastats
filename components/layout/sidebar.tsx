@@ -18,8 +18,6 @@ import {
   Settings,
   Sun,
   Moon,
-  Menu,
-  X,
   TestTube,
   BarChart3,
   Brain,
@@ -254,7 +252,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       title: 'Statistical Calculators',
       description: 'Sample size & power analysis',
       badge: '7',
-      isActive: isCategoryActive(['/sample-size', '/regression', '/disease-math']),
+      isActive: isCategoryActive(['/sample-size']),
       children: [
         {
           href: '/sample-size/intelligent-detector',
@@ -354,7 +352,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "h-screen bg-sidebar border-r border-sidebar-border flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
+      "h-screen bg-sidebar border-r border-sidebar-border flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out relative",
       isCollapsed ? "w-16" : "w-80"
     )}>
       <div className="flex flex-col h-full">
@@ -377,8 +375,9 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               size="icon"
               onClick={onToggle}
               className="h-8 w-8 hover:bg-sidebar-accent"
+              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              {isCollapsed ? <Menu size={16} /> : <X size={16} />}
+              {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
             </Button>
           </div>
         </div>

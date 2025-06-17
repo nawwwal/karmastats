@@ -14,7 +14,9 @@ function getZScore(confidence: number): number {
 export const CrossSectionalSchema = z.object({
     prevalence: z.number().min(0.1).max(99.9),
     marginOfError: z.number().min(0.1).max(50),
-    confidenceLevel: z.enum(['80', '90', '95', '99', '99.9']).transform(val => Number(val)),
+    confidenceLevel: z.number().refine(val => [80, 90, 95, 99, 99.9].includes(val), {
+        message: "Confidence level must be 80, 90, 95, 99, or 99.9"
+    }),
     populationSize: z.number().positive().optional(),
     designEffect: z.number().min(1).default(1),
     nonResponseRate: z.number().min(0).max(100).default(10),

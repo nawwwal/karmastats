@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,7 @@ export default function FamilyStudyPage() {
     sesMethod: 'prasad',
     sesClass: '',
     rationCard: 'none',
-    socialSchemes: [],
+    socialSchemes: [] as string[],
     familyHarmony: '',
     decisionPattern: '',
     relativeRelations: '',
@@ -71,7 +71,7 @@ export default function FamilyStudyPage() {
     lighting: '',
     totalFamilyCU: '0',
     averageCUPerPerson: '0',
-    chronicDiseases: []
+    chronicDiseases: [] as string[]
   });
 
   // ICMR-NIN 2020 Consumption Unit Factors
@@ -86,7 +86,7 @@ export default function FamilyStudyPage() {
     adolescent_10_12y_female: 0.83,
     adolescent_13_18y_male: 0.97,
     adolescent_13_18y_female: 0.93,
-    
+
     // Adult activity-based CU factors
     adult_sedentary_male: 1.0,
     adult_sedentary_female: 0.83,
@@ -94,11 +94,11 @@ export default function FamilyStudyPage() {
     adult_moderate_female: 1.0,
     adult_heavy_male: 1.6,
     adult_heavy_female: 1.4,
-    
+
     // Elderly CU factors
     elderly_male: 0.83,
     elderly_female: 0.79,
-    
+
     // Pregnancy and lactation additional CU
     pregnant_2nd_trimester: 0.29,
     pregnant_3rd_trimester: 0.46,
@@ -117,7 +117,7 @@ export default function FamilyStudyPage() {
     "Bajra": { energy: 361, protein: 11.6, carbs: 67.5, fat: 5.0, fiber: 11.5 },
     "Ragi": { energy: 336, protein: 7.3, carbs: 72.0, fat: 1.3, fiber: 11.2 },
     "Maize": { energy: 342, protein: 11.1, carbs: 66.2, fat: 3.9, fiber: 12.2 },
-    
+
     // Pulses and Legumes (per 100g)
     "Arhar dal (toor)": { energy: 335, protein: 22.3, carbs: 57.6, fat: 1.7, fiber: 5.1 },
     "Moong dal": { energy: 348, protein: 24.0, carbs: 59.9, fat: 1.3, fiber: 4.8 },
@@ -126,7 +126,7 @@ export default function FamilyStudyPage() {
     "Chana dal": { energy: 360, protein: 22.0, carbs: 57.0, fat: 4.5, fiber: 12.8 },
     "Rajma": { energy: 346, protein: 22.9, carbs: 60.6, fat: 1.3, fiber: 25.0 },
     "Black gram, whole": { energy: 341, protein: 24.0, carbs: 58.4, fat: 1.9, fiber: 7.6 },
-    
+
     // Vegetables (per 100g)
     "Potato": { energy: 97, protein: 2.0, carbs: 22.6, fat: 0.1, fiber: 2.2 },
     "Sweet potato": { energy: 120, protein: 1.2, carbs: 28.2, fat: 0.3, fiber: 3.0 },
@@ -140,7 +140,7 @@ export default function FamilyStudyPage() {
     "Brinjal": { energy: 24, protein: 1.1, carbs: 5.7, fat: 0.2, fiber: 3.0 },
     "Okra": { energy: 33, protein: 2.0, carbs: 7.6, fat: 0.1, fiber: 3.2 },
     "Green beans": { energy: 31, protein: 1.8, carbs: 7.1, fat: 0.2, fiber: 2.7 },
-    
+
     // Fruits (per 100g)
     "Apple": { energy: 52, protein: 0.3, carbs: 13.8, fat: 0.2, fiber: 2.4 },
     "Banana": { energy: 89, protein: 1.1, carbs: 22.8, fat: 0.3, fiber: 2.6 },
@@ -149,7 +149,7 @@ export default function FamilyStudyPage() {
     "Papaya": { energy: 43, protein: 0.6, carbs: 10.8, fat: 0.1, fiber: 2.5 },
     "Guava": { energy: 68, protein: 2.6, carbs: 14.3, fat: 0.9, fiber: 5.4 },
     "Pomegranate": { energy: 83, protein: 1.7, carbs: 18.7, fat: 1.2, fiber: 4.0 },
-    
+
     // Animal Products (per 100g)
     "Milk, cow": { energy: 67, protein: 3.2, carbs: 4.8, fat: 4.0, fiber: 0 },
     "Milk, buffalo": { energy: 117, protein: 4.3, carbs: 5.0, fat: 6.5, fiber: 0 },
@@ -160,19 +160,19 @@ export default function FamilyStudyPage() {
     "Mutton": { energy: 194, protein: 18.5, carbs: 0, fat: 13.3, fiber: 0 },
     "Fish, rohu": { energy: 97, protein: 16.6, carbs: 0, fat: 2.2, fiber: 0 },
     "Fish, pomfret": { energy: 96, protein: 18.8, carbs: 0, fat: 1.8, fiber: 0 },
-    
+
     // Oils and Fats (per 100g)
     "Mustard oil": { energy: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
     "Sunflower oil": { energy: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
     "Coconut oil": { energy: 900, protein: 0, carbs: 0, fat: 99.8, fiber: 0 },
     "Ghee, cow": { energy: 900, protein: 0, carbs: 0, fat: 99.8, fiber: 0 },
     "Butter": { energy: 717, protein: 0.9, carbs: 0.1, fat: 81.0, fiber: 0 },
-    
+
     // Nuts and Seeds (per 100g)
     "Groundnut": { energy: 567, protein: 25.3, carbs: 16.1, fat: 50.0, fiber: 8.5 },
     "Coconut, fresh": { energy: 354, protein: 3.3, carbs: 15.2, fat: 33.0, fiber: 9.0 },
     "Sesame seeds": { energy: 563, protein: 17.7, carbs: 23.4, fat: 49.7, fiber: 11.8 },
-    
+
     // Sugars (per 100g)
     "Sugar": { energy: 398, protein: 0, carbs: 99.5, fat: 0, fiber: 0 },
     "Jaggery": { energy: 383, protein: 0.4, carbs: 95.0, fat: 0.1, fiber: 0 }
@@ -239,32 +239,32 @@ export default function FamilyStudyPage() {
     const primaryIncome = parseFloat(formData.primaryIncome) || 0;
     const otherIncome = parseFloat(formData.otherIncome) || 0;
     const totalIncome = primaryIncome + otherIncome;
-    
+
     // Calculate family size and per capita income
     const familySize = familyMembers.length || 1;
     const perCapitaIncome = totalIncome / familySize;
-    
+
     setFormData(prev => ({
       ...prev,
       totalIncome: totalIncome.toString(),
       familySize: familySize.toString(),
       perCapitaIncome: perCapitaIncome.toFixed(2)
     }));
-    
+
     // Determine SES class
     const sesMethod = formData.sesMethod;
-    
+
     if (totalIncome > 0) {
       const classification = sesClassifications[sesMethod as keyof typeof sesClassifications];
       let selectedClass = null;
-      
+
       for (const cls of classification.classes) {
         if (perCapitaIncome >= cls.min && (!cls.max || perCapitaIncome <= cls.max)) {
           selectedClass = cls;
           break;
         }
       }
-      
+
       if (selectedClass) {
         setFormData(prev => ({
           ...prev,
@@ -287,7 +287,7 @@ export default function FamilyStudyPage() {
       income: 0,
       activity: ''
     };
-    
+
     setFamilyMembers([...familyMembers, newMember]);
   };
 
@@ -295,14 +295,14 @@ export default function FamilyStudyPage() {
     const updatedMembers = [...familyMembers];
     updatedMembers[index] = { ...updatedMembers[index], [field]: value };
     setFamilyMembers(updatedMembers);
-    
+
     // Auto-update calculations
     calculateSES();
   };
 
   const removeFamilyMember = (id: number) => {
     setFamilyMembers(familyMembers.filter(member => member.id !== id));
-    
+
     // Update calculations
     calculateSES();
   };
@@ -312,7 +312,7 @@ export default function FamilyStudyPage() {
       alert('Please add family members first');
       return;
     }
-    
+
     setShowFamilyStats(true);
     setShowFamilyAnalysis(true);
   };
@@ -322,14 +322,14 @@ export default function FamilyStudyPage() {
       alert('Please add family members first');
       return;
     }
-    
+
     let totalCU = 0;
     let cuBreakdown: any[] = [];
-    
+
     familyMembers.forEach(member => {
       let cu = 0;
       let category = '';
-      
+
       if (member.age < 0.5) {
         cu = consumptionUnits.infant_0_6m;
         category = 'Infant (0-6 months)';
@@ -371,7 +371,7 @@ export default function FamilyStudyPage() {
         cu = member.sex === 'male' ? consumptionUnits.elderly_male : consumptionUnits.elderly_female;
         category = 'Elderly (≥60 years)';
       }
-      
+
       totalCU += cu;
       cuBreakdown.push({
         name: member.name,
@@ -381,13 +381,13 @@ export default function FamilyStudyPage() {
         cu: cu.toFixed(2)
       });
     });
-    
+
     setFormData(prev => ({
       ...prev,
       totalFamilyCU: totalCU.toFixed(2),
       averageCUPerPerson: (totalCU / familyMembers.length).toFixed(2)
     }));
-    
+
     setShowCuResults(true);
   };
 
@@ -414,7 +414,7 @@ export default function FamilyStudyPage() {
       alert('Please add family members first');
       return;
     }
-    
+
     setShowComprehensiveReport(true);
   };
 
@@ -432,9 +432,9 @@ export default function FamilyStudyPage() {
   };
 
   const calculateLiteracyRate = () => {
-    const literateMembers = familyMembers.filter(m => 
-      m.age >= 7 && m.education && 
-      m.education.toLowerCase() !== 'illiterate' && 
+    const literateMembers = familyMembers.filter(m =>
+      m.age >= 7 && m.education &&
+      m.education.toLowerCase() !== 'illiterate' &&
       m.education.toLowerCase() !== 'none'
     ).length;
     const eligibleMembers = familyMembers.filter(m => m.age >= 7).length;
@@ -442,9 +442,9 @@ export default function FamilyStudyPage() {
   };
 
   const calculateEmploymentRate = () => {
-    const employedMembers = familyMembers.filter(m => 
-      m.age >= 15 && m.occupation && 
-      m.occupation.toLowerCase() !== 'unemployed' && 
+    const employedMembers = familyMembers.filter(m =>
+      m.age >= 15 && m.occupation &&
+      m.occupation.toLowerCase() !== 'unemployed' &&
       m.occupation.toLowerCase() !== 'student'
     ).length;
     const workingAgeMembers = familyMembers.filter(m => m.age >= 15).length;
@@ -456,9 +456,9 @@ export default function FamilyStudyPage() {
   };
 
   const countEligibleCouples = () => {
-    return familyMembers.filter(m => 
-      m.sex === 'female' && 
-      m.marital === 'married' && 
+    return familyMembers.filter(m =>
+      m.sex === 'female' &&
+      m.marital === 'married' &&
       m.age >= 15 && m.age <= 49
     ).length;
   };
@@ -473,7 +473,7 @@ export default function FamilyStudyPage() {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    
+
     // Update progress steps
     const steps = {
       'general-info': 1,
@@ -484,7 +484,7 @@ export default function FamilyStudyPage() {
       'health': 6,
       'analysis': 7
     };
-    
+
     setCurrentStep(steps[value as keyof typeof steps]);
   };
 
@@ -527,17 +527,17 @@ export default function FamilyStudyPage() {
             {[1, 2, 3, 4, 5, 6, 7].map((step) => (
               <div key={step} className="flex flex-col items-center">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${
-                  step < currentStep ? 'bg-green-500' : 
+                  step < currentStep ? 'bg-green-500' :
                   step === currentStep ? 'bg-primary' : 'bg-gray-300'
                 }`}>
                   {step}
                 </div>
                 <span className="text-xs mt-1">
-                  {step === 1 ? 'General' : 
-                   step === 2 ? 'Socio-Economic' : 
-                   step === 3 ? 'Environment' : 
-                   step === 4 ? 'Family' : 
-                   step === 5 ? 'Nutrition' : 
+                  {step === 1 ? 'General' :
+                   step === 2 ? 'Socio-Economic' :
+                   step === 3 ? 'Environment' :
+                   step === 4 ? 'Family' :
+                   step === 5 ? 'Nutrition' :
                    step === 6 ? 'Health' : 'Analysis'}
                 </span>
               </div>
@@ -567,61 +567,61 @@ export default function FamilyStudyPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <Label htmlFor="studyDate">Study Date</Label>
-                      <Input 
-                        id="studyDate" 
-                        name="studyDate" 
-                        type="date" 
-                        value={formData.studyDate} 
-                        onChange={handleInputChange} 
-                        required 
+                      <Input
+                        id="studyDate"
+                        name="studyDate"
+                        type="date"
+                        value={formData.studyDate}
+                        onChange={handleInputChange}
+                        required
                       />
                     </div>
                     <div>
                       <Label htmlFor="familyId">Family ID</Label>
-                      <Input 
-                        id="familyId" 
-                        name="familyId" 
-                        value={formData.familyId} 
-                        onChange={handleInputChange} 
-                        placeholder="Auto-generated" 
-                        readOnly 
+                      <Input
+                        id="familyId"
+                        name="familyId"
+                        value={formData.familyId}
+                        onChange={handleInputChange}
+                        placeholder="Auto-generated"
+                        readOnly
                       />
                     </div>
                   </div>
 
                   <div className="mb-4">
                     <Label htmlFor="familyHead">Name of Head of Family</Label>
-                    <Input 
-                      id="familyHead" 
-                      name="familyHead" 
-                      value={formData.familyHead} 
-                      onChange={handleInputChange} 
-                      required 
+                    <Input
+                      id="familyHead"
+                      name="familyHead"
+                      value={formData.familyHead}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
 
                   <div className="mb-4">
                     <Label htmlFor="address">Complete Address</Label>
-                    <Textarea 
-                      id="address" 
-                      name="address" 
-                      value={formData.address} 
-                      onChange={handleInputChange} 
-                      rows={3} 
-                      required 
+                    <Textarea
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      rows={3}
+                      required
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <Label htmlFor="pincode">Pincode</Label>
-                      <Input 
-                        id="pincode" 
-                        name="pincode" 
-                        value={formData.pincode} 
-                        onChange={handleInputChange} 
-                        pattern="[0-9]{6}" 
-                        maxLength={6} 
+                      <Input
+                        id="pincode"
+                        name="pincode"
+                        value={formData.pincode}
+                        onChange={handleInputChange}
+                        pattern="[0-9]{6}"
+                        maxLength={6}
                       />
                     </div>
                     <div>
@@ -646,38 +646,38 @@ export default function FamilyStudyPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
                       <div>
                         <Label htmlFor="residingYears">Years</Label>
-                        <Input 
-                          id="residingYears" 
-                          name="residingYears" 
-                          type="number" 
-                          value={formData.residingYears} 
-                          onChange={handleInputChange} 
-                          min={0} 
-                          max={100} 
+                        <Input
+                          id="residingYears"
+                          name="residingYears"
+                          type="number"
+                          value={formData.residingYears}
+                          onChange={handleInputChange}
+                          min={0}
+                          max={100}
                         />
                       </div>
                       <div>
                         <Label htmlFor="residingMonths">Months</Label>
-                        <Input 
-                          id="residingMonths" 
-                          name="residingMonths" 
-                          type="number" 
-                          value={formData.residingMonths} 
-                          onChange={handleInputChange} 
-                          min={0} 
-                          max={11} 
+                        <Input
+                          id="residingMonths"
+                          name="residingMonths"
+                          type="number"
+                          value={formData.residingMonths}
+                          onChange={handleInputChange}
+                          min={0}
+                          max={11}
                         />
                       </div>
                       <div>
                         <Label htmlFor="residingDays">Days</Label>
-                        <Input 
-                          id="residingDays" 
-                          name="residingDays" 
-                          type="number" 
-                          value={formData.residingDays} 
-                          onChange={handleInputChange} 
-                          min={0} 
-                          max={30} 
+                        <Input
+                          id="residingDays"
+                          name="residingDays"
+                          type="number"
+                          value={formData.residingDays}
+                          onChange={handleInputChange}
+                          min={0}
+                          max={30}
                         />
                       </div>
                     </div>
@@ -686,11 +686,11 @@ export default function FamilyStudyPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <Label htmlFor="native">Native Place</Label>
-                      <Input 
-                        id="native" 
-                        name="native" 
-                        value={formData.native} 
-                        onChange={handleInputChange} 
+                      <Input
+                        id="native"
+                        name="native"
+                        value={formData.native}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div>
@@ -715,18 +715,18 @@ export default function FamilyStudyPage() {
 
                   <div className="mb-4">
                     <Label htmlFor="caste">Caste/Community</Label>
-                    <Input 
-                      id="caste" 
-                      name="caste" 
-                      value={formData.caste} 
-                      onChange={handleInputChange} 
+                    <Input
+                      id="caste"
+                      name="caste"
+                      value={formData.caste}
+                      onChange={handleInputChange}
                     />
                   </div>
 
                   <div className="mb-4">
                     <Label>Type of Family</Label>
-                    <RadioGroup 
-                      value={formData.familyType} 
+                    <RadioGroup
+                      value={formData.familyType}
                       onValueChange={(value) => handleRadioChange('familyType', value)}
                       className="flex flex-wrap gap-4 mt-2"
                     >
@@ -751,13 +751,13 @@ export default function FamilyStudyPage() {
 
                   <div className="mb-4">
                     <Label htmlFor="pedigreeNotes">Family Health History & Pedigree Notes</Label>
-                    <Textarea 
-                      id="pedigreeNotes" 
-                      name="pedigreeNotes" 
-                      value={formData.pedigreeNotes} 
-                      onChange={handleInputChange} 
-                      rows={4} 
-                      placeholder="Document any hereditary conditions, chronic diseases, or significant health patterns in the family history" 
+                    <Textarea
+                      id="pedigreeNotes"
+                      name="pedigreeNotes"
+                      value={formData.pedigreeNotes}
+                      onChange={handleInputChange}
+                      rows={4}
+                      placeholder="Document any hereditary conditions, chronic diseases, or significant health patterns in the family history"
                     />
                   </div>
                 </CardContent>
@@ -783,30 +783,30 @@ export default function FamilyStudyPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
                       <Label htmlFor="primaryIncome">Primary Income (₹/month)</Label>
-                      <Input 
-                        id="primaryIncome" 
-                        name="primaryIncome" 
-                        type="number" 
-                        value={formData.primaryIncome} 
+                      <Input
+                        id="primaryIncome"
+                        name="primaryIncome"
+                        type="number"
+                        value={formData.primaryIncome}
                         onChange={(e) => {
                           handleInputChange(e);
                           setTimeout(calculateSES, 100);
-                        }} 
-                        min={0} 
+                        }}
+                        min={0}
                       />
                     </div>
                     <div>
                       <Label htmlFor="otherIncome">Other Income Sources (₹/month)</Label>
-                      <Input 
-                        id="otherIncome" 
-                        name="otherIncome" 
-                        type="number" 
-                        value={formData.otherIncome} 
+                      <Input
+                        id="otherIncome"
+                        name="otherIncome"
+                        type="number"
+                        value={formData.otherIncome}
                         onChange={(e) => {
                           handleInputChange(e);
                           setTimeout(calculateSES, 100);
-                        }} 
-                        min={0} 
+                        }}
+                        min={0}
                       />
                     </div>
                   </div>
@@ -821,37 +821,37 @@ export default function FamilyStudyPage() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
                           <Label>Total Monthly Income</Label>
-                          <Input 
-                            id="totalIncome" 
-                            name="totalIncome" 
-                            value={formData.totalIncome} 
-                            readOnly 
+                          <Input
+                            id="totalIncome"
+                            name="totalIncome"
+                            value={formData.totalIncome}
+                            readOnly
                           />
                         </div>
                         <div>
                           <Label>Family Size</Label>
-                          <Input 
-                            id="familySize" 
-                            name="familySize" 
-                            value={formData.familySize} 
-                            readOnly 
+                          <Input
+                            id="familySize"
+                            name="familySize"
+                            value={formData.familySize}
+                            readOnly
                           />
                         </div>
                         <div>
                           <Label>Per Capita Income</Label>
-                          <Input 
-                            id="perCapitaIncome" 
-                            name="perCapitaIncome" 
-                            value={formData.perCapitaIncome} 
-                            readOnly 
+                          <Input
+                            id="perCapitaIncome"
+                            name="perCapitaIncome"
+                            value={formData.perCapitaIncome}
+                            readOnly
                           />
                         </div>
                       </div>
                       <div className="mb-4">
                         <Label>SES Classification</Label>
-                        <Select 
-                          name="sesMethod" 
-                          value={formData.sesMethod} 
+                        <Select
+                          name="sesMethod"
+                          value={formData.sesMethod}
                           onValueChange={(value) => {
                             setFormData(prev => ({ ...prev, sesMethod: value }));
                             setTimeout(calculateSES, 100);
@@ -867,7 +867,7 @@ export default function FamilyStudyPage() {
                           </SelectContent>
                         </Select>
                       </div>
-                      <Alert variant={formData.sesClass.includes('Upper') ? 'default' : formData.sesClass.includes('Lower') ? 'destructive' : 'warning'}>
+                      <Alert variant={formData.sesClass.includes('Upper') ? 'default' : formData.sesClass.includes('Lower') ? 'destructive' : 'default'}>
                         <AlertTitle>{formData.sesClass || 'Enter income to calculate SES class'}</AlertTitle>
                       </Alert>
                     </CardContent>
@@ -894,11 +894,11 @@ export default function FamilyStudyPage() {
                             <TableRow key={category}>
                               <TableCell>{category}</TableCell>
                               <TableCell>
-                                <Input 
-                                  id={`exp${category}`} 
-                                  name={`exp${category}`} 
-                                  type="number" 
-                                  min={0} 
+                                <Input
+                                  id={`exp${category}`}
+                                  name={`exp${category}`}
+                                  type="number"
+                                  min={0}
                                 />
                               </TableCell>
                               <TableCell>0%</TableCell>
@@ -929,8 +929,8 @@ export default function FamilyStudyPage() {
                     <CardContent>
                       <div className="mb-6">
                         <Label>Ration Card Type</Label>
-                        <RadioGroup 
-                          value={formData.rationCard} 
+                        <RadioGroup
+                          value={formData.rationCard}
                           onValueChange={(value) => handleRadioChange('rationCard', value)}
                           className="flex flex-wrap gap-4 mt-2"
                         >
@@ -967,10 +967,10 @@ export default function FamilyStudyPage() {
                             { id: 'pf', value: 'pf', label: 'Provident Fund' }
                           ].map((scheme) => (
                             <div key={scheme.id} className="flex items-center space-x-2 border p-2 rounded-md">
-                              <Checkbox 
-                                id={scheme.id} 
+                              <Checkbox
+                                id={scheme.id}
                                 checked={formData.socialSchemes.includes(scheme.value)}
-                                onCheckedChange={(checked) => 
+                                onCheckedChange={(checked) =>
                                   handleCheckboxChange('socialSchemes', scheme.value, checked as boolean)
                                 }
                               />
@@ -1004,9 +1004,9 @@ export default function FamilyStudyPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                           <Label htmlFor="familyHarmony">Family Harmony</Label>
-                          <Select 
-                            name="familyHarmony" 
-                            value={formData.familyHarmony} 
+                          <Select
+                            name="familyHarmony"
+                            value={formData.familyHarmony}
                             onValueChange={(value) => setFormData(prev => ({ ...prev, familyHarmony: value }))}
                           >
                             <SelectTrigger>
@@ -1022,9 +1022,9 @@ export default function FamilyStudyPage() {
                         </div>
                         <div>
                           <Label htmlFor="decisionPattern">Decision Making Pattern</Label>
-                          <Select 
-                            name="decisionPattern" 
-                            value={formData.decisionPattern} 
+                          <Select
+                            name="decisionPattern"
+                            value={formData.decisionPattern}
                             onValueChange={(value) => setFormData(prev => ({ ...prev, decisionPattern: value }))}
                           >
                             <SelectTrigger>
@@ -1043,9 +1043,9 @@ export default function FamilyStudyPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                           <Label htmlFor="relativeRelations">Relationship with Relatives</Label>
-                          <Select 
-                            name="relativeRelations" 
-                            value={formData.relativeRelations} 
+                          <Select
+                            name="relativeRelations"
+                            value={formData.relativeRelations}
                             onValueChange={(value) => setFormData(prev => ({ ...prev, relativeRelations: value }))}
                           >
                             <SelectTrigger>
@@ -1061,9 +1061,9 @@ export default function FamilyStudyPage() {
                         </div>
                         <div>
                           <Label htmlFor="neighborRelations">Neighborhood Relations</Label>
-                          <Select 
-                            name="neighborRelations" 
-                            value={formData.neighborRelations} 
+                          <Select
+                            name="neighborRelations"
+                            value={formData.neighborRelations}
                             onValueChange={(value) => setFormData(prev => ({ ...prev, neighborRelations: value }))}
                           >
                             <SelectTrigger>
@@ -1081,8 +1081,8 @@ export default function FamilyStudyPage() {
 
                       <div>
                         <Label>Psychological Overcrowding</Label>
-                        <RadioGroup 
-                          value={formData.psychOvercrowding} 
+                        <RadioGroup
+                          value={formData.psychOvercrowding}
                           onValueChange={(value) => handleRadioChange('psychOvercrowding', value)}
                           className="flex flex-wrap gap-4 mt-2"
                         >
@@ -1113,9 +1113,9 @@ export default function FamilyStudyPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                           <Label htmlFor="houseOwnership">Ownership Status</Label>
-                          <Select 
-                            name="houseOwnership" 
-                            value={formData.houseOwnership} 
+                          <Select
+                            name="houseOwnership"
+                            value={formData.houseOwnership}
                             onValueChange={(value) => setFormData(prev => ({ ...prev, houseOwnership: value }))}
                           >
                             <SelectTrigger>
@@ -1132,9 +1132,9 @@ export default function FamilyStudyPage() {
                         </div>
                         <div>
                           <Label htmlFor="houseType">House Type</Label>
-                          <Select 
-                            name="houseType" 
-                            value={formData.houseType} 
+                          <Select
+                            name="houseType"
+                            value={formData.houseType}
                             onValueChange={(value) => setFormData(prev => ({ ...prev, houseType: value }))}
                           >
                             <SelectTrigger>
@@ -1152,24 +1152,24 @@ export default function FamilyStudyPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                           <Label htmlFor="numberOfRooms">Number of Rooms</Label>
-                          <Input 
-                            id="numberOfRooms" 
-                            name="numberOfRooms" 
-                            type="number" 
-                            value={formData.numberOfRooms} 
-                            onChange={handleInputChange} 
-                            min={1} 
+                          <Input
+                            id="numberOfRooms"
+                            name="numberOfRooms"
+                            type="number"
+                            value={formData.numberOfRooms}
+                            onChange={handleInputChange}
+                            min={1}
                           />
                         </div>
                         <div>
                           <Label htmlFor="totalFloorArea">Total Floor Area (sq ft)</Label>
-                          <Input 
-                            id="totalFloorArea" 
-                            name="totalFloorArea" 
-                            type="number" 
-                            value={formData.totalFloorArea} 
-                            onChange={handleInputChange} 
-                            min={0} 
+                          <Input
+                            id="totalFloorArea"
+                            name="totalFloorArea"
+                            type="number"
+                            value={formData.totalFloorArea}
+                            onChange={handleInputChange}
+                            min={0}
                           />
                         </div>
                       </div>
@@ -1184,20 +1184,20 @@ export default function FamilyStudyPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
                               <Label>Per Capita Floor Area (sq ft)</Label>
-                              <Input 
-                                id="perCapitaFloorArea" 
-                                name="perCapitaFloorArea" 
-                                value={formData.perCapitaFloorArea} 
-                                readOnly 
+                              <Input
+                                id="perCapitaFloorArea"
+                                name="perCapitaFloorArea"
+                                value={formData.perCapitaFloorArea}
+                                readOnly
                               />
                             </div>
                             <div>
                               <Label>Persons per Room</Label>
-                              <Input 
-                                id="personsPerRoom" 
-                                name="personsPerRoom" 
-                                value={formData.personsPerRoom} 
-                                readOnly 
+                              <Input
+                                id="personsPerRoom"
+                                name="personsPerRoom"
+                                value={formData.personsPerRoom}
+                                readOnly
                               />
                             </div>
                           </div>
@@ -1212,13 +1212,13 @@ export default function FamilyStudyPage() {
 
                       <div>
                         <h3 className="text-lg font-semibold mb-4">Basic Amenities</h3>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                           <div>
                             <Label htmlFor="waterSupply">Water Supply</Label>
-                            <Select 
-                              name="waterSupply" 
-                              value={formData.waterSupply} 
+                            <Select
+                              name="waterSupply"
+                              value={formData.waterSupply}
                               onValueChange={(value) => setFormData(prev => ({ ...prev, waterSupply: value }))}
                             >
                               <SelectTrigger>
@@ -1236,9 +1236,9 @@ export default function FamilyStudyPage() {
                           </div>
                           <div>
                             <Label htmlFor="toiletFacility">Toilet Facility</Label>
-                            <Select 
-                              name="toiletFacility" 
-                              value={formData.toiletFacility} 
+                            <Select
+                              name="toiletFacility"
+                              value={formData.toiletFacility}
                               onValueChange={(value) => setFormData(prev => ({ ...prev, toiletFacility: value }))}
                             >
                               <SelectTrigger>
@@ -1259,9 +1259,9 @@ export default function FamilyStudyPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                           <div>
                             <Label htmlFor="electricity">Electricity</Label>
-                            <Select 
-                              name="electricity" 
-                              value={formData.electricity} 
+                            <Select
+                              name="electricity"
+                              value={formData.electricity}
                               onValueChange={(value) => setFormData(prev => ({ ...prev, electricity: value }))}
                             >
                               <SelectTrigger>
@@ -1270,16 +1270,16 @@ export default function FamilyStudyPage() {
                               <SelectContent>
                                 <SelectItem value="24hrs">24 hours supply</SelectItem>
                                 <SelectItem value="partial">Partial supply (12-20 hrs)</SelectItem>
-                                <SelectItem value="limited">Limited supply (<12 hrs)</SelectItem>
+                                <SelectItem value="limited">Limited supply (&lt;12 hrs)</SelectItem>
                                 <SelectItem value="none">No electricity</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
                           <div>
                             <Label htmlFor="cookingFuel">Cooking Fuel</Label>
-                            <Select 
-                              name="cookingFuel" 
-                              value={formData.cookingFuel} 
+                            <Select
+                              name="cookingFuel"
+                              value={formData.cookingFuel}
                               onValueChange={(value) => setFormData(prev => ({ ...prev, cookingFuel: value }))}
                             >
                               <SelectTrigger>
@@ -1300,9 +1300,9 @@ export default function FamilyStudyPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="ventilation">Ventilation</Label>
-                            <Select 
-                              name="ventilation" 
-                              value={formData.ventilation} 
+                            <Select
+                              name="ventilation"
+                              value={formData.ventilation}
                               onValueChange={(value) => setFormData(prev => ({ ...prev, ventilation: value }))}
                             >
                               <SelectTrigger>
@@ -1317,9 +1317,9 @@ export default function FamilyStudyPage() {
                           </div>
                           <div>
                             <Label htmlFor="lighting">Natural Lighting</Label>
-                            <Select 
-                              name="lighting" 
-                              value={formData.lighting} 
+                            <Select
+                              name="lighting"
+                              value={formData.lighting}
                               onValueChange={(value) => setFormData(prev => ({ ...prev, lighting: value }))}
                             >
                               <SelectTrigger>
@@ -1356,9 +1356,9 @@ export default function FamilyStudyPage() {
                     </AlertDescription>
                   </Alert>
 
-                  <Button 
-                    variant="secondary" 
-                    className="mb-6" 
+                  <Button
+                    variant="secondary"
+                    className="mb-6"
                     onClick={addFamilyMember}
                   >
                     ➕ Add Family Member
@@ -1386,25 +1386,25 @@ export default function FamilyStudyPage() {
                           <TableRow key={member.id}>
                             <TableCell>{member.id}</TableCell>
                             <TableCell>
-                              <Input 
-                                value={member.name} 
-                                onChange={(e) => updateFamilyMember(index, 'name', e.target.value)} 
-                                placeholder="Full Name" 
+                              <Input
+                                value={member.name}
+                                onChange={(e) => updateFamilyMember(index, 'name', e.target.value)}
+                                placeholder="Full Name"
                               />
                             </TableCell>
                             <TableCell>
-                              <Input 
-                                type="number" 
-                                value={member.age} 
-                                onChange={(e) => updateFamilyMember(index, 'age', parseInt(e.target.value))} 
-                                min={0} 
-                                max={120} 
-                                placeholder="Age" 
+                              <Input
+                                type="number"
+                                value={member.age}
+                                onChange={(e) => updateFamilyMember(index, 'age', parseInt(e.target.value))}
+                                min={0}
+                                max={120}
+                                placeholder="Age"
                               />
                             </TableCell>
                             <TableCell>
-                              <Select 
-                                value={member.sex} 
+                              <Select
+                                value={member.sex}
                                 onValueChange={(value) => updateFamilyMember(index, 'sex', value)}
                               >
                                 <SelectTrigger>
@@ -1418,8 +1418,8 @@ export default function FamilyStudyPage() {
                               </Select>
                             </TableCell>
                             <TableCell>
-                              <Select 
-                                value={member.relation} 
+                              <Select
+                                value={member.relation}
                                 onValueChange={(value) => updateFamilyMember(index, 'relation', value)}
                               >
                                 <SelectTrigger>
@@ -1441,8 +1441,8 @@ export default function FamilyStudyPage() {
                               </Select>
                             </TableCell>
                             <TableCell>
-                              <Select 
-                                value={member.marital} 
+                              <Select
+                                value={member.marital}
                                 onValueChange={(value) => updateFamilyMember(index, 'marital', value)}
                               >
                                 <SelectTrigger>
@@ -1457,31 +1457,31 @@ export default function FamilyStudyPage() {
                               </Select>
                             </TableCell>
                             <TableCell>
-                              <Input 
-                                value={member.education} 
-                                onChange={(e) => updateFamilyMember(index, 'education', e.target.value)} 
-                                placeholder="Education Level" 
+                              <Input
+                                value={member.education}
+                                onChange={(e) => updateFamilyMember(index, 'education', e.target.value)}
+                                placeholder="Education Level"
                               />
                             </TableCell>
                             <TableCell>
-                              <Input 
-                                value={member.occupation} 
-                                onChange={(e) => updateFamilyMember(index, 'occupation', e.target.value)} 
-                                placeholder="Occupation" 
+                              <Input
+                                value={member.occupation}
+                                onChange={(e) => updateFamilyMember(index, 'occupation', e.target.value)}
+                                placeholder="Occupation"
                               />
                             </TableCell>
                             <TableCell>
-                              <Input 
-                                type="number" 
-                                value={member.income} 
-                                onChange={(e) => updateFamilyMember(index, 'income', parseFloat(e.target.value))} 
-                                min={0} 
-                                placeholder="Monthly Income" 
+                              <Input
+                                type="number"
+                                value={member.income}
+                                onChange={(e) => updateFamilyMember(index, 'income', parseFloat(e.target.value))}
+                                min={0}
+                                placeholder="Monthly Income"
                               />
                             </TableCell>
                             <TableCell>
-                              <Select 
-                                value={member.activity} 
+                              <Select
+                                value={member.activity}
                                 onValueChange={(value) => updateFamilyMember(index, 'activity', value)}
                               >
                                 <SelectTrigger>
@@ -1497,9 +1497,9 @@ export default function FamilyStudyPage() {
                               </Select>
                             </TableCell>
                             <TableCell>
-                              <Button 
-                                variant="destructive" 
-                                size="sm" 
+                              <Button
+                                variant="destructive"
+                                size="sm"
                                 onClick={() => removeFamilyMember(member.id)}
                               >
                                 🗑️ Remove
@@ -1511,7 +1511,7 @@ export default function FamilyStudyPage() {
                     </Table>
                   </div>
 
-                  <Button 
+                  <Button
                     onClick={calculateFamilySummary}
                     className="mb-6"
                   >
@@ -1586,7 +1586,7 @@ export default function FamilyStudyPage() {
                             <Input value={calculateEmploymentRate().toFixed(1)} readOnly />
                           </div>
                         </div>
-                        
+
                         <h4 className="font-semibold text-lg mb-4">🏥 Health Indicators</h4>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                           <div>
@@ -1641,7 +1641,7 @@ export default function FamilyStudyPage() {
                         <p><strong>Auto-calculation:</strong> CU values will be automatically calculated based on family member data</p>
                       </div>
 
-                      <Button 
+                      <Button
                         onClick={calculateConsumptionUnits}
                         className="mb-4"
                       >
@@ -1659,24 +1659,24 @@ export default function FamilyStudyPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                               <div>
                                 <Label>Total Family CU</Label>
-                                <Input 
-                                  id="totalFamilyCU" 
-                                  name="totalFamilyCU" 
-                                  value={formData.totalFamilyCU} 
-                                  readOnly 
+                                <Input
+                                  id="totalFamilyCU"
+                                  name="totalFamilyCU"
+                                  value={formData.totalFamilyCU}
+                                  readOnly
                                 />
                               </div>
                               <div>
                                 <Label>Average CU per Person</Label>
-                                <Input 
-                                  id="averageCUPerPerson" 
-                                  name="averageCUPerPerson" 
-                                  value={formData.averageCUPerPerson} 
-                                  readOnly 
+                                <Input
+                                  id="averageCUPerPerson"
+                                  name="averageCUPerPerson"
+                                  value={formData.averageCUPerPerson}
+                                  readOnly
                                 />
                               </div>
                             </div>
-                            
+
                             <h4 className="font-semibold mb-2">Consumption Units Breakdown</h4>
                             <Table>
                               <TableHeader>
@@ -1692,7 +1692,7 @@ export default function FamilyStudyPage() {
                                 {familyMembers.map((member) => {
                                   let cu = 0;
                                   let category = '';
-                                  
+
                                   if (member.age < 0.5) {
                                     cu = consumptionUnits.infant_0_6m;
                                     category = 'Infant (0-6 months)';
@@ -1732,7 +1732,7 @@ export default function FamilyStudyPage() {
                                     cu = member.sex === 'male' ? consumptionUnits.elderly_male : consumptionUnits.elderly_female;
                                     category = 'Elderly (≥60 years)';
                                   }
-                                  
+
                                   return (
                                     <TableRow key={member.id}>
                                       <TableCell>{member.name}</TableCell>
@@ -1768,18 +1768,18 @@ export default function FamilyStudyPage() {
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div className="md:col-span-2">
                               <Label htmlFor="foodSearch">Search Food Item</Label>
-                              <Input 
-                                id="foodSearch" 
-                                placeholder="Type food name..." 
+                              <Input
+                                id="foodSearch"
+                                placeholder="Type food name..."
                               />
                             </div>
                             <div>
                               <Label htmlFor="foodQuantity">Quantity (g)</Label>
-                              <Input 
-                                id="foodQuantity" 
-                                type="number" 
-                                placeholder="Amount" 
-                                min={0} 
+                              <Input
+                                id="foodQuantity"
+                                type="number"
+                                placeholder="Amount"
+                                min={0}
                               />
                             </div>
                             <div>
@@ -1830,9 +1830,9 @@ export default function FamilyStudyPage() {
                                 <TableCell>{item.fat}</TableCell>
                                 <TableCell>{item.fiber}</TableCell>
                                 <TableCell>
-                                  <Button 
-                                    variant="destructive" 
-                                    size="sm" 
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
                                     onClick={() => {
                                       const updatedItems = [...dietaryItems];
                                       updatedItems.splice(index, 1);
@@ -1866,7 +1866,7 @@ export default function FamilyStudyPage() {
                         </Table>
                       </div>
 
-                      <Button 
+                      <Button
                         onClick={() => setShowNutritionalAnalysis(true)}
                         className="mb-6"
                       >
@@ -1898,7 +1898,7 @@ export default function FamilyStudyPage() {
                                 </CardContent>
                               </Card>
                             </div>
-                            
+
                             <h4 className="font-semibold text-lg mb-4">📋 Detailed Nutritional Assessment</h4>
                             <Table>
                               <TableHeader>
@@ -1931,15 +1931,15 @@ export default function FamilyStudyPage() {
                                 </TableRow>
                               </TableBody>
                             </Table>
-                            
+
                             <h4 className="font-semibold text-lg mt-6 mb-4">🏥 Health Risk Assessment</h4>
-                            <Alert variant="success">
+                            <Alert variant="default">
                               <AlertTitle>Overall nutritional status is satisfactory</AlertTitle>
                               <AlertDescription>
                                 Continue current dietary practices with minor improvements.
                               </AlertDescription>
                             </Alert>
-                            
+
                             <h4 className="font-semibold text-lg mt-6 mb-4">💡 Recommendations</h4>
                             <div className="bg-white p-4 rounded-md border">
                               <ul className="list-disc pl-5 space-y-2">
@@ -1967,9 +1967,9 @@ export default function FamilyStudyPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button 
-                    variant="secondary" 
-                    className="mb-6" 
+                  <Button
+                    variant="secondary"
+                    className="mb-6"
                     onClick={addHealthRecord}
                   >
                     ➕ Add Health Record
@@ -2027,9 +2027,9 @@ export default function FamilyStudyPage() {
                               <Textarea rows={2} placeholder="Any health problems" />
                             </TableCell>
                             <TableCell>
-                              <Button 
-                                variant="destructive" 
-                                size="sm" 
+                              <Button
+                                variant="destructive"
+                                size="sm"
                                 onClick={() => removeHealthRecord(record.id)}
                               >
                                 🗑️ Remove
@@ -2048,9 +2048,9 @@ export default function FamilyStudyPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        variant="secondary" 
-                        className="mb-6" 
+                      <Button
+                        variant="secondary"
+                        className="mb-6"
                         onClick={addImmunizationRecord}
                       >
                         ➕ Add Immunization Record
@@ -2108,9 +2108,9 @@ export default function FamilyStudyPage() {
                                   <Checkbox />
                                 </TableCell>
                                 <TableCell>
-                                  <Button 
-                                    variant="destructive" 
-                                    size="sm" 
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
                                     onClick={() => removeImmunizationRecord(record.id)}
                                   >
                                     🗑️ Remove
@@ -2145,10 +2145,10 @@ export default function FamilyStudyPage() {
                             { id: 'cancer', value: 'cancer', label: 'Cancer' }
                           ].map((disease) => (
                             <div key={disease.id} className="flex items-center space-x-2 border p-2 rounded-md">
-                              <Checkbox 
-                                id={disease.id} 
+                              <Checkbox
+                                id={disease.id}
                                 checked={formData.chronicDiseases.includes(disease.value)}
-                                onCheckedChange={(checked) => 
+                                onCheckedChange={(checked) =>
                                   handleCheckboxChange('chronicDiseases', disease.value, checked as boolean)
                                 }
                               />
@@ -2172,8 +2172,8 @@ export default function FamilyStudyPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button 
-                    className="mb-6" 
+                  <Button
+                    className="mb-6"
                     onClick={generateComprehensiveReport}
                   >
                     📋 Generate Complete Analysis Report
@@ -2193,7 +2193,7 @@ export default function FamilyStudyPage() {
                           <p><strong>Family ID:</strong> {formData.familyId}</p>
                           <p><strong>Head of Family:</strong> {formData.familyHead}</p>
                         </div>
-                        
+
                         <div className="mb-6">
                           <h4 className="font-semibold text-md mb-2">🏠 General Information</h4>
                           <p><strong>Address:</strong> {formData.address}</p>
@@ -2201,14 +2201,14 @@ export default function FamilyStudyPage() {
                           <p><strong>Religion:</strong> {formData.religion}</p>
                           <p><strong>Family Type:</strong> {formData.familyType}</p>
                         </div>
-                        
+
                         <div className="mb-6">
                           <h4 className="font-semibold text-md mb-2">💰 Socio-Economic Status</h4>
                           <p><strong>Total Monthly Income:</strong> ₹{formData.totalIncome}</p>
                           <p><strong>Per Capita Income:</strong> ₹{formData.perCapitaIncome}</p>
                           <p><strong>SES Classification:</strong> {formData.sesClass}</p>
                         </div>
-                        
+
                         <div className="mb-6">
                           <h4 className="font-semibold text-md mb-2">👨‍👩‍👧‍👦 Family Composition</h4>
                           <p><strong>Total Members:</strong> {familyMembers.length}</p>
@@ -2218,27 +2218,27 @@ export default function FamilyStudyPage() {
                           <p><strong>Adults (18-59 years):</strong> {familyMembers.filter(m => m.age >= 18 && m.age < 60).length}</p>
                           <p><strong>Elderly (≥60 years):</strong> {familyMembers.filter(m => m.age >= 60).length}</p>
                         </div>
-                        
+
                         <div className="mb-6">
                           <h4 className="font-semibold text-md mb-2">🍎 Nutritional Assessment</h4>
                           <p><strong>Total Consumption Units:</strong> {formData.totalFamilyCU}</p>
                           <p><strong>Nutritional Status:</strong> Adequate nutrition</p>
                         </div>
-                        
+
                         <div className="mb-6">
                           <h4 className="font-semibold text-md mb-2">🏥 Health Status</h4>
                           <p><strong>Health Records:</strong> {healthRecords.length} members examined</p>
                           <p><strong>Immunization Records:</strong> {immunizationRecords.length} members assessed</p>
                           <p><strong>Chronic Diseases:</strong> {formData.chronicDiseases.join(', ') || 'None reported'}</p>
                         </div>
-                        
+
                         <div className="mb-6">
                           <h4 className="font-semibold text-md mb-2">🏠 Environmental Conditions</h4>
                           <p><strong>House Type:</strong> {formData.houseType}</p>
                           <p><strong>Water Supply:</strong> {formData.waterSupply}</p>
                           <p><strong>Toilet Facility:</strong> {formData.toiletFacility}</p>
                         </div>
-                        
+
                         <div>
                           <h4 className="font-semibold text-md mb-2">📊 Summary & Recommendations</h4>
                           <Alert className="mb-4">

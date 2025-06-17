@@ -31,12 +31,25 @@ if (typeof window !== "undefined" && pdfjs.GlobalWorkerOptions) {
 
 type Results = SuperiorityBinaryOutput | SuperiorityContinuousOutput | NonInferiorityOutput | EquivalenceOutput;
 
-const FormSchema = z.intersection(
-    SuperiorityBinarySchema.partial(),
-    SuperiorityContinuousSchema.partial()
-).and(NonInferioritySchema.partial()).and(EquivalenceSchema.partial()).and(z.object({
+const FormSchema = z.object({
     superiorityOutcome: z.enum(['binary', 'continuous']).optional(),
-}));
+    // Allow all fields to be optional for the combined form
+    alpha: z.number().optional(),
+    power: z.number().optional(),
+    allocationRatio: z.number().optional(),
+    dropoutRate: z.number().optional(),
+    // Superiority binary
+    controlRate: z.number().optional(),
+    treatmentRate: z.number().optional(),
+    // Superiority continuous
+    meanDifference: z.number().optional(),
+    stdDev: z.number().optional(),
+    // Non-inferiority
+    margin: z.number().optional(),
+    // Equivalence
+    referenceRate: z.number().optional(),
+    testRate: z.number().optional(),
+});
 
 
 export default function ClinicalTrialsPage() {
@@ -112,7 +125,7 @@ export default function ClinicalTrialsPage() {
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const text = await page.getTextContent();
-                    textContent += text.items.map(s => s.str).join(' ');
+                    textContent += text.items.map(s => 'str' in s ? s.str : '').join(' ');
                 }
 
                 const extractValue = (regex: RegExp) => {

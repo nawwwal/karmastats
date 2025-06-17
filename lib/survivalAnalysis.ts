@@ -229,3 +229,13 @@ export class SurvivalAnalysis {
     return zScores[probability] || 0;
   }
 }
+
+// Export convenience functions for components
+export const calculateLogRank = (params: LogRankParams): SurvivalAnalysisResults =>
+  SurvivalAnalysis.calculateLogRank(params);
+
+export const calculateCox = (params: CoxParams): SurvivalAnalysisResults =>
+  SurvivalAnalysis.calculateCoxRegression(params);
+
+export const calculateOneArm = (params: OneArmParams): SurvivalAnalysisResults =>
+  SurvivalAnalysis.calculateOneArm(params);
