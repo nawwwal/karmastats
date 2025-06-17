@@ -69,7 +69,7 @@ export function LinearRegressionTab() {
           {
             label: "Data Points",
             data: result.xValues.map((x, i) => ({ x, y: result.yValues[i] })),
-            backgroundColor: "rgba(54, 162, 235, 0.7)",
+            backgroundColor: "hsl(var(--secondary) / 0.6)",
             pointRadius: 6,
             pointHoverRadius: 8,
             type: "scatter" as const,
@@ -81,8 +81,8 @@ export function LinearRegressionTab() {
               { x: Math.min(...result.xValues), y: result.intercept + result.slope * Math.min(...result.xValues) },
               { x: Math.max(...result.xValues), y: result.intercept + result.slope * Math.max(...result.xValues) },
             ],
-            borderColor: "rgba(255, 99, 132, 1)",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: "hsl(var(--primary))",
+            backgroundColor: "hsl(var(--primary) / 0.15)",
             borderWidth: 3,
             pointRadius: 0,
             fill: false,
@@ -100,8 +100,8 @@ export function LinearRegressionTab() {
           {
             label: "Residuals",
             data: result.residuals,
-            borderColor: "#f59e0b",
-            backgroundColor: "#fde68a",
+            borderColor: "hsl(var(--warning))",
+            backgroundColor: "hsl(var(--warning) / 0.2)",
             pointRadius: 5,
             showLine: false,
             type: "scatter" as const,
@@ -183,7 +183,7 @@ export function LinearRegressionTab() {
             <Button onClick={handleCalculate} className="w-full">
               Calculate Linear Regression
             </Button>
-            {error && <div className="text-red-600 font-medium mt-2">{error}</div>}
+            {error && <div className="text-destructive font-medium mt-2">{error}</div>}
           </div>
           {result && (
             <div className="space-y-4">

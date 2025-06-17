@@ -74,14 +74,14 @@ export function PolynomialRegressionForm() {
           {
             label: "Data Points",
             data: result.X.map((val, i) => ({ x: val[0], y: result.y[i] })),
-            backgroundColor: "rgba(25, 167, 206, 0.5)",
+            backgroundColor: "hsl(var(--secondary) / 0.5)",
             type: 'scatter' as const,
           },
           {
             label: `Polynomial Fit (degree ${degree})`,
             data: result.predictedY.map((y, i) => ({ x: result.X[i][0], y })),
             type: 'line' as const,
-            borderColor: "#146C94",
+            borderColor: "hsl(var(--primary))",
             borderWidth: 2,
             fill: false,
             pointRadius: 0,
@@ -115,7 +115,7 @@ export function PolynomialRegressionForm() {
 
             <Button onClick={handleCalculate} className="w-full">Calculate</Button>
 
-            {error && <div className="text-red-500">{error}</div>}
+            {error && <div className="text-destructive">{error}</div>}
 
             {result && (
                 <Card>
