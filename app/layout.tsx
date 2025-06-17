@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono } from "next/font/google";
+import { Inter, Space_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -10,6 +10,10 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-mono"
+});
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-heading"
 });
 
 export const SpeedInsightsAnalytics = () => (
@@ -31,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceMono.variable} antialiased`}>
+      <body className={`${inter.variable} ${spaceMono.variable} ${montserrat.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
