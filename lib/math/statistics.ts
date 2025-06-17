@@ -108,6 +108,12 @@ function betacf(x: number, a: number, b: number): number {
         h *= del;
         if (Math.abs(del - 1.0) < EPS) break;
     }
+
+    // Safety check: if we reached maximum iterations without convergence
+    if (m > MAXIT) {
+        console.warn(`betacf: Maximum iterations (${MAXIT}) reached without convergence`);
+    }
+
     return h;
 }
 
