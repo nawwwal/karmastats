@@ -219,6 +219,19 @@ export function multipleRegression(y: number[], X: number[][]): MultipleRegressi
   if (y.length < 2 || X.length < 2 || X[0].length < 1) {
     return { error: "Input data must have at least 2 observations and at least 1 independent variable" };
   }
+
+  // Additional precondition checks
+  if (y.length !== X.length) {
+    return { error: "Number of observations in Y and X must be equal" };
+  }
+
+  if (y.some(val => !isFinite(val))) {
+    return { error: "Y values must be finite numbers" };
+  }
+
+  if (X.some(row => row.some(val => !isFinite(val)))) {
+    return { error: "X values must be finite numbers" };
+  }
   const n = y.length;
   const p = X[0].length;
   const X1 = X.map(row => [1, ...row]);
