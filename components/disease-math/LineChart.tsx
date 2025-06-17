@@ -85,7 +85,7 @@ export function LineChart({ results }: LineChartProps) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             let label = context.dataset.label || "";
             if (label) {
               label += ": ";
@@ -102,7 +102,7 @@ export function LineChart({ results }: LineChartProps) {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function (value) {
+          callback: function (value: any) {
             return new Intl.NumberFormat().format(value as number);
           },
         },
