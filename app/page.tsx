@@ -98,10 +98,10 @@ const CalcCard = ({ title, description, href, icon, features, status }: {
           </Badge>
         </div>
         <div>
-          <CardTitle className="text-xl group-hover:text-primary transition-colors">
+          <CardTitle className="heading-4 group-hover:text-primary transition-colors">
             {title}
           </CardTitle>
-          <CardDescription className="text-muted-foreground mt-2 leading-relaxed">
+          <CardDescription className="body-default text-muted-foreground mt-2">
             {description}
           </CardDescription>
         </div>
@@ -109,14 +109,14 @@ const CalcCard = ({ title, description, href, icon, features, status }: {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           {features.map((feature, index) => (
-            <div key={index} className="flex items-center text-sm text-muted-foreground">
+            <div key={index} className="flex items-center body-small text-muted-foreground">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2" />
               {feature}
             </div>
           ))}
         </div>
         <div className="flex items-center text-primary font-medium group-hover:text-primary/80">
-          <span className="text-sm">Access Tool</span>
+          <span className="body-small">Access Tool</span>
           <ChevronRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </div>
       </CardContent>
@@ -136,9 +136,9 @@ const StatCard = ({ icon, number, description, detail }: {
         {icon}
       </div>
       <div className="space-y-2">
-        <div className="text-3xl font-bold text-foreground">{number}</div>
+        <div className="heading-2 text-foreground">{number}</div>
         <div className="font-medium text-foreground">{description}</div>
-        <div className="text-sm text-muted-foreground">{detail}</div>
+        <div className="body-small text-muted-foreground">{detail}</div>
       </div>
     </CardContent>
   </Card>
@@ -153,15 +153,15 @@ export default function HomePage() {
         <div className="relative container mx-auto px-4 py-24 text-center">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="space-y-4">
-              <h1 className="text-6xl font-extrabold tracking-tight lg:text-7xl animate-fadeInDown">
+              <h1 className="heading-display lg:text-7xl animate-fadeInDown">
                 KARMASTAT
               </h1>
-              <p className="text-xl lg:text-2xl text-white/90 font-light animate-fadeInUp animate-delay-200">
+              <p className="lead-text lg:text-2xl text-white/90 font-light animate-fadeInUp animate-delay-200">
                 Where Selfless Work Meets Calculated Precision
               </p>
             </div>
             <div className="max-w-3xl mx-auto space-y-6 animate-fadeInUp animate-delay-300">
-              <p className="text-lg leading-relaxed text-white/80">
+              <p className="body-large text-white/80">
                 A powerful fusion of KARMA (selfless work performed with dedication and compassion)
                 and STAT (commitment to precision with scientific rigor) - creating statistical tools
                 that empower researchers to make informed decisions benefiting humanity.
@@ -184,8 +184,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-6 text-gradient">Our Mission</h2>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <h2 className="heading-1 mb-6 text-gradient">Our Mission</h2>
+              <p className="lead-text text-muted-foreground">
                 KARMASTAT represents a transformative approach to research and innovation,
                 combining ethical purpose with statistical precision.
               </p>
@@ -196,11 +196,11 @@ export default function HomePage() {
                 <CardHeader>
                   <div className="flex items-center space-x-3">
                     <Heart className="h-8 w-8 text-primary" />
-                    <CardTitle className="text-2xl">KARMA</CardTitle>
+                    <CardTitle className="heading-3">KARMA</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="body-default text-muted-foreground">
                     The principle of selfless work performed with dedication and compassion,
                     recognizing that our actions create ripples that extend far beyond ourselves.
                   </p>
@@ -211,11 +211,11 @@ export default function HomePage() {
                 <CardHeader>
                   <div className="flex items-center space-x-3">
                     <Target className="h-8 w-8 text-secondary" />
-                    <CardTitle className="text-2xl">STAT</CardTitle>
+                    <CardTitle className="heading-3">STAT</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="body-default text-muted-foreground">
                     The commitment to precision, where every analytical move is calculated
                     with scientific rigor to ensure accuracy and reliability.
                   </p>
@@ -225,12 +225,12 @@ export default function HomePage() {
 
             <Card className="bg-accent/10 border-accent/20">
               <CardContent className="pt-6">
-                <blockquote className="text-lg italic text-center text-muted-foreground leading-relaxed">
+                <blockquote className="lead-text italic text-center text-muted-foreground">
                   "In nature, nothing is perfect and everything is perfect. Trees can be contorted,
                   bent in weird ways, and they're still beautiful. Just as in nature, our tools
                   embrace both precision and adaptation."
                 </blockquote>
-                <p className="text-right mt-4 font-medium text-primary">— Alice Walker</p>
+                <p className="text-right mt-4 label-text text-primary">— Alice Walker</p>
               </CardContent>
             </Card>
           </div>
@@ -241,8 +241,8 @@ export default function HomePage() {
       <section id="tools" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6">Research Tools</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <h2 className="heading-1 mb-6">Research Tools</h2>
+            <p className="lead-text text-muted-foreground max-w-3xl mx-auto">
               Our suite of specialized tools represents the culmination of rigorous methodological
               development and statistical innovation, designed to address complex research challenges
               with precision and insight.
@@ -251,7 +251,7 @@ export default function HomePage() {
 
           {Object.entries(tools).map(([category, calcs]) => (
             <div key={category} className="mb-16">
-              <h3 className="text-3xl font-semibold mb-8 capitalize flex items-center">
+              <h3 className="heading-2 mb-8 capitalize flex items-center">
                 {category === 'calculators' ? <Calculator className="h-8 w-8 mr-3 text-primary" /> : <Users className="h-8 w-8 mr-3 text-primary" />}
                 {category}
               </h3>
@@ -270,8 +270,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-6 text-gradient">Environmental Impact</h2>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <h2 className="heading-1 mb-6 text-gradient">Environmental Impact</h2>
+              <p className="lead-text text-muted-foreground">
                 At KARMASTAT, we embrace nature-inspired solutions and environmental consciousness
                 as core principles guiding our work and research methodology.
               </p>
@@ -279,16 +279,16 @@ export default function HomePage() {
 
             <Card className="mb-12 bg-gradient-to-r from-success/10 to-info/10 border-success/20">
               <CardContent className="pt-6">
-                <blockquote className="text-lg italic text-center text-muted-foreground leading-relaxed">
+                <blockquote className="lead-text italic text-center text-muted-foreground">
                   "The best time to plant a tree was 20 years ago. The second best time is now.
                   Similarly, the optimal time for implementing data-driven solutions is at the
                   earliest possible opportunity."
                 </blockquote>
-                <p className="text-right mt-4 font-medium text-primary">— Adapted from Chinese Proverb</p>
+                <p className="text-right mt-4 label-text text-primary">— Adapted from Chinese Proverb</p>
               </CardContent>
             </Card>
 
-            <h3 className="text-3xl font-semibold mb-8 text-center">The Remarkable Impact of Trees</h3>
+            <h3 className="heading-2 mb-8 text-center">The Remarkable Impact of Trees</h3>
 
             <div className="grid md:grid-cols-3 gap-8">
               {impactStats.map((stat, index) => (
@@ -304,8 +304,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-6">Support Our Mission</h2>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <h2 className="heading-1 mb-6">Support Our Mission</h2>
+              <p className="lead-text text-muted-foreground">
                 Your voluntary contributions enable us to continue developing innovative research tools
                 while promoting environmental sustainability.
               </p>
@@ -314,17 +314,17 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="text-center">
                 <Card className="inline-block p-8 bg-card border-2 border-primary/20">
-                  <div className="w-48 h-48 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-lg font-mono">
+                  <div className="w-48 h-48 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white code-large">
                     QR CODE
                     <br />
                     ruchitnawal03@okaxis
                   </div>
                 </Card>
-                <p className="mt-4 text-sm text-muted-foreground">Scan to support our environmental initiatives</p>
+                <p className="mt-4 body-small text-muted-foreground">Scan to support our environmental initiatives</p>
               </div>
 
               <div className="space-y-6">
-                <h3 className="text-2xl font-semibold">Your Support Enables:</h3>
+                <h3 className="heading-3">Your Support Enables:</h3>
                 <div className="space-y-4">
                   {[
                     "Development of advanced epidemiological modeling tools",
@@ -349,11 +349,11 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <Card className="max-w-3xl mx-auto bg-accent/10 border-accent/20">
             <CardContent className="pt-6">
-              <blockquote className="text-lg italic text-center text-muted-foreground leading-relaxed">
+              <blockquote className="lead-text italic text-center text-muted-foreground">
                 "The true meaning of life is to plant trees, under whose shade you do not expect to sit.
                 Our research tools aim to create similar lasting impacts for future generations."
               </blockquote>
-              <p className="text-right mt-4 font-medium text-primary">— Nelson Henderson</p>
+              <p className="text-right mt-4 label-text text-primary">— Nelson Henderson</p>
             </CardContent>
           </Card>
         </div>

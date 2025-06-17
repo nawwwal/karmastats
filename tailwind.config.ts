@@ -91,6 +91,7 @@ const config = {
       fontSize: karmaTheme.typography.fontSize,
       fontWeight: karmaTheme.typography.fontWeight,
       lineHeight: karmaTheme.typography.lineHeight,
+      letterSpacing: karmaTheme.typography.letterSpacing,
       spacing: karmaTheme.spacing,
       borderRadius: {
         lg: "var(--radius)",

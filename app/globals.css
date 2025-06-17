@@ -308,4 +308,51 @@
       border-color: currentColor;
     }
   }
+
+  /* ===== SEMANTIC TYPOGRAPHY CLASSES ===== */
+  .heading-display { @apply text-display font-black tracking-tight; }
+  .heading-hero { @apply text-hero font-extrabold tracking-tight; }
+  .heading-1 { @apply text-h1 font-bold tracking-tight; }
+  .heading-2 { @apply text-h2 font-bold tracking-tight; }
+  .heading-3 { @apply text-h3 font-semibold; }
+  .heading-4 { @apply text-h4 font-semibold; }
+  .heading-5 { @apply text-h5 font-semibold; }
+  .heading-6 { @apply text-h6 font-semibold; }
+
+  /* Body text */
+  .body-large { @apply text-body-lg font-normal leading-relaxed; }
+  .body-default { @apply text-body font-normal leading-normal; }
+  .body-small { @apply text-sm font-normal leading-normal; }
+
+  /* Special text */
+  .lead-text { @apply text-lead font-normal leading-relaxed; }
+  .caption-text { @apply text-caption font-medium tracking-wide; }
+  .label-text { @apply text-sm font-medium; }
+  .helper-text { @apply text-xs text-muted-foreground; }
+
+  /* Monospace text */
+  .code-text { @apply font-mono text-sm; }
+  .code-large { @apply font-mono text-base; }
+
+  /* Interactive text */
+  .link-text { @apply text-primary hover:text-primary/80 underline-offset-4 hover:underline; }
+  .button-text { @apply font-medium tracking-wide; }
+
+  /* Status text */
+  .success-text { @apply text-success font-medium; }
+  .warning-text { @apply text-warning font-medium; }
+  .error-text { @apply text-destructive font-medium; }
+  .info-text { @apply text-info font-medium; }
+}
+
+/* ===== CUSTOM ANIMATIONS ===== */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

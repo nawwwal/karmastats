@@ -126,7 +126,7 @@ export function PolynomialRegressionForm() {
                             <p><strong>Adjusted R-squared:</strong> {result.adjustedRSquared.toFixed(4)}</p>
                         </div>
                         <div className="mt-4">
-                            <Scatter options={chartOptions} data={chartData} />
+                            <Scatter options={chartOptions} data={chartData as any} />
                         </div>
                         <Table>
                             <TableHeader>
