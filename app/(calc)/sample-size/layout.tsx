@@ -46,7 +46,7 @@ export default function SampleSizeLayout({
   return (
     <div className="container mx-auto p-4">
       <header className="text-center mb-8">
-        <h1 className="text-3xl font-bold">Sample Size Calculators</h1>
+        <h1 className="heading-1">Sample Size Calculators</h1>
         <p className="text-muted-foreground">
           Tools to help you determine the right sample size for your study.
         </p>

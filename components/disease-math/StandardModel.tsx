@@ -56,7 +56,7 @@ export function StandardModel() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Model Parameters</h2>
+          <h2 className="heading-3 mb-4">Model Parameters</h2>
           <Form {...(form as any)}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -219,7 +219,7 @@ export function StandardModel() {
 
         {results && (
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Results</h2>
+            <h2 className="heading-3 mb-4">Results</h2>
             <MetricsDisplay results={results} />
           </Card>
         )}
@@ -227,7 +227,7 @@ export function StandardModel() {
 
       {results && (
         <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Disease Spread Over Time</h2>
+          <h2 className="heading-3 mb-4">Disease Spread Over Time</h2>
           <div className="h-[400px]">
             <LineChart results={results} />
           </div>
