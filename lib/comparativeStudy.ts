@@ -91,18 +91,10 @@ export interface CohortParams {
     lossToFollowUp?: number;
 }
 
-const z_alpha = {
-    '0.05': 1.96,
-    '0.01': 2.576,
-    '0.10': 1.645
-};
+import { Z_SCORES_ALPHA, Z_SCORES_BETA } from './statistical-constants';
 
-const z_beta = {
-    '0.80': 0.842,
-    '0.85': 1.036,
-    '0.90': 1.282,
-    '0.95': 1.645
-};
+const z_alpha = Z_SCORES_ALPHA;
+const z_beta = Z_SCORES_BETA;
 
 export function calculateCaseControl(params: CaseControlParams) {
     const {
