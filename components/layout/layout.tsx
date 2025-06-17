@@ -1,43 +1,46 @@
 "use client";
 
-import { useState } from "react";
-import { Sidebar } from "./sidebar";
-import { MainNav } from "./main-nav";
-import { Breadcrumb } from "./breadcrumb";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { Sidebar } from './sidebar';
+import { cn } from '@/lib/utils';
 
-interface LayoutProps {
+interface LayoutWrapperProps {
   children: React.ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+export function LayoutWrapper({ children }: LayoutWrapperProps) {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const pathname = usePathname();
+
+  // Don't show sidebar on home page for clean hero experience
+  const isHomePage = pathname === '/';
+
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
+    setIsSidebarCollapsed(!isSidebarCollapsed);
   };
-  
+
+  if (isHomePage) {
+    return (
+      <div className="min-h-screen bg-background">
+        {children}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-screen bg-background">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block">
-        <Sidebar />
-      </div>
-      
-      {/* Mobile Sidebar */}
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent side="left" className="p-0 w-64">
-          <Sidebar />
-        </SheetContent>
-      </Sheet>
-      
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <MainNav toggleSidebar={toggleSidebar} />
-        <Breadcrumb />
-        <main className="flex-1 overflow-y-auto p-4">
+    <div className="min-h-screen bg-background flex">
+      <Sidebar isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} />
+      <main
+        className={cn(
+          "flex-1 transition-all duration-300 ease-in-out overflow-auto",
+          "min-h-screen"
+        )}
+      >
+        <div className="container mx-auto p-6 max-w-none">
           {children}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

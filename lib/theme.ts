@@ -1,39 +1,47 @@
-// Theme configuration for Karmastat
+// Centralized Theme Configuration for Karmastat
 // Based on ICMR-NIN 2020 Guidelines and medical design standards
 
 export const karmaTheme = {
-  // Primary colors - Medical blues
-  primary: {
-    50: '#e3f2fd',
-    100: '#bbdefb',
-    200: '#90caf9',
-    300: '#64b5f6',
-    400: '#42a5f5',
-    500: '#2196f3',
-    600: '#1e88e5',
-    700: '#1976d2',
-    800: '#1565c0',
-    900: '#0d47a1',
-    DEFAULT: '#146C94', // Primary blue
-  },
-  
-  // Secondary colors - Cool grays
-  secondary: {
-    50: '#f8f9fa',
-    100: '#f1f3f5',
-    200: '#e9ecef',
-    300: '#dee2e6',
-    400: '#ced4da',
-    500: '#adb5bd',
-    600: '#868e96',
-    700: '#495057',
-    800: '#343a40',
-    900: '#212529',
-    DEFAULT: '#19A7CE', // Secondary blue
-  },
-  
-  // Accent colors
-  accent: {
+  // Core color palette - KARMASTAT brand colors
+  colors: {
+    // Primary colors - Professional medical blues
+    primary: {
+      50: '#e3f2fd',
+      100: '#bbdefb',
+      200: '#90caf9',
+      300: '#64b5f6',
+      400: '#42a5f5',
+      500: '#146C94', // Brand primary
+      600: '#19A7CE', // Brand secondary
+      700: '#1976d2',
+      800: '#1565c0',
+      900: '#0d47a1',
+      DEFAULT: '#146C94',
+    },
+
+    // Secondary colors
+    secondary: {
+      50: '#f8f9fa',
+      100: '#f1f3f5',
+      200: '#e9ecef',
+      300: '#dee2e6',
+      400: '#ced4da',
+      500: '#adb5bd',
+      600: '#868e96',
+      700: '#495057',
+      800: '#343a40',
+      900: '#212529',
+      DEFAULT: '#19A7CE',
+    },
+
+    // Accent colors
+    accent: {
+      light: '#F8FDCF', // Light accent
+      neutral: '#F6F1F1', // Light neutral
+      DEFAULT: '#F8FDCF',
+    },
+
+    // Semantic colors
     success: {
       light: '#a5d6a7',
       DEFAULT: '#4caf50',
@@ -54,13 +62,8 @@ export const karmaTheme = {
       DEFAULT: '#03a9f4',
       dark: '#0288d1',
     },
-    DEFAULT: '#F8FDCF', // Light accent
-  },
-  
-  // Neutral colors
-  neutral: {
-    white: '#ffffff',
-    black: '#000000',
+
+    // Neutral grays
     gray: {
       50: '#fafafa',
       100: '#f5f5f5',
@@ -73,27 +76,16 @@ export const karmaTheme = {
       800: '#424242',
       900: '#212121',
     },
-    DEFAULT: '#F6F1F1', // Light neutral
   },
-  
-  // Gradients
-  gradients: {
-    primary: 'linear-gradient(135deg, #146C94, #19A7CE)',
-    secondary: 'linear-gradient(135deg, #19A7CE, #F8FDCF)',
-    accent: 'linear-gradient(135deg, #F8FDCF, #F6F1F1)',
-    success: 'linear-gradient(135deg, #4caf50, #8bc34a)',
-    warning: 'linear-gradient(135deg, #ff9800, #ffeb3b)',
-    error: 'linear-gradient(135deg, #f44336, #ff5722)',
-  },
-  
-  // Typography
+
+  // Typography system
   typography: {
     fontFamily: {
-      primary: 'Inter, system-ui, -apple-system, sans-serif',
-      secondary: 'Space Mono, monospace',
-      heading: 'Montserrat, sans-serif',
+      primary: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      secondary: ['Space Mono', 'monospace'],
+      heading: ['Montserrat', 'sans-serif'],
     },
-    fontSizes: {
+    fontSize: {
       xs: '0.75rem',
       sm: '0.875rem',
       base: '1rem',
@@ -105,27 +97,27 @@ export const karmaTheme = {
       '5xl': '3rem',
       '6xl': '3.75rem',
     },
-    fontWeights: {
-      thin: 100,
-      extralight: 200,
-      light: 300,
-      normal: 400,
-      medium: 500,
-      semibold: 600,
-      bold: 700,
-      extrabold: 800,
-      black: 900,
+    fontWeight: {
+      thin: '100',
+      extralight: '200',
+      light: '300',
+      normal: '400',
+      medium: '500',
+      semibold: '600',
+      bold: '700',
+      extrabold: '800',
+      black: '900',
     },
-    lineHeights: {
-      none: 1,
-      tight: 1.25,
-      snug: 1.375,
-      normal: 1.5,
-      relaxed: 1.625,
-      loose: 2,
+    lineHeight: {
+      none: '1',
+      tight: '1.25',
+      snug: '1.375',
+      normal: '1.5',
+      relaxed: '1.625',
+      loose: '2',
     },
   },
-  
+
   // Spacing system
   spacing: {
     0: '0',
@@ -147,7 +139,7 @@ export const karmaTheme = {
     56: '14rem',
     64: '16rem',
   },
-  
+
   // Shadows
   shadows: {
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -159,7 +151,7 @@ export const karmaTheme = {
     inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
     none: 'none',
   },
-  
+
   // Border radius
   borderRadius: {
     none: '0',
@@ -172,7 +164,18 @@ export const karmaTheme = {
     '3xl': '1.5rem',
     full: '9999px',
   },
-  
+
+  // Gradients
+  gradients: {
+    primary: 'linear-gradient(135deg, #146C94, #19A7CE)',
+    secondary: 'linear-gradient(135deg, #19A7CE, #F8FDCF)',
+    accent: 'linear-gradient(135deg, #F8FDCF, #F6F1F1)',
+    success: 'linear-gradient(135deg, #4caf50, #8bc34a)',
+    warning: 'linear-gradient(135deg, #ff9800, #ffeb3b)',
+    error: 'linear-gradient(135deg, #f44336, #ff5722)',
+    hero: 'linear-gradient(135deg, #146C94 0%, #19A7CE 50%, #F8FDCF 100%)',
+  },
+
   // Breakpoints
   breakpoints: {
     xs: '480px',
@@ -182,75 +185,138 @@ export const karmaTheme = {
     xl: '1280px',
     '2xl': '1536px',
   },
-  
+
   // Z-index
   zIndex: {
-    0: 0,
-    10: 10,
-    20: 20,
-    30: 30,
-    40: 40,
-    50: 50,
+    0: '0',
+    10: '10',
+    20: '20',
+    30: '30',
+    40: '40',
+    50: '50',
     auto: 'auto',
   },
-  
+
   // Transitions
   transitions: {
     DEFAULT: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     fast: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
-    slow: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+    slow: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
   },
 };
 
-// Light/Dark mode configurations
+// Light theme configuration
 export const lightTheme = {
-  background: '#ffffff',
-  foreground: '#212529',
-  card: '#ffffff',
-  cardForeground: '#212529',
-  border: '#e0e0e0',
-  input: '#f5f5f5',
-  primary: karmaTheme.primary.DEFAULT,
-  primaryForeground: '#ffffff',
-  secondary: karmaTheme.secondary.DEFAULT,
-  secondaryForeground: '#ffffff',
-  accent: karmaTheme.accent.DEFAULT,
-  accentForeground: '#212529',
-  muted: '#f5f5f5',
-  mutedForeground: '#757575',
-  success: karmaTheme.accent.success.DEFAULT,
-  warning: karmaTheme.accent.warning.DEFAULT,
-  error: karmaTheme.accent.error.DEFAULT,
-  info: karmaTheme.accent.info.DEFAULT,
+  background: 'oklch(1 0 0)', // White
+  foreground: 'oklch(0.141 0.005 285.823)', // Dark gray
+  card: 'oklch(1 0 0)', // White
+  cardForeground: 'oklch(0.141 0.005 285.823)', // Dark gray
+  popover: 'oklch(1 0 0)', // White
+  popoverForeground: 'oklch(0.141 0.005 285.823)', // Dark gray
+  primary: 'oklch(0.391 0.138 213.445)', // #146C94
+  primaryForeground: 'oklch(1 0 0)', // White
+  secondary: 'oklch(0.967 0.001 286.375)', // Light gray
+  secondaryForeground: 'oklch(0.21 0.006 285.885)', // Dark
+  muted: 'oklch(0.967 0.001 286.375)', // Light gray
+  mutedForeground: 'oklch(0.552 0.016 285.938)', // Medium gray
+  accent: 'oklch(0.967 0.001 286.375)', // Light gray
+  accentForeground: 'oklch(0.21 0.006 285.885)', // Dark
+  destructive: 'oklch(0.577 0.245 27.325)', // Red
+  destructiveForeground: 'oklch(1 0 0)', // White
+  border: 'oklch(0.92 0.004 286.32)', // Very light gray
+  input: 'oklch(0.92 0.004 286.32)', // Very light gray
+  ring: 'oklch(0.391 0.138 213.445)', // Primary blue
+  success: 'oklch(0.548 0.166 142.495)', // Green
+  warning: 'oklch(0.832 0.199 95.677)', // Yellow
+  error: 'oklch(0.577 0.245 27.325)', // Red
+  info: 'oklch(0.631 0.206 231.738)', // Blue
 };
 
+// Dark theme configuration
 export const darkTheme = {
-  background: '#1a202c',
-  foreground: '#f8f9fa',
-  card: '#2d3748',
-  cardForeground: '#f8f9fa',
-  border: '#4a5568',
-  input: '#2d3748',
-  primary: '#1976d2', // Slightly lighter for dark mode
-  primaryForeground: '#ffffff',
-  secondary: '#38b2ac',
-  secondaryForeground: '#ffffff',
-  accent: '#d6bcfa',
-  accentForeground: '#1a202c',
-  muted: '#2d3748',
-  mutedForeground: '#a0aec0',
-  success: '#48bb78',
-  warning: '#ecc94b',
-  error: '#f56565',
-  info: '#4299e1',
+  background: 'oklch(0.141 0.005 285.823)', // Dark gray
+  foreground: 'oklch(0.985 0 0)', // Nearly white
+  card: 'oklch(0.21 0.006 285.885)', // Medium dark
+  cardForeground: 'oklch(0.985 0 0)', // Nearly white
+  popover: 'oklch(0.21 0.006 285.885)', // Medium dark
+  popoverForeground: 'oklch(0.985 0 0)', // Nearly white
+  primary: 'oklch(0.488 0.243 264.376)', // Lighter blue for dark mode
+  primaryForeground: 'oklch(0.985 0 0)', // Nearly white
+  secondary: 'oklch(0.274 0.006 286.033)', // Dark gray
+  secondaryForeground: 'oklch(0.985 0 0)', // Nearly white
+  muted: 'oklch(0.274 0.006 286.033)', // Dark gray
+  mutedForeground: 'oklch(0.705 0.015 286.067)', // Light gray
+  accent: 'oklch(0.274 0.006 286.033)', // Dark gray
+  accentForeground: 'oklch(0.985 0 0)', // Nearly white
+  destructive: 'oklch(0.704 0.191 22.216)', // Red
+  destructiveForeground: 'oklch(0.985 0 0)', // Nearly white
+  border: 'oklch(1 0 0 / 10%)', // Transparent white
+  input: 'oklch(1 0 0 / 15%)', // Transparent white
+  ring: 'oklch(0.552 0.016 285.938)', // Medium gray
+  success: 'oklch(0.649 0.169 152.511)', // Green
+  warning: 'oklch(0.832 0.199 95.677)', // Yellow
+  error: 'oklch(0.704 0.191 22.216)', // Red
+  info: 'oklch(0.696 0.17 162.48)', // Blue
 };
 
-// WCAG 2.1 AA compliance settings
-export const accessibilitySettings = {
-  minContrastRatio: 4.5, // For normal text
-  minLargeTextContrastRatio: 3, // For large text (18pt+)
+// Medical color tokens for specific use cases
+export const medicalColors = {
+  clinical: '#3949ab',
+  research: '#00897b',
+  emergency: '#d32f2f',
+  pediatric: '#7cb342',
+  geriatric: '#8d6e63',
+  cardiology: '#d81b60',
+  neurology: '#5e35b1',
+  orthopedic: '#f57c00',
+  pulmonary: '#00acc1',
+  gastroenterology: '#fdd835',
+};
+
+// Animation configurations
+export const animations = {
+  fadeIn: 'fadeIn 1s ease-out',
+  fadeInUp: 'fadeInUp 1s ease-out',
+  fadeInDown: 'fadeInDown 1s ease-out',
+  slideInLeft: 'slideInLeft 0.5s ease-out',
+  slideInRight: 'slideInRight 0.5s ease-out',
+  bounce: 'bounce 2s infinite',
+  pulse: 'pulse 2s infinite',
+};
+
+// Component-specific theme tokens
+export const componentThemes = {
+  button: {
+    primary: {
+      background: 'hsl(var(--primary))',
+      foreground: 'hsl(var(--primary-foreground))',
+      hover: 'hsl(var(--primary) / 0.9)',
+    },
+    secondary: {
+      background: 'hsl(var(--secondary))',
+      foreground: 'hsl(var(--secondary-foreground))',
+      hover: 'hsl(var(--secondary) / 0.8)',
+    },
+  },
+  card: {
+    background: 'hsl(var(--card))',
+    foreground: 'hsl(var(--card-foreground))',
+    border: 'hsl(var(--border))',
+  },
+  input: {
+    background: 'hsl(var(--background))',
+    foreground: 'hsl(var(--foreground))',
+    border: 'hsl(var(--border))',
+    placeholder: 'hsl(var(--muted-foreground))',
+  },
+};
+
+// Accessibility settings (WCAG 2.1 AA compliance)
+export const accessibility = {
+  minContrastRatio: 4.5,
+  minLargeTextContrastRatio: 3,
   focusOutlineWidth: '3px',
-  focusOutlineColor: karmaTheme.primary[500],
+  focusOutlineColor: 'hsl(var(--ring))',
   focusOutlineStyle: 'solid',
   motionReduced: {
     transition: 'none',
@@ -258,16 +324,4 @@ export const accessibilitySettings = {
   },
 };
 
-// Medical-specific color tokens
-export const medicalColorTokens = {
-  clinical: '#3949ab', // Clinical blue
-  research: '#00897b', // Research teal
-  emergency: '#d32f2f', // Emergency red
-  pediatric: '#7cb342', // Pediatric green
-  geriatric: '#8d6e63', // Geriatric brown
-  cardiology: '#d81b60', // Cardiology pink
-  neurology: '#5e35b1', // Neurology purple
-  orthopedic: '#f57c00', // Orthopedic orange
-  pulmonary: '#00acc1', // Pulmonary cyan
-  gastro: '#fdd835', // Gastroenterology yellow
-};
+export default karmaTheme;

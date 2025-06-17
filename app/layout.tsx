@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
+import { LayoutWrapper } from "@/components/layout/layout";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const spaceMono = Space_Mono({
@@ -25,7 +26,14 @@ export const SpeedInsightsAnalytics = () => (
 
 export const metadata: Metadata = {
   title: "Karmastat - Statistical Calculators for Medical Research",
-  description: "A comprehensive suite of statistical calculators for medical research, including sample size calculations, survival analysis, and more.",
+  description: "A comprehensive suite of statistical calculators for medical research, including sample size calculations, survival analysis, regression modeling, and epidemiological tools. Built with precision and scientific rigor.",
+  keywords: ["statistics", "medical research", "sample size", "regression", "epidemiology", "clinical trials"],
+  authors: [{ name: "Karmayogi" }],
+  openGraph: {
+    title: "Karmastat - Where Selfless Work Meets Calculated Precision",
+    description: "Statistical tools that empower researchers to make informed decisions benefiting humanity",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -42,10 +50,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen bg-background">
+          <LayoutWrapper>
             {children}
-            <SpeedInsightsAnalytics />
-          </div>
+          </LayoutWrapper>
+          <SpeedInsightsAnalytics />
         </ThemeProvider>
       </body>
     </html>
