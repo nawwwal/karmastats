@@ -308,7 +308,7 @@ All backend calculation libraries now have comprehensive Zod validation schemas:
 - [x] Extract hardcoded statistical constants
 
 #### **Phase 2: Structural Refactoring (Week 2)**
-- [x] Split `family-study.ts` into modular structure (IN PROGRESS - 60% complete)
+- [x] Split `family-study.ts` into modular structure (COMPLETE - 8 files created)
 - [ ] Reorganize regression types into separate files
 - [ ] Consolidate sample-size calculations
 - [x] Create shared statistical utilities
