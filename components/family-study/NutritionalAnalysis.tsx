@@ -18,17 +18,17 @@ export function NutritionalAnalysis({
 }: NutritionalAnalysisProps) {
   // Helper functions
   const getAdequacyColor = (percentage: number) => {
-    if (percentage >= 90 && percentage <= 110) return 'text-green-600';
-    if (percentage >= 70 && percentage < 90) return 'text-orange-600';
-    if (percentage > 110 && percentage <= 130) return 'text-blue-600';
-    return 'text-red-600';
+    if (percentage >= 90 && percentage <= 110) return 'text-success';
+    if (percentage >= 70 && percentage < 90) return 'text-warning';
+    if (percentage > 110 && percentage <= 130) return 'text-info';
+    return 'text-destructive';
   };
 
   const getAdequacyStatus = (percentage: number) => {
-    if (percentage >= 90 && percentage <= 110) return 'bg-green-100';
-    if (percentage >= 70 && percentage < 90) return 'bg-orange-100';
-    if (percentage > 110 && percentage <= 130) return 'bg-blue-100';
-    return 'bg-red-100';
+    if (percentage >= 90 && percentage <= 110) return 'bg-success/10 text-success';
+    if (percentage >= 70 && percentage < 90) return 'bg-warning/10 text-warning';
+    if (percentage > 110 && percentage <= 130) return 'bg-info/10 text-info';
+    return 'bg-destructive/10 text-destructive';
   };
 
   const getAdequacyText = (percentage: number) => {
@@ -41,7 +41,7 @@ export function NutritionalAnalysis({
   const getOverallNutritionalVariant = (calorie: number, protein: number) => {
     const avgAdequacy = (calorie + protein) / 2;
     if (avgAdequacy >= 85) return 'default';
-    if (avgAdequacy >= 70) return 'default'; // Changed from 'warning' to 'default'
+    if (avgAdequacy >= 70) return 'warning';
     return 'destructive';
   };
 

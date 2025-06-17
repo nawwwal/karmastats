@@ -437,7 +437,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       icon={item.icon}
                       title={item.title}
                       description={item.description}
-                      isActive={isActive(item.href)}
+                      isActive={isActive(item.href || '')}
                       isCollapsed={isCollapsed}
                     />
                   );

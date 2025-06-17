@@ -137,7 +137,7 @@ export function LinearRegressionForm() {
                 <p><strong>Correlation (r):</strong> {result.correlation.toFixed(4)}</p>
                 <p><strong>Standard Error:</strong> {result.standardError.toFixed(4)}</p>
                 <div className="mt-4">
-                  <Scatter options={chartOptions} data={chartData} />
+                  <Scatter options={chartOptions} data={chartData as any} />
                 </div>
             </CardContent>
         </Card>

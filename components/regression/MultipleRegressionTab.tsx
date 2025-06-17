@@ -100,7 +100,7 @@ export function MultipleRegressionTab() {
           {
             label: "Predicted vs Actual",
             data: result.y.map((y, i) => ({ x: y, y: result.predictedY[i] })),
-            backgroundColor: "rgba(54, 162, 235, 0.7)",
+            backgroundColor: "hsl(var(--secondary) / 0.6)",
             pointRadius: 6,
             pointHoverRadius: 8,
           },
@@ -110,7 +110,7 @@ export function MultipleRegressionTab() {
               { x: Math.min(...result.y), y: Math.min(...result.y) },
               { x: Math.max(...result.y), y: Math.max(...result.y) },
             ],
-            borderColor: "rgba(255, 99, 132, 1)",
+            borderColor: "hsl(var(--primary))",
             borderWidth: 2,
             pointRadius: 0,
             type: "line" as const,
@@ -127,7 +127,7 @@ export function MultipleRegressionTab() {
           {
             label: "Residuals vs Predicted",
             data: result.predictedY.map((yhat, i) => ({ x: yhat, y: result.residuals[i] })),
-            backgroundColor: "#f59e0b",
+            backgroundColor: "hsl(var(--warning) / 0.6)",
             pointRadius: 6,
             showLine: false,
           },
@@ -183,7 +183,7 @@ export function MultipleRegressionTab() {
             <Button onClick={handleCalculate} className="w-full">
               Calculate Multiple Regression
             </Button>
-            {error && <div className="text-red-600 font-medium mt-2">{error}</div>}
+            {error && <div className="text-destructive font-medium mt-2">{error}</div>}
           </div>
           {result && (
             <div className="space-y-2">
@@ -191,7 +191,7 @@ export function MultipleRegressionTab() {
                 <span className="font-semibold">Coefficients (Intercept, X₁, X₂, ...):</span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {result.coefficients.map((coef, i) => (
-                    <span key={i} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    <span key={i} className="bg-primary/10 text-primary px-2 py-1 rounded">
                       {coef.toFixed(4)}
                     </span>
                   ))}
@@ -207,7 +207,7 @@ export function MultipleRegressionTab() {
                 <span className="font-semibold">Standard Errors:</span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {result.stdErrors.map((se, i) => (
-                    <span key={i} className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                    <span key={i} className="bg-warning/10 text-warning px-2 py-1 rounded">
                       {se.toFixed(4)}
                     </span>
                   ))}
@@ -217,7 +217,7 @@ export function MultipleRegressionTab() {
                 <span className="font-semibold">t-Statistics:</span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {result.tStats.map((t, i) => (
-                    <span key={i} className="bg-green-100 text-green-800 px-2 py-1 rounded">
+                    <span key={i} className="bg-success/10 text-success px-2 py-1 rounded">
                       {t.toFixed(4)}
                     </span>
                   ))}
@@ -227,7 +227,7 @@ export function MultipleRegressionTab() {
                 <span className="font-semibold">p-Values:</span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {result.pValues.map((p, i) => (
-                    <span key={i} className="bg-red-100 text-red-800 px-2 py-1 rounded">
+                    <span key={i} className="bg-destructive/10 text-destructive px-2 py-1 rounded">
                       {p.toExponential(2)}
                     </span>
                   ))}

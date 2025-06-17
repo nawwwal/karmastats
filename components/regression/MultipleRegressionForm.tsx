@@ -73,7 +73,7 @@ export function MultipleRegressionForm() {
 
             <Button onClick={handleCalculate} className="w-full">Calculate</Button>
 
-            {error && <div className="text-red-500">{error}</div>}
+            {error && <div className="text-destructive">{error}</div>}
 
             {result && (
                 <Card>
