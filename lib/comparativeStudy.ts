@@ -110,8 +110,12 @@ export function calculateCaseControl(params: CaseControlParams) {
     const p1 = (oddsRatio * p0) / (1 - p0 + (oddsRatio * p0));
     const p_bar = (p1 + caseControlRatio * p0) / (1 + caseControlRatio);
 
-    const za = z_alpha[significanceLevel.toString() as keyof typeof z_alpha];
-    const zb = z_beta[power.toString() as keyof typeof z_beta];
+    const za = z_alpha[significanceLevel as keyof typeof z_alpha];
+    const zb = z_beta[power as keyof typeof z_beta];
+
+    if (!za || !zb) {
+        throw new Error(`Invalid significance level (${significanceLevel}) or power (${power})`);
+    }
 
     const n_cases = Math.pow(za * Math.sqrt((1 + 1/caseControlRatio) * p_bar * (1 - p_bar)) + zb * Math.sqrt(p1*(1-p1) + (p0*(1-p0))/caseControlRatio), 2) / Math.pow(p1 - p0, 2);
     const n_controls = caseControlRatio * n_cases;
@@ -141,8 +145,12 @@ export function calculateCohort(params: CohortParams) {
     const p1 = p0 * relativeRisk;
     const p_bar = (exposedUnexposedRatio * p1 + p0) / (exposedUnexposedRatio + 1);
 
-    const za = z_alpha[significanceLevel.toString() as keyof typeof z_alpha];
-    const zb = z_beta[power.toString() as keyof typeof z_beta];
+    const za = z_alpha[significanceLevel as keyof typeof z_alpha];
+    const zb = z_beta[power as keyof typeof z_beta];
+
+    if (!za || !zb) {
+        throw new Error(`Invalid significance level (${significanceLevel}) or power (${power})`);
+    }
 
     const n_unexposed = Math.pow(za * Math.sqrt((1 + 1/exposedUnexposedRatio) * p_bar * (1 - p_bar)) + zb * Math.sqrt(p1*(1-p1)/exposedUnexposedRatio + p0*(1-p0)), 2) / Math.pow(p1 - p0, 2);
     const n_exposed = exposedUnexposedRatio * n_unexposed;
