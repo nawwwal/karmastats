@@ -35,7 +35,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 
 interface SidebarItemProps {
-  href: string;
+  href?: string;
   icon: React.ReactNode;
   title?: string;
   description?: string;
@@ -106,7 +106,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   return (
     <li className="mb-1">
       <Link
-        href={href}
+        href={href || '#'}
         className={cn(
           "flex items-center gap-3 px-3 py-3 rounded-lg w-full transition-all duration-200 group",
           isActive
