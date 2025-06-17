@@ -1,39 +1,62 @@
 'use client';
 
+import React from 'react';
+import { Calculator, Activity, Users, Brain, TrendingUp, BarChart3, TestTube, Stethoscope, Target, Database } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePathname } from 'next/navigation';
 
-const modules = [
+const sampleSizeTools = [
   {
-    title: 'Intelligent Study Type Detector',
-    href: '/sample-size/detector',
+    title: "Intelligent Study Detector",
+    description: "AI-powered study type detection and sample size recommendations",
+    href: "/sample-size/intelligent-detector",
+    icon: Brain,
+    status: "Complete"
   },
   {
-    title: 'Survival Analysis',
-    href: '/sample-size/survival',
+    title: "Survival Analysis",
+    description: "Log-rank test, Cox regression, and one-arm survival studies",
+    href: "/sample-size/survival",
+    icon: TrendingUp,
+    status: "Complete"
   },
   {
-    title: 'Comparative Study',
-    href: '/sample-size/comparative',
+    title: "Comparative Studies",
+    description: "Case-control and cohort study sample size calculations",
+    href: "/sample-size/comparative",
+    icon: BarChart3,
+    status: "Complete"
   },
   {
-    title: 'T-Test',
-    href: '/sample-size/t-test',
+    title: "T-Test Calculator",
+    description: "Independent and paired t-test sample size calculations",
+    href: "/sample-size/t-test",
+    icon: TestTube,
+    status: "Complete"
   },
   {
-    title: 'Diagnostic Study',
-    href: '/sample-size/diagnostic',
+    title: "Diagnostic Tests",
+    description: "Sensitivity, specificity, and ROC analysis calculations",
+    href: "/sample-size/diagnostic",
+    icon: Stethoscope,
+    status: "Complete"
   },
   {
-    title: 'Clinical Trials',
-    href: '/sample-size/clinical',
+    title: "Clinical Trials",
+    description: "Superiority, non-inferiority, and equivalence trials",
+    href: "/sample-size/clinical-trials",
+    icon: Target,
+    status: "Complete"
   },
   {
-    title: 'Cross-sectional / Descriptive',
-    href: '/sample-size/cross-sectional',
-  },
+    title: "Cross-sectional Studies",
+    description: "Prevalence and descriptive study calculations",
+    href: "/sample-size/cross-sectional",
+    icon: Database,
+    status: "Complete"
+  }
 ];
 
 export default function SampleSizeLayout({
@@ -44,14 +67,39 @@ export default function SampleSizeLayout({
   const pathname = usePathname();
 
   return (
-    <div className="container mx-auto p-4">
-      <header className="text-center mb-8">
-        <h1 className="heading-1">Sample Size Calculators</h1>
-        <p className="text-muted-foreground">
-          Tools to help you determine the right sample size for your study.
+    <div className="space-y-6">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Sample Size Calculators</h1>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          Comprehensive suite of sample size calculators for various study designs,
+          powered by statistical precision and validated methodologies.
         </p>
-      </header>
-      <div className="max-w-4xl mx-auto">
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sampleSizeTools.map((tool, index) => (
+          <Link key={tool.href} href={tool.href}>
+            <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <tool.icon className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                    {tool.status}
+                  </span>
+                </div>
+                <CardTitle className="group-hover:text-primary transition-colors">
+                  {tool.title}
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  {tool.description}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-8">
         {children}
       </div>
     </div>

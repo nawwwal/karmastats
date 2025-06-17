@@ -4,6 +4,7 @@ import { StudyRecommendation } from "@/lib/studyDetector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { CheckCircle, AlertCircle, Clock } from "lucide-react";
 
 interface StudyResultsProps {
     recommendations: StudyRecommendation[];
@@ -12,47 +13,43 @@ interface StudyResultsProps {
 
 export function StudyResults({ recommendations, onReset }: StudyResultsProps) {
     return (
-        <div className="space-y-6">
-            <div className="text-center">
-                <h2 className="heading-2">Our Recommendations</h2>
+        <div className="space-y-4">
+            <h2 className="text-3xl font-semibold tracking-tight">Our Recommendations</h2>
+
+            <div className="grid gap-4">
+                {recommendations.map((study, index) => (
+                    <Card key={index} className={`border-l-4 ${
+                        study.status === 'recommended'
+                            ? 'border-l-green-500'
+                            : study.status === 'alternative'
+                            ? 'border-l-yellow-500'
+                            : 'border-l-red-500'
+                    }`}>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="flex items-center gap-2">
+                                    {study.status === 'recommended' && <CheckCircle className="h-5 w-5 text-green-500" />}
+                                    {study.status === 'alternative' && <Clock className="h-5 w-5 text-yellow-500" />}
+                                    {study.status === 'not-recommended' && <AlertCircle className="h-5 w-5 text-red-500" />}
+                                    {study.type}
+                                </CardTitle>
+                                <Badge variant={
+                                    study.status === 'recommended'
+                                        ? 'default'
+                                        : study.status === 'alternative'
+                                        ? 'secondary'
+                                        : 'destructive'
+                                }>
+                                    {study.confidence}% confidence
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{study.reasoning}</p>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
-            {recommendations.map((study, index) => (
-                <Card key={study.type} className={index === 0 ? "border-primary" : ""}>
-                    <CardHeader>
-                        <div className="flex justify-between items-start">
-                            <CardTitle>{study.title}</CardTitle>
-                            <Badge variant={index === 0 ? "default" : "secondary"}>
-                                {study.confidence}% Match
-                            </Badge>
-                        </div>
-                        <CardDescription>{study.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div>
-                            <h4 className="font-semibold mb-2">Key Features:</h4>
-                            <div className="flex flex-wrap gap-2">
-                                {study.features.map(feature => (
-                                    <Badge key={feature} variant="outline">{feature}</Badge>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold mb-2">Why we recommend this:</h4>
-                            <p className="body-small text-muted-foreground">{study.reasoning}</p>
-                        </div>
-                        {study.detectedKeywords.length > 0 && (
-                             <div>
-                                <h4 className="font-semibold mb-2">Detected Keywords:</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {study.detectedKeywords.map(keyword => (
-                                        <Badge key={keyword} variant="secondary">{keyword}</Badge>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            ))}
             <Button onClick={onReset} className="w-full">Start New Analysis</Button>
         </div>
     );

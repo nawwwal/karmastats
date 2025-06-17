@@ -39,17 +39,17 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       <Sidebar isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} />
       <main
         className={cn(
           "flex-1 transition-all duration-300 ease-in-out overflow-auto",
-          "min-h-screen",
-          // Add responsive margin for mobile
-          isSidebarCollapsed ? "ml-0" : "ml-0"
+          "h-full",
+          // Add proper margin for sidebar width
+          isSidebarCollapsed ? "ml-16" : "ml-80"
         )}
       >
-        <div className="container mx-auto p-6 max-w-none">
+        <div className="container mx-auto p-6 max-w-none min-h-full">
           {children}
         </div>
       </main>

@@ -98,10 +98,10 @@ const CalcCard = ({ title, description, href, icon, features, status }: {
           </Badge>
         </div>
         <div>
-          <CardTitle className="heading-4 group-hover:text-primary transition-colors">
+          <CardTitle className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors">
             {title}
           </CardTitle>
-          <CardDescription className="body-default text-muted-foreground mt-2">
+          <CardDescription className="text-base text-muted-foreground mt-2">
             {description}
           </CardDescription>
         </div>
@@ -109,14 +109,14 @@ const CalcCard = ({ title, description, href, icon, features, status }: {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           {features.map((feature, index) => (
-            <div key={index} className="flex items-center body-small text-muted-foreground">
+            <div key={index} className="flex items-center text-sm text-muted-foreground">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2" />
               {feature}
             </div>
           ))}
         </div>
         <div className="flex items-center text-primary font-medium group-hover:text-primary/80">
-          <span className="body-small">Access Tool</span>
+          <span className="text-sm">Access Tool</span>
           <ChevronRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </div>
       </CardContent>
@@ -136,9 +136,9 @@ const StatCard = ({ icon, number, description, detail }: {
         {icon}
       </div>
       <div className="space-y-2">
-        <div className="heading-2 text-foreground">{number}</div>
+        <div className="text-3xl font-semibold tracking-tight text-foreground">{number}</div>
         <div className="font-medium text-foreground">{description}</div>
-        <div className="body-small text-muted-foreground">{detail}</div>
+        <div className="text-sm text-muted-foreground">{detail}</div>
       </div>
     </CardContent>
   </Card>
@@ -153,15 +153,15 @@ export default function HomePage() {
         <div className="relative container mx-auto px-4 py-24 text-center">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="space-y-4">
-              <h1 className="heading-display lg:text-7xl animate-fadeInDown">
+              <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight lg:text-7xl animate-fadeInDown">
                 KARMASTAT
               </h1>
-              <p className="lead-text lg:text-2xl text-white/90 font-light animate-fadeInUp animate-delay-200">
+              <p className="text-xl lg:text-2xl text-white/90 font-light animate-fadeInUp animate-delay-200">
                 Where Selfless Work Meets Calculated Precision
               </p>
             </div>
             <div className="max-w-3xl mx-auto space-y-6 animate-fadeInUp animate-delay-300">
-              <p className="body-large text-white/80">
+              <p className="text-lg text-white/80">
                 A powerful fusion of KARMA (selfless work performed with dedication and compassion)
                 and STAT (commitment to precision with scientific rigor) - creating statistical tools
                 that empower researchers to make informed decisions benefiting humanity.
@@ -184,8 +184,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="heading-1 mb-6 text-gradient">Our Mission</h2>
-              <p className="lead-text text-muted-foreground">
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-gradient">Our Mission</h2>
+              <p className="text-xl text-muted-foreground">
                 KARMASTAT represents a transformative approach to research and innovation,
                 combining ethical purpose with statistical precision.
               </p>
@@ -196,15 +196,15 @@ export default function HomePage() {
                 <CardHeader>
                   <div className="flex items-center space-x-3">
                     <Heart className="h-8 w-8 text-primary" />
-                    <CardTitle className="heading-3">KARMA</CardTitle>
+                    <CardTitle className="text-2xl font-semibold tracking-tight">KARMA</CardTitle>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="body-default text-muted-foreground">
-                    The principle of selfless work performed with dedication and compassion,
-                    recognizing that our actions create ripples that extend far beyond ourselves.
-                  </p>
-                </CardContent>
+                                  <CardContent>
+                    <p className="text-base text-muted-foreground">
+                      The principle of selfless work performed with dedication and compassion,
+                      recognizing that our actions create ripples that extend far beyond ourselves.
+                    </p>
+                  </CardContent>
               </Card>
 
               <Card className="border-2 border-secondary/20">

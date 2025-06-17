@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { jsPDF } from "jspdf";
-import * as pdfjs from "pdfjs-dist";
+// jsPDF will be dynamically imported to prevent SSR issues
+// pdfjs will be dynamically imported to prevent SSR issues
 
 import {
     SingleTestSchema, calculateSingleTestSampleSize, SingleTestOutput,
@@ -48,10 +48,6 @@ const FormSchema = z.object({
     nullAUC: z.number().optional(),
     negativePositiveRatio: z.number().optional(),
 });
-
-if (typeof window !== "undefined" && pdfjs.GlobalWorkerOptions) {
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
-}
 
 export default function DiagnosticTestPage() {
     const [activeTab, setActiveTab] = useState<'single' | 'comparative' | 'roc'>('single');
@@ -120,14 +116,9 @@ export default function DiagnosticTestPage() {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
-                const typedArray = new Uint8Array(e.target?.result as ArrayBuffer);
-                const pdf = await pdfjs.getDocument(typedArray).promise;
-                let textContent = '';
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const text = await page.getTextContent();
-                    textContent += text.items.map(s => 'str' in s ? s.str : '').join(' ');
-                }
+                // Dynamic import to prevent SSR issues
+                const { extractTextFromPDF } = await import('@/lib/pdf-utils');
+                const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
                 // Simplified regex - a robust solution is complex
                 const extractValue = (regex: RegExp) => {
@@ -153,13 +144,16 @@ export default function DiagnosticTestPage() {
         reader.readAsArrayBuffer(file);
     };
 
-    const generatePdf = () => {
+    const generatePdf = async () => {
         if (!results) return;
 
-        const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text(`Karmastat Diagnostic Test Report`, 105, 20, { align: 'center' });
-        doc.setFontSize(12);
+        try {
+            // Dynamic import to prevent SSR issues
+            const { jsPDF } = await import('jspdf');
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text(`Karmastat Diagnostic Test Report`, 105, 20, { align: 'center' });
+            doc.setFontSize(12);
 
         let y = 40;
 
@@ -191,7 +185,10 @@ export default function DiagnosticTestPage() {
             doc.text(`Total Required Sample Size: ${results.totalSize}`, 25, y);
         }
 
-        doc.save(`karmastat-diagnostic-report-${activeTab}.pdf`);
+            doc.save(`karmastat-diagnostic-report-${activeTab}.pdf`);
+        } catch (err: any) {
+            setError(`Failed to generate PDF: ${err.message}`);
+        }
     }
 
     const renderResults = () => {

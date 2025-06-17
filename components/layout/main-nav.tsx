@@ -66,7 +66,7 @@ export function MainNav({ toggleSidebar }: MainNavProps) {
           <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground font-bold">
             K
           </div>
-          <span className="heading-4 hidden md:inline-block">KARMASTAT</span>
+          <span className="text-xl font-semibold tracking-tight hidden md:inline-block">KARMASTAT</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
@@ -75,7 +75,7 @@ export function MainNav({ toggleSidebar }: MainNavProps) {
               key={route.href}
               href={route.href}
               className={cn(
-                "body-small font-medium transition-colors hover:text-primary",
+                "text-sm font-medium transition-colors hover:text-primary",
                 route.active ? "text-primary" : "text-muted-foreground"
               )}
             >
@@ -85,7 +85,7 @@ export function MainNav({ toggleSidebar }: MainNavProps) {
         </nav>
       </div>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto">
         <Button
           variant="ghost"
           size="icon"

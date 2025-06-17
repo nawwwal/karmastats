@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
-import { jsPDF } from "jspdf";
-import * as pdfjs from "pdfjs-dist";
+// jsPDF will be dynamically imported to prevent SSR issues
+// pdfjs will be dynamically imported to prevent SSR issues
 
 import {
     SuperiorityBinarySchema, calculateSuperiorityBinary, SuperiorityBinaryOutput,
@@ -24,10 +24,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-if (typeof window !== "undefined" && pdfjs.GlobalWorkerOptions) {
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
-}
 
 type Results = SuperiorityBinaryOutput | SuperiorityContinuousOutput | NonInferiorityOutput | EquivalenceOutput;
 
@@ -50,7 +46,6 @@ const FormSchema = z.object({
     referenceRate: z.number().optional(),
     testRate: z.number().optional(),
 });
-
 
 export default function ClinicalTrialsPage() {
     const [activeTab, setActiveTab] = useState<'superiority' | 'non-inferiority' | 'equivalence'>('superiority');
@@ -119,14 +114,9 @@ export default function ClinicalTrialsPage() {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
-                const typedArray = new Uint8Array(e.target?.result as ArrayBuffer);
-                const pdf = await pdfjs.getDocument(typedArray).promise;
-                let textContent = '';
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const text = await page.getTextContent();
-                    textContent += text.items.map(s => 'str' in s ? s.str : '').join(' ');
-                }
+                // Dynamic import to prevent SSR issues
+                const { extractTextFromPDF } = await import('@/lib/pdf-utils');
+                const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
                 const extractValue = (regex: RegExp) => {
                     const match = textContent.match(regex);
@@ -152,10 +142,13 @@ export default function ClinicalTrialsPage() {
         reader.readAsArrayBuffer(file);
     };
 
-    const generatePdf = () => {
+    const generatePdf = async () => {
         if (!results) return;
 
-        const doc = new jsPDF();
+        try {
+            // Dynamic import to prevent SSR issues
+            const { jsPDF } = await import('jspdf');
+            const doc = new jsPDF();
         doc.setFontSize(18);
         doc.text(`Karmastat Clinical Trials Report`, 105, 20, { align: 'center' });
         doc.setFontSize(12);
@@ -201,6 +194,9 @@ export default function ClinicalTrialsPage() {
         }
 
         doc.save(`karmastat-clinical-trial-report-${activeTab}.pdf`);
+        } catch (err: any) {
+            setError(`Failed to generate PDF: ${err.message}`);
+        }
     }
 
     const renderResults = () => {

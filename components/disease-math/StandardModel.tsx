@@ -1,237 +1,209 @@
 'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  DiseaseModel,
-  DiseaseModelResult,
-  DiseaseModelParamsSchema,
-  DiseaseModelInput
-} from "@/lib/infectious";
-import { LineChart } from "./LineChart";
-import { MetricsDisplay } from "./MetricsDisplay";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { LineChart } from './LineChart';
+import { MetricsDisplay } from './MetricsDisplay';
+import { simulateStandardModel } from '@/lib/infectious';
+
+interface Parameters {
+  population: number;
+  initialInfected: number;
+  transmissionRate: number;
+  incubationRate: number;
+  recoveryRate: number;
+  days: number;
+}
 
 export function StandardModel() {
-  const [results, setResults] = useState<DiseaseModelResult | null>(null);
-
-  const form = useForm<DiseaseModelInput>({
-    resolver: zodResolver(DiseaseModelParamsSchema),
-    defaultValues: {
-      populationSize: 1000000,
-      initialCases: 100,
-      transmissionRate: 0.3,
-      incubationPeriod: 5,
-      recoveryRate: 0.1,
-      mortalityRate: 0.02,
-      simulationDays: 100,
-      seasonality: 0.1,
-    },
+  const [params, setParams] = useState<Parameters>({
+    population: 1000000,
+    initialInfected: 100,
+    transmissionRate: 0.3,
+    incubationRate: 0.1,
+    recoveryRate: 0.05,
+    days: 365
   });
 
-  const onSubmit = (data: DiseaseModelInput) => {
-    const interventions = {
-      socialDistancing: 0,
-      maskEffectiveness: 0,
-      vaccinationRate: 0,
-      vaccineEffectiveness: 0,
-    };
-    const model = new DiseaseModel(data, interventions);
-    const result = model.calculate();
-    setResults(result);
+  const [results, setResults] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateParam = (key: keyof Parameters, value: number) => {
+    setParams(prev => ({ ...prev, [key]: value }));
   };
+
+  const runSimulation = async () => {
+    setIsLoading(true);
+    try {
+      const simulationResults = simulateStandardModel(params);
+      setResults(simulationResults);
+    } catch (error) {
+      console.error('Simulation failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    runSimulation();
+  }, []);
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h2 className="heading-3 mb-4">Model Parameters</h2>
-          <Form {...(form as any)}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="populationSize"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Population Size</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Parameters Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h2 className="text-2xl font-semibold tracking-tight mb-4">Model Parameters</h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="population">Population Size</Label>
+                <Input
+                  id="population"
+                  type="number"
+                  value={params.population}
+                  onChange={(e) => updateParam('population', Number(e.target.value))}
+                  min="1000"
+                  max="100000000"
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="initialCases"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Initial Cases</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <Label htmlFor="initialInfected">Initial Infected</Label>
+                <Input
+                  id="initialInfected"
+                  type="number"
+                  value={params.initialInfected}
+                  onChange={(e) => updateParam('initialInfected', Number(e.target.value))}
+                  min="1"
+                  max="10000"
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="transmissionRate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Transmission Rate</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <Label htmlFor="transmissionRate">Transmission Rate (β)</Label>
+                <Input
+                  id="transmissionRate"
+                  type="number"
+                  step="0.01"
+                  value={params.transmissionRate}
+                  onChange={(e) => updateParam('transmissionRate', Number(e.target.value))}
+                  min="0"
+                  max="2"
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="incubationPeriod"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Incubation Period (days)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <Label htmlFor="incubationRate">Incubation Rate (σ)</Label>
+                <Input
+                  id="incubationRate"
+                  type="number"
+                  step="0.01"
+                  value={params.incubationRate}
+                  onChange={(e) => updateParam('incubationRate', Number(e.target.value))}
+                  min="0"
+                  max="1"
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="recoveryRate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Recovery Rate</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <Label htmlFor="recoveryRate">Recovery Rate (γ)</Label>
+                <Input
+                  id="recoveryRate"
+                  type="number"
+                  step="0.01"
+                  value={params.recoveryRate}
+                  onChange={(e) => updateParam('recoveryRate', Number(e.target.value))}
+                  min="0"
+                  max="1"
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="mortalityRate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mortality Rate</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <Label htmlFor="days">Simulation Days</Label>
+                <Input
+                  id="days"
+                  type="number"
+                  value={params.days}
+                  onChange={(e) => updateParam('days', Number(e.target.value))}
+                  min="30"
+                  max="1095"
+                />
+              </div>
+            </div>
 
-              <FormField
-                control={form.control}
-                name="simulationDays"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Simulation Days</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="seasonality"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Seasonality (0-1)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="1"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full">
-                Calculate
-              </Button>
-            </form>
-          </Form>
+            <Button
+              onClick={runSimulation}
+              disabled={isLoading}
+              className="w-full"
+            >
+              {isLoading ? 'Running Simulation...' : 'Run Simulation'}
+            </Button>
+          </CardContent>
         </Card>
 
+        {/* Key Metrics */}
         {results && (
-          <Card className="p-6">
-            <h2 className="heading-3 mb-4">Results</h2>
-            <MetricsDisplay results={results} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Key Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MetricsDisplay metrics={results.metrics} />
+            </CardContent>
           </Card>
         )}
       </div>
 
+      {/* Simulation Results */}
       {results && (
-        <Card className="p-6">
-          <h2 className="heading-3 mb-4">Disease Spread Over Time</h2>
-          <div className="h-[400px]">
-            <LineChart results={results} />
-          </div>
-        </Card>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <h2 className="text-2xl font-semibold tracking-tight mb-4">Results</h2>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Peak Values</h3>
+                  <div className="space-y-2 text-sm">
+                    <div>Peak Infected: {results.metrics.peakInfected.toLocaleString()}</div>
+                    <div>Peak Day: {results.metrics.peakDay}</div>
+                    <div>Total Deaths: {results.metrics.totalDeaths.toLocaleString()}</div>
+                    <div>Attack Rate: {(results.metrics.attackRate * 100).toFixed(1)}%</div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Reproduction Numbers</h3>
+                  <div className="space-y-2 text-sm">
+                    <div>R₀: {results.metrics.r0.toFixed(2)}</div>
+                    <div>Herd Immunity: {(results.metrics.herdImmunityThreshold * 100).toFixed(1)}%</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <h2 className="text-2xl font-semibold tracking-tight mb-4">Disease Spread Over Time</h2>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LineChart data={results.data} />
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
