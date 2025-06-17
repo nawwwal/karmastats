@@ -70,9 +70,13 @@ export default function CrossSectionalPage() {
                     return match ? parseFloat(match[1]) : undefined;
                 };
 
-                form.setValue('prevalence', extractValue(/prevalence of ([\d\.]+)/i));
-                form.setValue('marginOfError', extractValue(/margin of error of ([\d\.]+)/i));
-                form.setValue('populationSize', extractValue(/population size of ([\d\.]+)/i));
+                const prevalence = extractValue(/prevalence of ([\d\.]+)/i);
+                const marginOfError = extractValue(/margin of error of ([\d\.]+)/i);
+                const populationSize = extractValue(/population size of ([\d\.]+)/i);
+
+                if (prevalence !== undefined) form.setValue('prevalence', prevalence);
+                if (marginOfError !== undefined) form.setValue('marginOfError', marginOfError);
+                if (populationSize !== undefined) form.setValue('populationSize', populationSize);
 
             } catch (err: any) {
                 setError(`Failed to process PDF: ${err.message}`);
