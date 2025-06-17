@@ -35,7 +35,7 @@ export function StandardModel() {
     setParams(prev => ({ ...prev, [key]: value }));
   };
 
-  const runSimulation = async () => {
+  const runSimulation = useCallback(async () => {
     setIsLoading(true);
     try {
       const diseaseParams: DiseaseModelParams = {
@@ -81,11 +81,11 @@ export function StandardModel() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [params]);
 
   useEffect(() => {
     runSimulation();
-  }, [params]);
+  }, [runSimulation]);
 
   return (
     <div className="space-y-6">
