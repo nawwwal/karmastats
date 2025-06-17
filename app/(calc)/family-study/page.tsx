@@ -14,7 +14,13 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { consumptionUnits, sesClassifications, loadFoodDatabase } from "@/lib/family-study";
+import { consumptionUnits, sesClassifications } from "@/lib/family-study";
+
+// Import the loadFoodDatabase function directly
+async function loadFoodDatabase() {
+  const foodData = await import('@/lib/family-study/data/food-database.json');
+  return foodData.default;
+}
 
 export default function FamilyStudyPage() {
   // State variables
@@ -29,7 +35,7 @@ export default function FamilyStudyPage() {
   const [showCuResults, setShowCuResults] = useState(false);
   const [showNutritionalAnalysis, setShowNutritionalAnalysis] = useState(false);
   const [showComprehensiveReport, setShowComprehensiveReport] = useState(false);
-  const [foodDatabase, setFoodDatabase] = useState<any>(null);
+  const [foodDatabaseData, setFoodDatabaseData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     studyDate: new Date().toISOString().split('T')[0],
@@ -82,7 +88,7 @@ export default function FamilyStudyPage() {
     const loadData = async () => {
       try {
         const foodData = await loadFoodDatabase();
-        setFoodDatabase(foodData);
+        setFoodDatabaseData(foodData);
       } catch (error) {
         console.error('Failed to load food database:', error);
       } finally {
@@ -1747,223 +1753,142 @@ export default function FamilyStudyPage() {
                               </TableRow>
                               <TableRow className="bg-muted/80">
                                 <TableCell colSpan={3}>Per CU Daily Intake</TableCell>
-                            <TableCell id="perCUCalories">0</TableCell>
-                            <TableCell id="perCUProtein">0</TableCell>
-                            <TableCell id="perCUCarbs">0</TableCell>
-                            <TableCell id="perCUFat">0</TableCell>
-                            <TableCell id="perCUFiber">0</TableCell>
-                            <TableCell></TableCell>
-                          </TableRow>
-                        </Table>
-                      </div>
-
-                      <Button
-                        onClick={() => setShowNutritionalAnalysis(true)}
-                        className="mb-6"
-                      >
-                        📈 Analyze Nutritional Status
-                      </Button>
-
-                      {showNutritionalAnalysis && (
-                        <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success">
-                          <CardHeader>
-                            <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2 text-success">
-                              <span>📊</span> Nutritional Status Analysis
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <h4 className="font-semibold text-lg mb-4">📊 Nutritional Adequacy Analysis</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                              <Card>
-                                <CardContent className="p-4 text-center">
-                                  <div className="text-3xl font-bold text-success">85.2%</div>
-                                  <div className="text-sm">Energy Adequacy</div>
-                                  <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
-                                </CardContent>
-                              </Card>
-                              <Card>
-                                <CardContent className="p-4 text-center">
-                                  <div className="text-3xl font-bold text-success">92.5%</div>
-                                  <div className="text-sm">Protein Adequacy</div>
-                                  <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
-                                </CardContent>
-                              </Card>
-                            </div>
-
-                            <h4 className="font-semibold text-lg mb-4">📋 Detailed Nutritional Assessment</h4>
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead>Nutrient</TableHead>
-                                  <TableHead>Per CU Intake</TableHead>
-                                  <TableHead>ICMR-NIN RDA</TableHead>
-                                  <TableHead>Adequacy (%)</TableHead>
-                                  <TableHead>Status</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                <TableRow>
-                                  <TableCell>Energy (kcal)</TableCell>
-                                  <TableCell>1798.5</TableCell>
-                                  <TableCell>2110</TableCell>
-                                  <TableCell>85.2%</TableCell>
-                                  <TableCell>
-                                    <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
-                                  </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                  <TableCell>Protein (g)</TableCell>
-                                  <TableCell>49.9</TableCell>
-                                  <TableCell>54.0</TableCell>
-                                  <TableCell>92.5%</TableCell>
-                                  <TableCell>
-                                    <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
-                                  </TableCell>
-                                </TableRow>
-                              </TableBody>
+                                <TableCell id="perCUCalories">0</TableCell>
+                                <TableCell id="perCUProtein">0</TableCell>
+                                <TableCell id="perCUCarbs">0</TableCell>
+                                <TableCell id="perCUFat">0</TableCell>
+                                <TableCell id="perCUFiber">0</TableCell>
+                                <TableCell></TableCell>
+                              </TableRow>
                             </Table>
+                          </div>
 
-                            <h4 className="font-semibold text-lg mt-6 mb-4">🏥 Health Risk Assessment</h4>
-                            <Alert variant="default">
-                              <AlertTitle>Overall nutritional status is satisfactory</AlertTitle>
-                              <AlertDescription>
-                                Continue current dietary practices with minor improvements.
-                              </AlertDescription>
-                            </Alert>
+                          <Button
+                            onClick={() => setShowNutritionalAnalysis(true)}
+                            className="mb-6"
+                          >
+                            📈 Analyze Nutritional Status
+                          </Button>
 
-                            <h4 className="font-semibold text-lg mt-6 mb-4">💡 Recommendations</h4>
-                            <div className="bg-white p-4 rounded-md border">
-                              <ul className="list-disc pl-5 space-y-2">
-                                <li>Follow ICMR My Plate guidelines for balanced nutrition</li>
-                                <li>Include variety in food choices across all food groups</li>
-                                <li>Ensure adequate intake of fruits and vegetables</li>
-                                <li>Monitor family nutritional status regularly</li>
-                              </ul>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
+                          {showNutritionalAnalysis && (
+                            <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success">
+                              <CardHeader>
+                                <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2 text-success">
+                                  <span>📊</span> Nutritional Status Analysis
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <h4 className="font-semibold text-lg mb-4">📊 Nutritional Adequacy Analysis</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                  <Card>
+                                    <CardContent className="p-4 text-center">
+                                      <div className="text-3xl font-bold text-success">85.2%</div>
+                                      <div className="text-sm">Energy Adequacy</div>
+                                      <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
+                                    </CardContent>
+                                  </Card>
+                                  <Card>
+                                    <CardContent className="p-4 text-center">
+                                      <div className="text-3xl font-bold text-success">92.5%</div>
+                                      <div className="text-sm">Protein Adequacy</div>
+                                      <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+
+                                <h4 className="font-semibold text-lg mb-4">📋 Detailed Nutritional Assessment</h4>
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead>Nutrient</TableHead>
+                                      <TableHead>Per CU Intake</TableHead>
+                                      <TableHead>ICMR-NIN RDA</TableHead>
+                                      <TableHead>Adequacy (%)</TableHead>
+                                      <TableHead>Status</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    <TableRow>
+                                      <TableCell>Energy (kcal)</TableCell>
+                                      <TableCell>1798.5</TableCell>
+                                      <TableCell>2110</TableCell>
+                                      <TableCell>85.2%</TableCell>
+                                      <TableCell>
+                                        <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
+                                      </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                      <TableCell>Protein (g)</TableCell>
+                                      <TableCell>49.9</TableCell>
+                                      <TableCell>54.0</TableCell>
+                                      <TableCell>92.5%</TableCell>
+                                      <TableCell>
+                                        <Badge variant="outline" className="bg-success/10 text-success">Adequate</Badge>
+                                      </TableCell>
+                                    </TableRow>
+                                  </TableBody>
+                                </Table>
+
+                                <h4 className="font-semibold text-lg mt-6 mb-4">🏥 Health Risk Assessment</h4>
+                                <Alert variant="default">
+                                  <AlertTitle>Overall nutritional status is satisfactory</AlertTitle>
+                                  <AlertDescription>
+                                    Continue current dietary practices with minor improvements.
+                                  </AlertDescription>
+                                </Alert>
+
+                                <h4 className="font-semibold text-lg mt-6 mb-4">💡 Recommendations</h4>
+                                <div className="bg-white p-4 rounded-md border">
+                                  <ul className="list-disc pl-5 space-y-2">
+                                    <li>Follow ICMR My Plate guidelines for balanced nutrition</li>
+                                    <li>Include variety in food choices across all food groups</li>
+                                    <li>Ensure adequate intake of fruits and vegetables</li>
+                                    <li>Monitor family nutritional status regularly</li>
+                                  </ul>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </CardContent>
+                      </Card>
                     </CardContent>
                   </Card>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </TabsContent>
 
-            {/* Health Tab */}
-            <TabsContent value="health">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <span>⚕️</span> Family Health Records
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    variant="secondary"
-                    className="mb-6"
-                    onClick={addHealthRecord}
-                  >
-                    ➕ Add Health Record
-                  </Button>
-
-                  <div className="overflow-x-auto mb-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Age</TableHead>
-                          <TableHead>Height (cm)</TableHead>
-                          <TableHead>Weight (kg)</TableHead>
-                          <TableHead>BMI</TableHead>
-                          <TableHead>BMI Category</TableHead>
-                          <TableHead>Blood Pressure</TableHead>
-                          <TableHead>Health Issues</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {healthRecords.map((record, index) => (
-                          <TableRow key={record.id}>
-                            <TableCell>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select Member" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {familyMembers.map(m => (
-                                    <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Input readOnly />
-                            </TableCell>
-                            <TableCell>
-                              <Input type="number" min={0} step={0.1} />
-                            </TableCell>
-                            <TableCell>
-                              <Input type="number" min={0} step={0.1} />
-                            </TableCell>
-                            <TableCell>
-                              <Input readOnly />
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="outline">-</Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Input placeholder="120/80" />
-                            </TableCell>
-                            <TableCell>
-                              <Textarea rows={2} placeholder="Any health problems" />
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removeHealthRecord(record.id)}
-                              >
-                                🗑️ Remove
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-
-                  <Card className="mb-6">
+                {/* Health Tab */}
+                <TabsContent value="health">
+                  <Card>
                     <CardHeader>
-                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
-                        <span>💉</span> Immunization Status
+                      <CardTitle className="flex items-center gap-2">
+                        <span>⚕️</span> Family Health Records
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <Button
                         variant="secondary"
                         className="mb-6"
-                        onClick={addImmunizationRecord}
+                        onClick={addHealthRecord}
                       >
-                        ➕ Add Immunization Record
+                        ➕ Add Health Record
                       </Button>
 
-                      <div className="overflow-x-auto">
+                      <div className="overflow-x-auto mb-6">
                         <Table>
                           <TableHeader>
                             <TableRow>
                               <TableHead>Name</TableHead>
                               <TableHead>Age</TableHead>
-                              <TableHead>BCG</TableHead>
-                              <TableHead>OPV/IPV</TableHead>
-                              <TableHead>DPT/Pentavalent</TableHead>
-                              <TableHead>Hepatitis B</TableHead>
-                              <TableHead>MMR/MR</TableHead>
-                              <TableHead>COVID-19</TableHead>
+                              <TableHead>Height (cm)</TableHead>
+                              <TableHead>Weight (kg)</TableHead>
+                              <TableHead>BMI</TableHead>
+                              <TableHead>BMI Category</TableHead>
+                              <TableHead>Blood Pressure</TableHead>
+                              <TableHead>Health Issues</TableHead>
                               <TableHead>Actions</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {immunizationRecords.map((record, index) => (
+                            {healthRecords.map((record, index) => (
                               <TableRow key={record.id}>
                                 <TableCell>
                                   <Select>
@@ -1981,28 +1906,28 @@ export default function FamilyStudyPage() {
                                   <Input readOnly />
                                 </TableCell>
                                 <TableCell>
-                                  <Checkbox />
+                                  <Input type="number" min={0} step={0.1} />
                                 </TableCell>
                                 <TableCell>
-                                  <Checkbox />
+                                  <Input type="number" min={0} step={0.1} />
                                 </TableCell>
                                 <TableCell>
-                                  <Checkbox />
+                                  <Input readOnly />
                                 </TableCell>
                                 <TableCell>
-                                  <Checkbox />
+                                  <Badge variant="outline">-</Badge>
                                 </TableCell>
                                 <TableCell>
-                                  <Checkbox />
+                                  <Input placeholder="120/80" />
                                 </TableCell>
                                 <TableCell>
-                                  <Checkbox />
+                                  <Textarea rows={2} placeholder="Any health problems" />
                                 </TableCell>
                                 <TableCell>
                                   <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => removeImmunizationRecord(record.id)}
+                                    onClick={() => removeHealthRecord(record.id)}
                                   >
                                     🗑️ Remove
                                   </Button>
@@ -2012,169 +1937,252 @@ export default function FamilyStudyPage() {
                           </TableBody>
                         </Table>
                       </div>
+
+                      <Card className="mb-6">
+                        <CardHeader>
+                          <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                            <span>💉</span> Immunization Status
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Button
+                            variant="secondary"
+                            className="mb-6"
+                            onClick={addImmunizationRecord}
+                          >
+                            ➕ Add Immunization Record
+                          </Button>
+
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Name</TableHead>
+                                  <TableHead>Age</TableHead>
+                                  <TableHead>BCG</TableHead>
+                                  <TableHead>OPV/IPV</TableHead>
+                                  <TableHead>DPT/Pentavalent</TableHead>
+                                  <TableHead>Hepatitis B</TableHead>
+                                  <TableHead>MMR/MR</TableHead>
+                                  <TableHead>COVID-19</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {immunizationRecords.map((record, index) => (
+                                  <TableRow key={record.id}>
+                                    <TableCell>
+                                      <Select>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select Member" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {familyMembers.map(m => (
+                                            <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Input readOnly />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Checkbox />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Checkbox />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Checkbox />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Checkbox />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Checkbox />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Checkbox />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => removeImmunizationRecord(record.id)}
+                                      >
+                                        🗑️ Remove
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                            <span>🏥</span> Medical History & Health Status
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div>
+                            <Label>Chronic Diseases Present in Family</Label>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
+                              {[
+                                { id: 'diabetes', value: 'diabetes', label: 'Diabetes Mellitus' },
+                                { id: 'hypertension', value: 'hypertension', label: 'Hypertension' },
+                                { id: 'heart-disease', value: 'heart-disease', label: 'Heart Disease' },
+                                { id: 'asthma', value: 'asthma', label: 'Asthma/COPD' },
+                                { id: 'arthritis', value: 'arthritis', label: 'Arthritis' },
+                                { id: 'thyroid', value: 'thyroid', label: 'Thyroid Disorders' },
+                                { id: 'kidney', value: 'kidney', label: 'Kidney Disease' },
+                                { id: 'cancer', value: 'cancer', label: 'Cancer' }
+                              ].map((disease) => (
+                                <div key={disease.id} className="flex items-center space-x-2 border p-2 rounded-md">
+                                  <Checkbox
+                                    id={disease.id}
+                                    checked={formData.chronicDiseases.includes(disease.value)}
+                                    onCheckedChange={(checked) =>
+                                      handleCheckboxChange('chronicDiseases', disease.value, checked as boolean)
+                                    }
+                                  />
+                                  <Label htmlFor={disease.id}>{disease.label}</Label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </CardContent>
                   </Card>
+                </TabsContent>
 
+                {/* Analysis Tab */}
+                <TabsContent value="analysis">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2">
-                        <span>🏥</span> Medical History & Health Status
+                      <CardTitle className="flex items-center gap-2">
+                        <span>📊</span> Comprehensive Family Health Analysis
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div>
-                        <Label>Chronic Diseases Present in Family</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
-                          {[
-                            { id: 'diabetes', value: 'diabetes', label: 'Diabetes Mellitus' },
-                            { id: 'hypertension', value: 'hypertension', label: 'Hypertension' },
-                            { id: 'heart-disease', value: 'heart-disease', label: 'Heart Disease' },
-                            { id: 'asthma', value: 'asthma', label: 'Asthma/COPD' },
-                            { id: 'arthritis', value: 'arthritis', label: 'Arthritis' },
-                            { id: 'thyroid', value: 'thyroid', label: 'Thyroid Disorders' },
-                            { id: 'kidney', value: 'kidney', label: 'Kidney Disease' },
-                            { id: 'cancer', value: 'cancer', label: 'Cancer' }
-                          ].map((disease) => (
-                            <div key={disease.id} className="flex items-center space-x-2 border p-2 rounded-md">
-                              <Checkbox
-                                id={disease.id}
-                                checked={formData.chronicDiseases.includes(disease.value)}
-                                onCheckedChange={(checked) =>
-                                  handleCheckboxChange('chronicDiseases', disease.value, checked as boolean)
-                                }
-                              />
-                              <Label htmlFor={disease.id}>{disease.label}</Label>
+                      <Button
+                        className="mb-6"
+                        onClick={generateComprehensiveReport}
+                      >
+                        📋 Generate Complete Analysis Report
+                      </Button>
+
+                      {showComprehensiveReport && (
+                        <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success mb-6">
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-success">
+                              <span>📊</span> Family Health Study Report
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="mb-6">
+                              <h3 className="font-semibold text-lg mb-2">📋 Family Health Study Report</h3>
+                              <p><strong>Date:</strong> {formData.studyDate}</p>
+                              <p><strong>Family ID:</strong> {formData.familyId}</p>
+                              <p><strong>Head of Family:</strong> {formData.familyHead}</p>
                             </div>
-                          ))}
+
+                            <div className="mb-6">
+                              <h4 className="font-semibold text-md mb-2">🏠 General Information</h4>
+                              <p><strong>Address:</strong> {formData.address}</p>
+                              <p><strong>Area Type:</strong> {formData.area}</p>
+                              <p><strong>Religion:</strong> {formData.religion}</p>
+                              <p><strong>Family Type:</strong> {formData.familyType}</p>
+                            </div>
+
+                            <div className="mb-6">
+                              <h4 className="font-semibold text-md mb-2">💰 Socio-Economic Status</h4>
+                              <p><strong>Total Monthly Income:</strong> ₹{formData.totalIncome}</p>
+                              <p><strong>Per Capita Income:</strong> ₹{formData.perCapitaIncome}</p>
+                              <p><strong>SES Classification:</strong> {formData.sesClass}</p>
+                            </div>
+
+                            <div className="mb-6">
+                              <h4 className="font-semibold text-md mb-2">👨‍👩‍👧‍👦 Family Composition</h4>
+                              <p><strong>Total Members:</strong> {familyMembers.length}</p>
+                              <p><strong>Males:</strong> {familyMembers.filter(m => m.sex === 'male').length}</p>
+                              <p><strong>Females:</strong> {familyMembers.filter(m => m.sex === 'female').length}</p>
+                              <p><strong>Children (&lt;18 years):</strong> {familyMembers.filter(m => m.age < 18).length}</p>
+                              <p><strong>Adults (18-59 years):</strong> {familyMembers.filter(m => m.age >= 18 && m.age < 60).length}</p>
+                              <p><strong>Elderly (≥60 years):</strong> {familyMembers.filter(m => m.age >= 60).length}</p>
+                            </div>
+
+                            <div className="mb-6">
+                              <h4 className="font-semibold text-md mb-2">🍎 Nutritional Assessment</h4>
+                              <p><strong>Total Consumption Units:</strong> {formData.totalFamilyCU}</p>
+                              <p><strong>Nutritional Status:</strong> Adequate nutrition</p>
+                            </div>
+
+                            <div className="mb-6">
+                              <h4 className="font-semibold text-md mb-2">🏥 Health Status</h4>
+                              <p><strong>Health Records:</strong> {healthRecords.length} members examined</p>
+                              <p><strong>Immunization Records:</strong> {immunizationRecords.length} members assessed</p>
+                              <p><strong>Chronic Diseases:</strong> {formData.chronicDiseases.join(', ') || 'None reported'}</p>
+                            </div>
+
+                            <div className="mb-6">
+                              <h4 className="font-semibold text-md mb-2">🏠 Environmental Conditions</h4>
+                              <p><strong>House Type:</strong> {formData.houseType}</p>
+                              <p><strong>Water Supply:</strong> {formData.waterSupply}</p>
+                              <p><strong>Toilet Facility:</strong> {formData.toiletFacility}</p>
+                            </div>
+
+                            <div>
+                              <h4 className="font-semibold text-md mb-2">📊 Summary & Recommendations</h4>
+                              <Alert className="mb-4">
+                                <AlertTitle>Overall Assessment</AlertTitle>
+                                <AlertDescription>
+                                  This {formData.familyType} family shows mixed indicators and would benefit from focused improvements.
+                                </AlertDescription>
+                              </Alert>
+                              <div className="bg-white p-4 rounded-md border">
+                                <h5 className="font-semibold mb-2">Key Recommendations:</h5>
+                                <ul className="list-disc pl-5 space-y-2">
+                                  <li>Regular health check-ups and monitoring</li>
+                                  <li>Follow ICMR dietary guidelines for optimal nutrition</li>
+                                  <li>Maintain good hygiene and sanitation practices</li>
+                                  <li>Consider enrolling in applicable government welfare schemes</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      <div className="bg-muted p-6 rounded-lg text-center">
+                        <h3 className="text-lg font-semibold mb-4">Export Options</h3>
+                        <div className="flex flex-wrap gap-4 justify-center">
+                          <Button variant="secondary">
+                            📄 Export to PDF
+                          </Button>
+                          <Button variant="secondary">
+                            📊 Export to Excel
+                          </Button>
+                          <Button variant="secondary">
+                            💾 Export Data (JSON)
+                          </Button>
+                          <Button variant="default">
+                            🖨️ Print Report
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Analysis Tab */}
-            <TabsContent value="analysis">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <span>📊</span> Comprehensive Family Health Analysis
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    className="mb-6"
-                    onClick={generateComprehensiveReport}
-                  >
-                    📋 Generate Complete Analysis Report
-                  </Button>
-
-                  {showComprehensiveReport && (
-                    <Card className="bg-gradient-to-r from-success/10 to-info/10 border-success mb-6">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-success">
-                          <span>📊</span> Family Health Study Report
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="mb-6">
-                          <h3 className="font-semibold text-lg mb-2">📋 Family Health Study Report</h3>
-                          <p><strong>Date:</strong> {formData.studyDate}</p>
-                          <p><strong>Family ID:</strong> {formData.familyId}</p>
-                          <p><strong>Head of Family:</strong> {formData.familyHead}</p>
-                        </div>
-
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-md mb-2">🏠 General Information</h4>
-                          <p><strong>Address:</strong> {formData.address}</p>
-                          <p><strong>Area Type:</strong> {formData.area}</p>
-                          <p><strong>Religion:</strong> {formData.religion}</p>
-                          <p><strong>Family Type:</strong> {formData.familyType}</p>
-                        </div>
-
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-md mb-2">💰 Socio-Economic Status</h4>
-                          <p><strong>Total Monthly Income:</strong> ₹{formData.totalIncome}</p>
-                          <p><strong>Per Capita Income:</strong> ₹{formData.perCapitaIncome}</p>
-                          <p><strong>SES Classification:</strong> {formData.sesClass}</p>
-                        </div>
-
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-md mb-2">👨‍👩‍👧‍👦 Family Composition</h4>
-                          <p><strong>Total Members:</strong> {familyMembers.length}</p>
-                          <p><strong>Males:</strong> {familyMembers.filter(m => m.sex === 'male').length}</p>
-                          <p><strong>Females:</strong> {familyMembers.filter(m => m.sex === 'female').length}</p>
-                          <p><strong>Children (&lt;18 years):</strong> {familyMembers.filter(m => m.age < 18).length}</p>
-                          <p><strong>Adults (18-59 years):</strong> {familyMembers.filter(m => m.age >= 18 && m.age < 60).length}</p>
-                          <p><strong>Elderly (≥60 years):</strong> {familyMembers.filter(m => m.age >= 60).length}</p>
-                        </div>
-
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-md mb-2">🍎 Nutritional Assessment</h4>
-                          <p><strong>Total Consumption Units:</strong> {formData.totalFamilyCU}</p>
-                          <p><strong>Nutritional Status:</strong> Adequate nutrition</p>
-                        </div>
-
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-md mb-2">🏥 Health Status</h4>
-                          <p><strong>Health Records:</strong> {healthRecords.length} members examined</p>
-                          <p><strong>Immunization Records:</strong> {immunizationRecords.length} members assessed</p>
-                          <p><strong>Chronic Diseases:</strong> {formData.chronicDiseases.join(', ') || 'None reported'}</p>
-                        </div>
-
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-md mb-2">🏠 Environmental Conditions</h4>
-                          <p><strong>House Type:</strong> {formData.houseType}</p>
-                          <p><strong>Water Supply:</strong> {formData.waterSupply}</p>
-                          <p><strong>Toilet Facility:</strong> {formData.toiletFacility}</p>
-                        </div>
-
-                        <div>
-                          <h4 className="font-semibold text-md mb-2">📊 Summary & Recommendations</h4>
-                          <Alert className="mb-4">
-                            <AlertTitle>Overall Assessment</AlertTitle>
-                            <AlertDescription>
-                              This {formData.familyType} family shows mixed indicators and would benefit from focused improvements.
-                            </AlertDescription>
-                          </Alert>
-                          <div className="bg-white p-4 rounded-md border">
-                            <h5 className="font-semibold mb-2">Key Recommendations:</h5>
-                            <ul className="list-disc pl-5 space-y-2">
-                              <li>Regular health check-ups and monitoring</li>
-                              <li>Follow ICMR dietary guidelines for optimal nutrition</li>
-                              <li>Maintain good hygiene and sanitation practices</li>
-                              <li>Consider enrolling in applicable government welfare schemes</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  <div className="bg-muted p-6 rounded-lg text-center">
-                    <h3 className="text-lg font-semibold mb-4">Export Options</h3>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                      <Button variant="secondary">
-                        📄 Export to PDF
-                      </Button>
-                      <Button variant="secondary">
-                        📊 Export to Excel
-                      </Button>
-                      <Button variant="secondary">
-                        💾 Export Data (JSON)
-                      </Button>
-                      <Button variant="default">
-                        🖨️ Print Report
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
