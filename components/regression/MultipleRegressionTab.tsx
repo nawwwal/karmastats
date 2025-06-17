@@ -261,10 +261,10 @@ export function MultipleRegressionTab() {
           </div>
           <div className="h-[400px]">
             {showChart === 'predicted' && predictedVsActualData && (
-              <Scatter data={predictedVsActualData} options={chartOptions} />
+              <Scatter data={predictedVsActualData as any} options={chartOptions} />
             )}
             {showChart === 'residuals' && residualsData && (
-              <Scatter data={residualsData} options={chartOptions} />
+              <Scatter data={residualsData as any} options={chartOptions} />
             )}
           </div>
         </Card>
