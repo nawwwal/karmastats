@@ -147,7 +147,7 @@ export default function CrossSectionalPage() {
     }
 
     return (
-        <Form {...form}>
+        <Form {...(form as any)}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="text-center">
                     <h1 className="text-4xl font-bold">Cross-Sectional Study Calculator</h1>
