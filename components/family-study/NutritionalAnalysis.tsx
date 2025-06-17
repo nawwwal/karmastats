@@ -41,7 +41,7 @@ export function NutritionalAnalysis({
   const getOverallNutritionalVariant = (calorie: number, protein: number) => {
     const avgAdequacy = (calorie + protein) / 2;
     if (avgAdequacy >= 85) return 'default';
-    if (avgAdequacy >= 70) return 'warning';
+    if (avgAdequacy >= 70) return 'default'; // Changed from 'warning' to 'default'
     return 'destructive';
   };
 
