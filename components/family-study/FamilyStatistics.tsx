@@ -16,38 +16,38 @@ export function FamilyStatistics({ members }: FamilyStatisticsProps) {
     <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
       <Card>
         <CardContent className="p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{members.length}</div>
-          <div className="text-sm">Total Members</div>
+          <div className="heading-2 text-primary">{members.length}</div>
+          <div className="body-small">Total Members</div>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{maleCount}</div>
-          <div className="text-sm">Males</div>
+          <div className="heading-2 text-primary">{maleCount}</div>
+          <div className="body-small">Males</div>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{femaleCount}</div>
-          <div className="text-sm">Females</div>
+          <div className="heading-2 text-primary">{femaleCount}</div>
+          <div className="body-small">Females</div>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{childrenCount}</div>
-          <div className="text-sm">Children (&lt;18 yrs)</div>
+          <div className="heading-2 text-primary">{childrenCount}</div>
+          <div className="body-small">Children (&lt;18 yrs)</div>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{adultsCount}</div>
-          <div className="text-sm">Adults (18-59 yrs)</div>
+          <div className="heading-2 text-primary">{adultsCount}</div>
+          <div className="body-small">Adults (18-59 yrs)</div>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{elderlyCount}</div>
-          <div className="text-sm">Elderly (≥60 yrs)</div>
+          <div className="heading-2 text-primary">{elderlyCount}</div>
+          <div className="body-small">Elderly (≥60 yrs)</div>
         </CardContent>
       </Card>
     </div>

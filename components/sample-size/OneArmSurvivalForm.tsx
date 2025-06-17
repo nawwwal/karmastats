@@ -17,9 +17,9 @@ const OneArmSurvivalSchema = z.object({
   historicalMedianSurvival: z.number().min(0.1),
   targetMedianSurvival: z.number().min(0.1),
   analysisTimePoint: z.number().min(0.1),
-  significanceLevel: z.number().default(0.05),
-  power: z.number().default(0.8),
-  dropoutRate: z.number().min(0).max(100).default(0),
+  significanceLevel: z.number().min(0).max(1),
+  power: z.number().min(0).max(1),
+  dropoutRate: z.number().min(0).max(100),
 });
 
 type OneArmSurvivalInput = z.infer<typeof OneArmSurvivalSchema>;

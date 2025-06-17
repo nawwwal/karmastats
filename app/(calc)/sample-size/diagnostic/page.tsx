@@ -248,7 +248,7 @@ export default function DiagnosticTestPage() {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="text-center">
-                <h1 className="text-4xl font-bold">Diagnostic Test Accuracy Calculator</h1>
+                <h1 className="heading-1">Diagnostic Test Accuracy Calculator</h1>
                 <p className="text-muted-foreground mt-2">Calculate sample size for diagnostic test studies.</p>
             </div>
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">

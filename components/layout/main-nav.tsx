@@ -2,11 +2,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { 
-  Calculator, 
-  Activity, 
-  Microscope, 
-  Users, 
+import {
+  Calculator,
+  Activity,
+  Microscope,
+  Users,
   Menu,
   Sun,
   Moon
@@ -20,7 +20,7 @@ interface MainNavProps {
 export function MainNav({ toggleSidebar }: MainNavProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  
+
   const routes = [
     {
       href: "/",
@@ -60,22 +60,22 @@ export function MainNav({ toggleSidebar }: MainNavProps) {
         <Menu className="h-5 w-5" />
         <span className="sr-only">Toggle sidebar</span>
       </Button>
-      
+
       <div className="flex items-center">
         <Link href="/" className="flex items-center gap-2 mr-6">
           <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground font-bold">
             K
           </div>
-          <span className="font-bold text-lg hidden md:inline-block">KARMASTAT</span>
+          <span className="heading-4 hidden md:inline-block">KARMASTAT</span>
         </Link>
-        
+
         <nav className="hidden md:flex items-center gap-6">
           {routes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
+                "body-small font-medium transition-colors hover:text-primary",
                 route.active ? "text-primary" : "text-muted-foreground"
               )}
             >
@@ -84,7 +84,7 @@ export function MainNav({ toggleSidebar }: MainNavProps) {
           ))}
         </nav>
       </div>
-      
+
       <div className="ml-auto flex items-center gap-2">
         <Button
           variant="ghost"

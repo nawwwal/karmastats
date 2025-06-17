@@ -16,7 +16,7 @@ export default function IntelligentDetectorPage() {
     return (
         <div className="container mx-auto p-4">
             <header className="text-center mb-8">
-                <h1 className="text-3xl font-bold">Intelligent Study Detector</h1>
+                <h1 className="heading-1">Intelligent Study Detector</h1>
                 <p className="text-muted-foreground">
                     Let AI help you choose the right study design.
                 </p>

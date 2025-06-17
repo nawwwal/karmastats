@@ -82,11 +82,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
               <div className="flex-grow min-w-0">
                 <div className="font-medium truncate">{title || 'Unknown'}</div>
                 {description && (
-                  <div className="text-xs text-muted-foreground truncate">{description}</div>
+                  <div className="caption-text text-muted-foreground truncate">{description}</div>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                {badge && <Badge variant="secondary" className="text-xs">{badge}</Badge>}
+                {badge && <Badge variant="secondary" className="caption-text">{badge}</Badge>}
                 <span className="flex-shrink-0">
                   {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </span>
@@ -122,12 +122,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           <div className="flex-grow min-w-0">
             <div className="font-medium truncate">{title || 'Unknown'}</div>
             {description && (
-              <div className="text-xs text-muted-foreground truncate">{description}</div>
+              <div className="caption-text text-muted-foreground truncate">{description}</div>
             )}
           </div>
         )}
         {!isCollapsed && badge && (
-          <Badge variant="secondary" className="text-xs">{badge}</Badge>
+          <Badge variant="secondary" className="caption-text">{badge}</Badge>
         )}
       </Link>
     </li>
@@ -186,7 +186,7 @@ const SidebarFavorites: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) =
   return (
     <div className="mb-6">
       {!isCollapsed && (
-        <h3 className="px-3 mb-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <h3 className="px-3 mb-3 caption-text font-semibold text-muted-foreground uppercase tracking-wider">
           Favorites
         </h3>
       )}
@@ -365,8 +365,8 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                   K
                 </div>
                 <div>
-                  <div className="font-bold text-lg text-gradient">KARMASTAT</div>
-                  <div className="text-xs text-muted-foreground">Statistical Tools</div>
+                  <div className="heading-4 text-gradient">KARMASTAT</div>
+                  <div className="caption-text text-muted-foreground">Statistical Tools</div>
                 </div>
               </Link>
             )}
@@ -451,7 +451,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         <div className="p-4 border-t border-sidebar-border space-y-2">
           <ThemeToggle isCollapsed={isCollapsed} />
           {!isCollapsed && (
-            <div className="text-xs text-muted-foreground text-center">
+            <div className="caption-text text-muted-foreground text-center">
               Made with ❤️ by Karmayogi
             </div>
           )}

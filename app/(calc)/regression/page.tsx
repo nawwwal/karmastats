@@ -17,7 +17,7 @@ export default function RegressionPage() {
   return (
     <div className="container mx-auto p-4">
       <header className="text-center mb-8">
-        <h1 className="text-3xl font-bold">Regression Analysis</h1>
+        <h1 className="heading-1">Regression Analysis</h1>
         <p className="text-muted-foreground">
           Explore relationships between variables.
         </p>
