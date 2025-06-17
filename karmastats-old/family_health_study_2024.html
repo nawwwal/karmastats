@@ -1,0 +1,3262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Family Health Study Assessment - ICMR-NIN 2024 Guidelines</title>
+    <style>
+        :root {
+            --primary-blue: #1565c0;
+            --secondary-green: #2e7d32;
+            --accent-orange: #ef6c00;
+            --success-green: #388e3c;
+            --warning-orange: #f57c00;
+            --error-red: #d32f2f;
+            --info-blue: #1976d2;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #424242;
+            --white: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.12);
+            --border-radius: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-gray);
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--white);
+            box-shadow: 0 8px 32px var(--shadow);
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+            color: var(--white);
+            padding: 30px;
+            text-align: center;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            margin: -20px -20px 20px -20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-50px); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .guidelines-info {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-left: 4px solid var(--info-blue);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: var(--white);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .info-card h4 {
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .info-card p {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+
+        .tab-container {
+            margin: 20px 0;
+        }
+
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 5px;
+            gap: 5px;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: calc(var(--border-radius) - 2px);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-button:hover {
+            background: rgba(21, 101, 192, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .tab-button.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            box-shadow: 0 2px 8px rgba(21, 101, 192, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border: 1px solid var(--medium-gray);
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .section-header h2 {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-header .icon {
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group input[readonly] {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            cursor: pointer;
+            background: var(--white);
+        }
+
+        .radio-item:hover {
+            border-color: var(--primary-blue);
+            background: rgba(21, 101, 192, 0.05);
+        }
+
+        .radio-item input[type="radio"]:checked + label,
+        .radio-item.checked {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            cursor: pointer;
+            background: var(--white);
+        }
+
+        .checkbox-item:hover {
+            background: var(--light-gray);
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + label,
+        .checkbox-item.checked {
+            background: var(--success-green);
+            color: var(--white);
+            border-color: var(--success-green);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--medium-gray);
+            vertical-align: top;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+            color: var(--white);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(245, 245, 245, 0.5);
+        }
+
+        tr:hover {
+            background: rgba(21, 101, 192, 0.05);
+            transform: scale(1.01);
+            transition: var(--transition);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            min-width: 120px;
+            justify-content: center;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), #1976d2);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary-green), #388e3c);
+            color: var(--white);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent-orange), var(--warning-orange));
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-green), #4caf50);
+            color: var(--white);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-orange), #ff9800);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error-red), #f44336);
+            color: var(--white);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info-blue);
+            color: #0d47a1;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            border-left: 4px solid var(--success-green);
+            color: #1b5e20;
+        }
+
+        .alert-warning {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning-orange);
+            color: #e65100;
+        }
+
+        .alert-danger {
+            background: #ffebee;
+            border-left: 4px solid var(--error-red);
+            color: #b71c1c;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--white), var(--light-gray));
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border: 1px solid var(--medium-gray);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        .calculation-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 2px solid var(--primary-blue);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .calculation-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-container {
+            background: var(--light-gray);
+            border-radius: 20px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), var(--secondary-green));
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--light-gray);
+            border-radius: 50%;
+            border-top-color: var(--primary-blue);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-gray);
+            color: var(--white);
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        .results-panel {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border: 2px solid var(--success-green);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .results-header {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--success-green);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tab-nav {
+                flex-direction: column;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .nutrition-calculator {
+            background: linear-gradient(135deg, #fff3e0, #fce4ec);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid var(--accent-orange);
+        }
+
+        .cu-breakdown {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .food-database-search {
+            background: linear-gradient(135deg, #f3e5f5, #e1f5fe);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid var(--info-blue);
+        }
+
+        .quick-add-food {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin: 10px 0;
+        }
+
+        .nutritional-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-adequate { background: var(--success-green); }
+        .status-borderline { background: var(--warning-orange); }
+        .status-deficient { background: var(--error-red); }
+        .status-excess { background: var(--info-blue); }
+
+        .export-section {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .progress-step {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+
+        .step-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--medium-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--white);
+        }
+
+        .step-indicator.completed {
+            background: var(--success-green);
+        }
+
+        .step-indicator.active {
+            background: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Professional Family Health Study Assessment</h1>
+            <p class="subtitle">Based on ICMR-NIN Guidelines 2020 | IFCT 2017 | Community Medicine Standards</p>
+        </div>
+
+        <div class="guidelines-info">
+            <div class="info-card">
+                <h4>🏛️ ICMR-NIN 2020 Guidelines</h4>
+                <p>Latest Recommended Dietary Allowances with consumption unit calculation based on 2110 kcal reference male sedentary worker</p>
+            </div>
+            <div class="info-card">
+                <h4>📊 IFCT 2017 Database</h4>
+                <p>528 Indian foods with comprehensive nutritional analysis across 151 nutrients</p>
+            </div>
+            <div class="info-card">
+                <h4>⚕️ Medical Standards</h4>
+                <p>WHO, IAP, and national health program compliance with real-time calculations</p>
+            </div>
+            <div class="info-card">
+                <h4>💾 Data Management</h4>
+                <p>Export capabilities, automatic calculations, and comprehensive reporting system</p>
+            </div>
+        </div>
+
+        <div class="progress-step">
+            <div>
+                <div class="step-indicator active" id="step1">1</div>
+                <span>General Info</span>
+            </div>
+            <div>
+                <div class="step-indicator" id="step2">2</div>
+                <span>Socio-Economic</span>
+            </div>
+            <div>
+                <div class="step-indicator" id="step3">3</div>
+                <span>Environment</span>
+            </div>
+            <div>
+                <div class="step-indicator" id="step4">4</div>
+                <span>Family Members</span>
+            </div>
+            <div>
+                <div class="step-indicator" id="step5">5</div>
+                <span>Nutrition</span>
+            </div>
+            <div>
+                <div class="step-indicator" id="step6">6</div>
+                <span>Health</span>
+            </div>
+            <div>
+                <div class="step-indicator" id="step7">7</div>
+                <span>Analysis</span>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-nav">
+                <button class="tab-button active" onclick="openTab(event, 'general-info')">
+                    🏠 General Information
+                </button>
+                <button class="tab-button" onclick="openTab(event, 'socio-economic')">
+                    💰 Socio-Economic Status
+                </button>
+                <button class="tab-button" onclick="openTab(event, 'environment')">
+                    🌍 Environment
+                </button>
+                <button class="tab-button" onclick="openTab(event, 'family-members')">
+                    👨‍👩‍👧‍👦 Family Members
+                </button>
+                <button class="tab-button" onclick="openTab(event, 'nutrition')">
+                    🍎 Nutritional Assessment
+                </button>
+                <button class="tab-button" onclick="openTab(event, 'health')">
+                    ⚕️ Health Records
+                </button>
+                <button class="tab-button" onclick="openTab(event, 'analysis')">
+                    📊 Analysis & Report
+                </button>
+            </div>
+
+            <!-- General Information Tab -->
+            <div id="general-info" class="tab-content active">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="icon">📋</span>
+                        <h2>General Information</h2>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="studyDate">Study Date</label>
+                            <input type="date" id="studyDate" name="studyDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="familyId">Family ID</label>
+                            <input type="text" id="familyId" name="familyId" placeholder="Auto-generated">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="familyHead">Name of Head of Family</label>
+                        <input type="text" id="familyHead" name="familyHead" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Complete Address</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="pincode">Pincode</label>
+                            <input type="text" id="pincode" name="pincode" pattern="[0-9]{6}" maxlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="area">Area Type</label>
+                            <select id="area" name="area" required>
+                                <option value="">Select Area Type</option>
+                                <option value="urban">Urban</option>
+                                <option value="peri-urban">Peri-urban</option>
+                                <option value="rural">Rural</option>
+                                <option value="slum">Slum</option>
+                                <option value="tribal">Tribal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Duration of Stay in Current Area</label>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="residingYears">Years</label>
+                                <input type="number" id="residingYears" name="residingYears" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="residingMonths">Months</label>
+                                <input type="number" id="residingMonths" name="residingMonths" min="0" max="11">
+                            </div>
+                            <div class="form-group">
+                                <label for="residingDays">Days</label>
+                                <input type="number" id="residingDays" name="residingDays" min="0" max="30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="native">Native Place</label>
+                            <input type="text" id="native" name="native">
+                        </div>
+                        <div class="form-group">
+                            <label for="religion">Religion</label>
+                            <select id="religion" name="religion" required>
+                                <option value="">Select Religion</option>
+                                <option value="hindu">Hindu</option>
+                                <option value="muslim">Muslim</option>
+                                <option value="christian">Christian</option>
+                                <option value="sikh">Sikh</option>
+                                <option value="jain">Jain</option>
+                                <option value="buddhist">Buddhist</option>
+                                <option value="parsi">Parsi</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="caste">Caste/Community</label>
+                        <input type="text" id="caste" name="caste">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Type of Family</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="nuclear" name="familyType" value="nuclear" checked>
+                                <label for="nuclear">Nuclear Family</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="joint" name="familyType" value="joint">
+                                <label for="joint">Joint Family</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="extended" name="familyType" value="extended">
+                                <label for="extended">Extended Family</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="three-gen" name="familyType" value="three-generation">
+                                <label for="three-gen">Three Generation</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pedigreeNotes">Family Health History & Pedigree Notes</label>
+                        <textarea id="pedigreeNotes" name="pedigreeNotes" rows="4" 
+                                placeholder="Document any hereditary conditions, chronic diseases, or significant health patterns in the family history"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Socio-Economic Status Tab -->
+            <div id="socio-economic" class="tab-content">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="icon">💰</span>
+                        <h2>Socio-Economic Status Assessment</h2>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <span>Using Modified Prasad Classification 2024 (CPI-IW Base: May 2024 = 139.4)</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="primaryIncome">Primary Income (₹/month)</label>
+                            <input type="number" id="primaryIncome" name="primaryIncome" min="0" onchange="calculateSES()">
+                        </div>
+                        <div class="form-group">
+                            <label for="otherIncome">Other Income Sources (₹/month)</label>
+                            <input type="number" id="otherIncome" name="otherIncome" min="0" onchange="calculateSES()">
+                        </div>
+                    </div>
+
+                    <div class="calculation-card">
+                        <div class="calculation-header">
+                            <span>💹</span>
+                            <span>Income Analysis</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Total Monthly Income</label>
+                                <input type="number" id="totalIncome" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Family Size</label>
+                                <input type="number" id="familySize" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Per Capita Income</label>
+                                <input type="number" id="perCapitaIncome" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>SES Classification</label>
+                                <select id="sesMethod" onchange="calculateSES()">
+                                    <option value="prasad">Modified Prasad 2024</option>
+                                    <option value="kuppuswami">Kuppuswami Scale</option>
+                                    <option value="pareek">Pareek (Rural)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="alert" id="sesResult">
+                            <span id="sesIcon"></span>
+                            <span id="sesText">Enter income to calculate SES class</span>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="icon">💸</span>
+                            <h2>Monthly Expenditure Pattern</h2>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Amount (₹/month)</th>
+                                        <th>% of Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>🍛 Food</td>
+                                        <td><input type="number" id="expFood" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expFoodPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expFoodStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>👕 Clothing</td>
+                                        <td><input type="number" id="expClothing" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expClothingPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expClothingStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>🏠 Housing/Rent</td>
+                                        <td><input type="number" id="expHousing" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expHousingPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expHousingStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>📚 Education</td>
+                                        <td><input type="number" id="expEducation" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expEducationPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expEducationStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>⚕️ Medical Care</td>
+                                        <td><input type="number" id="expMedical" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expMedicalPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expMedicalStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>🚗 Transportation</td>
+                                        <td><input type="number" id="expTransport" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expTransportPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expTransportStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>💡 Utilities</td>
+                                        <td><input type="number" id="expUtilities" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expUtilitiesPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expUtilitiesStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>🎮 Recreation</td>
+                                        <td><input type="number" id="expRecreation" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expRecreationPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expRecreationStatus"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>🔍 Other</td>
+                                        <td><input type="number" id="expOther" min="0" onchange="calculateExpenditure()"></td>
+                                        <td><span id="expOtherPercent">0%</span></td>
+                                        <td><span class="status-indicator" id="expOtherStatus"></span></td>
+                                    </tr>
+                                    <tr style="background: var(--light-gray); font-weight: bold;">
+                                        <td>Total Expenditure</td>
+                                        <td><input type="number" id="expTotal" readonly></td>
+                                        <td>100%</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="calculation-card">
+                            <div class="calculation-header">
+                                <span>📊</span>
+                                <span>Budget Analysis</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Monthly Savings/Deficit</label>
+                                    <input type="number" id="monthlySavings" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Savings Rate (%)</label>
+                                    <input type="number" id="savingsRate" readonly>
+                                </div>
+                            </div>
+                            <div class="alert" id="budgetStatus">
+                                <span id="budgetIcon"></span>
+                                <span id="budgetText">Enter income and expenditure to analyze budget</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="icon">🏛️</span>
+                            <h2>Government Schemes & Social Security</h2>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ration Card Type</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="apl" name="rationCard" value="apl">
+                                    <label for="apl">APL (Above Poverty Line)</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="bpl" name="rationCard" value="bpl">
+                                    <label for="bpl">BPL (Below Poverty Line)</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="antyodaya" name="rationCard" value="antyodaya">
+                                    <label for="antyodaya">Antyodaya</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="no-ration" name="rationCard" value="none" checked>
+                                    <label for="no-ration">None</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Enrolled Social Security Schemes</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="pmjay" name="socialSchemes" value="pm-jay">
+                                    <label for="pmjay">Ayushman Bharat (PM-JAY)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="pmkisan" name="socialSchemes" value="pm-kisan">
+                                    <label for="pmkisan">PM-KISAN</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="mnrega" name="socialSchemes" value="mnrega">
+                                    <label for="mnrega">MNREGA</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="oldage" name="socialSchemes" value="old-age-pension">
+                                    <label for="oldage">Old Age Pension</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="widow" name="socialSchemes" value="widow-pension">
+                                    <label for="widow">Widow Pension</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="disability" name="socialSchemes" value="disability-pension">
+                                    <label for="disability">Disability Pension</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="esi" name="socialSchemes" value="esi">
+                                    <label for="esi">ESI</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="pf" name="socialSchemes" value="pf">
+                                    <label for="pf">Provident Fund</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Environment Tab -->
+            <div id="environment" class="tab-content">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="icon">🌍</span>
+                        <h2>Environmental Assessment</h2>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="icon">🧠</span>
+                            <h2>Psychological Environment</h2>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="familyHarmony">Family Harmony</label>
+                                <select id="familyHarmony" name="familyHarmony">
+                                    <option value="">Select Status</option>
+                                    <option value="excellent">Excellent - Very harmonious</option>
+                                    <option value="good">Good - Generally peaceful</option>
+                                    <option value="fair">Fair - Occasional conflicts</option>
+                                    <option value="poor">Poor - Frequent conflicts</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="decisionPattern">Decision Making Pattern</label>
+                                <select id="decisionPattern" name="decisionPattern">
+                                    <option value="">Select Pattern</option>
+                                    <option value="democratic">Democratic - Joint decisions</option>
+                                    <option value="patriarchal">Patriarchal - Male dominated</option>
+                                    <option value="matriarchal">Matriarchal - Female dominated</option>
+                                    <option value="individual">Individual - Each decides</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="relativeRelations">Relationship with Relatives</label>
+                                <select id="relativeRelations" name="relativeRelations">
+                                    <option value="">Select Status</option>
+                                    <option value="excellent">Excellent - Very close</option>
+                                    <option value="good">Good - Regular contact</option>
+                                    <option value="fair">Fair - Occasional contact</option>
+                                    <option value="poor">Poor - Rare/No contact</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="neighborRelations">Neighborhood Relations</label>
+                                <select id="neighborRelations" name="neighborRelations">
+                                    <option value="">Select Status</option>
+                                    <option value="excellent">Excellent - Very supportive</option>
+                                    <option value="good">Good - Friendly</option>
+                                    <option value="fair">Fair - Cordial</option>
+                                    <option value="poor">Poor - Isolated/Conflicted</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Psychological Overcrowding</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="psych-absent" name="psychOvercrowding" value="absent" checked>
+                                    <label for="psych-absent">Absent - Adequate personal space</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="psych-mild" name="psychOvercrowding" value="mild">
+                                    <label for="psych-mild">Mild - Some privacy issues</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="psych-severe" name="psychOvercrowding" value="severe">
+                                    <label for="psych-severe">Severe - Significant stress</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="icon">🏠</span>
+                            <h2>Housing and Physical Environment</h2>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="houseOwnership">Ownership Status</label>
+                                <select id="houseOwnership" name="houseOwnership">
+                                    <option value="">Select Status</option>
+                                    <option value="owned">Owned</option>
+                                    <option value="rented">Rented</option>
+                                    <option value="leased">Leased</option>
+                                    <option value="provided">Employer Provided</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="houseType">House Type</label>
+                                <select id="houseType" name="houseType">
+                                    <option value="">Select Type</option>
+                                    <option value="pucca">Pucca (Permanent)</option>
+                                    <option value="semi-pucca">Semi-pucca</option>
+                                    <option value="kutcha">Kutcha (Temporary)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="numberOfRooms">Number of Rooms</label>
+                                <input type="number" id="numberOfRooms" name="numberOfRooms" min="1" onchange="calculateOvercrowding()">
+                            </div>
+                            <div class="form-group">
+                                <label for="totalFloorArea">Total Floor Area (sq ft)</label>
+                                <input type="number" id="totalFloorArea" name="totalFloorArea" min="0" onchange="calculateOvercrowding()">
+                            </div>
+                        </div>
+
+                        <div class="calculation-card">
+                            <div class="calculation-header">
+                                <span>📏</span>
+                                <span>Overcrowding Analysis</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Per Capita Floor Area (sq ft)</label>
+                                    <input type="number" id="perCapitaFloorArea" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Persons per Room</label>
+                                    <input type="number" id="personsPerRoom" readonly>
+                                </div>
+                            </div>
+                            <div class="alert" id="overcrowdingStatus">
+                                <span id="overcrowdingIcon">ℹ️</span>
+                                <span id="overcrowdingText">Enter room details to calculate overcrowding</span>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Basic Amenities</h3>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="waterSupply">Water Supply</label>
+                                    <select id="waterSupply" name="waterSupply">
+                                        <option value="">Select Source</option>
+                                        <option value="piped-home">Piped water at home</option>
+                                        <option value="piped-public">Public tap</option>
+                                        <option value="well">Well</option>
+                                        <option value="borewell">Borewell</option>
+                                        <option value="tanker">Tanker supply</option>
+                                        <option value="other">Other source</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="toiletFacility">Toilet Facility</label>
+                                    <select id="toiletFacility" name="toiletFacility">
+                                        <option value="">Select Type</option>
+                                        <option value="flush-private">Flush toilet - Private</option>
+                                        <option value="flush-shared">Flush toilet - Shared</option>
+                                        <option value="pit-private">Pit latrine - Private</option>
+                                        <option value="pit-shared">Pit latrine - Shared</option>
+                                        <option value="public">Public toilet</option>
+                                        <option value="open">Open defecation</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="electricity">Electricity</label>
+                                    <select id="electricity" name="electricity">
+                                        <option value="">Select Status</option>
+                                        <option value="24hrs">24 hours supply</option>
+                                        <option value="partial">Partial supply (12-20 hrs)</option>
+                                        <option value="limited">Limited supply (<12 hrs)</option>
+                                        <option value="none">No electricity</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cookingFuel">Cooking Fuel</label>
+                                    <select id="cookingFuel" name="cookingFuel">
+                                        <option value="">Select Fuel</option>
+                                        <option value="lpg">LPG/PNG</option>
+                                        <option value="electricity">Electricity</option>
+                                        <option value="kerosene">Kerosene</option>
+                                        <option value="wood">Wood/Coal</option>
+                                        <option value="biogas">Biogas</option>
+                                        <option value="cowdung">Cow dung</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="ventilation">Ventilation</label>
+                                    <select id="ventilation" name="ventilation">
+                                        <option value="">Select Status</option>
+                                        <option value="adequate">Adequate - Good air circulation</option>
+                                        <option value="moderate">Moderate - Some circulation</option>
+                                        <option value="poor">Poor - Limited air flow</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lighting">Natural Lighting</label>
+                                    <select id="lighting" name="lighting">
+                                        <option value="">Select Status</option>
+                                        <option value="adequate">Adequate - Well lit</option>
+                                        <option value="moderate">Moderate - Partially lit</option>
+                                        <option value="poor">Poor - Dark rooms</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Family Members Tab -->
+            <div id="family-members" class="tab-content">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="icon">👨‍👩‍👧‍👦</span>
+                        <h2>Family Composition</h2>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <span>Add all family members including those temporarily away. Include complete details for accurate nutritional and health assessments.</span>
+                    </div>
+
+                    <button type="button" class="btn btn-accent" onclick="addFamilyMember()">
+                        ➕ Add Family Member
+                    </button>
+
+                    <div class="table-container">
+                        <table id="familyMemberTable">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Sex</th>
+                                    <th>Relation to HOF</th>
+                                    <th>Marital Status</th>
+                                    <th>Education</th>
+                                    <th>Occupation</th>
+                                    <th>Income (₹/month)</th>
+                                    <th>Activity Level</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="familyMemberTableBody">
+                                <!-- Family members will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="calculateFamilySummary()">
+                        📊 Calculate Family Analysis
+                    </button>
+
+                    <div class="stats-grid" id="familyStats" style="display: none;">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalMembersCount">0</div>
+                            <div class="stat-label">Total Members</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="maleCount">0</div>
+                            <div class="stat-label">Males</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="femaleCount">0</div>
+                            <div class="stat-label">Females</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="childrenCount">0</div>
+                            <div class="stat-label">Children (<18 yrs)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="adultsCount">0</div>
+                            <div class="stat-label">Adults (18-59 yrs)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="elderlyCount">0</div>
+                            <div class="stat-label">Elderly (≥60 yrs)</div>
+                        </div>
+                    </div>
+
+                    <div class="results-panel" id="familyAnalysis" style="display: none;">
+                        <div class="results-header">
+                            <span>📊</span>
+                            <span>Detailed Family Analysis</span>
+                        </div>
+                        <div id="familyAnalysisContent">
+                            <!-- Analysis content will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nutrition Tab -->
+            <div id="nutrition" class="tab-content">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="icon">🍎</span>
+                        <h2>Nutritional Assessment (ICMR-NIN 2020)</h2>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <span>Based on ICMR-NIN 2020 Guidelines with IFCT 2017 food database. Reference: Adult sedentary male = 2110 kcal (1 Consumption Unit)</span>
+                    </div>
+
+                    <div class="nutrition-calculator">
+                        <div class="calculation-header">
+                            <span>⚖️</span>
+                            <span>Consumption Units (CU) Calculator</span>
+                        </div>
+
+                        <div class="cu-breakdown">
+                            <p><strong>Reference:</strong> Adult sedentary male (19-50 years) = 1.0 CU = 2110 kcal</p>
+                            <p><strong>Auto-calculation:</strong> CU values will be automatically calculated based on family member data</p>
+                        </div>
+
+                        <button type="button" class="btn btn-primary" onclick="calculateConsumptionUnits()">
+                            🔄 Calculate Consumption Units
+                        </button>
+
+                        <div class="calculation-card" id="cuResults" style="display: none;">
+                            <div class="calculation-header">
+                                <span>📊</span>
+                                <span>Consumption Units Summary</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Total Family CU</label>
+                                    <input type="number" id="totalFamilyCU" readonly step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label>Average CU per Person</label>
+                                    <input type="number" id="averageCUPerPerson" readonly step="0.1">
+                                </div>
+                            </div>
+                            <div id="cuBreakdown"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="icon">🍽️</span>
+                            <h2>24-Hour Dietary Recall</h2>
+                        </div>
+
+                        <div class="food-database-search">
+                            <div class="calculation-header">
+                                <span>🔍</span>
+                                <span>IFCT 2017 Food Database Search</span>
+                            </div>
+                            <div class="quick-add-food">
+                                <div class="form-group">
+                                    <label for="foodSearch">Search Food Item</label>
+                                    <input type="text" id="foodSearch" placeholder="Type food name..." onkeyup="searchFoodDatabase()">
+                                    <div id="foodSearchResults" class="search-results"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="foodQuantity">Quantity (g)</label>
+                                    <input type="number" id="foodQuantity" placeholder="Amount" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="foodMeal">Meal</label>
+                                    <select id="foodMeal">
+                                        <option value="breakfast">Breakfast</option>
+                                        <option value="lunch">Lunch</option>
+                                        <option value="dinner">Dinner</option>
+                                        <option value="snack">Snack</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>&nbsp;</label>
+                                    <button type="button" class="btn btn-accent" onclick="addSelectedFood()">Add Food</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table id="dietaryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Meal</th>
+                                        <th>Food Item</th>
+                                        <th>Quantity (g)</th>
+                                        <th>Energy (kcal)</th>
+                                        <th>Protein (g)</th>
+                                        <th>Carbs (g)</th>
+                                        <th>Fat (g)</th>
+                                        <th>Fiber (g)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dietaryTableBody">
+                                    <!-- Dietary items will be added here -->
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background: var(--light-gray); font-weight: bold;">
+                                        <td colspan="3">Total Daily Intake</td>
+                                        <td id="totalCalories">0</td>
+                                        <td id="totalProtein">0</td>
+                                        <td id="totalCarbs">0</td>
+                                        <td id="totalFat">0</td>
+                                        <td id="totalFiber">0</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr style="background: var(--medium-gray);">
+                                        <td colspan="3">Per CU Daily Intake</td>
+                                        <td id="perCUCalories">0</td>
+                                        <td id="perCUProtein">0</td>
+                                        <td id="perCUCarbs">0</td>
+                                        <td id="perCUFat">0</td>
+                                        <td id="perCUFiber">0</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <button type="button" class="btn btn-primary" onclick="analyzeNutritionalStatus()">
+                            📈 Analyze Nutritional Status
+                        </button>
+                    </div>
+
+                    <div class="results-panel" id="nutritionalAnalysis" style="display: none;">
+                        <div class="results-header">
+                            <span>📊</span>
+                            <span>Nutritional Status Analysis</span>
+                        </div>
+                        <div id="nutritionalAnalysisContent">
+                            <!-- Nutritional analysis will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Tab -->
+            <div id="health" class="tab-content">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="icon">⚕️</span>
+                        <h2>Family Health Records</h2>
+                    </div>
+
+                    <button type="button" class="btn btn-accent" onclick="addHealthRecord()">
+                        ➕ Add Health Record
+                    </button>
+
+                    <div class="table-container">
+                        <table id="healthRecordTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Height (cm)</th>
+                                    <th>Weight (kg)</th>
+                                    <th>BMI</th>
+                                    <th>BMI Category</th>
+                                    <th>Blood Pressure</th>
+                                    <th>Health Issues</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="healthRecordTableBody">
+                                <!-- Health records will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="icon">💉</span>
+                            <h2>Immunization Status</h2>
+                        </div>
+
+                        <button type="button" class="btn btn-accent" onclick="addImmunizationRecord()">
+                            ➕ Add Immunization Record
+                        </button>
+
+                        <div class="table-container">
+                            <table id="immunizationTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>BCG</th>
+                                        <th>OPV/IPV</th>
+                                        <th>DPT/Pentavalent</th>
+                                        <th>Hepatitis B</th>
+                                        <th>MMR/MR</th>
+                                        <th>COVID-19</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="immunizationTableBody">
+                                    <!-- Immunization records will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="icon">🏥</span>
+                            <h2>Medical History & Health Status</h2>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Chronic Diseases Present in Family</label>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="diabetes" name="chronicDiseases" value="diabetes">
+                                        <label for="diabetes">Diabetes Mellitus</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="hypertension" name="chronicDiseases" value="hypertension">
+                                        <label for="hypertension">Hypertension</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="heart-disease" name="chronicDiseases" value="heart-disease">
+                                        <label for="heart-disease">Heart Disease</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="asthma" name="chronicDiseases" value="asthma">
+                                        <label for="asthma">Asthma/COPD</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="arthritis" name="chronicDiseases" value="arthritis">
+                                        <label for="arthritis">Arthritis</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="thyroid" name="chronicDiseases" value="thyroid">
+                                        <label for="thyroid">Thyroid Disorders</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="kidney" name="chronicDiseases" value="kidney">
+                                        <label for="kidney">Kidney Disease</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="cancer" name="chronicDiseases" value="cancer">
+                                        <label for="cancer">Cancer</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Tab -->
+            <div id="analysis" class="tab-content">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="icon">📊</span>
+                        <h2>Comprehensive Family Health Analysis</h2>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="generateComprehensiveReport()">
+                        📋 Generate Complete Analysis Report
+                    </button>
+
+                    <div class="results-panel" id="comprehensiveReport" style="display: none;">
+                        <div class="results-header">
+                            <span>📊</span>
+                            <span>Family Health Study Report</span>
+                        </div>
+                        <div id="reportContent">
+                            <!-- Comprehensive report will be generated here -->
+                        </div>
+                    </div>
+
+                    <div class="export-section">
+                        <h3>Export Options</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                            <button type="button" class="btn btn-secondary" onclick="exportToPDF()">
+                                📄 Export to PDF
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="exportToExcel()">
+                                📊 Export to Excel
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="exportToJSON()">
+                                💾 Export Data (JSON)
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="printReport()">
+                                🖨️ Print Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ICMR-NIN 2020 Guidelines and IFCT 2017 Database Implementation
+        
+        // Global variables
+        let familyMembers = [];
+        let dietaryItems = [];
+        let healthRecords = [];
+        let immunizationRecords = [];
+        let currentTab = 'general-info';
+
+        // ICMR-NIN 2020 Consumption Unit Factors
+        const consumptionUnits = {
+            // Age-based CU factors
+            infant_0_6m: 0.25,
+            infant_6_12m: 0.33,
+            child_1_3y: 0.43,
+            child_4_6y: 0.54,
+            child_7_9y: 0.68,
+            adolescent_10_12y_male: 0.84,
+            adolescent_10_12y_female: 0.83,
+            adolescent_13_18y_male: 0.97,
+            adolescent_13_18y_female: 0.93,
+            
+            // Adult activity-based CU factors
+            adult_sedentary_male: 1.0,
+            adult_sedentary_female: 0.83,
+            adult_moderate_male: 1.2,
+            adult_moderate_female: 1.0,
+            adult_heavy_male: 1.6,
+            adult_heavy_female: 1.4,
+            
+            // Elderly CU factors
+            elderly_male: 0.83,
+            elderly_female: 0.79,
+            
+            // Pregnancy and lactation additional CU
+            pregnant_2nd_trimester: 0.29,
+            pregnant_3rd_trimester: 0.46,
+            lactating_0_6m: 0.59,
+            lactating_6_12m: 0.42
+        };
+
+        // IFCT 2017 Food Database (Comprehensive subset)
+        const foodDatabase = {
+            // Cereals and Millets (per 100g)
+            "Rice, raw": { energy: 345, protein: 6.8, carbs: 78.2, fat: 0.6, fiber: 0.4 },
+            "Rice, cooked": { energy: 130, protein: 2.7, carbs: 28.0, fat: 0.3, fiber: 0.2 },
+            "Wheat flour": { energy: 341, protein: 12.1, carbs: 71.2, fat: 1.7, fiber: 2.9 },
+            "Wheat, chapati": { energy: 297, protein: 8.7, carbs: 64.0, fat: 1.2, fiber: 2.0 },
+            "Jowar": { energy: 349, protein: 10.4, carbs: 72.6, fat: 1.9, fiber: 9.7 },
+            "Bajra": { energy: 361, protein: 11.6, carbs: 67.5, fat: 5.0, fiber: 11.5 },
+            "Ragi": { energy: 336, protein: 7.3, carbs: 72.0, fat: 1.3, fiber: 11.2 },
+            "Maize": { energy: 342, protein: 11.1, carbs: 66.2, fat: 3.9, fiber: 12.2 },
+            
+            // Pulses and Legumes (per 100g)
+            "Arhar dal (toor)": { energy: 335, protein: 22.3, carbs: 57.6, fat: 1.7, fiber: 5.1 },
+            "Moong dal": { energy: 348, protein: 24.0, carbs: 59.9, fat: 1.3, fiber: 4.8 },
+            "Masoor dal": { energy: 343, protein: 25.1, carbs: 59.0, fat: 0.7, fiber: 4.6 },
+            "Urad dal": { energy: 347, protein: 24.0, carbs: 59.6, fat: 1.4, fiber: 4.5 },
+            "Chana dal": { energy: 360, protein: 22.0, carbs: 57.0, fat: 4.5, fiber: 12.8 },
+            "Rajma": { energy: 346, protein: 22.9, carbs: 60.6, fat: 1.3, fiber: 25.0 },
+            "Black gram, whole": { energy: 341, protein: 24.0, carbs: 58.4, fat: 1.9, fiber: 7.6 },
+            
+            // Vegetables (per 100g)
+            "Potato": { energy: 97, protein: 2.0, carbs: 22.6, fat: 0.1, fiber: 2.2 },
+            "Sweet potato": { energy: 120, protein: 1.2, carbs: 28.2, fat: 0.3, fiber: 3.0 },
+            "Onion": { energy: 40, protein: 1.1, carbs: 9.3, fat: 0.1, fiber: 1.1 },
+            "Tomato": { energy: 18, protein: 0.9, carbs: 3.9, fat: 0.2, fiber: 1.2 },
+            "Carrot": { energy: 41, protein: 0.9, carbs: 9.6, fat: 0.2, fiber: 2.8 },
+            "Spinach": { energy: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2 },
+            "Fenugreek leaves": { energy: 49, protein: 4.4, carbs: 6.0, fat: 0.9, fiber: 1.1 },
+            "Cauliflower": { energy: 25, protein: 1.9, carbs: 5.0, fat: 0.3, fiber: 2.5 },
+            "Cabbage": { energy: 25, protein: 1.3, carbs: 5.8, fat: 0.1, fiber: 2.5 },
+            "Brinjal": { energy: 24, protein: 1.1, carbs: 5.7, fat: 0.2, fiber: 3.0 },
+            "Okra": { energy: 33, protein: 2.0, carbs: 7.6, fat: 0.1, fiber: 3.2 },
+            "Green beans": { energy: 31, protein: 1.8, carbs: 7.1, fat: 0.2, fiber: 2.7 },
+            
+            // Fruits (per 100g)
+            "Apple": { energy: 52, protein: 0.3, carbs: 13.8, fat: 0.2, fiber: 2.4 },
+            "Banana": { energy: 89, protein: 1.1, carbs: 22.8, fat: 0.3, fiber: 2.6 },
+            "Orange": { energy: 47, protein: 0.9, carbs: 11.8, fat: 0.1, fiber: 2.4 },
+            "Mango": { energy: 60, protein: 0.6, carbs: 15.0, fat: 0.4, fiber: 1.6 },
+            "Papaya": { energy: 43, protein: 0.6, carbs: 10.8, fat: 0.1, fiber: 2.5 },
+            "Guava": { energy: 68, protein: 2.6, carbs: 14.3, fat: 0.9, fiber: 5.4 },
+            "Pomegranate": { energy: 83, protein: 1.7, carbs: 18.7, fat: 1.2, fiber: 4.0 },
+            
+            // Animal Products (per 100g)
+            "Milk, cow": { energy: 67, protein: 3.2, carbs: 4.8, fat: 4.0, fiber: 0 },
+            "Milk, buffalo": { energy: 117, protein: 4.3, carbs: 5.0, fat: 6.5, fiber: 0 },
+            "Curd": { energy: 60, protein: 3.1, carbs: 4.4, fat: 4.0, fiber: 0 },
+            "Paneer": { energy: 265, protein: 18.3, carbs: 6.1, fat: 20.8, fiber: 0 },
+            "Egg, chicken": { energy: 155, protein: 12.6, carbs: 1.1, fat: 10.6, fiber: 0 },
+            "Chicken": { energy: 165, protein: 31.0, carbs: 0, fat: 3.6, fiber: 0 },
+            "Mutton": { energy: 194, protein: 18.5, carbs: 0, fat: 13.3, fiber: 0 },
+            "Fish, rohu": { energy: 97, protein: 16.6, carbs: 0, fat: 2.2, fiber: 0 },
+            "Fish, pomfret": { energy: 96, protein: 18.8, carbs: 0, fat: 1.8, fiber: 0 },
+            
+            // Oils and Fats (per 100g)
+            "Mustard oil": { energy: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
+            "Sunflower oil": { energy: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
+            "Coconut oil": { energy: 900, protein: 0, carbs: 0, fat: 99.8, fiber: 0 },
+            "Ghee, cow": { energy: 900, protein: 0, carbs: 0, fat: 99.8, fiber: 0 },
+            "Butter": { energy: 717, protein: 0.9, carbs: 0.1, fat: 81.0, fiber: 0 },
+            
+            // Nuts and Seeds (per 100g)
+            "Groundnut": { energy: 567, protein: 25.3, carbs: 16.1, fat: 50.0, fiber: 8.5 },
+            "Coconut, fresh": { energy: 354, protein: 3.3, carbs: 15.2, fat: 33.0, fiber: 9.0 },
+            "Sesame seeds": { energy: 563, protein: 17.7, carbs: 23.4, fat: 49.7, fiber: 11.8 },
+            
+            // Sugars (per 100g)
+            "Sugar": { energy: 398, protein: 0, carbs: 99.5, fat: 0, fiber: 0 },
+            "Jaggery": { energy: 383, protein: 0.4, carbs: 95.0, fat: 0.1, fiber: 0 }
+        };
+
+        // SES Classification data (Updated 2024)
+        const sesClassifications = {
+            prasad: {
+                name: "Modified Prasad Classification 2024",
+                classes: [
+                    { min: 10533, class: "Class I (Upper)", color: "success" },
+                    { min: 5267, max: 10532, class: "Class II (Upper Middle)", color: "info" },
+                    { min: 3160, max: 5266, class: "Class III (Middle)", color: "warning" },
+                    { min: 1580, max: 3159, class: "Class IV (Lower Middle)", color: "warning" },
+                    { min: 0, max: 1579, class: "Class V (Lower)", color: "danger" }
+                ]
+            },
+            kuppuswami: {
+                name: "Modified Kuppuswami Scale",
+                classes: [
+                    { min: 52734, class: "Upper (I)", color: "success" },
+                    { min: 26355, max: 52733, class: "Upper Middle (II)", color: "info" },
+                    { min: 19759, max: 26354, class: "Lower Middle (III)", color: "warning" },
+                    { min: 13161, max: 19758, class: "Upper Lower (IV)", color: "warning" },
+                    { min: 0, max: 13160, class: "Lower (V)", color: "danger" }
+                ]
+            },
+            pareek: {
+                name: "Pareek's Classification (Rural)",
+                classes: [
+                    { min: 30000, class: "Upper High", color: "success" },
+                    { min: 20000, max: 29999, class: "High", color: "info" },
+                    { min: 15000, max: 19999, class: "Upper Middle", color: "info" },
+                    { min: 10000, max: 14999, class: "Middle", color: "warning" },
+                    { min: 5000, max: 9999, class: "Lower Middle", color: "warning" },
+                    { min: 2500, max: 4999, class: "Poor", color: "danger" },
+                    { min: 0, max: 2499, class: "Very Poor", color: "danger" }
+                ]
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApplication();
+        });
+
+        function initializeApplication() {
+            // Set current date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('studyDate').value = today;
+            
+            // Generate family ID
+            const familyId = 'FAM-' + Date.now().toString().substr(-6);
+            document.getElementById('familyId').value = familyId;
+            
+            // Initialize radio button event listeners
+            initializeRadioButtons();
+            
+            // Initialize form validation
+            initializeFormValidation();
+            
+            // Load sample data for demonstration
+            loadSampleData();
+        }
+
+        function initializeRadioButtons() {
+            const radioGroups = document.querySelectorAll('.radio-group');
+            radioGroups.forEach(group => {
+                const radioItems = group.querySelectorAll('.radio-item');
+                radioItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio) {
+                            radio.checked = true;
+                            // Remove checked class from siblings
+                            radioItems.forEach(sibling => sibling.classList.remove('checked'));
+                            // Add checked class to current item
+                            this.classList.add('checked');
+                        }
+                    });
+                });
+            });
+
+            // Initialize checkbox groups
+            const checkboxGroups = document.querySelectorAll('.checkbox-group');
+            checkboxGroups.forEach(group => {
+                const checkboxItems = group.querySelectorAll('.checkbox-item');
+                checkboxItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            this.classList.toggle('checked', checkbox.checked);
+                        }
+                    });
+                });
+            });
+        }
+
+        function initializeFormValidation() {
+            // Add real-time validation for numeric inputs
+            const numericInputs = document.querySelectorAll('input[type="number"]');
+            numericInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+                });
+            });
+        }
+
+        function openTab(evt, tabName) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            // Remove active class from all tab buttons
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            // Show the selected tab content and mark button as active
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            
+            // Update current tab
+            currentTab = tabName;
+            
+            // Update progress steps
+            updateProgressSteps(tabName);
+        }
+
+        function updateProgressSteps(tabName) {
+            const steps = {
+                'general-info': 1,
+                'socio-economic': 2,
+                'environment': 3,
+                'family-members': 4,
+                'nutrition': 5,
+                'health': 6,
+                'analysis': 7
+            };
+
+            const currentStep = steps[tabName];
+            
+            for (let i = 1; i <= 7; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < currentStep) {
+                    stepElement.classList.remove('active');
+                    stepElement.classList.add('completed');
+                } else if (i === currentStep) {
+                    stepElement.classList.remove('completed');
+                    stepElement.classList.add('active');
+                } else {
+                    stepElement.classList.remove('active', 'completed');
+                }
+            }
+        }
+
+        // Socio-Economic Status Calculations
+        function calculateSES() {
+            const primaryIncome = parseFloat(document.getElementById('primaryIncome').value) || 0;
+            const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+            const totalIncome = primaryIncome + otherIncome;
+            
+            document.getElementById('totalIncome').value = totalIncome;
+            
+            // Calculate family size and per capita income
+            const familySize = familyMembers.length || 1;
+            document.getElementById('familySize').value = familySize;
+            
+            const perCapitaIncome = totalIncome / familySize;
+            document.getElementById('perCapitaIncome').value = perCapitaIncome.toFixed(2);
+            
+            // Determine SES class
+            const sesMethod = document.getElementById('sesMethod').value;
+            const sesResult = document.getElementById('sesResult');
+            const sesIcon = document.getElementById('sesIcon');
+            const sesText = document.getElementById('sesText');
+            
+            if (totalIncome > 0) {
+                const classification = sesClassifications[sesMethod];
+                let selectedClass = null;
+                
+                for (const cls of classification.classes) {
+                    if (perCapitaIncome >= cls.min && (!cls.max || perCapitaIncome <= cls.max)) {
+                        selectedClass = cls;
+                        break;
+                    }
+                }
+                
+                if (selectedClass) {
+                    sesResult.className = `alert alert-${selectedClass.color}`;
+                    sesIcon.textContent = getStatusIcon(selectedClass.color);
+                    sesText.textContent = `${selectedClass.class} (₹${perCapitaIncome.toFixed(0)} per capita/month)`;
+                }
+            } else {
+                sesResult.className = 'alert alert-info';
+                sesIcon.textContent = 'ℹ️';
+                sesText.textContent = 'Enter income to calculate SES class';
+            }
+        }
+
+        function calculateExpenditure() {
+            const categories = ['Food', 'Clothing', 'Housing', 'Education', 'Medical', 'Transport', 'Utilities', 'Recreation', 'Other'];
+            let total = 0;
+            
+            categories.forEach(category => {
+                const value = parseFloat(document.getElementById(`exp${category}`).value) || 0;
+                total += value;
+            });
+            
+            document.getElementById('expTotal').value = total;
+            
+            // Calculate percentages
+            categories.forEach(category => {
+                const value = parseFloat(document.getElementById(`exp${category}`).value) || 0;
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                document.getElementById(`exp${category}Percent`).textContent = percentage + '%';
+                
+                // Set status indicator
+                const statusElement = document.getElementById(`exp${category}Status`);
+                if (statusElement) {
+                    if (category === 'Food' && percentage > 50) {
+                        statusElement.className = 'status-indicator status-danger';
+                    } else if (category === 'Food' && percentage > 35) {
+                        statusElement.className = 'status-indicator status-warning';
+                    } else {
+                        statusElement.className = 'status-indicator status-adequate';
+                    }
+                }
+            });
+            
+            // Calculate budget analysis
+            const totalIncome = parseFloat(document.getElementById('totalIncome').value) || 0;
+            const monthlySavings = totalIncome - total;
+            
+            document.getElementById('monthlySavings').value = monthlySavings.toFixed(2);
+            
+            const savingsRate = totalIncome > 0 ? ((monthlySavings / totalIncome) * 100) : 0;
+            document.getElementById('savingsRate').value = savingsRate.toFixed(1);
+            
+            // Update budget status
+            const budgetStatus = document.getElementById('budgetStatus');
+            const budgetIcon = document.getElementById('budgetIcon');
+            const budgetText = document.getElementById('budgetText');
+            
+            if (monthlySavings > 0) {
+                budgetStatus.className = 'alert alert-success';
+                budgetIcon.textContent = '✅';
+                budgetText.textContent = `Balanced Budget - Savings: ₹${monthlySavings.toFixed(0)} (${savingsRate.toFixed(1)}%)`;
+            } else if (monthlySavings === 0) {
+                budgetStatus.className = 'alert alert-warning';
+                budgetIcon.textContent = '⚠️';
+                budgetText.textContent = 'Break-even Budget - No savings';
+            } else {
+                budgetStatus.className = 'alert alert-danger';
+                budgetIcon.textContent = '❌';
+                budgetText.textContent = `Deficit Budget - Shortfall: ₹${Math.abs(monthlySavings).toFixed(0)}`;
+            }
+        }
+
+        function calculateOvercrowding() {
+            const numberOfRooms = parseInt(document.getElementById('numberOfRooms').value) || 0;
+            const totalFloorArea = parseInt(document.getElementById('totalFloorArea').value) || 0;
+            const familySize = familyMembers.length || 1;
+            
+            if (totalFloorArea > 0) {
+                const perCapitaFloorArea = totalFloorArea / familySize;
+                document.getElementById('perCapitaFloorArea').value = perCapitaFloorArea.toFixed(1);
+                
+                const overcrowdingStatus = document.getElementById('overcrowdingStatus');
+                const overcrowdingIcon = document.getElementById('overcrowdingIcon');
+                const overcrowdingText = document.getElementById('overcrowdingText');
+                
+                if (perCapitaFloorArea >= 80) {
+                    overcrowdingStatus.className = 'alert alert-success';
+                    overcrowdingIcon.textContent = '✅';
+                    overcrowdingText.textContent = 'Adequate space - No overcrowding';
+                } else if (perCapitaFloorArea >= 50) {
+                    overcrowdingStatus.className = 'alert alert-warning';
+                    overcrowdingIcon.textContent = '⚠️';
+                    overcrowdingText.textContent = 'Borderline adequate space';
+                } else {
+                    overcrowdingStatus.className = 'alert alert-danger';
+                    overcrowdingIcon.textContent = '❌';
+                    overcrowdingText.textContent = 'Overcrowded - Inadequate space';
+                }
+            }
+            
+            if (numberOfRooms > 0) {
+                const personsPerRoom = familySize / numberOfRooms;
+                document.getElementById('personsPerRoom').value = personsPerRoom.toFixed(1);
+            }
+        }
+
+        // Family Member Management
+        function addFamilyMember() {
+            const tableBody = document.getElementById('familyMemberTableBody');
+            const rowCount = familyMembers.length + 1;
+            
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${rowCount}</td>
+                <td><input type="text" id="memberName${rowCount}" placeholder="Full Name" required></td>
+                <td><input type="number" id="memberAge${rowCount}" min="0" max="120" placeholder="Age" required onchange="updateMemberDetails(${rowCount})"></td>
+                <td>
+                    <select id="memberSex${rowCount}" required onchange="updateMemberDetails(${rowCount})">
+                        <option value="">Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="memberRelation${rowCount}" required>
+                        <option value="">Select Relation</option>
+                        <option value="self">Self (Head)</option>
+                        <option value="spouse">Spouse</option>
+                        <option value="son">Son</option>
+                        <option value="daughter">Daughter</option>
+                        <option value="father">Father</option>
+                        <option value="mother">Mother</option>
+                        <option value="brother">Brother</option>
+                        <option value="sister">Sister</option>
+                        <option value="grandfather">Grandfather</option>
+                        <option value="grandmother">Grandmother</option>
+                        <option value="other">Other</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="memberMarital${rowCount}">
+                        <option value="">Select</option>
+                        <option value="single">Single</option>
+                        <option value="married">Married</option>
+                        <option value="divorced">Divorced</option>
+                        <option value="widowed">Widowed</option>
+                    </select>
+                </td>
+                <td><input type="text" id="memberEducation${rowCount}" placeholder="Education Level"></td>
+                <td><input type="text" id="memberOccupation${rowCount}" placeholder="Occupation"></td>
+                <td><input type="number" id="memberIncome${rowCount}" min="0" placeholder="Monthly Income"></td>
+                <td>
+                    <select id="memberActivity${rowCount}" onchange="updateMemberDetails(${rowCount})">
+                        <option value="">Select Activity</option>
+                        <option value="sedentary">Sedentary</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="heavy">Heavy Work</option>
+                        <option value="student">Student</option>
+                        <option value="homemaker">Homemaker</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="removeFamilyMember(${rowCount})">🗑️ Remove</button>
+                </td>
+            `;
+            
+            // Add to family members array
+            familyMembers.push({
+                id: rowCount,
+                name: '',
+                age: 0,
+                sex: '',
+                relation: '',
+                marital: '',
+                education: '',
+                occupation: '',
+                income: 0,
+                activity: ''
+            });
+        }
+
+        function updateMemberDetails(memberId) {
+            const member = familyMembers.find(m => m.id === memberId);
+            if (member) {
+                member.name = document.getElementById(`memberName${memberId}`).value;
+                member.age = parseInt(document.getElementById(`memberAge${memberId}`).value) || 0;
+                member.sex = document.getElementById(`memberSex${memberId}`).value;
+                member.relation = document.getElementById(`memberRelation${memberId}`).value;
+                member.marital = document.getElementById(`memberMarital${memberId}`).value;
+                member.education = document.getElementById(`memberEducation${memberId}`).value;
+                member.occupation = document.getElementById(`memberOccupation${memberId}`).value;
+                member.income = parseFloat(document.getElementById(`memberIncome${memberId}`).value) || 0;
+                member.activity = document.getElementById(`memberActivity${memberId}`).value;
+            }
+            
+            // Auto-update calculations
+            calculateSES();
+            calculateOvercrowding();
+        }
+
+        function removeFamilyMember(memberId) {
+            // Remove from array
+            familyMembers = familyMembers.filter(m => m.id !== memberId);
+            
+            // Remove from table
+            const tableBody = document.getElementById('familyMemberTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i].cells[0].textContent == memberId) {
+                    tableBody.removeChild(rows[i]);
+                    break;
+                }
+            }
+            
+            // Update calculations
+            calculateSES();
+            calculateOvercrowding();
+        }
+
+        function calculateFamilySummary() {
+            if (familyMembers.length === 0) {
+                alert('Please add family members first');
+                return;
+            }
+            
+            let maleCount = 0, femaleCount = 0, childrenCount = 0, adultsCount = 0, elderlyCount = 0;
+            
+            familyMembers.forEach(member => {
+                if (member.sex === 'male') maleCount++;
+                if (member.sex === 'female') femaleCount++;
+                
+                if (member.age < 18) childrenCount++;
+                else if (member.age >= 18 && member.age < 60) adultsCount++;
+                else elderlyCount++;
+            });
+            
+            // Update display
+            document.getElementById('totalMembersCount').textContent = familyMembers.length;
+            document.getElementById('maleCount').textContent = maleCount;
+            document.getElementById('femaleCount').textContent = femaleCount;
+            document.getElementById('childrenCount').textContent = childrenCount;
+            document.getElementById('adultsCount').textContent = adultsCount;
+            document.getElementById('elderlyCount').textContent = elderlyCount;
+            
+            // Show stats
+            document.getElementById('familyStats').style.display = 'grid';
+            
+            // Generate detailed analysis
+            generateFamilyAnalysis();
+        }
+
+        function generateFamilyAnalysis() {
+            let analysisHTML = `
+                <h4>📊 Demographic Analysis</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Dependency Ratio</label>
+                        <input type="number" value="${calculateDependencyRatio().toFixed(2)}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Sex Ratio (F per 1000 M)</label>
+                        <input type="number" value="${calculateSexRatio().toFixed(0)}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Literacy Rate (%)</label>
+                        <input type="number" value="${calculateLiteracyRate().toFixed(1)}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Employment Rate (%)</label>
+                        <input type="number" value="${calculateEmploymentRate().toFixed(1)}" readonly>
+                    </div>
+                </div>
+                
+                <h4>🏥 Health Indicators</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Reproductive Age Women</label>
+                        <input type="number" value="${countReproductiveAgeWomen()}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Eligible Couples</label>
+                        <input type="number" value="${countEligibleCouples()}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Under-5 Children</label>
+                        <input type="number" value="${countUnder5Children()}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Adolescents (10-19 yrs)</label>
+                        <input type="number" value="${countAdolescents()}" readonly>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('familyAnalysisContent').innerHTML = analysisHTML;
+            document.getElementById('familyAnalysis').style.display = 'block';
+        }
+
+        // Helper functions for family analysis
+        function calculateDependencyRatio() {
+            const dependents = familyMembers.filter(m => m.age < 15 || m.age >= 65).length;
+            const workingAge = familyMembers.filter(m => m.age >= 15 && m.age < 65).length;
+            return workingAge > 0 ? (dependents / workingAge) * 100 : 0;
+        }
+
+        function calculateSexRatio() {
+            const males = familyMembers.filter(m => m.sex === 'male').length;
+            const females = familyMembers.filter(m => m.sex === 'female').length;
+            return males > 0 ? (females / males) * 1000 : 0;
+        }
+
+        function calculateLiteracyRate() {
+            const literateMembers = familyMembers.filter(m => 
+                m.age >= 7 && m.education && 
+                m.education.toLowerCase() !== 'illiterate' && 
+                m.education.toLowerCase() !== 'none'
+            ).length;
+            const eligibleMembers = familyMembers.filter(m => m.age >= 7).length;
+            return eligibleMembers > 0 ? (literateMembers / eligibleMembers) * 100 : 0;
+        }
+
+        function calculateEmploymentRate() {
+            const employedMembers = familyMembers.filter(m => 
+                m.age >= 15 && m.occupation && 
+                m.occupation.toLowerCase() !== 'unemployed' && 
+                m.occupation.toLowerCase() !== 'student'
+            ).length;
+            const workingAgeMembers = familyMembers.filter(m => m.age >= 15).length;
+            return workingAgeMembers > 0 ? (employedMembers / workingAgeMembers) * 100 : 0;
+        }
+
+        function countReproductiveAgeWomen() {
+            return familyMembers.filter(m => m.sex === 'female' && m.age >= 15 && m.age <= 49).length;
+        }
+
+        function countEligibleCouples() {
+            const marriedWomen = familyMembers.filter(m => 
+                m.sex === 'female' && 
+                m.marital === 'married' && 
+                m.age >= 15 && m.age <= 49
+            ).length;
+            return marriedWomen;
+        }
+
+        function countUnder5Children() {
+            return familyMembers.filter(m => m.age < 5).length;
+        }
+
+        function countAdolescents() {
+            return familyMembers.filter(m => m.age >= 10 && m.age <= 19).length;
+        }
+
+        // Consumption Units Calculation (ICMR-NIN 2020)
+        function calculateConsumptionUnits() {
+            if (familyMembers.length === 0) {
+                alert('Please add family members first');
+                return;
+            }
+            
+            let totalCU = 0;
+            let cuBreakdown = [];
+            
+            familyMembers.forEach(member => {
+                let cu = 0;
+                let category = '';
+                
+                if (member.age < 0.5) {
+                    cu = consumptionUnits.infant_0_6m;
+                    category = 'Infant (0-6 months)';
+                } else if (member.age < 1) {
+                    cu = consumptionUnits.infant_6_12m;
+                    category = 'Infant (6-12 months)';
+                } else if (member.age < 4) {
+                    cu = consumptionUnits.child_1_3y;
+                    category = 'Child (1-3 years)';
+                } else if (member.age < 7) {
+                    cu = consumptionUnits.child_4_6y;
+                    category = 'Child (4-6 years)';
+                } else if (member.age < 10) {
+                    cu = consumptionUnits.child_7_9y;
+                    category = 'Child (7-9 years)';
+                } else if (member.age < 13) {
+                    cu = member.sex === 'male' ? consumptionUnits.adolescent_10_12y_male : consumptionUnits.adolescent_10_12y_female;
+                    category = 'Adolescent (10-12 years)';
+                } else if (member.age < 19) {
+                    cu = member.sex === 'male' ? consumptionUnits.adolescent_13_18y_male : consumptionUnits.adolescent_13_18y_female;
+                    category = 'Adolescent (13-18 years)';
+                } else if (member.age < 60) {
+                    // Adult CU based on activity level
+                    if (member.activity === 'sedentary') {
+                        cu = member.sex === 'male' ? consumptionUnits.adult_sedentary_male : consumptionUnits.adult_sedentary_female;
+                        category = 'Adult - Sedentary';
+                    } else if (member.activity === 'moderate') {
+                        cu = member.sex === 'male' ? consumptionUnits.adult_moderate_male : consumptionUnits.adult_moderate_female;
+                        category = 'Adult - Moderate Activity';
+                    } else if (member.activity === 'heavy') {
+                        cu = member.sex === 'male' ? consumptionUnits.adult_heavy_male : consumptionUnits.adult_heavy_female;
+                        category = 'Adult - Heavy Work';
+                    } else {
+                        // Default to moderate for adults
+                        cu = member.sex === 'male' ? consumptionUnits.adult_moderate_male : consumptionUnits.adult_moderate_female;
+                        category = 'Adult - Moderate Activity (Default)';
+                    }
+                } else {
+                    cu = member.sex === 'male' ? consumptionUnits.elderly_male : consumptionUnits.elderly_female;
+                    category = 'Elderly (≥60 years)';
+                }
+                
+                totalCU += cu;
+                cuBreakdown.push({
+                    name: member.name,
+                    age: member.age,
+                    sex: member.sex,
+                    category: category,
+                    cu: cu.toFixed(2)
+                });
+            });
+            
+            // Update display
+            document.getElementById('totalFamilyCU').value = totalCU.toFixed(2);
+            document.getElementById('averageCUPerPerson').value = (totalCU / familyMembers.length).toFixed(2);
+            
+            // Show breakdown
+            let breakdownHTML = `
+                <h4>Consumption Units Breakdown</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Sex</th>
+                                <th>Category</th>
+                                <th>CU Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            cuBreakdown.forEach(item => {
+                breakdownHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.age}</td>
+                        <td>${item.sex}</td>
+                        <td>${item.category}</td>
+                        <td>${item.cu}</td>
+                    </tr>
+                `;
+            });
+            
+            breakdownHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('cuBreakdown').innerHTML = breakdownHTML;
+            document.getElementById('cuResults').style.display = 'block';
+        }
+
+        // Food Database Search
+        function searchFoodDatabase() {
+            const searchTerm = document.getElementById('foodSearch').value.toLowerCase();
+            const resultsDiv = document.getElementById('foodSearchResults');
+            
+            if (searchTerm.length < 2) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+            
+            const matchingFoods = Object.keys(foodDatabase).filter(food => 
+                food.toLowerCase().includes(searchTerm)
+            ).slice(0, 10);
+            
+            let resultsHTML = '<div style="background: white; border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; position: absolute; z-index: 1000; width: 100%;">';
+            
+            matchingFoods.forEach(food => {
+                resultsHTML += `
+                    <div style="padding: 8px; cursor: pointer; border-bottom: 1px solid #eee;" 
+                         onclick="selectFood('${food}')" 
+                         onmouseover="this.style.backgroundColor='#f5f5f5'" 
+                         onmouseout="this.style.backgroundColor='white'">
+                        <strong>${food}</strong><br>
+                        <small>Energy: ${foodDatabase[food].energy} kcal, Protein: ${foodDatabase[food].protein}g per 100g</small>
+                    </div>
+                `;
+            });
+            
+            resultsHTML += '</div>';
+            resultsDiv.innerHTML = resultsHTML;
+        }
+
+        function selectFood(foodName) {
+            document.getElementById('foodSearch').value = foodName;
+            document.getElementById('foodSearchResults').innerHTML = '';
+        }
+
+        function addSelectedFood() {
+            const foodName = document.getElementById('foodSearch').value;
+            const quantity = parseFloat(document.getElementById('foodQuantity').value);
+            const meal = document.getElementById('foodMeal').value;
+            
+            if (!foodName || !quantity || !meal) {
+                alert('Please select a food item, enter quantity, and choose meal');
+                return;
+            }
+            
+            const foodData = foodDatabase[foodName];
+            if (!foodData) {
+                alert('Food not found in database');
+                return;
+            }
+            
+            // Calculate nutritional values for the quantity
+            const factor = quantity / 100;
+            const nutritionalData = {
+                meal: meal,
+                foodName: foodName,
+                quantity: quantity,
+                energy: (foodData.energy * factor).toFixed(1),
+                protein: (foodData.protein * factor).toFixed(1),
+                carbs: (foodData.carbs * factor).toFixed(1),
+                fat: (foodData.fat * factor).toFixed(1),
+                fiber: (foodData.fiber * factor).toFixed(1)
+            };
+            
+            // Add to dietary items array
+            dietaryItems.push(nutritionalData);
+            
+            // Add to table
+            addDietaryRowToTable(nutritionalData);
+            
+            // Clear inputs
+            document.getElementById('foodSearch').value = '';
+            document.getElementById('foodQuantity').value = '';
+            
+            // Update totals
+            updateDietaryTotals();
+        }
+
+        function addDietaryRowToTable(data) {
+            const tableBody = document.getElementById('dietaryTableBody');
+            const row = tableBody.insertRow();
+            
+            row.innerHTML = `
+                <td>${data.meal}</td>
+                <td>${data.foodName}</td>
+                <td>${data.quantity}</td>
+                <td>${data.energy}</td>
+                <td>${data.protein}</td>
+                <td>${data.carbs}</td>
+                <td>${data.fat}</td>
+                <td>${data.fiber}</td>
+                <td><button type="button" class="btn btn-danger" onclick="removeDietaryItem(${dietaryItems.length - 1})">🗑️</button></td>
+            `;
+        }
+
+        function removeDietaryItem(index) {
+            dietaryItems.splice(index, 1);
+            
+            // Rebuild table
+            const tableBody = document.getElementById('dietaryTableBody');
+            tableBody.innerHTML = '';
+            
+            dietaryItems.forEach((item, idx) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${item.meal}</td>
+                    <td>${item.foodName}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.energy}</td>
+                    <td>${item.protein}</td>
+                    <td>${item.carbs}</td>
+                    <td>${item.fat}</td>
+                    <td>${item.fiber}</td>
+                    <td><button type="button" class="btn btn-danger" onclick="removeDietaryItem(${idx})">🗑️</button></td>
+                `;
+            });
+            
+            updateDietaryTotals();
+        }
+
+        function updateDietaryTotals() {
+            let totalEnergy = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0, totalFiber = 0;
+            
+            dietaryItems.forEach(item => {
+                totalEnergy += parseFloat(item.energy);
+                totalProtein += parseFloat(item.protein);
+                totalCarbs += parseFloat(item.carbs);
+                totalFat += parseFloat(item.fat);
+                totalFiber += parseFloat(item.fiber);
+            });
+            
+            // Update total row
+            document.getElementById('totalCalories').textContent = totalEnergy.toFixed(1);
+            document.getElementById('totalProtein').textContent = totalProtein.toFixed(1);
+            document.getElementById('totalCarbs').textContent = totalCarbs.toFixed(1);
+            document.getElementById('totalFat').textContent = totalFat.toFixed(1);
+            document.getElementById('totalFiber').textContent = totalFiber.toFixed(1);
+            
+            // Calculate per CU values
+            const totalCU = parseFloat(document.getElementById('totalFamilyCU').value) || 1;
+            
+            document.getElementById('perCUCalories').textContent = (totalEnergy / totalCU).toFixed(1);
+            document.getElementById('perCUProtein').textContent = (totalProtein / totalCU).toFixed(1);
+            document.getElementById('perCUCarbs').textContent = (totalCarbs / totalCU).toFixed(1);
+            document.getElementById('perCUFat').textContent = (totalFat / totalCU).toFixed(1);
+            document.getElementById('perCUFiber').textContent = (totalFiber / totalCU).toFixed(1);
+        }
+
+        function analyzeNutritionalStatus() {
+            if (dietaryItems.length === 0) {
+                alert('Please add dietary items first');
+                return;
+            }
+            
+            const totalCU = parseFloat(document.getElementById('totalFamilyCU').value) || 1;
+            const perCUCalories = parseFloat(document.getElementById('perCUCalories').textContent);
+            const perCUProtein = parseFloat(document.getElementById('perCUProtein').textContent);
+            
+            // ICMR-NIN 2020 Recommendations per CU
+            const recommendedCalories = 2110; // kcal per CU
+            const recommendedProtein = 0.83 * 65; // 54g protein per CU (0.83g/kg for 65kg reference male)
+            
+            // Calculate adequacy percentages
+            const calorieAdequacy = (perCUCalories / recommendedCalories) * 100;
+            const proteinAdequacy = (perCUProtein / recommendedProtein) * 100;
+            
+            let analysisHTML = `
+                <h4>📊 Nutritional Adequacy Analysis</h4>
+                <div class="nutritional-status">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: ${getAdequacyColor(calorieAdequacy)}">${calorieAdequacy.toFixed(1)}%</div>
+                        <div class="stat-label">Energy Adequacy</div>
+                        <div><span class="status-indicator ${getAdequacyStatus(calorieAdequacy)}"></span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: ${getAdequacyColor(proteinAdequacy)}">${proteinAdequacy.toFixed(1)}%</div>
+                        <div class="stat-label">Protein Adequacy</div>
+                        <div><span class="status-indicator ${getAdequacyStatus(proteinAdequacy)}"></span></div>
+                    </div>
+                </div>
+                
+                <h4>📋 Detailed Nutritional Assessment</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nutrient</th>
+                                <th>Per CU Intake</th>
+                                <th>ICMR-NIN RDA</th>
+                                <th>Adequacy (%)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Energy (kcal)</td>
+                                <td>${perCUCalories.toFixed(1)}</td>
+                                <td>${recommendedCalories}</td>
+                                <td>${calorieAdequacy.toFixed(1)}%</td>
+                                <td><span class="status-indicator ${getAdequacyStatus(calorieAdequacy)}"></span> ${getAdequacyText(calorieAdequacy)}</td>
+                            </tr>
+                            <tr>
+                                <td>Protein (g)</td>
+                                <td>${perCUProtein.toFixed(1)}</td>
+                                <td>${recommendedProtein.toFixed(1)}</td>
+                                <td>${proteinAdequacy.toFixed(1)}%</td>
+                                <td><span class="status-indicator ${getAdequacyStatus(proteinAdequacy)}"></span> ${getAdequacyText(proteinAdequacy)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h4>🏥 Health Risk Assessment</h4>
+                <div class="alert ${getOverallNutritionalAlert(calorieAdequacy, proteinAdequacy)}">
+                    <span>${getOverallNutritionalIcon(calorieAdequacy, proteinAdequacy)}</span>
+                    <span>${getOverallNutritionalMessage(calorieAdequacy, proteinAdequacy)}</span>
+                </div>
+                
+                <h4>💡 Recommendations</h4>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    ${generateNutritionalRecommendations(calorieAdequacy, proteinAdequacy)}
+                </div>
+            `;
+            
+            document.getElementById('nutritionalAnalysisContent').innerHTML = analysisHTML;
+            document.getElementById('nutritionalAnalysis').style.display = 'block';
+        }
+
+        // Helper functions for nutritional analysis
+        function getAdequacyColor(percentage) {
+            if (percentage >= 90 && percentage <= 110) return '#388e3c';
+            if (percentage >= 70 && percentage < 90) return '#f57c00';
+            if (percentage > 110 && percentage <= 130) return '#1976d2';
+            return '#d32f2f';
+        }
+
+        function getAdequacyStatus(percentage) {
+            if (percentage >= 90 && percentage <= 110) return 'status-adequate';
+            if (percentage >= 70 && percentage < 90) return 'status-borderline';
+            if (percentage > 110 && percentage <= 130) return 'status-excess';
+            return 'status-deficient';
+        }
+
+        function getAdequacyText(percentage) {
+            if (percentage >= 90 && percentage <= 110) return 'Adequate';
+            if (percentage >= 70 && percentage < 90) return 'Borderline';
+            if (percentage > 110 && percentage <= 130) return 'Excess';
+            return 'Deficient';
+        }
+
+        function getOverallNutritionalAlert(calorie, protein) {
+            const avgAdequacy = (calorie + protein) / 2;
+            if (avgAdequacy >= 85) return 'alert-success';
+            if (avgAdequacy >= 70) return 'alert-warning';
+            return 'alert-danger';
+        }
+
+        function getOverallNutritionalIcon(calorie, protein) {
+            const avgAdequacy = (calorie + protein) / 2;
+            if (avgAdequacy >= 85) return '✅';
+            if (avgAdequacy >= 70) return '⚠️';
+            return '❌';
+        }
+
+        function getOverallNutritionalMessage(calorie, protein) {
+            const avgAdequacy = (calorie + protein) / 2;
+            if (avgAdequacy >= 85) return 'Overall nutritional status is satisfactory. Continue current dietary practices with minor improvements.';
+            if (avgAdequacy >= 70) return 'Nutritional status is borderline. Requires dietary modifications to prevent malnutrition.';
+            return 'Poor nutritional status detected. Immediate dietary intervention and medical consultation recommended.';
+        }
+
+        function generateNutritionalRecommendations(calorie, protein) {
+            let recommendations = [];
+            
+            if (calorie < 70) {
+                recommendations.push('• Increase overall food intake to meet energy requirements');
+                recommendations.push('• Include energy-dense foods like nuts, oils, and cereals');
+            } else if (calorie > 130) {
+                recommendations.push('• Reduce portion sizes to prevent excess caloric intake');
+                recommendations.push('• Focus on nutrient-dense, low-calorie foods');
+            }
+            
+            if (protein < 70) {
+                recommendations.push('• Increase protein-rich foods like pulses, dairy, eggs, and meat');
+                recommendations.push('• Include protein in every major meal');
+            } else if (protein > 130) {
+                recommendations.push('• Balance protein intake with other macronutrients');
+            }
+            
+            recommendations.push('• Follow ICMR My Plate guidelines for balanced nutrition');
+            recommendations.push('• Include variety in food choices across all food groups');
+            recommendations.push('• Ensure adequate intake of fruits and vegetables');
+            recommendations.push('• Monitor family nutritional status regularly');
+            
+            return recommendations.join('<br>');
+        }
+
+        // Health Records Management
+        function addHealthRecord() {
+            const tableBody = document.getElementById('healthRecordTableBody');
+            const rowCount = healthRecords.length + 1;
+            
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>
+                    <select id="healthName${rowCount}">
+                        <option value="">Select Member</option>
+                        ${familyMembers.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="number" id="healthAge${rowCount}" readonly></td>
+                <td><input type="number" id="healthHeight${rowCount}" min="0" step="0.1" onchange="calculateBMI(${rowCount})"></td>
+                <td><input type="number" id="healthWeight${rowCount}" min="0" step="0.1" onchange="calculateBMI(${rowCount})"></td>
+                <td><input type="number" id="healthBMI${rowCount}" readonly step="0.1"></td>
+                <td><span id="bmiCategory${rowCount}">-</span></td>
+                <td><input type="text" id="healthBP${rowCount}" placeholder="120/80"></td>
+                <td><textarea id="healthIssues${rowCount}" rows="2" placeholder="Any health problems"></textarea></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeHealthRecord(${rowCount})">🗑️</button></td>
+            `;
+            
+            // Add event listener for name selection
+            document.getElementById(`healthName${rowCount}`).addEventListener('change', function() {
+                const selectedMember = familyMembers.find(m => m.name === this.value);
+                if (selectedMember) {
+                    document.getElementById(`healthAge${rowCount}`).value = selectedMember.age;
+                }
+            });
+            
+            healthRecords.push({ id: rowCount });
+        }
+
+        function calculateBMI(rowId) {
+            const height = parseFloat(document.getElementById(`healthHeight${rowId}`).value);
+            const weight = parseFloat(document.getElementById(`healthWeight${rowId}`).value);
+            
+            if (height > 0 && weight > 0) {
+                const heightInMeters = height / 100;
+                const bmi = weight / (heightInMeters * heightInMeters);
+                
+                document.getElementById(`healthBMI${rowId}`).value = bmi.toFixed(1);
+                
+                // Determine BMI category
+                let category, categoryClass;
+                if (bmi < 18.5) {
+                    category = 'Underweight';
+                    categoryClass = 'status-deficient';
+                } else if (bmi < 25) {
+                    category = 'Normal';
+                    categoryClass = 'status-adequate';
+                } else if (bmi < 30) {
+                    category = 'Overweight';
+                    categoryClass = 'status-borderline';
+                } else {
+                    category = 'Obese';
+                    categoryClass = 'status-deficient';
+                }
+                
+                const categoryElement = document.getElementById(`bmiCategory${rowId}`);
+                categoryElement.textContent = category;
+                categoryElement.className = `status-indicator ${categoryClass}`;
+            }
+        }
+
+        function removeHealthRecord(recordId) {
+            healthRecords = healthRecords.filter(r => r.id !== recordId);
+            
+            const tableBody = document.getElementById('healthRecordTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const nameSelect = rows[i].querySelector('select');
+                if (nameSelect && nameSelect.id === `healthName${recordId}`) {
+                    tableBody.removeChild(rows[i]);
+                    break;
+                }
+            }
+        }
+
+        function addImmunizationRecord() {
+            const tableBody = document.getElementById('immunizationTableBody');
+            const rowCount = immunizationRecords.length + 1;
+            
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>
+                    <select id="immunizationName${rowCount}">
+                        <option value="">Select Member</option>
+                        ${familyMembers.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="number" id="immunizationAge${rowCount}" readonly></td>
+                <td><input type="checkbox" id="bcg${rowCount}"></td>
+                <td><input type="checkbox" id="opv${rowCount}"></td>
+                <td><input type="checkbox" id="dpt${rowCount}"></td>
+                <td><input type="checkbox" id="hepb${rowCount}"></td>
+                <td><input type="checkbox" id="mmr${rowCount}"></td>
+                <td><input type="checkbox" id="covid${rowCount}"></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeImmunizationRecord(${rowCount})">🗑️</button></td>
+            `;
+            
+            // Add event listener for name selection
+            document.getElementById(`immunizationName${rowCount}`).addEventListener('change', function() {
+                const selectedMember = familyMembers.find(m => m.name === this.value);
+                if (selectedMember) {
+                    document.getElementById(`immunizationAge${rowCount}`).value = selectedMember.age;
+                }
+            });
+            
+            immunizationRecords.push({ id: rowCount });
+        }
+
+        function removeImmunizationRecord(recordId) {
+            immunizationRecords = immunizationRecords.filter(r => r.id !== recordId);
+            
+            const tableBody = document.getElementById('immunizationTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const nameSelect = rows[i].querySelector('select');
+                if (nameSelect && nameSelect.id === `immunizationName${recordId}`) {
+                    tableBody.removeChild(rows[i]);
+                    break;
+                }
+            }
+        }
+
+        // Comprehensive Report Generation
+        function generateComprehensiveReport() {
+            if (familyMembers.length === 0) {
+                alert('Please add family members first');
+                return;
+            }
+            
+            const reportHTML = `
+                <div class="report-section">
+                    <h3>📋 Family Health Study Report</h3>
+                    <p><strong>Date:</strong> ${document.getElementById('studyDate').value}</p>
+                    <p><strong>Family ID:</strong> ${document.getElementById('familyId').value}</p>
+                    <p><strong>Head of Family:</strong> ${document.getElementById('familyHead').value}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h4>🏠 General Information</h4>
+                    <p><strong>Address:</strong> ${document.getElementById('address').value}</p>
+                    <p><strong>Area Type:</strong> ${document.getElementById('area').value}</p>
+                    <p><strong>Religion:</strong> ${document.getElementById('religion').value}</p>
+                    <p><strong>Family Type:</strong> ${document.querySelector('input[name="familyType"]:checked')?.value || 'Not specified'}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h4>💰 Socio-Economic Status</h4>
+                    <p><strong>Total Monthly Income:</strong> ₹${document.getElementById('totalIncome').value}</p>
+                    <p><strong>Per Capita Income:</strong> ₹${document.getElementById('perCapitaIncome').value}</p>
+                    <p><strong>SES Classification:</strong> ${document.getElementById('sesText').textContent}</p>
+                    <p><strong>Monthly Savings:</strong> ₹${document.getElementById('monthlySavings').value}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h4>👨‍👩‍👧‍👦 Family Composition</h4>
+                    <p><strong>Total Members:</strong> ${familyMembers.length}</p>
+                    <p><strong>Males:</strong> ${familyMembers.filter(m => m.sex === 'male').length}</p>
+                    <p><strong>Females:</strong> ${familyMembers.filter(m => m.sex === 'female').length}</p>
+                    <p><strong>Children (<18 years):</strong> ${familyMembers.filter(m => m.age < 18).length}</p>
+                    <p><strong>Adults (18-59 years):</strong> ${familyMembers.filter(m => m.age >= 18 && m.age < 60).length}</p>
+                    <p><strong>Elderly (≥60 years):</strong> ${familyMembers.filter(m => m.age >= 60).length}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h4>🍎 Nutritional Assessment</h4>
+                    <p><strong>Total Consumption Units:</strong> ${document.getElementById('totalFamilyCU').value}</p>
+                    <p><strong>Energy Intake per CU:</strong> ${document.getElementById('perCUCalories').textContent} kcal</p>
+                    <p><strong>Protein Intake per CU:</strong> ${document.getElementById('perCUProtein').textContent} g</p>
+                    <p><strong>Nutritional Status:</strong> ${getNutritionalSummary()}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h4>🏥 Health Status</h4>
+                    <p><strong>Health Records:</strong> ${healthRecords.length} members examined</p>
+                    <p><strong>Immunization Records:</strong> ${immunizationRecords.length} members assessed</p>
+                    <p><strong>Chronic Diseases:</strong> ${getSelectedChronicDiseases()}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h4>🏠 Environmental Conditions</h4>
+                    <p><strong>House Type:</strong> ${document.getElementById('houseType').value}</p>
+                    <p><strong>Water Supply:</strong> ${document.getElementById('waterSupply').value}</p>
+                    <p><strong>Toilet Facility:</strong> ${document.getElementById('toiletFacility').value}</p>
+                    <p><strong>Overcrowding Status:</strong> ${document.getElementById('overcrowdingText').textContent}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h4>📊 Summary & Recommendations</h4>
+                    <div class="alert alert-info">
+                        <p><strong>Overall Assessment:</strong> ${generateOverallAssessment()}</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <h5>Key Recommendations:</h5>
+                        ${generateKeyRecommendations()}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('reportContent').innerHTML = reportHTML;
+            document.getElementById('comprehensiveReport').style.display = 'block';
+        }
+
+        function getNutritionalSummary() {
+            const caloriesAdequacy = calculateCalorieAdequacy();
+            const proteinAdequacy = calculateProteinAdequacy();
+            
+            if (caloriesAdequacy >= 85 && proteinAdequacy >= 85) {
+                return 'Adequate nutrition';
+            } else if (caloriesAdequacy >= 70 || proteinAdequacy >= 70) {
+                return 'Borderline nutrition - needs improvement';
+            } else {
+                return 'Poor nutrition - requires immediate intervention';
+            }
+        }
+
+        function calculateCalorieAdequacy() {
+            const perCUCalories = parseFloat(document.getElementById('perCUCalories').textContent) || 0;
+            return (perCUCalories / 2110) * 100;
+        }
+
+        function calculateProteinAdequacy() {
+            const perCUProtein = parseFloat(document.getElementById('perCUProtein').textContent) || 0;
+            return (perCUProtein / 54) * 100;
+        }
+
+        function getSelectedChronicDiseases() {
+            const checkedDiseases = Array.from(document.querySelectorAll('input[name="chronicDiseases"]:checked'))
+                .map(cb => cb.nextElementSibling.textContent)
+                .join(', ');
+            return checkedDiseases || 'None reported';
+        }
+
+        function generateOverallAssessment() {
+            const sesStatus = document.getElementById('sesText').textContent;
+            const nutritionalStatus = getNutritionalSummary();
+            const overcrowdingStatus = document.getElementById('overcrowdingText').textContent;
+            
+            let assessment = `This ${document.querySelector('input[name="familyType"]:checked')?.value || 'family'} family `;
+            assessment += `belongs to ${sesStatus} and has ${nutritionalStatus.toLowerCase()}. `;
+            assessment += `Housing conditions show ${overcrowdingStatus.toLowerCase()}. `;
+            
+            if (nutritionalStatus.includes('Adequate') && sesStatus.includes('Upper')) {
+                assessment += 'Overall, the family demonstrates good health and socio-economic status.';
+            } else if (nutritionalStatus.includes('Poor') || sesStatus.includes('Lower')) {
+                assessment += 'The family requires targeted interventions to improve health and economic conditions.';
+            } else {
+                assessment += 'The family shows mixed indicators and would benefit from focused improvements.';
+            }
+            
+            return assessment;
+        }
+
+        function generateKeyRecommendations() {
+            let recommendations = [];
+            
+            // SES-based recommendations
+            const sesText = document.getElementById('sesText').textContent;
+            if (sesText.includes('Lower') || sesText.includes('Poor')) {
+                recommendations.push('• Enroll in government welfare schemes (PMJAY, BPL card, MNREGA)');
+                recommendations.push('• Explore skill development and employment opportunities');
+            }
+            
+            // Nutrition-based recommendations
+            const nutritionalStatus = getNutritionalSummary();
+            if (nutritionalStatus.includes('Poor') || nutritionalStatus.includes('Borderline')) {
+                recommendations.push('• Increase dietary diversity and include all food groups');
+                recommendations.push('• Focus on protein-rich foods like pulses, dairy, and eggs');
+                recommendations.push('• Consider nutrition counseling and supplementation if needed');
+            }
+            
+            // Environmental recommendations
+            const overcrowdingText = document.getElementById('overcrowdingText').textContent;
+            if (overcrowdingText.includes('Overcrowded')) {
+                recommendations.push('• Address overcrowding issues for better health outcomes');
+                recommendations.push('• Improve ventilation and sanitation facilities');
+            }
+            
+            // Health recommendations
+            if (healthRecords.length === 0) {
+                recommendations.push('• Conduct comprehensive health examinations for all family members');
+            }
+            
+            if (immunizationRecords.length === 0) {
+                recommendations.push('• Update immunization status according to national schedule');
+            }
+            
+            // General recommendations
+            recommendations.push('• Regular health check-ups and monitoring');
+            recommendations.push('• Follow ICMR dietary guidelines for optimal nutrition');
+            recommendations.push('• Maintain good hygiene and sanitation practices');
+            
+            return recommendations.join('<br>');
+        }
+
+        // Export Functions
+        function exportToPDF() {
+            window.print();
+        }
+
+        function exportToExcel() {
+            // Create workbook data
+            const workbookData = {
+                familyMembers: familyMembers,
+                dietaryItems: dietaryItems,
+                healthRecords: healthRecords,
+                generalInfo: {
+                    familyHead: document.getElementById('familyHead').value,
+                    address: document.getElementById('address').value,
+                    area: document.getElementById('area').value,
+                    religion: document.getElementById('religion').value
+                },
+                socioEconomic: {
+                    totalIncome: document.getElementById('totalIncome').value,
+                    perCapitaIncome: document.getElementById('perCapitaIncome').value,
+                    sesClass: document.getElementById('sesText').textContent
+                }
+            };
+            
+            // Convert to CSV format for download
+            const csvContent = convertToCSV(workbookData);
+            downloadFile(csvContent, 'family-health-study.csv', 'text/csv');
+        }
+
+        function exportToJSON() {
+            const data = {
+                generalInfo: {
+                    studyDate: document.getElementById('studyDate').value,
+                    familyId: document.getElementById('familyId').value,
+                    familyHead: document.getElementById('familyHead').value,
+                    address: document.getElementById('address').value,
+                    area: document.getElementById('area').value,
+                    religion: document.getElementById('religion').value,
+                    caste: document.getElementById('caste').value,
+                    familyType: document.querySelector('input[name="familyType"]:checked')?.value
+                },
+                socioEconomic: {
+                    primaryIncome: document.getElementById('primaryIncome').value,
+                    otherIncome: document.getElementById('otherIncome').value,
+                    totalIncome: document.getElementById('totalIncome').value,
+                    perCapitaIncome: document.getElementById('perCapitaIncome').value,
+                    sesClass: document.getElementById('sesText').textContent,
+                    monthlySavings: document.getElementById('monthlySavings').value
+                },
+                environment: {
+                    houseType: document.getElementById('houseType').value,
+                    numberOfRooms: document.getElementById('numberOfRooms').value,
+                    totalFloorArea: document.getElementById('totalFloorArea').value,
+                    waterSupply: document.getElementById('waterSupply').value,
+                    toiletFacility: document.getElementById('toiletFacility').value
+                },
+                familyMembers: familyMembers,
+                dietaryAssessment: {
+                    totalFamilyCU: document.getElementById('totalFamilyCU').value,
+                    dietaryItems: dietaryItems,
+                    nutritionalSummary: getNutritionalSummary()
+                },
+                healthRecords: healthRecords,
+                immunizationRecords: immunizationRecords,
+                generatedOn: new Date().toISOString()
+            };
+            
+            const jsonContent = JSON.stringify(data, null, 2);
+            downloadFile(jsonContent, 'family-health-study.json', 'application/json');
+        }
+
+        function printReport() {
+            const reportContent = document.getElementById('comprehensiveReport').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Family Health Study Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .report-section { margin-bottom: 20px; page-break-inside: avoid; }
+                        h3, h4 { color: #1565c0; }
+                        .alert { padding: 10px; border-radius: 5px; margin: 10px 0; }
+                        .alert-info { background: #e3f2fd; border-left: 4px solid #1976d2; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    ${reportContent}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Utility Functions
+        function convertToCSV(data) {
+            let csv = 'Family Health Study Data\n\n';
+            
+            // Family Members
+            csv += 'Family Members\n';
+            csv += 'Name,Age,Sex,Relation,Education,Occupation,Income,Activity\n';
+            data.familyMembers.forEach(member => {
+                csv += `${member.name},${member.age},${member.sex},${member.relation},${member.education},${member.occupation},${member.income},${member.activity}\n`;
+            });
+            
+            csv += '\nDietary Items\n';
+            csv += 'Meal,Food Item,Quantity,Energy,Protein,Carbs,Fat,Fiber\n';
+            data.dietaryItems.forEach(item => {
+                csv += `${item.meal},${item.foodName},${item.quantity},${item.energy},${item.protein},${item.carbs},${item.fat},${item.fiber}\n`;
+            });
+            
+            return csv;
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function getStatusIcon(status) {
+            switch(status) {
+                case 'success': return '✅';
+                case 'warning': return '⚠️';
+                case 'danger': return '❌';
+                case 'info': return 'ℹ️';
+                default: return '📊';
+            }
+        }
+
+        // Sample Data Loading (for demonstration)
+        function loadSampleData() {
+            // This function can be used to load sample data for testing
+            // In production, this would be removed or made optional
+        }
+
+        // Auto-save functionality (optional)
+        function autoSave() {
+            const data = {
+                familyMembers,
+                dietaryItems,
+                healthRecords,
+                timestamp: Date.now()
+            };
+            
+            try {
+                localStorage.setItem('familyHealthStudy', JSON.stringify(data));
+                console.log('Data auto-saved successfully');
+            } catch (error) {
+                console.warn('Auto-save failed:', error);
+            }
+        }
+
+        // Auto-save every 5 minutes
+        setInterval(autoSave, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
