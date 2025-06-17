@@ -15,7 +15,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -227,83 +227,81 @@ export default function DiagnosticTestPage() {
     };
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <div className="text-center">
-                    <h1 className="text-4xl font-bold">Diagnostic Test Accuracy Calculator</h1>
-                    <p className="text-muted-foreground mt-2">Calculate sample size for diagnostic test studies.</p>
-                </div>
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="single">Single Test</TabsTrigger>
-                        <TabsTrigger value="comparative">Comparative</TabsTrigger>
-                        <TabsTrigger value="roc">ROC Analysis</TabsTrigger>
-                    </TabsList>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="text-center">
+                <h1 className="text-4xl font-bold">Diagnostic Test Accuracy Calculator</h1>
+                <p className="text-muted-foreground mt-2">Calculate sample size for diagnostic test studies.</p>
+            </div>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="single">Single Test</TabsTrigger>
+                    <TabsTrigger value="comparative">Comparative</TabsTrigger>
+                    <TabsTrigger value="roc">ROC Analysis</TabsTrigger>
+                </TabsList>
 
-                    <TabsContent value="single">
-                        <Card><CardHeader><CardTitle>Single Test Evaluation</CardTitle><CardDescription>Calculate sample size based on desired precision for sensitivity and specificity.</CardDescription></CardHeader>
-                            <CardContent className="grid md:grid-cols-2 gap-4">
-                                <FormField name="expectedSensitivity" render={({ field }) => (<FormItem><FormLabel>Expected Sensitivity (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
-                                <FormField name="expectedSpecificity" render={({ field }) => (<FormItem><FormLabel>Expected Specificity (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                                <FormField name="diseasePrevalence" render={({ field }) => (<FormItem><FormLabel>Disease Prevalence (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
-                                <FormField name="marginOfError" render={({ field }) => (<FormItem><FormLabel>Margin of Error (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                                <FormField name="confidenceLevel" render={({ field }) => (<FormItem><FormLabel>Confidence Level</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="80">80%</SelectItem><SelectItem value="90">90%</SelectItem><SelectItem value="95">95%</SelectItem><SelectItem value="99">99%</SelectItem></SelectContent></Select></FormItem>)} />
-                                <FormField name="dropoutRate" render={({ field }) => (<FormItem><FormLabel>Dropout Rate (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                <TabsContent value="single">
+                    <Card><CardHeader><CardTitle>Single Test Evaluation</CardTitle><CardDescription>Calculate sample size based on desired precision for sensitivity and specificity.</CardDescription></CardHeader>
+                        <CardContent className="grid md:grid-cols-2 gap-4">
+                            <FormField name="expectedSensitivity" render={({ field }) => (<FormItem><FormLabel>Expected Sensitivity (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
+                            <FormField name="expectedSpecificity" render={({ field }) => (<FormItem><FormLabel>Expected Specificity (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                            <FormField name="diseasePrevalence" render={({ field }) => (<FormItem><FormLabel>Disease Prevalence (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
+                            <FormField name="marginOfError" render={({ field }) => (<FormItem><FormLabel>Margin of Error (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                            <FormField name="confidenceLevel" render={({ field }) => (<FormItem><FormLabel>Confidence Level</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="80">80%</SelectItem><SelectItem value="90">90%</SelectItem><SelectItem value="95">95%</SelectItem><SelectItem value="99">99%</SelectItem></SelectContent></Select></FormItem>)} />
+                            <FormField name="dropoutRate" render={({ field }) => (<FormItem><FormLabel>Dropout Rate (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                    <TabsContent value="comparative">
-                        <Card><CardHeader><CardTitle>Comparative Test Study</CardTitle><CardDescription>Calculate sample size for comparing the performance of two diagnostic tests.</CardDescription></CardHeader>
-                            <CardContent className="grid md:grid-cols-2 gap-4">
-                                <FormField name="studyDesign" render={({ field }) => (<FormItem><FormLabel>Study Design</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="paired">Paired</SelectItem><SelectItem value="unpaired">Unpaired</SelectContent></Select></FormItem>)} />
-                                <FormField name="comparisonMetric" render={({ field }) => (<FormItem><FormLabel>Metric to Compare</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="sensitivity">Sensitivity</SelectItem><SelectItem value="specificity">Specificity</SelectContent></Select></FormItem>)} />
-                                <FormField name="test1Performance" render={({ field }) => (<FormItem><FormLabel>Test 1 Performance (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
-                                <FormField name="test2Performance" render={({ field }) => (<FormItem><FormLabel>Test 2 Performance (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
-                                <FormField name="diseasePrevalence" render={({ field }) => (<FormItem><FormLabel>Disease Prevalence (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                                <FormField name="testCorrelation" render={({ field }) => (<FormItem><FormLabel>Test Correlation (ρ)</FormLabel><FormControl><Input type="number" step="0.1" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} disabled={watchStudyDesign !== 'paired'} /></FormControl></FormItem>)} />
-                                <FormField name="significanceLevel" render={({ field }) => (<FormItem><FormLabel>Significance Level (α)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="1">1%</SelectItem><SelectItem value="5">5%</SelectItem><SelectItem value="10">10%</SelectItem></SelectContent></Select></FormItem>)} />
-                                <FormField name="power" render={({ field }) => (<FormItem><FormLabel>Statistical Power (%)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="80">80%</SelectItem><SelectItem value="85">85%</SelectItem><SelectItem value="90">90%</SelectItem><SelectItem value="95">95%</SelectItem></SelectContent></Select></FormItem>)} />
-                                <FormField name="dropoutRate" render={({ field }) => (<FormItem><FormLabel>Dropout Rate (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                <TabsContent value="comparative">
+                    <Card><CardHeader><CardTitle>Comparative Test Study</CardTitle><CardDescription>Calculate sample size for comparing the performance of two diagnostic tests.</CardDescription></CardHeader>
+                        <CardContent className="grid md:grid-cols-2 gap-4">
+                            <FormField name="studyDesign" render={({ field }) => (<FormItem><FormLabel>Study Design</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="paired">Paired</SelectItem><SelectItem value="unpaired">Unpaired</SelectContent></Select></FormItem>)} />
+                            <FormField name="comparisonMetric" render={({ field }) => (<FormItem><FormLabel>Metric to Compare</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="sensitivity">Sensitivity</SelectItem><SelectItem value="specificity">Specificity</SelectContent></Select></FormItem>)} />
+                            <FormField name="test1Performance" render={({ field }) => (<FormItem><FormLabel>Test 1 Performance (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
+                            <FormField name="test2Performance" render={({ field }) => (<FormItem><FormLabel>Test 2 Performance (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} /></FormControl></FormItem>)} />
+                            <FormField name="diseasePrevalence" render={({ field }) => (<FormItem><FormLabel>Disease Prevalence (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                            <FormField name="testCorrelation" render={({ field }) => (<FormItem><FormLabel>Test Correlation (ρ)</FormLabel><FormControl><Input type="number" step="0.1" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} disabled={watchStudyDesign !== 'paired'} /></FormControl></FormItem>)} />
+                            <FormField name="significanceLevel" render={({ field }) => (<FormItem><FormLabel>Significance Level (α)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="1">1%</SelectItem><SelectItem value="5">5%</SelectItem><SelectItem value="10">10%</SelectItem></SelectContent></Select></FormItem>)} />
+                            <FormField name="power" render={({ field }) => (<FormItem><FormLabel>Statistical Power (%)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="80">80%</SelectItem><SelectItem value="85">85%</SelectItem><SelectItem value="90">90%</SelectItem><SelectItem value="95">95%</SelectItem></SelectContent></Select></FormItem>)} />
+                            <FormField name="dropoutRate" render={({ field }) => (<FormItem><FormLabel>Dropout Rate (%)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                    <TabsContent value="roc">
-                        <Card><CardHeader><CardTitle>ROC Curve Analysis</CardTitle><CardDescription>Calculate sample size for determining if a test is better than chance.</CardDescription></CardHeader>
-                            <CardContent className="grid md:grid-cols-2 gap-4">
-                                <FormField name="expectedAUC" render={({ field }) => (<FormItem><FormLabel>Expected AUC</FormLabel><FormControl><Input type="number" step="0.05" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                                <FormField name="nullAUC" render={({ field }) => (<FormItem><FormLabel>Null Hypothesis AUC</FormLabel><FormControl><Input type="number" step="0.05" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                                <FormField name="negativePositiveRatio" render={({ field }) => (<FormItem><FormLabel>Negative to Positive Ratio</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
-                                <FormField name="significanceLevel" render={({ field }) => (<FormItem><FormLabel>Significance Level (α)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="1">1%</SelectItem><SelectItem value="5">5%</SelectItem><SelectItem value="10">10%</SelectItem></SelectContent></Select></FormItem>)} />
-                                <FormField name="power" render={({ field }) => (<FormItem><FormLabel>Statistical Power (%)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="80">80%</SelectItem><SelectItem value="85">85%</SelectItem><SelectItem value="90">90%</SelectItem><SelectItem value="95">95%</SelectItem></SelectContent></Select></FormItem>)} />
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
+                <TabsContent value="roc">
+                    <Card><CardHeader><CardTitle>ROC Curve Analysis</CardTitle><CardDescription>Calculate sample size for determining if a test is better than chance.</CardDescription></CardHeader>
+                        <CardContent className="grid md:grid-cols-2 gap-4">
+                            <FormField name="expectedAUC" render={({ field }) => (<FormItem><FormLabel>Expected AUC</FormLabel><FormControl><Input type="number" step="0.05" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                            <FormField name="nullAUC" render={({ field }) => (<FormItem><FormLabel>Null Hypothesis AUC</FormLabel><FormControl><Input type="number" step="0.05" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                            <FormField name="negativePositiveRatio" render={({ field }) => (<FormItem><FormLabel>Negative to Positive Ratio</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)}/></FormControl></FormItem>)} />
+                            <FormField name="significanceLevel" render={({ field }) => (<FormItem><FormLabel>Significance Level (α)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="1">1%</SelectItem><SelectItem value="5">5%</SelectItem><SelectItem value="10">10%</SelectItem></SelectContent></Select></FormItem>)} />
+                            <FormField name="power" render={({ field }) => (<FormItem><FormLabel>Statistical Power (%)</FormLabel><Select onValueChange={(v) => field.onChange(Number(v))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="80">80%</SelectItem><SelectItem value="85">85%</SelectItem><SelectItem value="90">90%</SelectItem><SelectItem value="95">95%</SelectItem></SelectContent></Select></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
 
-                <div className="flex justify-center items-center gap-4">
-                    <Button type="submit" className="w-48">Calculate</Button>
-                    <div className="flex-col">
-                        <Input type="file" accept=".pdf" onChange={handleFileUpload} className="w-48 mb-2" />
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild><Button type="button" variant="outline" className="w-48" onClick={() => document.getElementById('pdf-upload')?.click()} >Extract from PDF</Button></TooltipTrigger>
-                                <TooltipContent><p>Automatically extract parameters from a research paper.</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
+            <div className="flex justify-center items-center gap-4">
+                <Button type="submit" className="w-48">Calculate</Button>
+                <div className="flex-col">
+                    <Input type="file" accept=".pdf" onChange={handleFileUpload} className="w-48 mb-2" />
                     <TooltipProvider>
                         <Tooltip>
-                            <TooltipTrigger asChild><Button type="button" variant="outline" className="w-48" onClick={generatePdf} disabled={!results}>Export to PDF</Button></TooltipTrigger>
-                            <TooltipContent><p>Export results as a PDF report.</p></TooltipContent>
+                            <TooltipTrigger asChild><Button type="button" variant="outline" className="w-48" onClick={() => document.getElementById('pdf-upload')?.click()} >Extract from PDF</Button></TooltipTrigger>
+                            <TooltipContent><p>Automatically extract parameters from a research paper.</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                 </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild><Button type="button" variant="outline" className="w-48" onClick={generatePdf} disabled={!results}>Export to PDF</Button></TooltipTrigger>
+                        <TooltipContent><p>Export results as a PDF report.</p></TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            </div>
 
-                {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
-                {results && <div className="mt-8">{renderResults()}</div>}
-            </form>
-        </Form>
+            {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+            {results && <div className="mt-8">{renderResults()}</div>}
+        </form>
     );
 }
