@@ -38,6 +38,8 @@ const tools = {
   ]
 };
 
+const CalcCard = ({ title, description, href, icon }) => (
+    <Link href={href} className="block">
         <p className="font-normal text-gray-700">{description}</p>
     </Link>
 );
@@ -55,7 +57,7 @@ export default function HomePage() {
       </header>
 
       <main className="container mx-auto px-4 py-12">
-        {Object.entries(calculators).map(([category, calcs]) => (
+        {Object.entries(tools).map(([category, calcs]) => (
           <section key={category} className="mb-12">
             <h2 className="text-4xl font-bold mb-6 border-b-4 pb-2 border-blue-500 text-blue-800">
               {category}
