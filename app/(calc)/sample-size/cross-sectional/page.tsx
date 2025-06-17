@@ -10,7 +10,8 @@ import { extractTextFromPDF } from '@/lib/pdf-utils';
 import {
     CrossSectionalSchema,
     calculateCrossSectionalSampleSize,
-    CrossSectionalOutput
+    CrossSectionalOutput,
+    CrossSectionalInput
 } from '@/lib/crossSectional';
 
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ export default function CrossSectionalPage() {
     const [error, setError] = useState<string | null>(null);
     const [showAdvanced, setShowAdvanced] = useState(false);
 
-    const form = useForm<z.infer<typeof CrossSectionalSchema>>({
+    const form = useForm<CrossSectionalInput>({
         resolver: zodResolver(CrossSectionalSchema),
         defaultValues: {
             prevalence: 50,
@@ -42,7 +43,7 @@ export default function CrossSectionalPage() {
         },
     });
 
-    const onSubmit = (data: z.infer<typeof CrossSectionalSchema>) => {
+    const onSubmit = (data: CrossSectionalInput) => {
         try {
             setError(null);
             const result = calculateCrossSectionalSampleSize(data);
