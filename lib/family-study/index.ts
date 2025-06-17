@@ -17,8 +17,8 @@ export { getSESClass } from './calculations/ses-calculator';
 
 // Food database lazy loader
 export async function loadFoodDatabase() {
-  const module = await import('./data/food-database.json');
-  return module.default;
+  const foodData = await import('./data/food-database.json');
+  return foodData.default;
 }
 
 // Legacy compatibility - maintain original exports structure

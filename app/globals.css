@@ -197,7 +197,7 @@
   /* Print styles */
   @media print {
     * {
-      color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .no-print {
@@ -310,23 +310,23 @@
   }
 
   /* ===== SEMANTIC TYPOGRAPHY CLASSES ===== */
-  .heading-display { @apply text-display font-black tracking-tight; }
-  .heading-hero { @apply text-hero font-extrabold tracking-tight; }
-  .heading-1 { @apply text-h1 font-bold tracking-tight; }
-  .heading-2 { @apply text-h2 font-bold tracking-tight; }
-  .heading-3 { @apply text-h3 font-semibold; }
-  .heading-4 { @apply text-h4 font-semibold; }
-  .heading-5 { @apply text-h5 font-semibold; }
-  .heading-6 { @apply text-h6 font-semibold; }
+  .heading-display { @apply text-6xl md:text-7xl lg:text-8xl font-black tracking-tight; }
+  .heading-hero { @apply text-5xl md:text-6xl font-extrabold tracking-tight; }
+  .heading-1 { @apply text-4xl md:text-5xl font-bold tracking-tight; }
+  .heading-2 { @apply text-3xl md:text-4xl font-bold tracking-tight; }
+  .heading-3 { @apply text-2xl md:text-3xl font-semibold; }
+  .heading-4 { @apply text-xl md:text-2xl font-semibold; }
+  .heading-5 { @apply text-lg md:text-xl font-semibold; }
+  .heading-6 { @apply text-base md:text-lg font-semibold; }
 
   /* Body text */
-  .body-large { @apply text-body-lg font-normal leading-relaxed; }
-  .body-default { @apply text-body font-normal leading-normal; }
+  .body-large { @apply text-lg font-normal leading-relaxed; }
+  .body-default { @apply text-base font-normal leading-normal; }
   .body-small { @apply text-sm font-normal leading-normal; }
 
   /* Special text */
-  .lead-text { @apply text-lead font-normal leading-relaxed; }
-  .caption-text { @apply text-caption font-medium tracking-wide; }
+  .lead-text { @apply text-xl font-normal leading-relaxed; }
+  .caption-text { @apply text-xs font-medium tracking-wide; }
   .label-text { @apply text-sm font-medium; }
   .helper-text { @apply text-xs text-muted-foreground; }
 

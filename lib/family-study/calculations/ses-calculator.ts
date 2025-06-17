@@ -11,7 +11,7 @@ export function getSESClass(perCapitaIncome: number, method: string): {
   }
 
   for (const range of classification.classes) {
-    if (range.max !== undefined) {
+    if ('max' in range && range.max !== undefined) {
       // Has both min and max
       if (perCapitaIncome >= range.min && perCapitaIncome <= range.max) {
         return { class: range.class, color: range.color };

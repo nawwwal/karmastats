@@ -94,10 +94,10 @@ const config = {
       letterSpacing: karmaTheme.typography.letterSpacing,
       spacing: karmaTheme.spacing,
       borderRadius: {
+        ...karmaTheme.borderRadius,
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        ...karmaTheme.borderRadius,
       },
       boxShadow: karmaTheme.shadows,
       zIndex: karmaTheme.zIndex,
