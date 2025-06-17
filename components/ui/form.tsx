@@ -17,7 +17,8 @@ import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
 const Form = (props: React.ComponentProps<typeof FormProvider>) => {
-  return <FormProvider {...props} />
+  const { children, ...providerProps } = props;
+  return <FormProvider {...providerProps}>{children}</FormProvider>;
 }
 
 type FormFieldContextValue<
