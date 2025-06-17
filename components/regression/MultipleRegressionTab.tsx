@@ -157,7 +157,7 @@ export function MultipleRegressionTab() {
   return (
     <div className="space-y-6">
       <Card className="p-6 mb-4">
-        <h2 className="text-2xl font-bold mb-4">Multiple Regression</h2>
+        <h2 className="heading-2 mb-4">Multiple Regression</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
@@ -183,7 +183,7 @@ export function MultipleRegressionTab() {
             <Button onClick={handleCalculate} className="w-full">
               Calculate Multiple Regression
             </Button>
-            {error && <div className="text-destructive font-medium mt-2">{error}</div>}
+            {error && <div className="error-text mt-2">{error}</div>}
           </div>
           {result && (
             <div className="space-y-2">

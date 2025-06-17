@@ -12,7 +12,7 @@ export function DiseaseMathPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2">Infectious Disease Modeling</h1>
+        <h1 className="heading-1 mb-2">Infectious Disease Modeling</h1>
         <p className="text-muted-foreground">
           Model and simulate disease spread using advanced mathematical models
         </p>

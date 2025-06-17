@@ -65,7 +65,7 @@ export function CohortForm() {
         <CardTitle>Cohort Study</CardTitle>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
+        <Form {...(form as any)}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
