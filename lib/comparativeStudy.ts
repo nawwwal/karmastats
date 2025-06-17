@@ -167,15 +167,17 @@ export function calculateCohort(params: CohortParams) {
 
 export class ComparativeStudy {
   private static getZScore(probability: number): number {
-    const zScores: { [key: number]: number } = {
-      0.80: 0.842,
-      0.85: 1.036,
-      0.90: 1.282,
-      0.95: 1.645,
+    // Use centralized constants first
+    if (Z_SCORES_BETA[probability as keyof typeof Z_SCORES_BETA]) {
+      return Z_SCORES_BETA[probability as keyof typeof Z_SCORES_BETA];
+    }
+
+    // Fallback for additional values not in centralized constants
+    const additionalZScores: { [key: number]: number } = {
       0.99: 2.326,
       0.999: 3.090
     };
-    return zScores[probability] || 0;
+    return additionalZScores[probability] || 0;
   }
 
   static calculateCaseControl(params: ComparativeStudyParams): ComparativeStudyResults {
