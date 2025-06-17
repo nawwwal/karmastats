@@ -39,9 +39,25 @@ const tools = {
 };
 
 const CalcCard = ({ title, description, href, icon }) => (
-    <Link href={href} className="block">
-        <p className="font-normal text-gray-700">{description}</p>
-    </Link>
+  <Link href={href} className="block">
+    <Card className="h-full hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+      <CardHeader>
+        <div className="flex items-center space-x-3">
+          {icon}
+          <CardTitle className="text-xl">{title}</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <CardDescription className="text-gray-600">
+          {description}
+        </CardDescription>
+        <div className="flex items-center mt-4 text-primary">
+          <span className="text-sm font-medium">Open Tool</span>
+          <ChevronRight className="h-4 w-4 ml-1" />
+        </div>
+      </CardContent>
+    </Card>
+  </Link>
 );
 
 export default function HomePage() {
@@ -59,7 +75,7 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-12">
         {Object.entries(tools).map(([category, calcs]) => (
           <section key={category} className="mb-12">
-            <h2 className="text-4xl font-bold mb-6 border-b-4 pb-2 border-blue-500 text-blue-800">
+            <h2 className="text-4xl font-bold mb-6 border-b-4 pb-2 border-blue-500 text-blue-800 capitalize">
               {category}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
