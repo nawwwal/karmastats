@@ -108,14 +108,14 @@ export const karmaTheme = {
       body: ['0.875rem', { lineHeight: '1.25rem' }],     // Body text
       'body-lg': ['1rem', { lineHeight: '1.5rem' }],     // Large body text
       lead: ['1.125rem', { lineHeight: '1.75rem' }],     // Lead paragraphs
-      h6: ['0.875rem', { lineHeight: '1.25rem', fontWeight: '600' }],  // Small heading
-      h5: ['1rem', { lineHeight: '1.5rem', fontWeight: '600' }],       // Small heading
-      h4: ['1.125rem', { lineHeight: '1.75rem', fontWeight: '600' }],  // Medium heading
-      h3: ['1.25rem', { lineHeight: '1.75rem', fontWeight: '600' }],   // Large heading
-      h2: ['1.5rem', { lineHeight: '2rem', fontWeight: '700' }],       // Section heading
-      h1: ['2.25rem', { lineHeight: '2.5rem', fontWeight: '800' }],    // Page heading
-      hero: ['3rem', { lineHeight: '1', fontWeight: '800' }],          // Hero text
-      display: ['4.5rem', { lineHeight: '1', fontWeight: '900' }],     // Display text
+      h6: ['0.875rem', { lineHeight: '1.25rem' }],  // Small heading
+      h5: ['1rem', { lineHeight: '1.5rem' }],       // Small heading
+      h4: ['1.125rem', { lineHeight: '1.75rem' }],  // Medium heading
+      h3: ['1.25rem', { lineHeight: '1.75rem' }],   // Large heading
+      h2: ['1.5rem', { lineHeight: '2rem' }],       // Section heading
+      h1: ['2.25rem', { lineHeight: '2.5rem' }],    // Page heading
+      hero: ['3rem', { lineHeight: '1' }],          // Hero text
+      display: ['4.5rem', { lineHeight: '1' }],     // Display text
     },
     fontWeight: {
       thin: '100',
