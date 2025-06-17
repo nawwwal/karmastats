@@ -29,6 +29,7 @@ export function StandardModel() {
   });
 
   const [results, setResults] = useState<any>(null);
+  const [rawResults, setRawResults] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const updateParam = (key: keyof Parameters, value: number) => {
@@ -76,6 +77,7 @@ export function StandardModel() {
       };
 
       setResults(transformedResults);
+      setRawResults(simulationResults);
     } catch (error) {
       console.error('Simulation failed:', error);
     } finally {
@@ -192,7 +194,7 @@ export function StandardModel() {
               <CardTitle>Key Metrics</CardTitle>
             </CardHeader>
             <CardContent>
-              <MetricsDisplay metrics={results.metrics} />
+              <MetricsDisplay results={rawResults} />
             </CardContent>
           </Card>
         )}
@@ -236,7 +238,7 @@ export function StandardModel() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <LineChart data={results.data} />
+              <LineChart data={rawResults} />
             </CardContent>
           </Card>
         </div>
