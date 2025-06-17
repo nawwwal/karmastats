@@ -103,7 +103,7 @@ export function NutritionalAnalysis({
               {proteinAdequacy.toFixed(1)}%
             </div>
             <div className="text-sm">Protein Adequacy</div>
-            <Badge className="mt-2" variant="outline" className={getAdequacyStatus(proteinAdequacy)}>
+            <Badge variant="outline" className={`mt-2 ${getAdequacyStatus(proteinAdequacy)}`}>
               {getAdequacyText(proteinAdequacy)}
             </Badge>
           </CardContent>

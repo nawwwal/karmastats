@@ -58,9 +58,9 @@
     --sidebar-foreground: 215 19% 23%;
     --sidebar-primary: 201 78% 33%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 19% 28%;
-    --sidebar-accent-foreground: 210 25% 98%;
-    --sidebar-border: 215 19% 35%;
+    --sidebar-accent: 215 25% 95%; /* pale accent for hover background */
+    --sidebar-accent-foreground: 215 19% 23%;
+    --sidebar-border: 215 15% 85%; /* maintain our slightly darker neutral */
     --sidebar-ring: 201 78% 33%;
   }
 

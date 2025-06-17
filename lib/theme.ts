@@ -223,8 +223,8 @@ export const lightTheme = {
   accentForeground: 'oklch(0.21 0.006 285.885)', // Dark
   destructive: 'oklch(0.577 0.245 27.325)', // Red
   destructiveForeground: 'oklch(1 0 0)', // White
-  border: 'oklch(0.92 0.004 286.32)', // Very light gray
-  input: 'oklch(0.92 0.004 286.32)', // Very light gray
+  border: 'oklch(0.87 0.015 285.938)', // Slightly darker for visible outlines
+  input: 'oklch(0.87 0.015 285.938)', // Matches border shade
   ring: 'oklch(0.391 0.138 213.445)', // Primary blue
   success: 'oklch(0.548 0.166 142.495)', // Green
   warning: 'oklch(0.832 0.199 95.677)', // Yellow
