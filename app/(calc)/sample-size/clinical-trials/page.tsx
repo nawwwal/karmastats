@@ -268,7 +268,7 @@ export default function ClinicalTrialsPage() {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="text-center">
-                    <h1 className="text-4xl font-bold">Clinical Trials Sample Size Calculator</h1>
+                    <h1 className="heading-1">Clinical Trials Sample Size Calculator</h1>
                     <p className="text-muted-foreground mt-2">For superiority, non-inferiority, and equivalence trials.</p>
                 </div>
                 <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">

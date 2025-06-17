@@ -21,8 +21,7 @@ import {
 } from "@/components/ui/card";
 import { useState, useRef } from "react";
 import { jsPDF } from "jspdf";
-import * as pdfjs from "pdfjs-dist/build/pdf";
-import "pdfjs-dist/build/pdf.worker.entry";
+import * as pdfjs from "pdfjs-dist";
 import {
     calculateIndependentSampleSize,
     IndependentSampleSizeSchema,
@@ -66,7 +65,7 @@ export function IndependentTTestForm() {
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const text = await page.getTextContent();
-        textContent += text.items.map((s) => s.str).join(' ');
+        textContent += text.items.map((s: any) => s.str).join(' ');
       }
 
       // Very basic regex for demonstration.
