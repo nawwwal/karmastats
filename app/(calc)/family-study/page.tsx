@@ -528,7 +528,7 @@ export default function FamilyStudyPage() {
               <div key={step} className="flex flex-col items-center">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${
                   step < currentStep ? 'bg-success' :
-                  step === currentStep ? 'bg-primary' : 'bg-gray-300'
+                  step === currentStep ? 'bg-primary' : 'bg-muted'
                 }`}>
                   {step}
                 </div>

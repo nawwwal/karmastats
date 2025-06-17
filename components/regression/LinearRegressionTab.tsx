@@ -229,8 +229,8 @@ export function LinearRegressionTab() {
             </Button>
           </div>
           <div className="h-[400px]">
-            {!showResidual && scatterData && <Line data={scatterData} options={options} />}
-            {showResidual && residualData && <Line data={residualData} options={residualOptions} />}
+            {!showResidual && scatterData && <Line data={scatterData as any} options={options} />}
+            {showResidual && residualData && <Line data={residualData as any} options={residualOptions} />}
           </div>
         </Card>
       )}
