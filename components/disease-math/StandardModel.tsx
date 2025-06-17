@@ -14,15 +14,23 @@ export function StandardModel() {
     populationSize: 1000000,
     initialCases: 100,
     transmissionRate: 0.3,
+    incubationPeriod: 5,
     recoveryRate: 0.1,
     mortalityRate: 0.02,
     simulationDays: 100,
+    seasonality: 0.1,
   });
 
   const [results, setResults] = useState<DiseaseModelResult | null>(null);
 
   const handleCalculate = () => {
-    const model = new DiseaseModel(params);
+    const interventions = {
+      socialDistancing: 0,
+      maskEffectiveness: 0,
+      vaccinationRate: 0,
+      vaccineEffectiveness: 0,
+    };
+    const model = new DiseaseModel(params, interventions);
     const result = model.calculate();
     setResults(result);
   };
@@ -68,6 +76,18 @@ export function StandardModel() {
               />
             </div>
             <div>
+              <Label htmlFor="incubationPeriod">Incubation Period (days)</Label>
+              <Input
+                id="incubationPeriod"
+                type="number"
+                step="0.1"
+                value={params.incubationPeriod}
+                onChange={(e) =>
+                  setParams({ ...params, incubationPeriod: Number(e.target.value) })
+                }
+              />
+            </div>
+            <div>
               <Label htmlFor="recoveryRate">Recovery Rate</Label>
               <Input
                 id="recoveryRate"
@@ -99,6 +119,20 @@ export function StandardModel() {
                 value={params.simulationDays}
                 onChange={(e) =>
                   setParams({ ...params, simulationDays: Number(e.target.value) })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="seasonality">Seasonality (0-1)</Label>
+              <Input
+                id="seasonality"
+                type="number"
+                step="0.01"
+                min="0"
+                max="1"
+                value={params.seasonality}
+                onChange={(e) =>
+                  setParams({ ...params, seasonality: Number(e.target.value) })
                 }
               />
             </div>

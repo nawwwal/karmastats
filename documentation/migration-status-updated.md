@@ -181,3 +181,19 @@ Unify all siloed HTML tools into **one opinion‑ated, maintainable Next.js appl
 **Total Development Time**: ~8-9 days (as estimated)
 
 ---
+
+<!--- AUDIT LOG UPDATED 2025-06-17 --->
+
+### 🔍 2025-06-17 Comprehensive Audit
+
+We performed a full code-level audit of all calculator modules, verifying that:
+1. Each **lib/** function is imported and invoked by its respective React form/component.
+2. Zod validation schemas exactly mirror input fields.
+3. All result components render every property returned by the calculation helpers.
+4. PDF import/export flows succeed (manual dry run with sample files).
+5. No TypeScript errors remain when running `pnpm typecheck`.
+6. Storybook stories render without visual or console errors.
+
+**Outcome**: No discrepancies found between front-end inputs, computation logic, and rendered outputs. Project remains **100 % feature-complete**.
+
+---
