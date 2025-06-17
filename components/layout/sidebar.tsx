@@ -37,7 +37,7 @@ import { Separator } from '@/components/ui/separator';
 interface SidebarItemProps {
   href: string;
   icon: React.ReactNode;
-  title: string;
+  title?: string;
   description?: string;
   children?: React.ReactNode;
   isActive?: boolean;
@@ -80,7 +80,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           {!isCollapsed && (
             <>
               <div className="flex-grow min-w-0">
-                <div className="font-medium truncate">{title}</div>
+                <div className="font-medium truncate">{title || 'Unknown'}</div>
                 {description && (
                   <div className="text-xs text-muted-foreground truncate">{description}</div>
                 )}
@@ -120,7 +120,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         </span>
         {!isCollapsed && (
           <div className="flex-grow min-w-0">
-            <div className="font-medium truncate">{title}</div>
+            <div className="font-medium truncate">{title || 'Unknown'}</div>
             {description && (
               <div className="text-xs text-muted-foreground truncate">{description}</div>
             )}
