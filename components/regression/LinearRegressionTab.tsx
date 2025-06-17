@@ -7,28 +7,35 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { linearRegression, LinearRegressionResult } from "@/lib/regression";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartOptions,
-} from "chart.js";
+import dynamic from "next/dynamic";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+// Dynamically import Chart.js to prevent SSR issues
+const Line = dynamic(
+  () => import("react-chartjs-2").then((mod) => mod.Line),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[400px] bg-muted animate-pulse rounded-lg flex items-center justify-center">
+        <span className="text-muted-foreground">Loading chart...</span>
+      </div>
+    ),
+  }
 );
+
+// Dynamic import for Chart.js registration
+if (typeof window !== "undefined") {
+  import("chart.js").then((ChartJS) => {
+    ChartJS.Chart.register(
+      ChartJS.CategoryScale,
+      ChartJS.LinearScale,
+      ChartJS.PointElement,
+      ChartJS.LineElement,
+      ChartJS.Title,
+      ChartJS.Tooltip,
+      ChartJS.Legend
+    );
+  });
+}
 
 function parseInput(input: string): number[] {
   return input
@@ -110,7 +117,7 @@ export function LinearRegressionTab() {
       }
     : undefined;
 
-  const options: ChartOptions<"line"> = {
+  const options: any = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -129,7 +136,7 @@ export function LinearRegressionTab() {
     },
   };
 
-  const residualOptions: ChartOptions<"line"> = {
+  const residualOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {

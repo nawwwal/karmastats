@@ -7,28 +7,35 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { multipleRegression, MultipleRegressionResult } from "@/lib/regression";
-import { Scatter } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartOptions,
-} from "chart.js";
+import dynamic from "next/dynamic";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+// Dynamically import Chart.js to prevent SSR issues
+const Scatter = dynamic(
+  () => import("react-chartjs-2").then((mod) => mod.Scatter),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[400px] bg-muted animate-pulse rounded-lg flex items-center justify-center">
+        <span className="text-muted-foreground">Loading chart...</span>
+      </div>
+    ),
+  }
 );
+
+// Dynamic import for Chart.js registration
+if (typeof window !== "undefined") {
+  import("chart.js").then((ChartJS) => {
+    ChartJS.Chart.register(
+      ChartJS.CategoryScale,
+      ChartJS.LinearScale,
+      ChartJS.PointElement,
+      ChartJS.LineElement,
+      ChartJS.Title,
+      ChartJS.Tooltip,
+      ChartJS.Legend
+    );
+  });
+}
 
 function parseColumnInput(input: string): number[][] {
   // Split by lines, then by comma/tab/space
@@ -135,7 +142,7 @@ export function MultipleRegressionTab() {
       }
     : undefined;
 
-  const chartOptions: ChartOptions<'scatter'> = {
+  const chartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {

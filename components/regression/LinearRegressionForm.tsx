@@ -8,27 +8,35 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Scatter } from "react-chartjs-2";
+import dynamic from "next/dynamic";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+// Dynamically import Chart.js to prevent SSR issues
+const Scatter = dynamic(
+  () => import("react-chartjs-2").then((mod) => mod.Scatter),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[400px] bg-muted animate-pulse rounded-lg flex items-center justify-center">
+        <span className="text-muted-foreground">Loading chart...</span>
+      </div>
+    ),
+  }
 );
+
+// Dynamic import for Chart.js registration
+if (typeof window !== "undefined") {
+  import("chart.js").then((ChartJS) => {
+    ChartJS.Chart.register(
+      ChartJS.CategoryScale,
+      ChartJS.LinearScale,
+      ChartJS.PointElement,
+      ChartJS.LineElement,
+      ChartJS.Title,
+      ChartJS.Tooltip,
+      ChartJS.Legend
+    );
+  });
+}
 
 const parseInput = (input: string): number[] => {
     return input.split(/[\s,]+/).filter(s => s.trim() !== "").map(Number);
