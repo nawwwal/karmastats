@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono } from "next/font/google";
+import { Inter, Space_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -10,8 +11,17 @@ const spaceMono = Space_Mono({
   weight: "400",
   variable: "--font-mono"
 });
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-heading"
+});
 
-<><SpeedInsights /><Analytics /></>
+export const SpeedInsightsAnalytics = () => (
+  <>
+    <SpeedInsights />
+    <Analytics />
+  </>
+);
 
 export const metadata: Metadata = {
   title: "Karmastat - Statistical Calculators for Medical Research",
@@ -25,10 +35,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceMono.variable}`}>
-        <div className="min-h-screen bg-background">
-          {children}
-        </div>
+      <body className={`${inter.variable} ${spaceMono.variable} ${montserrat.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="min-h-screen bg-background">
+            {children}
+            <SpeedInsightsAnalytics />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

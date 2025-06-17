@@ -1,4 +1,6 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 
@@ -29,7 +31,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 95%; /* neutral: #F6F1F1 */
+    --background: 0 0% 100%;
     --foreground: 215 19% 23%;
 
     --card: 0 0% 100%;
@@ -38,16 +40,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 19% 23%;
 
-    --primary: 201 78% 33%; /* primary: #146C94 */
+    --primary: 201 78% 33%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 193 79% 45%; /* secondary: #19A7CE */
+    --secondary: 193 79% 45%;
     --secondary-foreground: 215 19% 23%;
 
     --muted: 215 25% 95%;
     --muted-foreground: 215 15% 45%;
 
-    --accent: 67 86% 90%; /* accent: #F8FDCF */
+    --accent: 67 86% 90%;
     --accent-foreground: 215 19% 15%;
 
     --destructive: 0 84% 60%;
@@ -86,7 +88,7 @@
     --destructive-foreground: 0 0% 100%;
 
     --border: 215 19% 23%;
-    --input: 215 19% 29%;
+    --input: 215 19% 23%;
     --ring: 201 78% 43%;
   }
 }
@@ -98,6 +100,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
   }
 }
 
