@@ -83,15 +83,6 @@ const config = {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
-      fontFamily: {
-        sans: ["var(--font-sans)", ...karmaTheme.typography.fontFamily.primary],
-        mono: ["var(--font-mono)", ...karmaTheme.typography.fontFamily.secondary],
-        heading: ["var(--font-heading)", ...karmaTheme.typography.fontFamily.heading],
-      },
-      // fontSize: karmaTheme.typography.fontSize, // Commented out due to type issues
-      fontWeight: karmaTheme.typography.fontWeight,
-      lineHeight: karmaTheme.typography.lineHeight,
-      letterSpacing: karmaTheme.typography.letterSpacing,
       spacing: karmaTheme.spacing,
       borderRadius: {
         ...karmaTheme.borderRadius,

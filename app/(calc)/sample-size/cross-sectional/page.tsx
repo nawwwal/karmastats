@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { jsPDF } from "jspdf";
-import { extractTextFromPDF } from '@/lib/pdf-utils';
 
 import {
     CrossSectionalSchema,
@@ -64,6 +62,8 @@ export default function CrossSectionalPage() {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
+                // Dynamic import to prevent SSR issues
+                const { extractTextFromPDF } = await import('@/lib/pdf-utils');
                 const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
                 const extractValue = (regex: RegExp) => {
@@ -86,33 +86,39 @@ export default function CrossSectionalPage() {
         reader.readAsArrayBuffer(file);
     };
 
-    const generatePdf = () => {
+    const generatePdf = async () => {
         if (!results) return;
 
-        const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text(`Karmastat Cross-Sectional Study Report`, 105, 20, { align: 'center' });
-        doc.setFontSize(12);
+        try {
+            // Dynamic import to prevent SSR issues
+            const { jsPDF } = await import('jspdf');
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text(`Karmastat Cross-Sectional Study Report`, 105, 20, { align: 'center' });
+            doc.setFontSize(12);
 
-        let y = 40;
+            let y = 40;
 
-        const resultData = [
-            { label: 'Base Sample Size (Cochran\'s)', value: results.baseSize },
-            { label: 'After Design Effect', value: results.designAdjustedSize },
-            { label: 'After Finite Population Correction', value: results.populationAdjustedSize },
-            { label: 'After Clustering Adjustment', value: results.clusterAdjustedSize },
-            { label: 'Final Size (inc. Non-Response)', value: results.finalSize },
-        ];
+            const resultData = [
+                { label: 'Base Sample Size (Cochran\'s)', value: results.baseSize },
+                { label: 'After Design Effect', value: results.designAdjustedSize },
+                { label: 'After Finite Population Correction', value: results.populationAdjustedSize },
+                { label: 'After Clustering Adjustment', value: results.clusterAdjustedSize },
+                { label: 'Final Size (inc. Non-Response)', value: results.finalSize },
+            ];
 
-        doc.text('Calculation Steps', 20, y);
-        y += 10;
+            doc.text('Calculation Steps', 20, y);
+            y += 10;
 
-        resultData.forEach(row => {
-            doc.text(`${row.label}: ${row.value.toLocaleString()}`, 25, y);
-            y += 7;
-        });
+            resultData.forEach(row => {
+                doc.text(`${row.label}: ${row.value.toLocaleString()}`, 25, y);
+                y += 7;
+            });
 
-        doc.save('karmastat-cross-sectional-report.pdf');
+            doc.save('karmastat-cross-sectional-report.pdf');
+        } catch (err: any) {
+            setError(`Failed to generate PDF: ${err.message}`);
+        }
     }
 
     const renderResults = () => {

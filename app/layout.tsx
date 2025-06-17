@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import { LayoutWrapper } from "@/components/layout/layout";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const spaceMono = Space_Mono({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-mono"
-});
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  variable: "--font-heading"
-});
 
 const SpeedInsightsAnalytics = () => (
   <>
@@ -25,13 +13,13 @@ const SpeedInsightsAnalytics = () => (
 );
 
 export const metadata: Metadata = {
-  title: "Karmastat - Statistical Calculators for Medical Research",
-  description: "A comprehensive suite of statistical calculators for medical research, including sample size calculations, survival analysis, regression modeling, and epidemiological tools. Built with precision and scientific rigor.",
-  keywords: ["statistics", "medical research", "sample size", "regression", "epidemiology", "clinical trials"],
-  authors: [{ name: "Karmayogi" }],
+  title: "Karmastat - Statistical Analysis Platform",
+  description: "Advanced statistical analysis tools for research and development",
+  keywords: "statistics, analysis, research, data, biostatistics, epidemiology",
+  authors: [{ name: "Karmastat Team" }],
   openGraph: {
-    title: "Karmastat - Where Selfless Work Meets Calculated Precision",
-    description: "Statistical tools that empower researchers to make informed decisions benefiting humanity",
+    title: "Karmastat - Statistical Analysis Platform",
+    description: "Advanced statistical analysis tools for research and development",
     type: "website",
   },
 };
@@ -43,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceMono.variable} ${montserrat.variable} antialiased`}>
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
