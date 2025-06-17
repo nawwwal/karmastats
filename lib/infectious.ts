@@ -1,3 +1,27 @@
+import { z } from 'zod';
+
+// Zod validation schemas
+export const DiseaseModelParamsSchema = z.object({
+  populationSize: z.number().int().positive('Population size must be a positive integer'),
+  initialCases: z.number().int().positive('Initial cases must be a positive integer'),
+  transmissionRate: z.number().min(0).max(10, 'Transmission rate must be between 0 and 10'),
+  incubationPeriod: z.number().positive('Incubation period must be positive'),
+  recoveryRate: z.number().min(0).max(1, 'Recovery rate must be between 0 and 1'),
+  mortalityRate: z.number().min(0).max(1, 'Mortality rate must be between 0 and 1'),
+  simulationDays: z.number().int().min(1).max(3650, 'Simulation days must be between 1 and 3650'),
+  seasonality: z.number().min(0).max(1, 'Seasonality must be between 0 and 1'),
+});
+
+export const InterventionParamsSchema = z.object({
+  socialDistancing: z.number().min(0).max(1, 'Social distancing effectiveness must be between 0 and 1'),
+  maskEffectiveness: z.number().min(0).max(1, 'Mask effectiveness must be between 0 and 1'),
+  vaccinationRate: z.number().min(0).max(1, 'Vaccination rate must be between 0 and 1'),
+  vaccineEffectiveness: z.number().min(0).max(1, 'Vaccine effectiveness must be between 0 and 1'),
+});
+
+export type DiseaseModelInput = z.infer<typeof DiseaseModelParamsSchema>;
+export type InterventionInput = z.infer<typeof InterventionParamsSchema>;
+
 export interface DiseaseModelParams {
   populationSize: number;
   initialCases: number;

@@ -1,3 +1,53 @@
+import { z } from 'zod';
+
+// Zod validation schemas
+export const CaseControlParamsSchema = z.object({
+  controlExposure: z.number().min(0.1).max(99.9, 'Control exposure must be between 0.1% and 99.9%'),
+  oddsRatio: z.number().min(0.1).max(100, 'Odds ratio must be between 0.1 and 100'),
+  caseControlRatio: z.number().positive('Case-control ratio must be positive'),
+  significanceLevel: z.number().refine(val => [0.01, 0.05, 0.10].includes(val), {
+    message: 'Significance level must be 0.01, 0.05, or 0.10'
+  }).optional(),
+  power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
+    message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
+  }).optional(),
+  nonResponseRate: z.number().min(0).max(100, 'Non-response rate must be between 0 and 100').optional(),
+});
+
+export const CohortParamsSchema = z.object({
+  unexposedIncidence: z.number().min(0.1).max(99.9, 'Unexposed incidence must be between 0.1% and 99.9%'),
+  relativeRisk: z.number().min(0.1).max(100, 'Relative risk must be between 0.1 and 100'),
+  exposedUnexposedRatio: z.number().positive('Exposed-unexposed ratio must be positive'),
+  significanceLevel: z.number().refine(val => [0.01, 0.05, 0.10].includes(val), {
+    message: 'Significance level must be 0.01, 0.05, or 0.10'
+  }).optional(),
+  power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
+    message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
+  }).optional(),
+  lossToFollowUp: z.number().min(0).max(100, 'Loss to follow-up must be between 0 and 100').optional(),
+});
+
+export const ComparativeStudyParamsSchema = z.object({
+  significanceLevel: z.number().refine(val => [0.01, 0.05, 0.10].includes(val), {
+    message: 'Significance level must be 0.01, 0.05, or 0.10'
+  }),
+  statisticalPower: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
+    message: 'Statistical power must be 0.80, 0.85, 0.90, or 0.95'
+  }),
+  nonResponseRate: z.number().min(0).max(100, 'Non-response rate must be between 0 and 100'),
+  allocationRatio: z.number().positive('Allocation ratio must be positive'),
+  // Case-Control specific
+  controlExposure: z.number().min(0.1).max(99.9).optional(),
+  expectedOddsRatio: z.number().min(0.1).max(100).optional(),
+  // Cohort specific
+  unexposedIncidence: z.number().min(0.1).max(99.9).optional(),
+  expectedRelativeRisk: z.number().min(0.1).max(100).optional(),
+});
+
+export type CaseControlInput = z.infer<typeof CaseControlParamsSchema>;
+export type CohortInput = z.infer<typeof CohortParamsSchema>;
+export type ComparativeStudyInput = z.infer<typeof ComparativeStudyParamsSchema>;
+
 export interface ComparativeStudyParams {
   // Common parameters
   significanceLevel: number;

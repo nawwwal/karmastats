@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export interface SurvivalAnalysisParams {
   medianSurvival1: number;
   medianSurvival2: number;
@@ -68,6 +70,72 @@ const z_beta = {
     '0.90': 1.282,
     '0.95': 1.645
 };
+
+// Zod validation schemas
+export const LogRankParamsSchema = z.object({
+  medianSurvival1: z.number().positive('Median survival for group 1 must be positive'),
+  medianSurvival2: z.number().positive('Median survival for group 2 must be positive'),
+  accrualPeriod: z.number().positive('Accrual period must be positive'),
+  followupPeriod: z.number().positive('Follow-up period must be positive'),
+  allocationRatio: z.number().positive('Allocation ratio must be positive').optional(),
+  significanceLevel: z.number().refine(val => [0.01, 0.05, 0.10].includes(val), {
+    message: 'Significance level must be 0.01, 0.05, or 0.10'
+  }).optional(),
+  power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
+    message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
+  }).optional(),
+  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100').optional(),
+});
+
+export const CoxParamsSchema = z.object({
+  hazardRatio: z.number().positive('Hazard ratio must be positive'),
+  rSquared: z.number().min(0).max(1, 'R-squared must be between 0 and 1'),
+  overallEventRate: z.number().min(0.01).max(1, 'Overall event rate must be between 0.01 and 1'),
+  accrualPeriod: z.number().positive('Accrual period must be positive'),
+  followupPeriod: z.number().positive('Follow-up period must be positive'),
+  significanceLevel: z.number().refine(val => [0.01, 0.05, 0.10].includes(val), {
+    message: 'Significance level must be 0.01, 0.05, or 0.10'
+  }).optional(),
+  power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
+    message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
+  }).optional(),
+  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100').optional(),
+  allocationRatio: z.number().positive('Allocation ratio must be positive').optional(),
+});
+
+export const OneArmParamsSchema = z.object({
+  historicalMedianSurvival: z.number().positive('Historical median survival must be positive'),
+  targetMedianSurvival: z.number().positive('Target median survival must be positive'),
+  analysisTimePoint: z.number().positive('Analysis time point must be positive'),
+  significanceLevel: z.number().refine(val => [0.01, 0.05, 0.10].includes(val), {
+    message: 'Significance level must be 0.01, 0.05, or 0.10'
+  }).optional(),
+  power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
+    message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
+  }).optional(),
+  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100').optional(),
+});
+
+export const SurvivalAnalysisParamsSchema = z.object({
+  medianSurvival1: z.number().positive('Median survival for group 1 must be positive'),
+  medianSurvival2: z.number().positive('Median survival for group 2 must be positive'),
+  hazardRatio: z.number().positive('Hazard ratio must be positive'),
+  accrualPeriod: z.number().positive('Accrual period must be positive'),
+  followupPeriod: z.number().positive('Follow-up period must be positive'),
+  allocationRatio: z.number().positive('Allocation ratio must be positive'),
+  significanceLevel: z.number().refine(val => [0.01, 0.05, 0.10].includes(val), {
+    message: 'Significance level must be 0.01, 0.05, or 0.10'
+  }),
+  statisticalPower: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
+    message: 'Statistical power must be 0.80, 0.85, 0.90, or 0.95'
+  }),
+  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100'),
+});
+
+export type LogRankInput = z.infer<typeof LogRankParamsSchema>;
+export type CoxInput = z.infer<typeof CoxParamsSchema>;
+export type OneArmInput = z.infer<typeof OneArmParamsSchema>;
+export type SurvivalAnalysisInput = z.infer<typeof SurvivalAnalysisParamsSchema>;
 
 export class SurvivalAnalysis {
   private static readonly LN2 = Math.log(2);

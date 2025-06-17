@@ -38,10 +38,10 @@ export function NutritionalAnalysis({
     return 'Deficient';
   };
 
-  const getOverallNutritionalVariant = (calorie: number, protein: number) => {
+  const getOverallNutritionalVariant = (calorie: number, protein: number): 'default' | 'destructive' => {
     const avgAdequacy = (calorie + protein) / 2;
     if (avgAdequacy >= 85) return 'default';
-    if (avgAdequacy >= 70) return 'warning';
+    if (avgAdequacy >= 70) return 'default';
     return 'destructive';
   };
 
@@ -156,7 +156,7 @@ export function NutritionalAnalysis({
       </Alert>
 
       <h4 className="font-semibold text-lg mt-6 mb-4">💡 Recommendations</h4>
-      <div className="bg-white p-4 rounded-md border">
+      <div className="bg-card p-4 rounded-md border">
         <ul className="space-y-2">
           {generateNutritionalRecommendations(calorieAdequacy, proteinAdequacy).map((rec, index) => (
             <li key={index}>{rec}</li>

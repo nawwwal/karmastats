@@ -1,3 +1,17 @@
+import { z } from 'zod';
+
+// Zod validation schema
+export const StudyDetectorSchema = z.object({
+  researchText: z.string()
+    .min(10, 'Research description must be at least 10 characters')
+    .max(5000, 'Research description must not exceed 5000 characters')
+    .refine(text => text.trim().length > 0, {
+      message: 'Research description cannot be empty or only whitespace'
+    }),
+});
+
+export type StudyDetectorInput = z.infer<typeof StudyDetectorSchema>;
+
 export interface StudyRecommendation {
   type: string;
   title: string;

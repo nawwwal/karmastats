@@ -1,5 +1,46 @@
 import { invertMatrix, matrixMultiply, transpose } from "./math/matrix";
 import { fcdf, tcdf, erf } from "./math/statistics";
+import { z } from 'zod';
+
+// Zod validation schemas
+export const LinearRegressionSchema = z.object({
+  xValues: z.array(z.number()).min(2, 'At least 2 data points required'),
+  yValues: z.array(z.number()).min(2, 'At least 2 data points required'),
+}).refine(data => data.xValues.length === data.yValues.length, {
+  message: "X and Y values must have equal length"
+});
+
+export const PolynomialRegressionSchema = z.object({
+  xValues: z.array(z.number()).min(2, 'At least 2 data points required'),
+  yValues: z.array(z.number()).min(2, 'At least 2 data points required'),
+  degree: z.number().int().min(1).max(10, 'Degree must be between 1 and 10'),
+}).refine(data => data.xValues.length === data.yValues.length, {
+  message: "X and Y values must have equal length"
+});
+
+export const LogisticRegressionSchema = z.object({
+  y: z.array(z.number().min(0).max(1)).min(2, 'At least 2 observations required'),
+  X: z.array(z.array(z.number())).min(2, 'At least 2 observations required'),
+  options: z.object({
+    learningRate: z.number().positive().optional(),
+    iterations: z.number().int().positive().optional(),
+    tolerance: z.number().positive().optional(),
+  }).optional(),
+}).refine(data => data.y.length === data.X.length, {
+  message: "Y and X must have equal number of observations"
+});
+
+export const MultipleRegressionSchema = z.object({
+  y: z.array(z.number()).min(2, 'At least 2 observations required'),
+  X: z.array(z.array(z.number())).min(2, 'At least 2 observations required'),
+}).refine(data => data.y.length === data.X.length, {
+  message: "Y and X must have equal number of observations"
+});
+
+export type LinearRegressionInput = z.infer<typeof LinearRegressionSchema>;
+export type PolynomialRegressionInput = z.infer<typeof PolynomialRegressionSchema>;
+export type LogisticRegressionInput = z.infer<typeof LogisticRegressionSchema>;
+export type MultipleRegressionInput = z.infer<typeof MultipleRegressionSchema>;
 
 // Simple Linear Regression
 export interface LinearRegressionResult {
