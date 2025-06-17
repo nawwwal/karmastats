@@ -18,9 +18,9 @@ export const CrossSectionalSchema = z.object({
         message: "Confidence level must be 80, 90, 95, 99, or 99.9"
     }),
     populationSize: z.number().positive().optional(),
-    designEffect: z.number().min(1).default(1),
-    nonResponseRate: z.number().min(0).max(100).default(10),
-    clusteringEffect: z.number().min(0).max(1).default(0),
+    designEffect: z.number().min(1),
+    nonResponseRate: z.number().min(0).max(100),
+    clusteringEffect: z.number().min(0).max(1),
 });
 
 export type CrossSectionalInput = z.infer<typeof CrossSectionalSchema>;
