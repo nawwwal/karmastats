@@ -69,7 +69,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           className={cn(
             "flex items-center gap-3 px-3 py-3 rounded-lg w-full text-left transition-all duration-200 group",
             isActive
-              ? "bg-primary text-primary-foreground shadow-sm"
+              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
               : "hover:bg-accent hover:text-accent-foreground",
             isCollapsed && "justify-center px-2"
           )}
@@ -110,7 +110,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         className={cn(
           "flex items-center gap-3 px-3 py-3 rounded-lg w-full transition-all duration-200 group",
           isActive
-            ? "bg-primary text-primary-foreground shadow-sm"
+            ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
             : "hover:bg-accent hover:text-accent-foreground",
           isCollapsed && "justify-center px-2"
         )}
@@ -352,7 +352,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "fixed left-0 top-0 z-50 h-screen bg-sidebar border-r border-sidebar-border flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
+      "fixed left-0 top-0 z-50 h-screen bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
       isCollapsed ? "w-16" : "w-80"
     )}>
       <div className="flex flex-col h-full">
@@ -388,7 +388,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         </div>
 
         {/* Main Navigation */}
-        <ScrollArea className="flex-1 px-3">
+        <ScrollArea className="flex-1 px-3 overflow-y-auto">
           <div className="space-y-2">
             {/* Favorites */}
             <SidebarFavorites isCollapsed={isCollapsed} />

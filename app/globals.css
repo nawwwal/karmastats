@@ -114,8 +114,8 @@
     /* Sidebar colors - Dark theme */
     --sidebar: 215 19% 23%;
     --sidebar-foreground: 210 25% 98%;
-    --sidebar-primary: 220 70% 50%;
-    --sidebar-primary-foreground: 210 25% 98%;
+    --sidebar-primary: 220 70% 70%;
+    --sidebar-primary-foreground: 215 19% 23%;
     --sidebar-accent: 215 19% 28%;
     --sidebar-accent-foreground: 210 25% 98%;
     --sidebar-border: 215 19% 35%;
