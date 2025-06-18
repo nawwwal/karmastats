@@ -277,8 +277,18 @@ export default function ClinicalTrialsPage() {
                     <TabsContent value="superiority" className="space-y-6">
                         <FormField name="superiorityOutcome" render={({ field }) => (
                             <RadioGroup value={field.value} onValueChange={field.onChange} className="flex justify-center gap-4 p-2 bg-muted/50 rounded-lg">
-                                <FormItem><FormControl><RadioGroupItem value="binary" id="binary" className="sr-only" /><FormLabel htmlFor="binary" className={`cursor-pointer p-2 rounded-md ${field.value === 'binary' ? 'bg-primary text-primary-foreground' : 'bg-card'}`}>Binary Outcome</FormLabel></FormControl></FormItem>
-                                <FormItem><FormControl><RadioGroupItem value="continuous" id="continuous" className="sr-only" /><FormLabel htmlFor="continuous" className={`cursor-pointer p-2 rounded-md ${field.value === 'continuous' ? 'bg-primary text-primary-foreground' : 'bg-card'}`}>Continuous Outcome</FormLabel></FormControl></FormItem>
+                                <FormItem>
+                                    <FormControl>
+                                        <RadioGroupItem value="binary" id="binary" className="sr-only" />
+                                    </FormControl>
+                                    <FormLabel htmlFor="binary" className={`cursor-pointer p-2 rounded-md ${field.value === 'binary' ? 'bg-primary text-primary-foreground' : 'bg-card'}`}>Binary Outcome</FormLabel>
+                                </FormItem>
+                                <FormItem>
+                                    <FormControl>
+                                        <RadioGroupItem value="continuous" id="continuous" className="sr-only" />
+                                    </FormControl>
+                                    <FormLabel htmlFor="continuous" className={`cursor-pointer p-2 rounded-md ${field.value === 'continuous' ? 'bg-primary text-primary-foreground' : 'bg-card'}`}>Continuous Outcome</FormLabel>
+                                </FormItem>
                             </RadioGroup>
                         )} />
 
