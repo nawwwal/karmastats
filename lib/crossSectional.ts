@@ -19,7 +19,7 @@ export const CrossSectionalSchema = z.object({
     }),
     populationSize: z.number().positive().optional(),
     designEffect: z.number().min(1),
-    nonResponseRate: z.number().min(0).max(100),
+    nonResponseRate: z.number().min(0).max(99.9, 'Non-response rate must be less than 100'),
     clusteringEffect: z.number().min(0).max(1),
 });
 
@@ -72,7 +72,9 @@ export function calculateCrossSectionalSampleSize(params: CrossSectionalInput): 
     }
 
     // 5. Adjust for Non-Response Rate
-    const finalSize = clusterAdjustedSize / (1 - (nonResponseRate / 100));
+    const finalSize = nonResponseRate >= 100
+        ? Infinity
+        : clusterAdjustedSize / (1 - (nonResponseRate / 100));
 
     return {
         baseSize: Math.ceil(baseSize),

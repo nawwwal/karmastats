@@ -17,7 +17,7 @@ export const SuperiorityBinarySchema = z.object({
     alpha: z.enum(['1', '5', '10']).transform(val => Number(val)),
     power: z.enum(['80', '85', '90', '95']).transform(val => Number(val)),
     allocationRatio: z.number().positive(),
-    dropoutRate: z.number().min(0).max(100),
+    dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100'),
 }).refine((data: { treatmentRate: number; controlRate: number; }) => data.treatmentRate > data.controlRate, {
     message: "Treatment rate must be greater than control rate.",
     path: ["treatmentRate"],
@@ -38,7 +38,7 @@ export const SuperiorityContinuousSchema = z.object({
     alpha: z.enum(['1', '5', '10']).transform(val => Number(val)),
     power: z.enum(['80', '85', '90', '95']).transform(val => Number(val)),
     allocationRatio: z.number().positive(),
-    dropoutRate: z.number().min(0).max(100),
+    dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100'),
 });
 
 export type SuperiorityContinuousInput = z.infer<typeof SuperiorityContinuousSchema>;
@@ -57,7 +57,7 @@ export const NonInferioritySchema = z.object({
     alpha: z.enum(['1', '5', '10']).transform(val => Number(val)),
     power: z.enum(['80', '85', '90', '95']).transform(val => Number(val)),
     allocationRatio: z.number().positive(),
-    dropoutRate: z.number().min(0).max(100),
+    dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100'),
 });
 
 export type NonInferiorityInput = z.infer<typeof NonInferioritySchema>;
@@ -75,7 +75,7 @@ export const EquivalenceSchema = z.object({
     alpha: z.enum(['1', '5', '10']).transform(val => Number(val)),
     power: z.enum(['80', '85', '90', '95']).transform(val => Number(val)),
     allocationRatio: z.number().positive(),
-    dropoutRate: z.number().min(0).max(100),
+    dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100'),
 }).refine((data: { margin: number; testRate: number; referenceRate: number; }) => data.margin > Math.abs(data.testRate - data.referenceRate), {
     message: "Equivalence margin must be larger than the expected difference.",
     path: ["margin"],

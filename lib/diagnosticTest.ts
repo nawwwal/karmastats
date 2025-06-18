@@ -44,7 +44,7 @@ export const SingleTestSchema = z.object({
     diseasePrevalence: z.number().min(0.1).max(99.9),
     marginOfError: z.number().min(0.1).max(50),
     confidenceLevel: z.number().refine(val => [80, 90, 95, 99].includes(val)),
-    dropoutRate: z.number().min(0).max(100),
+    dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100'),
 });
 
 export type SingleTestInput = z.infer<typeof SingleTestSchema>;
@@ -69,10 +69,12 @@ export function calculateSingleTestSampleSize(params: SingleTestInput): SingleTe
     const nSpecificity = (Math.pow(zScore, 2) * sp * (1 - sp)) / (Math.pow(d, 2) * (1 - p));
 
     const baseSize = Math.max(nSensitivity, nSpecificity);
-    const totalSize = Math.ceil(baseSize / (1 - (dropoutRate / 100)));
+    const totalSize = dropoutRate >= 100
+        ? Infinity
+        : Math.ceil(baseSize / (1 - (dropoutRate / 100)));
 
-    const diseasePositive = Math.ceil(totalSize * p);
-    const diseaseNegative = totalSize - diseasePositive;
+    const diseasePositive = isFinite(totalSize) ? Math.ceil(totalSize * p) : Infinity;
+    const diseaseNegative = isFinite(totalSize) ? totalSize - diseasePositive : Infinity;
 
     return {
         nSensitivity: Math.ceil(nSensitivity),
@@ -93,7 +95,7 @@ export const ComparativeTestSchema = z.object({
     testCorrelation: z.number().min(-1).max(1).optional(),
     significanceLevel: z.number().refine(val => [1, 5, 10].includes(val)),
     power: z.number().refine(val => [80, 85, 90, 95].includes(val)),
-    dropoutRate: z.number().min(0).max(100),
+    dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100'),
 }).refine(data => data.studyDesign === 'unpaired' || data.testCorrelation !== undefined, {
     message: "Test correlation is required for paired designs",
     path: ["testCorrelation"],
@@ -127,8 +129,12 @@ export function calculateComparativeTestSampleSize(params: ComparativeTestInput)
         sampleSize = sampleSize * 2; // For two groups
     }
 
-    const adjustedSampleSize = Math.ceil(sampleSize / (1 - dropoutRate/100));
-    const totalSize = Math.ceil(adjustedSampleSize / prev);
+    const adjustedSampleSize = dropoutRate >= 100
+        ? Infinity
+        : Math.ceil(sampleSize / (1 - dropoutRate/100));
+    const totalSize = isFinite(adjustedSampleSize)
+        ? Math.ceil(adjustedSampleSize / prev)
+        : Infinity;
 
     return {
         sampleSize: adjustedSampleSize,
