@@ -130,11 +130,11 @@ export default function CrossSectionalPage() {
         if (!results) return null;
 
         const resultItems = [
-            { label: 'Base Sample Size (Cochran\'s)', value: results.baseSize, category: 'calculation', format: 'integer' },
-            { label: 'After Design Effect', value: results.designAdjustedSize, category: 'calculation', format: 'integer' },
-            { label: 'After Finite Population Correction', value: results.populationAdjustedSize, category: 'calculation', format: 'integer' },
-            { label: 'After Clustering Adjustment', value: results.clusterAdjustedSize, category: 'calculation', format: 'integer' },
-            { label: 'Final Required Sample Size', value: results.finalSize, category: 'primary', highlight: true, format: 'integer' },
+            { label: 'Base Sample Size (Cochran\'s)', value: results.baseSize, category: 'secondary' as const, format: 'integer' as const },
+            { label: 'After Design Effect', value: results.designAdjustedSize, category: 'secondary' as const, format: 'integer' as const },
+            { label: 'After Finite Population Correction', value: results.populationAdjustedSize, category: 'secondary' as const, format: 'integer' as const },
+            { label: 'After Clustering Adjustment', value: results.clusterAdjustedSize, category: 'secondary' as const, format: 'integer' as const },
+            { label: 'Final Required Sample Size', value: results.finalSize, category: 'primary' as const, highlight: true, format: 'integer' as const },
         ];
 
         const interpretation = {

@@ -13,6 +13,7 @@ import { LogRankForm } from "@/components/sample-size/LogRankForm";
 import { CoxRegressionForm } from "@/components/sample-size/CoxRegressionForm";
 import { OneArmSurvivalForm } from "@/components/sample-size/OneArmSurvivalForm";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
+import { ResultsDisplay } from '@/components/ui/results-display';
 
 export default function SurvivalAnalysisPage() {
   const [activeTab, setActiveTab] = useState("log-rank");
@@ -77,20 +78,55 @@ export default function SurvivalAnalysisPage() {
   const renderResults = () => {
     if (!results) return null;
 
+    let resultItems: any[] = [];
+    let title = "Survival Analysis Results";
+
+    if (activeTab === "log-rank") {
+      title = "Log-Rank Test Results";
+      resultItems = [
+        { label: 'Total Sample Size', value: results.totalSampleSize, category: 'primary' as const, highlight: true, format: 'integer' as const },
+        { label: 'Sample Size Group 1', value: results.n1, category: 'secondary' as const, format: 'integer' as const },
+        { label: 'Sample Size Group 2', value: results.n2, category: 'secondary' as const, format: 'integer' as const },
+        { label: 'Total Events Required', value: results.totalEvents, category: 'statistical' as const, format: 'integer' as const },
+      ];
+    } else if (activeTab === "cox") {
+      title = "Cox Regression Results";
+      resultItems = [
+        { label: 'Total Sample Size', value: results.totalSampleSize, category: 'primary' as const, highlight: true, format: 'integer' as const },
+        { label: 'Total Events Required', value: results.totalEvents, category: 'statistical' as const, format: 'integer' as const },
+      ];
+    } else if (activeTab === "one-arm") {
+      title = "One-Arm Survival Results";
+      resultItems = [
+        { label: 'Total Sample Size', value: results.totalSampleSize, category: 'primary' as const, highlight: true, format: 'integer' as const },
+        { label: 'Total Events Required', value: results.totalEvents, category: 'secondary' as const, format: 'integer' as const },
+        { label: 'Study Duration', value: results.studyDuration, category: 'secondary' as const, format: 'integer' as const },
+        { label: 'Statistical Power', value: results.power * 100, category: 'statistical' as const, format: 'percentage' as const },
+      ];
+    }
+
+    const interpretation = {
+      recommendations: [
+        'Ensure adequate follow-up time to observe required events',
+        'Consider interim analyses for early stopping if appropriate',
+        'Plan for potential loss to follow-up in the study design',
+        'Validate assumptions about event rates and hazard ratios'
+      ],
+      assumptions: [
+        'Proportional hazards assumption holds throughout study',
+        'Event rates are consistent with historical data',
+        'Censoring is non-informative and independent',
+        'Study population is representative of target population'
+      ]
+    };
+
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Survival Analysis Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Results will be rendered here based on the active tab and form data */}
-            <div className="text-center text-muted-foreground">
-              <p>Survival analysis results will appear here</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <ResultsDisplay
+        title={title}
+        results={resultItems}
+        interpretation={interpretation}
+        showInterpretation={true}
+      />
     );
   };
 

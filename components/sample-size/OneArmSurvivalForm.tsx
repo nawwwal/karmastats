@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { calculateOneArm, OneArmParams } from '@/lib/survivalAnalysis';
 
 const OneArmSurvivalSchema = z.object({
@@ -24,8 +22,11 @@ const OneArmSurvivalSchema = z.object({
 
 type OneArmSurvivalInput = z.infer<typeof OneArmSurvivalSchema>;
 
-export function OneArmSurvivalForm() {
-  const [results, setResults] = useState<any>(null);
+interface OneArmSurvivalFormProps {
+  onResultsChange: (results: any) => void;
+}
+
+export function OneArmSurvivalForm({ onResultsChange }: OneArmSurvivalFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<OneArmSurvivalInput>({
@@ -44,7 +45,7 @@ export function OneArmSurvivalForm() {
     try {
       setError(null);
       const result = calculateOneArm(data);
-      setResults(result);
+      onResultsChange(result);
       // Scroll to top to show results
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
@@ -188,53 +189,6 @@ export function OneArmSurvivalForm() {
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-      )}
-
-      {results && (
-        <Card>
-          <CardHeader>
-            <CardTitle>One-Arm Survival Study Results</CardTitle>
-            <CardDescription>
-              Sample size calculation for single-arm survival study
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Parameter</TableHead>
-                  <TableHead className="text-right">Value</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Total Sample Size</TableCell>
-                  <TableCell className="text-right">{results.totalSampleSize}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Total Events Required</TableCell>
-                  <TableCell className="text-right">{results.totalEvents}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Expected Events (Group 1)</TableCell>
-                  <TableCell className="text-right">{results.expectedEvents.group1}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Expected Events (Group 2)</TableCell>
-                  <TableCell className="text-right">{results.expectedEvents.group2}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Study Duration</TableCell>
-                  <TableCell className="text-right">{results.studyDuration} months</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Statistical Power</TableCell>
-                  <TableCell className="text-right">{(results.power * 100).toFixed(1)}%</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       )}
     </div>
   );
