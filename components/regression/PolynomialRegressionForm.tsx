@@ -308,81 +308,102 @@ export function PolynomialRegressionForm({ onResultsChange }: PolynomialRegressi
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <BarChart3 className="h-5 w-5" />
-                        Quick Start with Sample Data
+                        Try Sample Datasets
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="md:col-span-2 space-y-2">
-                            <Label>Choose Sample Dataset</Label>
-                            <Select onValueChange={loadSampleData}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a sample dataset..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {Object.entries(sampleDatasets).map(([key, dataset]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {dataset.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Quick Actions</Label>
-                            <div className="flex gap-2">
-                                <Button variant="outline" onClick={clearData} className="flex-1">
-                                    <Shuffle className="h-4 w-4 mr-2" />
-                                    Clear
-                                </Button>
-                                <Button variant="outline" onClick={() => document.getElementById('csv-upload-poly')?.click()} className="flex-1">
-                                    <Upload className="h-4 w-4 mr-2" />
-                                    CSV
-                                </Button>
+                <CardContent>
+                    <div className="space-y-3">
+                        <Select onValueChange={loadSampleData}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Choose a sample dataset to get started..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(sampleDatasets).map(([key, dataset]) => (
+                                    <SelectItem key={key} value={key}>
+                                        {dataset.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                            Select a dataset to see polynomial curve fitting in action
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Upload Your Data */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <Upload className="h-5 w-5" />
+                        Upload Your Data
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div
+                        className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                        onClick={() => document.getElementById('csv-upload-poly')?.click()}
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            const file = e.dataTransfer.files[0];
+                            if (file) {
+                                const event = { target: { files: [file] } } as any;
+                                handleFileUpload(event);
+                            }
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDragEnter={(e) => e.preventDefault()}
+                    >
+                        <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <h3 className="font-medium mb-2">Drop your CSV file here, or click to browse</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                            Supports .csv and .txt files with comma, space, or tab separation
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-muted-foreground">
+                            <div className="p-2 bg-muted rounded">
+                                <strong>Two columns:</strong><br/>
+                                1.2, 2.1<br/>
+                                2.4, 3.9
                             </div>
-                            <input
-                                id="csv-upload-poly"
-                                type="file"
-                                accept=".csv,.txt"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                            />
+                            <div className="p-2 bg-muted rounded">
+                                <strong>Two rows:</strong><br/>
+                                1.2, 2.4, 3.1<br/>
+                                2.1, 3.9, 6.2
+                            </div>
+                            <div className="p-2 bg-muted rounded">
+                                <strong>Format:</strong><br/>
+                                X values, Y values<br/>
+                                {dataFormat} separated
+                            </div>
                         </div>
                     </div>
+                    <input
+                        id="csv-upload-poly"
+                        type="file"
+                        accept=".csv,.txt"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                    />
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                            <Label>Data Format</Label>
+                    <div className="mt-4 flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <Label htmlFor="data-format" className="text-sm">Format:</Label>
                             <Select onValueChange={setDataFormat} defaultValue={dataFormat}>
-                                <SelectTrigger>
+                                <SelectTrigger className="w-auto">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="comma">Comma Separated</SelectItem>
-                                    <SelectItem value="space">Space Separated</SelectItem>
-                                    <SelectItem value="tab">Tab Separated</SelectItem>
+                                    <SelectItem value="comma">Comma (,)</SelectItem>
+                                    <SelectItem value="space">Space ( )</SelectItem>
+                                    <SelectItem value="tab">Tab</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="md:col-span-2 space-y-2">
-                            <Label>Data Input Method</Label>
-                            <div className="flex gap-2">
-                                <Button
-                                    variant={inputMethod === 'manual' ? 'default' : 'outline'}
-                                    onClick={() => setInputMethod('manual')}
-                                    className="flex-1"
-                                >
-                                    Manual Entry
-                                </Button>
-                                <Button
-                                    variant={inputMethod === 'paste' ? 'default' : 'outline'}
-                                    onClick={() => setInputMethod('paste')}
-                                    className="flex-1"
-                                >
-                                    Paste Data
-                                </Button>
-                            </div>
-                        </div>
+                        <Button variant="outline" onClick={clearData} size="sm">
+                            <Shuffle className="h-4 w-4 mr-2" />
+                            Clear All Data
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
@@ -409,6 +430,25 @@ export function PolynomialRegressionForm({ onResultsChange }: PolynomialRegressi
                             onChange={(e) => setYLabel(e.target.value)}
                             placeholder="Dependent variable name"
                         />
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-center mb-4">
+                    <div className="flex gap-2 p-1 bg-muted rounded-lg">
+                        <Button
+                            variant={inputMethod === 'manual' ? 'default' : 'ghost'}
+                            onClick={() => setInputMethod('manual')}
+                            size="sm"
+                        >
+                            Manual Entry
+                        </Button>
+                        <Button
+                            variant={inputMethod === 'paste' ? 'default' : 'ghost'}
+                            onClick={() => setInputMethod('paste')}
+                            size="sm"
+                        >
+                            Paste Data
+                        </Button>
                     </div>
                 </div>
 

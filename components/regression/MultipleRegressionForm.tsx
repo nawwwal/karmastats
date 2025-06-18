@@ -124,32 +124,67 @@ export function MultipleRegressionForm({ onResultsChange }: MultipleRegressionFo
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <BarChart3 className="h-5 w-5" />
-                        Quick Start with Sample Data
+                        Try Sample Datasets
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Choose Sample Dataset</Label>
-                            <Select onValueChange={loadSampleData}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a sample dataset..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {Object.entries(sampleDatasets).map(([key, dataset]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {dataset.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                <CardContent>
+                    <div className="space-y-3">
+                        <Select onValueChange={loadSampleData}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Choose a sample dataset to get started..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(sampleDatasets).map(([key, dataset]) => (
+                                    <SelectItem key={key} value={key}>
+                                        {dataset.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                            Select a dataset to explore multiple variable relationships
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Upload Your Data */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <Upload className="h-5 w-5" />
+                        Upload Your Data
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div
+                        className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                        onClick={() => document.getElementById('csv-upload-multiple')?.click()}
+                    >
+                        <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                        <h3 className="font-medium mb-2">Drop your CSV file here, or click to browse</h3>
+                        <p className="text-sm text-muted-foreground mb-3">
+                            Format: Y, X1, X2, X3... (dependent variable first, then independent variables)
+                        </p>
+                        <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
+                            <strong>Example:</strong><br/>
+                            250000, 1200, 2<br/>
+                            300000, 1500, 3<br/>
+                            180000, 900, 1
                         </div>
-                        <div className="flex items-end gap-2">
-                            <Button variant="outline" onClick={clearData} className="flex-1">
-                                <Shuffle className="h-4 w-4 mr-2" />
-                                Clear Data
-                            </Button>
-                        </div>
+                    </div>
+                    <input
+                        id="csv-upload-multiple"
+                        type="file"
+                        accept=".csv,.txt"
+                        className="hidden"
+                    />
+
+                    <div className="mt-4 flex items-center justify-between">
+                        <Button variant="outline" onClick={clearData} size="sm">
+                            <Shuffle className="h-4 w-4 mr-2" />
+                            Clear All Data
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
@@ -164,7 +199,7 @@ export function MultipleRegressionForm({ onResultsChange }: MultipleRegressionFo
                         id="variableNames"
                         value={variableNames}
                         onChange={(e) => setVariableNames(e.target.value)}
-                        placeholder="e.g., Age, BMI, Exercise Hours"
+                        placeholder="e.g., Area (sq ft), Bedrooms"
                     />
                     <p className="text-xs text-muted-foreground">
                         Names for the independent variables (predictors)
@@ -188,6 +223,16 @@ Example:
                     <p className="text-xs text-muted-foreground">
                         Each row: dependent variable (Y) followed by independent variables (X1, X2, ...)
                     </p>
+                </div>
+
+                <div className="flex items-center justify-center">
+                    <div className="text-sm text-muted-foreground">
+                        {dataMatrix.trim() && (
+                            <span>
+                                {dataMatrix.trim().split('\n').length} data points ready
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 

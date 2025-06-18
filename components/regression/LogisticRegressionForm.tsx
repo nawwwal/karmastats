@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { BarChart3, Shuffle } from "lucide-react";
+import { BarChart3, Shuffle, Upload } from "lucide-react";
 
 const parseMatrixInput = (input: string): { y: number[], X: number[][] } => {
     const rows = input.trim().split('\n').map(row => row.split(/[\s,]+/).map(Number));
@@ -28,16 +28,23 @@ const parseMatrixInput = (input: string): { y: number[], X: number[][] } => {
 
 const sampleDatasets = {
   medicalDiagnosis: {
-    name: "Medical Diagnosis (Age, Symptoms → Disease)",
-    data: `1, 45, 1, 1
-0, 30, 0, 0
-1, 55, 1, 0
-0, 25, 0, 1
-1, 60, 1, 1
-0, 35, 0, 0
-1, 50, 1, 0
-0, 40, 0, 1`,
-    variables: "Age, Symptom A, Symptom B"
+    name: "Medical Diagnosis (Age, Blood Pressure → Disease)",
+    data: `1, 65, 140
+0, 35, 120
+1, 70, 160
+0, 40, 110
+1, 55, 150
+0, 45, 125
+1, 60, 145
+0, 50, 135
+1, 75, 170
+0, 30, 100
+1, 80, 180
+0, 25, 95
+1, 85, 185
+0, 42, 118
+1, 72, 165`,
+    variables: "Age, Blood Pressure"
   },
   marketing: {
     name: "Marketing Response (Income, Age → Purchase)",
@@ -48,7 +55,14 @@ const sampleDatasets = {
 1, 85000, 40
 0, 55000, 30
 1, 95000, 50
-0, 40000, 28`,
+0, 40000, 28
+1, 110000, 55
+0, 35000, 24
+1, 120000, 60
+0, 28000, 21
+1, 105000, 52
+0, 38000, 26
+1, 130000, 65`,
     variables: "Income, Age"
   },
   creditApproval: {
@@ -60,7 +74,14 @@ const sampleDatasets = {
 1, 70000, 720
 0, 40000, 600
 1, 100000, 850
-0, 30000, 550`,
+0, 30000, 550
+1, 120000, 800
+0, 32000, 570
+1, 90000, 780
+0, 28000, 540
+1, 110000, 830
+0, 45000, 620
+1, 135000, 880`,
     variables: "Income, Credit Score"
   }
 };
@@ -74,6 +95,7 @@ export function LogisticRegressionForm({ onResultsChange }: LogisticRegressionFo
     const [variableNames, setVariableNames] = useState(sampleDatasets.medicalDiagnosis.variables);
     const [result, setResult] = useState<LogisticRegressionResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [outcomeVariable, setOutcomeVariable] = useState("");
 
     const loadSampleData = (datasetKey: string) => {
         const dataset = sampleDatasets[datasetKey as keyof typeof sampleDatasets];
@@ -123,32 +145,67 @@ export function LogisticRegressionForm({ onResultsChange }: LogisticRegressionFo
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <BarChart3 className="h-5 w-5" />
-                        Quick Start with Sample Data
+                        Try Sample Datasets
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Choose Sample Dataset</Label>
-                            <Select onValueChange={loadSampleData}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a sample dataset..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {Object.entries(sampleDatasets).map(([key, dataset]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {dataset.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                <CardContent>
+                    <div className="space-y-3">
+                        <Select onValueChange={loadSampleData}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Choose a sample dataset to get started..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(sampleDatasets).map(([key, dataset]) => (
+                                    <SelectItem key={key} value={key}>
+                                        {dataset.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                            Select a dataset to explore binary classification models
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Upload Your Data */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <Upload className="h-5 w-5" />
+                        Upload Your Data
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div
+                        className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                        onClick={() => document.getElementById('csv-upload-logistic')?.click()}
+                    >
+                        <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                        <h3 className="font-medium mb-2">Drop your CSV file here, or click to browse</h3>
+                        <p className="text-sm text-muted-foreground mb-3">
+                            Format: X1, X2, X3..., Y (features first, binary outcome last: 0 or 1)
+                        </p>
+                        <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
+                            <strong>Example:</strong><br/>
+                            35, 180, 1<br/>
+                            45, 220, 0<br/>
+                            28, 160, 1
                         </div>
-                        <div className="flex items-end gap-2">
-                            <Button variant="outline" onClick={clearData} className="flex-1">
-                                <Shuffle className="h-4 w-4 mr-2" />
-                                Clear Data
-                            </Button>
-                        </div>
+                    </div>
+                    <input
+                        id="csv-upload-logistic"
+                        type="file"
+                        accept=".csv,.txt"
+                        className="hidden"
+                    />
+
+                    <div className="mt-4 flex items-center justify-between">
+                        <Button variant="outline" onClick={clearData} size="sm">
+                            <Shuffle className="h-4 w-4 mr-2" />
+                            Clear All Data
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
@@ -158,35 +215,58 @@ export function LogisticRegressionForm({ onResultsChange }: LogisticRegressionFo
             {/* Data Input */}
             <div className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="variableNames">Variable Names (comma-separated for X variables)</Label>
+                    <Label htmlFor="variableNames">Variable Names (comma-separated for features)</Label>
                     <Input
                         id="variableNames"
                         value={variableNames}
                         onChange={(e) => setVariableNames(e.target.value)}
-                        placeholder="e.g., Age, Income, Education"
+                        placeholder="e.g., Age, Blood Pressure"
                     />
                     <p className="text-xs text-muted-foreground">
-                        Names for the independent variables (predictors)
+                        Names for the independent variables (predictors/features)
                     </p>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="dataMatrix">Data Matrix (Y, X1, X2, ... format)</Label>
+                    <Label htmlFor="outcomeVariable">Outcome Variable Name</Label>
+                    <Input
+                        id="outcomeVariable"
+                        value={outcomeVariable}
+                        onChange={(e) => setOutcomeVariable(e.target.value)}
+                        placeholder="e.g., Disease Status"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                        Name for the binary outcome variable (0 = no, 1 = yes)
+                    </p>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="dataMatrix">Data Matrix (X1, X2, ..., Y format)</Label>
                     <Textarea
                         id="dataMatrix"
                         value={dataMatrix}
                         onChange={(e) => setDataMatrix(e.target.value)}
-                        placeholder="Format: Outcome (0/1), X1, X2, X3...
+                        placeholder="Format: X1, X2, X3..., Y (outcome last)
 Example:
-1, 45, 75000
-0, 30, 45000
-1, 55, 90000"
+35, 180, 1
+45, 220, 0
+28, 160, 1"
                         rows={8}
                         className="font-mono text-sm"
                     />
                     <p className="text-xs text-muted-foreground">
-                        Each row: binary outcome (0/1) followed by independent variables
+                        Each row: independent variables followed by binary outcome (0 or 1)
                     </p>
+                </div>
+
+                <div className="flex items-center justify-center">
+                    <div className="text-sm text-muted-foreground">
+                        {dataMatrix.trim() && (
+                            <span>
+                                {dataMatrix.trim().split('\n').length} data points ready
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 
