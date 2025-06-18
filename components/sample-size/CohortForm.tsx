@@ -57,6 +57,8 @@ export function CohortForm() {
       p2,
     );
     setResult(sampleSize);
+    // Scroll to top to show results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (

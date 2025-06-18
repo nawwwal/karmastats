@@ -24,6 +24,8 @@ export function StudyDetectorForm({ onAnalysisComplete, setIsLoading, isLoading 
         const recommendations = analyzeStudy(researchText);
         onAnalysisComplete(recommendations);
         setIsLoading(false);
+        // Scroll to top to show results
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (

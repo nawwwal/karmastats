@@ -40,6 +40,8 @@ export function CoxRegressionForm() {
   const onSubmit = (data: FormData) => {
     const calculatedResult = calculateCox(data as CoxParams);
     setResult(calculatedResult);
+    // Scroll to top to show results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (

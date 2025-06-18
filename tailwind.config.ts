@@ -159,6 +159,8 @@ const config = {
         "primary-gradient": karmaTheme.gradients.primary,
         "secondary-gradient": karmaTheme.gradients.secondary,
         "accent-gradient": karmaTheme.gradients.accent,
+        "sunset-gradient": karmaTheme.gradients.sunset,
+        "warm-gradient": karmaTheme.gradients.warm,
       },
     },
   },

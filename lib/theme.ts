@@ -2,43 +2,43 @@
 // Based on ICMR-NIN 2020 Guidelines and medical design standards
 
 export const karmaTheme = {
-  // Core color palette - KARMASTAT brand colors
+  // Core color palette - KARMASTAT vibrant orange-yellow theme
   colors: {
-    // Primary colors - Professional medical blues
+    // Primary colors - Vibrant orange-yellow spectrum
     primary: {
-      50: '#e3f2fd',
-      100: '#bbdefb',
-      200: '#90caf9',
-      300: '#64b5f6',
-      400: '#42a5f5',
-      500: '#146C94', // Brand primary
-      600: '#19A7CE', // Brand secondary
-      700: '#1976d2',
-      800: '#1565c0',
-      900: '#0d47a1',
-      DEFAULT: '#146C94',
+      50: '#fff7ed',
+      100: '#ffedd5',
+      200: '#fed7aa',
+      300: '#fdba74',
+      400: '#fb923c',
+      500: '#f97316', // Brand primary - vibrant orange
+      600: '#ea580c', // Deeper orange
+      700: '#c2410c',
+      800: '#9a3412',
+      900: '#7c2d12',
+      DEFAULT: '#f97316',
     },
 
-    // Secondary colors
+    // Secondary colors - Complementary yellows and warm tones
     secondary: {
-      50: '#f8f9fa',
-      100: '#f1f3f5',
-      200: '#e9ecef',
-      300: '#dee2e6',
-      400: '#ced4da',
-      500: '#adb5bd',
-      600: '#868e96',
-      700: '#495057',
-      800: '#343a40',
-      900: '#212529',
-      DEFAULT: '#19A7CE',
+      50: '#fefce8',
+      100: '#fef9c3',
+      200: '#fef08a',
+      300: '#fde047',
+      400: '#facc15',
+      500: '#eab308', // Brand secondary - golden yellow
+      600: '#ca8a04',
+      700: '#a16207',
+      800: '#854d0e',
+      900: '#713f12',
+      DEFAULT: '#eab308',
     },
 
-    // Accent colors
+    // Accent colors - Warm peach and cream tones
     accent: {
-      light: '#F8FDCF', // Light accent
-      neutral: '#F6F1F1', // Light neutral
-      DEFAULT: '#F8FDCF',
+      light: '#fef3c7', // Light warm cream
+      neutral: '#fdf4e6', // Warm neutral
+      DEFAULT: '#fef3c7',
     },
 
     // Semantic colors
@@ -193,15 +193,17 @@ export const karmaTheme = {
     full: '9999px',
   },
 
-  // Gradients
+  // Gradients - Vibrant orange-yellow combinations
   gradients: {
-    primary: 'linear-gradient(135deg, #146C94, #19A7CE)',
-    secondary: 'linear-gradient(135deg, #19A7CE, #F8FDCF)',
-    accent: 'linear-gradient(135deg, #F8FDCF, #F6F1F1)',
+    primary: 'linear-gradient(135deg, #f97316, #fb923c)', // Orange gradient
+    secondary: 'linear-gradient(135deg, #eab308, #fde047)', // Yellow gradient
+    accent: 'linear-gradient(135deg, #fef3c7, #fdf4e6)', // Cream gradient
     success: 'linear-gradient(135deg, #4caf50, #8bc34a)',
     warning: 'linear-gradient(135deg, #ff9800, #ffeb3b)',
     error: 'linear-gradient(135deg, #f44336, #ff5722)',
-    hero: 'linear-gradient(135deg, #146C94 0%, #19A7CE 50%, #F8FDCF 100%)',
+    hero: 'linear-gradient(135deg, #f97316 0%, #eab308 50%, #fef3c7 100%)', // Orange to yellow to cream
+    sunset: 'linear-gradient(135deg, #fb923c 0%, #f97316 25%, #eab308 75%, #fde047 100%)', // Full spectrum
+    warm: 'linear-gradient(135deg, #fed7aa, #fef3c7)', // Soft warm gradient
   },
 
   // Breakpoints
@@ -233,58 +235,58 @@ export const karmaTheme = {
   },
 };
 
-// Light theme configuration
+// Light theme configuration - Warm orange-yellow palette
 export const lightTheme = {
-  background: 'oklch(1 0 0)', // White
-  foreground: 'oklch(0.141 0.005 285.823)', // Dark gray
-  card: 'oklch(1 0 0)', // White
-  cardForeground: 'oklch(0.141 0.005 285.823)', // Dark gray
-  popover: 'oklch(1 0 0)', // White
-  popoverForeground: 'oklch(0.141 0.005 285.823)', // Dark gray
-  primary: 'oklch(0.391 0.138 213.445)', // #146C94
-  primaryForeground: 'oklch(1 0 0)', // White
-  secondary: 'oklch(0.967 0.001 286.375)', // Light gray
-  secondaryForeground: 'oklch(0.21 0.006 285.885)', // Dark
-  muted: 'oklch(0.967 0.001 286.375)', // Light gray
-  mutedForeground: 'oklch(0.552 0.016 285.938)', // Medium gray
-  accent: 'oklch(0.967 0.001 286.375)', // Light gray
-  accentForeground: 'oklch(0.21 0.006 285.885)', // Dark
-  destructive: 'oklch(0.577 0.245 27.325)', // Red
+  background: 'oklch(0.99 0.005 85)', // Warm white with hint of yellow
+  foreground: 'oklch(0.15 0.01 45)', // Warm dark brown
+  card: 'oklch(0.98 0.01 85)', // Slightly warm card background
+  cardForeground: 'oklch(0.15 0.01 45)', // Warm dark text
+  popover: 'oklch(0.98 0.01 85)', // Warm popover background
+  popoverForeground: 'oklch(0.15 0.01 45)', // Warm dark text
+  primary: 'oklch(0.65 0.18 35)', // Vibrant orange #f97316
+  primaryForeground: 'oklch(0.98 0.01 85)', // Warm white text
+  secondary: 'oklch(0.75 0.15 85)', // Golden yellow #eab308
+  secondaryForeground: 'oklch(0.15 0.01 45)', // Dark text on yellow
+  muted: 'oklch(0.95 0.02 85)', // Warm light background
+  mutedForeground: 'oklch(0.45 0.02 45)', // Medium warm brown
+  accent: 'oklch(0.93 0.03 75)', // Warm cream accent
+  accentForeground: 'oklch(0.15 0.01 45)', // Dark text on cream
+  destructive: 'oklch(0.577 0.245 27.325)', // Red (unchanged)
   destructiveForeground: 'oklch(1 0 0)', // White
-  border: 'oklch(0.87 0.015 285.938)', // Slightly darker for visible outlines
-  input: 'oklch(0.87 0.015 285.938)', // Matches border shade
-  ring: 'oklch(0.391 0.138 213.445)', // Primary blue
-  success: 'oklch(0.548 0.166 142.495)', // Green
-  warning: 'oklch(0.832 0.199 95.677)', // Yellow
-  error: 'oklch(0.577 0.245 27.325)', // Red
-  info: 'oklch(0.631 0.206 231.738)', // Blue
+  border: 'oklch(0.88 0.02 75)', // Warm border color
+  input: 'oklch(0.88 0.02 75)', // Warm input border
+  ring: 'oklch(0.65 0.18 35)', // Orange focus ring
+  success: 'oklch(0.548 0.166 142.495)', // Green (unchanged)
+  warning: 'oklch(0.75 0.15 85)', // Our golden yellow
+  error: 'oklch(0.577 0.245 27.325)', // Red (unchanged)
+  info: 'oklch(0.65 0.18 35)', // Orange for info
 };
 
-// Dark theme configuration
+// Dark theme configuration - Warm dark with orange accents
 export const darkTheme = {
-  background: 'oklch(0.141 0.005 285.823)', // Dark gray
-  foreground: 'oklch(0.985 0 0)', // Nearly white
-  card: 'oklch(0.21 0.006 285.885)', // Medium dark
-  cardForeground: 'oklch(0.985 0 0)', // Nearly white
-  popover: 'oklch(0.21 0.006 285.885)', // Medium dark
-  popoverForeground: 'oklch(0.985 0 0)', // Nearly white
-  primary: 'oklch(0.488 0.243 264.376)', // Lighter blue for dark mode
-  primaryForeground: 'oklch(0.985 0 0)', // Nearly white
-  secondary: 'oklch(0.274 0.006 286.033)', // Dark gray
-  secondaryForeground: 'oklch(0.985 0 0)', // Nearly white
-  muted: 'oklch(0.274 0.006 286.033)', // Dark gray
-  mutedForeground: 'oklch(0.705 0.015 286.067)', // Light gray
-  accent: 'oklch(0.32 0.01 286.033)', // Mid gray for hover / accent backgrounds
-  accentForeground: 'oklch(0.985 0 0)', // Nearly white
-  destructive: 'oklch(0.704 0.191 22.216)', // Red
-  destructiveForeground: 'oklch(0.985 0 0)', // Nearly white
-  border: 'oklch(0.37 0.02 285.938)', // Visible gray for outlines
-  input: 'oklch(0.37 0.02 285.938)', // Visible gray for inputs
-  ring: 'oklch(0.552 0.016 285.938)', // Medium gray
-  success: 'oklch(0.649 0.169 152.511)', // Green
-  warning: 'oklch(0.832 0.199 95.677)', // Yellow
-  error: 'oklch(0.704 0.191 22.216)', // Red
-  info: 'oklch(0.696 0.17 162.48)', // Blue
+  background: 'oklch(0.12 0.01 45)', // Warm dark brown
+  foreground: 'oklch(0.95 0.02 75)', // Warm light cream
+  card: 'oklch(0.18 0.01 45)', // Warmer dark card
+  cardForeground: 'oklch(0.95 0.02 75)', // Warm light text
+  popover: 'oklch(0.18 0.01 45)', // Warmer dark popover
+  popoverForeground: 'oklch(0.95 0.02 75)', // Warm light text
+  primary: 'oklch(0.75 0.15 35)', // Lighter vibrant orange for dark mode
+  primaryForeground: 'oklch(0.12 0.01 45)', // Dark text on orange
+  secondary: 'oklch(0.85 0.12 85)', // Lighter golden yellow for dark mode
+  secondaryForeground: 'oklch(0.12 0.01 45)', // Dark text on yellow
+  muted: 'oklch(0.25 0.01 45)', // Warm muted dark
+  mutedForeground: 'oklch(0.65 0.02 75)', // Warm medium light
+  accent: 'oklch(0.35 0.02 55)', // Warm accent background
+  accentForeground: 'oklch(0.95 0.02 75)', // Light text on accent
+  destructive: 'oklch(0.704 0.191 22.216)', // Red (unchanged)
+  destructiveForeground: 'oklch(0.985 0 0)', // White
+  border: 'oklch(0.35 0.02 55)', // Warm border
+  input: 'oklch(0.35 0.02 55)', // Warm input border
+  ring: 'oklch(0.75 0.15 35)', // Orange focus ring
+  success: 'oklch(0.649 0.169 152.511)', // Green (unchanged)
+  warning: 'oklch(0.85 0.12 85)', // Light golden yellow
+  error: 'oklch(0.704 0.191 22.216)', // Red (unchanged)
+  info: 'oklch(0.75 0.15 35)', // Orange for info
 };
 
 // Medical color tokens for specific use cases

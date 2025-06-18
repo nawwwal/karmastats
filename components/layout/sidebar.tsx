@@ -162,7 +162,7 @@ const SidebarSearch: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => {
           placeholder="Search tools..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 bg-background/50 border-border/50 focus:bg-background focus:border-primary/50"
+          className="pl-9 bg-background/50 border-border/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
         />
       </div>
     </div>
@@ -214,7 +214,7 @@ const SidebarFavorites: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) =
                 isCollapsed && "justify-center px-2"
               )}
             >
-              <Star size={16} className="text-warning flex-shrink-0" />
+              <Star size={16} className="text-primary flex-shrink-0" />
               {!isCollapsed && <span className="truncate">{item.title}</span>}
             </Link>
           </li>
@@ -227,9 +227,10 @@ const SidebarFavorites: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) =
 interface SidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  isHovered?: boolean;
 }
 
-export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+export function Sidebar({ isCollapsed, onToggle, isHovered = false }: SidebarProps) {
   const pathname = usePathname();
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
     calculators: true,
@@ -367,7 +368,8 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   return (
     <aside className={cn(
       "fixed left-0 top-0 z-50 h-screen bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
-      isCollapsed ? "w-16" : "w-80"
+      isCollapsed ? "w-16" : "w-80 shadow-xl",
+      isHovered && !isCollapsed && "shadow-2xl"
     )}>
       <div className="flex flex-col h-full">
         {/* Header */}

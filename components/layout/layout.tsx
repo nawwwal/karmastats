@@ -10,7 +10,7 @@ interface LayoutWrapperProps {
 }
 
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true); // Default to collapsed for more space
   const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
@@ -32,6 +32,14 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
     }
   }, [isClient]);
 
+  const handleSidebarMouseEnter = () => {
+    setIsSidebarCollapsed(false);
+  };
+
+  const handleSidebarMouseLeave = () => {
+    setIsSidebarCollapsed(true);
+  };
+
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
@@ -51,17 +59,27 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   }
 
   return (
-    <div className="h-screen bg-background flex overflow-hidden">
-      <Sidebar isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} />
+    <div className="min-h-screen bg-background flex">
+      <div
+        className="relative"
+        onMouseEnter={handleSidebarMouseEnter}
+        onMouseLeave={handleSidebarMouseLeave}
+      >
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggle={toggleSidebar}
+          isHovered={!isSidebarCollapsed}
+        />
+      </div>
       <main
         className={cn(
-          "flex-1 transition-all duration-300 ease-in-out overflow-auto",
-          "h-full",
-          // Add proper margin for sidebar width
+          "flex-1 transition-all duration-300 ease-in-out",
+          "min-h-screen",
+          // Add proper margin for sidebar width with smooth transition
           isSidebarCollapsed ? "ml-16" : "ml-80"
         )}
       >
-        <div className="container mx-auto p-6 max-w-none min-h-full">
+        <div className="container mx-auto p-6 max-w-none">
           {children}
         </div>
       </main>

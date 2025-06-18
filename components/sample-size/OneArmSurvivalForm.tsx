@@ -45,6 +45,8 @@ export function OneArmSurvivalForm() {
       setError(null);
       const result = calculateOneArm(data);
       setResults(result);
+      // Scroll to top to show results
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       setError(err.message);
     }

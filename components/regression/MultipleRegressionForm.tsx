@@ -15,6 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Upload, BarChart3, Shuffle } from "lucide-react";
 
 const parseMatrixInput = (input: string): { y: number[], X: number[][] } => {
     const rows = input.trim().split('\n').map(row => row.split(/[\s,]+/).map(Number));
@@ -23,15 +27,78 @@ const parseMatrixInput = (input: string): { y: number[], X: number[][] } => {
     return { y, X };
 }
 
-export function MultipleRegressionForm() {
-    const [dataMatrix, setDataMatrix] = useState("");
-    const [variableNames, setVariableNames] = useState("");
+const sampleDatasets = {
+  housingPrices: {
+    name: "Housing Prices (Area, Bedrooms → Price)",
+    data: `250000, 1200, 2
+300000, 1500, 3
+180000, 900, 1
+420000, 2000, 4
+380000, 1800, 3
+220000, 1000, 2
+500000, 2500, 4
+320000, 1600, 3`,
+    variables: "Area (sq ft), Bedrooms"
+  },
+  studentGrades: {
+    name: "Student Performance (Study Hours, Previous GPA → Final Grade)",
+    data: `85, 8, 3.2
+92, 12, 3.8
+78, 5, 2.9
+88, 9, 3.5
+95, 15, 3.9
+82, 7, 3.1
+90, 11, 3.7
+76, 4, 2.8`,
+    variables: "Study Hours, Previous GPA"
+  },
+  salesPerformance: {
+    name: "Sales Performance (Advertising, Experience → Sales)",
+    data: `120000, 5000, 2
+180000, 8000, 5
+95000, 3000, 1
+220000, 12000, 8
+160000, 6500, 4
+140000, 7000, 3
+200000, 10000, 7
+110000, 4000, 2`,
+    variables: "Advertising Budget, Years Experience"
+  }
+};
+
+interface MultipleRegressionFormProps {
+  onResultsChange?: (results: any) => void;
+}
+
+export function MultipleRegressionForm({ onResultsChange }: MultipleRegressionFormProps) {
+    const [dataMatrix, setDataMatrix] = useState(sampleDatasets.housingPrices.data);
+    const [variableNames, setVariableNames] = useState(sampleDatasets.housingPrices.variables);
     const [result, setResult] = useState<MultipleRegressionResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    const loadSampleData = (datasetKey: string) => {
+        const dataset = sampleDatasets[datasetKey as keyof typeof sampleDatasets];
+        if (dataset) {
+            setDataMatrix(dataset.data);
+            setVariableNames(dataset.variables);
+            setError(null);
+            setResult(null);
+            onResultsChange?.(null);
+        }
+    };
+
+    const clearData = () => {
+        setDataMatrix("");
+        setVariableNames("");
+        setError(null);
+        setResult(null);
+        onResultsChange?.(null);
+    };
 
     const handleCalculate = () => {
         setError(null);
         setResult(null);
+        onResultsChange?.(null);
 
         try {
             const { y, X } = parseMatrixInput(dataMatrix);
@@ -41,6 +108,7 @@ export function MultipleRegressionForm() {
                 setError(regressionResult.error);
             } else {
                 setResult(regressionResult);
+                onResultsChange?.(regressionResult);
             }
         } catch (e: any) {
             setError("Invalid data format. Please check your input.");
@@ -50,63 +118,90 @@ export function MultipleRegressionForm() {
     const varNames = ['Intercept', ...variableNames.split(',').map(name => name.trim())];
 
     return (
-        <div className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="dataMatrix">Data Matrix (Y, X1, X2, ...)</Label>
-                <Textarea
-                    id="dataMatrix"
-                    value={dataMatrix}
-                    onChange={(e) => setDataMatrix(e.target.value)}
-                    placeholder={"10, 1, 5\n15, 2, 6\n20, 3, 7"}
-                    rows={6}
-                />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="variableNames">Variable Names (comma-separated for X variables)</Label>
-                <Input
-                    id="variableNames"
-                    value={variableNames}
-                    onChange={(e) => setVariableNames(e.target.value)}
-                    placeholder="e.g., Age, BMI"
-                />
-            </div>
-
-            <Button onClick={handleCalculate} className="w-full">Calculate</Button>
-
-            {error && <div className="text-destructive">{error}</div>}
-
-            {result && (
-                <Card>
-                    <CardHeader><CardTitle>Results</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div>
-                            <p><strong>R-squared:</strong> {result.rSquared.toFixed(4)}</p>
-                            <p><strong>Adjusted R-squared:</strong> {result.adjustedRSquared.toFixed(4)}</p>
-                            <p><strong>F-statistic:</strong> {result.F.toFixed(4)} (p-value: {result.fPValue.toExponential(4)})</p>
-                            <p><strong>Observations:</strong> {result.n}</p>
+        <div className="space-y-6">
+            {/* Sample Data Selector */}
+            <Card className="bg-muted/30">
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <BarChart3 className="h-5 w-5" />
+                        Quick Start with Sample Data
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Choose Sample Dataset</Label>
+                            <Select onValueChange={loadSampleData}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a sample dataset..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.entries(sampleDatasets).map(([key, dataset]) => (
+                                        <SelectItem key={key} value={key}>
+                                            {dataset.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Variable</TableHead>
-                                    <TableHead>Coefficient</TableHead>
-                                    <TableHead>Std. Error</TableHead>
-                                    <TableHead>t-statistic</TableHead>
-                                    <TableHead>p-value</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {result.coefficients.map((coef, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell>{varNames[i] || `X${i}`}</TableCell>
-                                        <TableCell>{coef.toFixed(4)}</TableCell>
-                                        <TableCell>{result.stdErrors[i].toFixed(4)}</TableCell>
-                                        <TableCell>{result.tStats[i].toFixed(4)}</TableCell>
-                                        <TableCell>{result.pValues[i].toExponential(4)}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                        <div className="flex items-end gap-2">
+                            <Button variant="outline" onClick={clearData} className="flex-1">
+                                <Shuffle className="h-4 w-4 mr-2" />
+                                Clear Data
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Separator />
+
+            {/* Data Input */}
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="variableNames">Variable Names (comma-separated for X variables)</Label>
+                    <Input
+                        id="variableNames"
+                        value={variableNames}
+                        onChange={(e) => setVariableNames(e.target.value)}
+                        placeholder="e.g., Age, BMI, Exercise Hours"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                        Names for the independent variables (predictors)
+                    </p>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="dataMatrix">Data Matrix (Y, X1, X2, ... format)</Label>
+                    <Textarea
+                        id="dataMatrix"
+                        value={dataMatrix}
+                        onChange={(e) => setDataMatrix(e.target.value)}
+                        placeholder="Format: Y, X1, X2, X3...
+Example:
+250000, 1200, 2
+300000, 1500, 3
+180000, 900, 1"
+                        rows={8}
+                        className="font-mono text-sm"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                        Each row: dependent variable (Y) followed by independent variables (X1, X2, ...)
+                    </p>
+                </div>
+            </div>
+
+            <Button onClick={handleCalculate} className="w-full" size="lg">
+                Calculate Multiple Regression
+            </Button>
+
+            {error && (
+                <Card className="border-destructive">
+                    <CardContent className="pt-6">
+                        <div className="text-destructive flex items-center gap-2">
+                            <span className="text-sm font-medium">Error:</span>
+                            <span className="text-sm">{error}</span>
+                        </div>
                     </CardContent>
                 </Card>
             )}

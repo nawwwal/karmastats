@@ -4,122 +4,122 @@
 
 @layer base {
   :root {
-    /* Base colors - Light theme */
-    --background: 0 0% 100%;
-    --foreground: 215 19% 23%;
-    --card: 0 0% 100%;
-    --card-foreground: 215 19% 23%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 19% 23%;
+    /* Base colors - Light theme (DEFAULT) - Warm orange-yellow palette */
+    --background: 43 100% 97%; /* Warm white with hint of yellow */
+    --foreground: 25 20% 15%; /* Warm dark brown */
+    --card: 43 67% 96%; /* Slightly warm card background */
+    --card-foreground: 25 20% 15%; /* Warm dark text */
+    --popover: 43 67% 96%; /* Warm popover background */
+    --popover-foreground: 25 20% 15%; /* Warm dark text */
 
-    /* Primary colors - KARMASTAT brand */
-    --primary: 201 78% 33%; /* #146C94 */
-    --primary-foreground: 0 0% 100%;
+    /* Primary colors - Vibrant orange */
+    --primary: 22 92% 52%; /* Vibrant orange #f97316 */
+    --primary-foreground: 43 67% 96%; /* Warm white text on orange */
 
-    /* Secondary colors */
-    --secondary: 193 79% 45%; /* #19A7CE */
-    --secondary-foreground: 215 19% 23%;
+    /* Secondary colors - Golden yellow */
+    --secondary: 45 93% 47%; /* Golden yellow #eab308 */
+    --secondary-foreground: 25 20% 15%; /* Dark text on yellow */
 
-    /* Muted colors */
-    --muted: 215 25% 95%;
-    --muted-foreground: 215 15% 45%;
+    /* Muted colors - Warm neutrals */
+    --muted: 43 33% 93%; /* Warm light background */
+    --muted-foreground: 25 10% 45%; /* Medium warm brown */
 
-    /* Accent colors */
-    --accent: 67 86% 90%; /* #F8FDCF */
-    --accent-foreground: 215 19% 15%;
+    /* Accent colors - Warm cream */
+    --accent: 43 58% 88%; /* Warm cream accent */
+    --accent-foreground: 25 20% 15%; /* Dark text on cream */
 
     /* Semantic colors */
-    --success: 122 39% 49%; /* #4CAF50 */
-    --warning: 54 91% 59%; /* #FFEB3B */
-    --error: 4 90% 58%; /* #F44336 */
-    --info: 199 89% 48%; /* #03A9F4 */
+    --success: 122 39% 49%; /* Green (unchanged) */
+    --warning: 45 93% 47%; /* Our golden yellow */
+    --error: 4 90% 58%; /* Red (unchanged) */
+    --info: 22 92% 52%; /* Orange for info */
 
     /* Destructive (error variant) */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border and input */
-    --border: 215 15% 85%;
-    --input: 215 15% 85%;
-    --ring: 201 78% 33%;
+    /* Border and input - Warm borders */
+    --border: 43 25% 88%; /* Warm border color */
+    --input: 43 25% 88%; /* Warm input border */
+    --ring: 22 92% 52%; /* Orange focus ring */
 
     /* Radius */
     --radius: 0.75rem;
 
-    /* Chart colors */
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    /* Chart colors - Warm orange-yellow palette */
+    --chart-1: 22 92% 52%; /* Primary orange */
+    --chart-2: 45 93% 47%; /* Golden yellow */
+    --chart-3: 35 85% 60%; /* Warm amber */
+    --chart-4: 15 75% 55%; /* Deep orange */
+    --chart-5: 50 95% 65%; /* Bright yellow */
 
-    /* Sidebar colors */
-    --sidebar: 0 0% 100%;
-    --sidebar-foreground: 215 19% 23%;
-    --sidebar-primary: 201 78% 33%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 25% 95%; /* pale accent for hover background */
-    --sidebar-accent-foreground: 215 19% 23%;
-    --sidebar-border: 215 15% 85%; /* maintain our slightly darker neutral */
-    --sidebar-ring: 201 78% 33%;
+    /* Sidebar colors - Warm orange-yellow theme */
+    --sidebar: 43 67% 96%; /* Warm card background */
+    --sidebar-foreground: 25 20% 15%; /* Warm dark text */
+    --sidebar-primary: 22 92% 52%; /* Vibrant orange */
+    --sidebar-primary-foreground: 43 67% 96%; /* Warm white text on orange */
+    --sidebar-accent: 43 58% 88%; /* Warm cream accent for hover */
+    --sidebar-accent-foreground: 25 20% 15%; /* Dark text on cream */
+    --sidebar-border: 43 25% 88%; /* Warm border */
+    --sidebar-ring: 22 92% 52%; /* Orange focus ring */
   }
 
   .dark {
-    /* Base colors - Dark theme */
-    --background: 222 29% 14%; /* #1A202C */
-    --foreground: 210 25% 98%;
-    --card: 215 19% 23%; /* #2D3748 */
-    --card-foreground: 210 25% 98%;
-    --popover: 215 19% 23%;
-    --popover-foreground: 210 25% 98%;
+    /* Base colors - Dark theme - Warm dark with orange accents */
+    --background: 25 20% 12%; /* Warm dark brown */
+    --foreground: 43 33% 93%; /* Warm light cream */
+    --card: 25 15% 18%; /* Warmer dark card */
+    --card-foreground: 43 33% 93%; /* Warm light text */
+    --popover: 25 15% 18%; /* Warmer dark popover */
+    --popover-foreground: 43 33% 93%; /* Warm light text */
 
-    /* Primary colors - Adjusted for dark mode */
-    --primary: 213 94% 68%; /* Lighter blue for dark mode */
-    --primary-foreground: 210 25% 98%;
+    /* Primary colors - Lighter orange for dark mode */
+    --primary: 22 75% 75%; /* Lighter vibrant orange for dark mode */
+    --primary-foreground: 25 20% 12%; /* Dark text on orange */
 
-    /* Secondary colors */
-    --secondary: 180 25% 25%; /* Darker teal */
-    --secondary-foreground: 210 25% 98%;
+    /* Secondary colors - Lighter yellow for dark mode */
+    --secondary: 45 85% 80%; /* Lighter golden yellow for dark mode */
+    --secondary-foreground: 25 20% 12%; /* Dark text on yellow */
 
-    /* Muted colors – a touch lighter for subtle separation */
-    --muted: 215 15% 20%;
-    --muted-foreground: 215 15% 65%;
+    /* Muted colors - Warm dark neutrals */
+    --muted: 25 10% 25%; /* Warm muted dark */
+    --muted-foreground: 43 20% 65%; /* Warm medium light */
 
-    /* Accent colors – lighter so hover states stand out */
-    --accent: 215 19% 28%;
-    --accent-foreground: 210 25% 98%;
+    /* Accent colors - Warm dark accent */
+    --accent: 35 15% 35%; /* Warm accent background */
+    --accent-foreground: 43 33% 93%; /* Light text on accent */
 
     /* Semantic colors - Dark theme variants */
-    --success: 122 39% 69%; /* Lighter green */
-    --warning: 54 91% 79%; /* Lighter yellow */
-    --error: 4 90% 78%; /* Lighter red */
-    --info: 199 89% 68%; /* Lighter blue */
+    --success: 122 39% 69%; /* Green (unchanged) */
+    --warning: 45 85% 80%; /* Light golden yellow */
+    --error: 4 90% 78%; /* Red (unchanged) */
+    --info: 22 75% 75%; /* Orange for info */
 
     /* Destructive */
     --destructive: 0 63% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border and input – lighter than background for clear outlines */
-    --border: 215 19% 35%;
-    --input: 215 19% 35%;
-    --ring: 213 94% 68%;
+    /* Border and input - Warm dark borders */
+    --border: 35 15% 35%; /* Warm border */
+    --input: 35 15% 35%; /* Warm input border */
+    --ring: 22 75% 75%; /* Orange focus ring */
 
-    /* Chart colors - Dark theme */
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Chart colors - Warm dark theme */
+    --chart-1: 22 75% 75%; /* Lighter orange for dark */
+    --chart-2: 45 85% 80%; /* Lighter yellow for dark */
+    --chart-3: 35 70% 70%; /* Warm amber for dark */
+    --chart-4: 15 65% 65%; /* Deep orange for dark */
+    --chart-5: 50 80% 85%; /* Bright yellow for dark */
 
-    /* Sidebar colors - Dark theme */
-    --sidebar: 215 19% 23%;
-    --sidebar-foreground: 210 25% 98%;
-    --sidebar-primary: 220 70% 70%;
-    --sidebar-primary-foreground: 215 19% 23%;
-    --sidebar-accent: 215 19% 28%;
-    --sidebar-accent-foreground: 210 25% 98%;
-    --sidebar-border: 215 19% 35%;
-    --sidebar-ring: 213 94% 68%;
+    /* Sidebar colors - Warm dark theme */
+    --sidebar: 25 15% 18%; /* Warmer dark card */
+    --sidebar-foreground: 43 33% 93%; /* Warm light text */
+    --sidebar-primary: 22 75% 75%; /* Lighter orange for dark mode */
+    --sidebar-primary-foreground: 25 20% 12%; /* Dark text on orange */
+    --sidebar-accent: 35 15% 35%; /* Warm accent background */
+    --sidebar-accent-foreground: 43 33% 93%; /* Light text on accent */
+    --sidebar-border: 35 15% 35%; /* Warm border */
+    --sidebar-ring: 22 75% 75%; /* Orange focus ring */
   }
 
   /* Base element styles */
@@ -172,6 +172,36 @@
     @apply bg-primary/20 text-primary-foreground;
   }
 
+  /* Form label and control spacing improvements */
+  [data-slot="form-label"] {
+    @apply mb-2;
+  }
+
+  [data-slot="form-label"] + [data-slot="form-control"] {
+    @apply mt-1;
+  }
+
+  /* Better spacing for form items in grid layouts */
+  .space-y-6 > [data-slot="form-item"] {
+    @apply mb-6;
+  }
+
+  .space-y-4 > [data-slot="form-item"] {
+    @apply mb-4;
+  }
+
+  /* Ensure all form controls take full width in their containers */
+  [data-slot="form-control"] [data-slot="input"],
+  [data-slot="form-control"] [data-slot="select-trigger"],
+  [data-slot="form-control"] textarea {
+    @apply w-full min-w-0;
+  }
+
+  /* Ensure proper responsive behavior for form controls */
+  .grid [data-slot="form-item"] [data-slot="form-control"] {
+    @apply w-full;
+  }
+
   /* Scrollbar styles */
   ::-webkit-scrollbar {
     width: 8px;
@@ -203,20 +233,20 @@
 }
 
 @layer components {
-  /* Custom component styles using theme variables */
+  /* Custom component styles using warm orange-yellow theme variables */
   .gradient-bg {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 50%, hsl(var(--accent)) 100%);
   }
 
   .glass-morphism {
     backdrop-filter: blur(16px) saturate(180%);
-    background-color: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(209, 213, 219, 0.3);
+    background-color: rgba(255, 248, 237, 0.75); /* Warm white with orange tint */
+    border: 1px solid rgba(251, 146, 60, 0.2); /* Orange border */
   }
 
   .dark .glass-morphism {
-    background-color: rgba(17, 24, 39, 0.75);
-    border: 1px solid rgba(75, 85, 99, 0.3);
+    background-color: rgba(41, 25, 15, 0.75); /* Warm dark brown */
+    border: 1px solid rgba(251, 146, 60, 0.3); /* Orange border */
   }
 
   .card-hover {
@@ -225,7 +255,7 @@
 
   .btn-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
-    @apply text-white hover:opacity-90 transition-opacity;
+    @apply text-primary-foreground hover:opacity-90 transition-opacity;
   }
 
   .text-gradient {
@@ -233,6 +263,19 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* New warm-specific utilities */
+  .sunset-gradient {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 25%, #eab308 75%, #fde047 100%);
+  }
+
+  .warm-glow {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+  }
+
+  .dark .warm-glow {
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.4);
   }
 
   /* Animation delay utilities */
