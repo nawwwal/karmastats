@@ -82,7 +82,14 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
               <div className="flex-grow min-w-0">
                 <div className="font-medium truncate">{title || 'Unknown'}</div>
                 {description && (
-                  <div className="text-xs font-medium tracking-wide text-muted-foreground truncate">{description}</div>
+                  <div
+                    className={cn(
+                      "text-xs font-medium tracking-wide truncate",
+                      isActive ? "text-sidebar-primary-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    {description}
+                  </div>
                 )}
               </div>
               <div className="flex items-center gap-2">
@@ -122,7 +129,14 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           <div className="flex-grow min-w-0">
             <div className="font-medium truncate">{title || 'Unknown'}</div>
             {description && (
-              <div className="text-xs font-medium tracking-wide text-muted-foreground truncate">{description}</div>
+              <div
+                className={cn(
+                  "text-xs font-medium tracking-wide truncate",
+                  isActive ? "text-sidebar-primary-foreground" : "text-muted-foreground"
+                )}
+              >
+                {description}
+              </div>
             )}
           </div>
         )}
