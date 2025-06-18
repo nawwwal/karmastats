@@ -89,6 +89,8 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
   const [result, setResult] = useState<LinearRegressionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showChart, setShowChart] = useState(true);
+  const [dataFormat, setDataFormat] = useState('comma');
+  const [inputMethod, setInputMethod] = useState('manual');
 
   const loadSampleData = (datasetKey: string) => {
     const dataset = sampleDatasets[datasetKey as keyof typeof sampleDatasets];
@@ -127,53 +129,187 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
       setError(regressionResult.error);
     } else {
       setResult(regressionResult);
-      onResultsChange?.(regressionResult);
+
+      // Create enhanced chart data with better interactions
+      const chartData = {
+        datasets: [
+          {
+            label: "Data Points",
+            data: regressionResult.xValues.map((val, i) => ({ x: val, y: regressionResult.yValues[i] })),
+            backgroundColor: "hsl(var(--primary) / 0.7)",
+            borderColor: "hsl(var(--primary))",
+            borderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            type: 'scatter' as const,
+          },
+          {
+            label: "Regression Line",
+            data: regressionResult.xValues.map((val) => ({
+              x: val,
+              y: regressionResult.intercept + regressionResult.slope * val
+            })),
+            type: 'line' as const,
+            borderColor: "hsl(var(--secondary))",
+            backgroundColor: "hsl(var(--secondary) / 0.1)",
+            borderWidth: 3,
+            fill: false,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0,
+          },
+        ],
+      };
+
+      const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          intersect: false,
+          mode: 'index' as const,
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: xLabel,
+              font: { size: 14, weight: 'bold' }
+            },
+            grid: {
+              color: 'hsl(var(--border))',
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: yLabel,
+              font: { size: 14, weight: 'bold' }
+            },
+            grid: {
+              color: 'hsl(var(--border))',
+            }
+          },
+        },
+        plugins: {
+          legend: {
+            position: 'top' as const,
+            labels: {
+              usePointStyle: true,
+              font: { size: 12 }
+            }
+          },
+          title: {
+            display: true,
+            text: `${yLabel} vs ${xLabel}`,
+            font: { size: 16, weight: 'bold' }
+          },
+          tooltip: {
+            backgroundColor: 'hsl(var(--popover))',
+            titleColor: 'hsl(var(--popover-foreground))',
+            bodyColor: 'hsl(var(--popover-foreground))',
+            borderColor: 'hsl(var(--border))',
+            borderWidth: 1,
+            callbacks: {
+              title: function(context: any) {
+                return `${xLabel}: ${context[0].parsed.x}`;
+              },
+              label: function(context: any) {
+                const dataset = context.dataset;
+                if (dataset.label === 'Data Points') {
+                  return `${yLabel}: ${context.parsed.y.toFixed(3)}`;
+                } else {
+                  return `Predicted ${yLabel}: ${context.parsed.y.toFixed(3)}`;
+                }
+              },
+              afterBody: function(context: any) {
+                if (context[0].dataset.label === 'Data Points') {
+                  const predicted = regressionResult.intercept + regressionResult.slope * context[0].parsed.x;
+                  const residual = context[0].parsed.y - predicted;
+                  return [`Predicted: ${predicted.toFixed(3)}`, `Residual: ${residual.toFixed(3)}`];
+                }
+                return [];
+              }
+            }
+          }
+        },
+      };
+
+      // Pass result with chart data to parent
+      onResultsChange?.({
+        ...regressionResult,
+        chartData,
+        chartComponent: <Scatter options={chartOptions} data={chartData} />
+      });
     }
   };
 
-  const chartData = result ? {
-    datasets: [
-      {
-        label: "Data Points",
-        data: result.xValues.map((val, i) => ({ x: val, y: result.yValues[i] })),
-        backgroundColor: "hsl(var(--secondary) / 0.5)",
-      },
-      {
-        label: "Regression Line",
-        data: result.xValues.map((val) => ({ x: val, y: result.intercept + result.slope * val })),
-        type: 'line' as const,
-        borderColor: "hsl(var(--primary))",
-        borderWidth: 2,
-        fill: false,
-        pointRadius: 0,
-      },
-    ],
-  } : { datasets: []};
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        try {
+          // Parse CSV format: assume two columns (X, Y) or two rows
+          const lines = text.trim().split('\n');
+          if (lines.length === 2) {
+            // Two rows format
+            const row1 = lines[0].split(dataFormat === 'comma' ? ',' : dataFormat === 'space' ? /\s+/ : '\t');
+            const row2 = lines[1].split(dataFormat === 'comma' ? ',' : dataFormat === 'space' ? /\s+/ : '\t');
+            setXValues(row1.map(v => v.trim()).join(', '));
+            setYValues(row2.map(v => v.trim()).join(', '));
+          } else {
+            // Two columns format
+            const xVals: string[] = [];
+            const yVals: string[] = [];
+            lines.forEach(line => {
+              const cols = line.split(dataFormat === 'comma' ? ',' : dataFormat === 'space' ? /\s+/ : '\t');
+              if (cols.length >= 2) {
+                xVals.push(cols[0].trim());
+                yVals.push(cols[1].trim());
+              }
+            });
+            setXValues(xVals.join(', '));
+            setYValues(yVals.join(', '));
+          }
+          setError(null);
+          setResult(null);
+          onResultsChange?.(null);
+        } catch (err) {
+          setError("Error parsing file. Please check the format.");
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
 
-  const chartOptions = {
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: xLabel,
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: yLabel,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Simple Linear Regression',
-      },
-    },
+  const handlePasteData = (text: string) => {
+    try {
+      const lines = text.trim().split('\n');
+      if (lines.length === 2) {
+        // Two rows format
+        setXValues(lines[0]);
+        setYValues(lines[1]);
+      } else {
+        // Two columns format
+        const xVals: string[] = [];
+        const yVals: string[] = [];
+        lines.forEach(line => {
+          const cols = line.split(dataFormat === 'comma' ? ',' : dataFormat === 'space' ? /\s+/ : '\t');
+          if (cols.length >= 2) {
+            xVals.push(cols[0].trim());
+            yVals.push(cols[1].trim());
+          }
+        });
+        setXValues(xVals.join(', '));
+        setYValues(yVals.join(', '));
+      }
+      setError(null);
+      setResult(null);
+      onResultsChange?.(null);
+    } catch (err) {
+      setError("Error parsing pasted data. Please check the format.");
+    }
   };
 
   return (
@@ -187,8 +323,8 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2 space-y-2">
               <Label>Choose Sample Dataset</Label>
               <Select onValueChange={loadSampleData}>
                 <SelectTrigger>
@@ -203,11 +339,60 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-end gap-2">
-              <Button variant="outline" onClick={clearData} className="flex-1">
-                <Shuffle className="h-4 w-4 mr-2" />
-                Clear Data
-              </Button>
+            <div className="space-y-2">
+              <Label>Quick Actions</Label>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={clearData} className="flex-1">
+                  <Shuffle className="h-4 w-4 mr-2" />
+                  Clear
+                </Button>
+                <Button variant="outline" onClick={() => document.getElementById('csv-upload')?.click()} className="flex-1">
+                  <Upload className="h-4 w-4 mr-2" />
+                  CSV
+                </Button>
+              </div>
+              <input
+                id="csv-upload"
+                type="file"
+                accept=".csv,.txt"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label>Data Format</Label>
+              <Select onValueChange={setDataFormat} defaultValue={dataFormat}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="comma">Comma Separated</SelectItem>
+                  <SelectItem value="space">Space Separated</SelectItem>
+                  <SelectItem value="tab">Tab Separated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="md:col-span-2 space-y-2">
+              <Label>Data Input Method</Label>
+              <div className="flex gap-2">
+                <Button
+                  variant={inputMethod === 'manual' ? 'default' : 'outline'}
+                  onClick={() => setInputMethod('manual')}
+                  className="flex-1"
+                >
+                  Manual Entry
+                </Button>
+                <Button
+                  variant={inputMethod === 'paste' ? 'default' : 'outline'}
+                  onClick={() => setInputMethod('paste')}
+                  className="flex-1"
+                >
+                  Paste Data
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -238,43 +423,67 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="xValues">X Values (Independent Variable)</Label>
-            <Textarea
-              id="xValues"
-              value={xValues}
-              onChange={(e) => setXValues(e.target.value)}
-              placeholder="Enter values separated by comma or space"
-              rows={6}
-            />
-            <p className="text-xs text-muted-foreground">
-              Enter numbers separated by commas or spaces
-            </p>
+        {inputMethod === 'manual' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="xValues">X Values (Independent Variable)</Label>
+              <Textarea
+                id="xValues"
+                value={xValues}
+                onChange={(e) => setXValues(e.target.value)}
+                placeholder="Enter values separated by comma or space"
+                rows={6}
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter numbers separated by commas or spaces
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="yValues">Y Values (Dependent Variable)</Label>
+              <Textarea
+                id="yValues"
+                value={yValues}
+                onChange={(e) => setYValues(e.target.value)}
+                placeholder="Enter values separated by comma or space"
+                rows={6}
+              />
+              <p className="text-xs text-muted-foreground">
+                Must have same number of values as X
+              </p>
+            </div>
           </div>
+        ) : (
           <div className="space-y-2">
-            <Label htmlFor="yValues">Y Values (Dependent Variable)</Label>
+            <Label htmlFor="pasteData">Paste Your Data</Label>
             <Textarea
-              id="yValues"
-              value={yValues}
-              onChange={(e) => setYValues(e.target.value)}
-              placeholder="Enter values separated by comma or space"
-              rows={6}
-            />
-            <p className="text-xs text-muted-foreground">
-              Must have same number of values as X
-            </p>
-          </div>
-        </div>
+              id="pasteData"
+              placeholder={`Paste data in ${dataFormat === 'comma' ? 'comma' : dataFormat === 'space' ? 'space' : 'tab'} separated format:
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="show-chart"
-              checked={showChart}
-              onCheckedChange={setShowChart}
+Two columns format:
+1.2${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}2.1
+2.4${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}3.9
+3.1${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}6.2
+
+Two rows format:
+1.2${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}2.4${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}3.1
+2.1${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}3.9${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}6.2`}
+              rows={8}
+              onChange={(e) => handlePasteData(e.target.value)}
+              className="font-mono text-sm"
             />
-            <Label htmlFor="show-chart">Show visualization</Label>
+            <p className="text-xs text-muted-foreground">
+              Data will be automatically parsed when you paste it here
+            </p>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">
+            {xValues && yValues && (
+              <span>
+                {parseInput(xValues).length} data points ready
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -289,19 +498,6 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
             <div className="text-destructive flex items-center gap-2">
               <span className="text-sm font-medium">Error:</span>
               <span className="text-sm">{error}</span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {result && showChart && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Regression Visualization</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="w-full h-[400px]">
-              <Scatter options={chartOptions} data={chartData as any} />
             </div>
           </CardContent>
         </Card>

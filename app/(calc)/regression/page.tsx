@@ -347,6 +347,23 @@ export default function RegressionPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Visualization */}
+        {results.chartData && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Activity className="h-5 w-5" />
+                Regression Visualization
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="w-full h-[500px]">
+                {results.chartComponent}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     );
   };
