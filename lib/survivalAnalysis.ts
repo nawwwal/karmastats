@@ -84,7 +84,7 @@ export const LogRankParamsSchema = z.object({
   power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
     message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
   }).optional(),
-  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100').optional(),
+  dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100').optional(),
 });
 
 export const CoxParamsSchema = z.object({
@@ -99,7 +99,7 @@ export const CoxParamsSchema = z.object({
   power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
     message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
   }).optional(),
-  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100').optional(),
+  dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100').optional(),
   allocationRatio: z.number().positive('Allocation ratio must be positive').optional(),
 });
 
@@ -113,7 +113,7 @@ export const OneArmParamsSchema = z.object({
   power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
     message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
   }).optional(),
-  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100').optional(),
+  dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100').optional(),
 });
 
 export const SurvivalAnalysisParamsSchema = z.object({
@@ -129,7 +129,7 @@ export const SurvivalAnalysisParamsSchema = z.object({
   statisticalPower: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
     message: 'Statistical power must be 0.80, 0.85, 0.90, or 0.95'
   }),
-  dropoutRate: z.number().min(0).max(100, 'Dropout rate must be between 0 and 100'),
+  dropoutRate: z.number().min(0).max(99.9, 'Dropout rate must be less than 100'),
 });
 
 export type LogRankInput = z.infer<typeof LogRankParamsSchema>;
@@ -168,7 +168,7 @@ export class SurvivalAnalysis {
     const n1 = totalEvents / (probEvent1 + allocationRatio * probEvent2);
     const n2 = allocationRatio * n1;
 
-    const totalSampleSize = Math.ceil(n1 + n2) / (1 - dropoutRate/100);
+    const totalSampleSize = dropoutRate >= 100 ? Infinity : Math.ceil(n1 + n2) / (1 - dropoutRate/100);
 
     // Calculate group sizes
     const group1SampleSize = Math.ceil(totalSampleSize / (1 + allocationRatio));
@@ -209,7 +209,9 @@ export class SurvivalAnalysis {
     const zb = z_beta[power.toString() as keyof typeof z_beta];
 
     const totalEvents = Math.pow(za + zb, 2) / (Math.pow(Math.log(hazardRatio), 2) * (1 - rSquared));
-    const totalSampleSize = Math.ceil(totalEvents / overallEventRate / (1 - dropoutRate/100));
+    const totalSampleSize = dropoutRate >= 100
+        ? Infinity
+        : Math.ceil(totalEvents / overallEventRate / (1 - dropoutRate/100));
 
     // Calculate group sizes
     const group1SampleSize = Math.round(totalSampleSize / (1 + allocationRatio));
@@ -258,7 +260,9 @@ export class SurvivalAnalysis {
     const numerator = Math.pow(za * Math.sqrt(p0 * (1 - p0)) + zb * Math.sqrt(p1 * (1 - p1)), 2);
     const denominator = Math.pow(p1 - p0, 2);
 
-    const totalSampleSize = numerator / denominator / (1 - dropoutRate/100);
+    const totalSampleSize = dropoutRate >= 100
+        ? Infinity
+        : numerator / denominator / (1 - dropoutRate/100);
 
     // Calculate group sizes
     const group1SampleSize = Math.ceil(totalSampleSize / (1 + targetMedianSurvival / historicalMedianSurvival));

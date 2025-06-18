@@ -11,7 +11,7 @@ export const CaseControlParamsSchema = z.object({
   power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
     message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
   }).optional(),
-  nonResponseRate: z.number().min(0).max(100, 'Non-response rate must be between 0 and 100').optional(),
+  nonResponseRate: z.number().min(0).max(99.9, 'Non-response rate must be less than 100').optional(),
 });
 
 export const CohortParamsSchema = z.object({
@@ -24,7 +24,7 @@ export const CohortParamsSchema = z.object({
   power: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
     message: 'Power must be 0.80, 0.85, 0.90, or 0.95'
   }).optional(),
-  lossToFollowUp: z.number().min(0).max(100, 'Loss to follow-up must be between 0 and 100').optional(),
+  lossToFollowUp: z.number().min(0).max(99.9, 'Loss to follow-up must be less than 100').optional(),
 });
 
 export const ComparativeStudyParamsSchema = z.object({
@@ -34,7 +34,7 @@ export const ComparativeStudyParamsSchema = z.object({
   statisticalPower: z.number().refine(val => [0.80, 0.85, 0.90, 0.95].includes(val), {
     message: 'Statistical power must be 0.80, 0.85, 0.90, or 0.95'
   }),
-  nonResponseRate: z.number().min(0).max(100, 'Non-response rate must be between 0 and 100'),
+  nonResponseRate: z.number().min(0).max(99.9, 'Non-response rate must be less than 100'),
   allocationRatio: z.number().positive('Allocation ratio must be positive'),
   // Case-Control specific
   controlExposure: z.number().min(0.1).max(99.9).optional(),
@@ -120,8 +120,8 @@ export function calculateCaseControl(params: CaseControlParams) {
     const n_cases = Math.pow(za * Math.sqrt((1 + 1/caseControlRatio) * p_bar * (1 - p_bar)) + zb * Math.sqrt(p1*(1-p1) + (p0*(1-p0))/caseControlRatio), 2) / Math.pow(p1 - p0, 2);
     const n_controls = caseControlRatio * n_cases;
 
-    const total_n_cases = Math.ceil(n_cases / (1 - nonResponseRate/100));
-    const total_n_controls = Math.ceil(n_controls / (1 - nonResponseRate/100));
+    const total_n_cases = nonResponseRate >= 100 ? Infinity : Math.ceil(n_cases / (1 - nonResponseRate/100));
+    const total_n_controls = nonResponseRate >= 100 ? Infinity : Math.ceil(n_controls / (1 - nonResponseRate/100));
 
     return {
         cases: total_n_cases,
@@ -155,8 +155,8 @@ export function calculateCohort(params: CohortParams) {
     const n_unexposed = Math.pow(za * Math.sqrt((1 + 1/exposedUnexposedRatio) * p_bar * (1 - p_bar)) + zb * Math.sqrt(p1*(1-p1)/exposedUnexposedRatio + p0*(1-p0)), 2) / Math.pow(p1 - p0, 2);
     const n_exposed = exposedUnexposedRatio * n_unexposed;
 
-    const total_n_unexposed = Math.ceil(n_unexposed / (1 - lossToFollowUp/100));
-    const total_n_exposed = Math.ceil(n_exposed / (1 - lossToFollowUp/100));
+    const total_n_unexposed = lossToFollowUp >= 100 ? Infinity : Math.ceil(n_unexposed / (1 - lossToFollowUp/100));
+    const total_n_exposed = lossToFollowUp >= 100 ? Infinity : Math.ceil(n_exposed / (1 - lossToFollowUp/100));
 
     return {
         exposed: total_n_exposed,
