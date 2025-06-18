@@ -263,13 +263,13 @@ export default function DiagnosticTestPage() {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="single">Single Test</TabsTrigger>
-                        <TabsTrigger value="comparative">Comparative</TabsTrigger>
-                        <TabsTrigger value="roc">ROC Analysis</TabsTrigger>
-                    </TabsList>
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="single">Single Test</TabsTrigger>
+                    <TabsTrigger value="comparative">Comparative</TabsTrigger>
+                    <TabsTrigger value="roc">ROC Analysis</TabsTrigger>
+                </TabsList>
 
-                    <TabsContent value="single">
+                <TabsContent value="single">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Single Test Evaluation</CardTitle>
@@ -328,11 +328,11 @@ export default function DiagnosticTestPage() {
                                         </FormItem>
                                     )} />
                                 </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                    <TabsContent value="comparative">
+                <TabsContent value="comparative">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Comparative Test Study</CardTitle>
@@ -406,11 +406,11 @@ export default function DiagnosticTestPage() {
                                         </FormItem>
                                     )} />
                                 )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                    <TabsContent value="roc">
+                <TabsContent value="roc">
                         <Card>
                             <CardHeader>
                                 <CardTitle>ROC Analysis</CardTitle>
@@ -449,10 +449,10 @@ export default function DiagnosticTestPage() {
                                         </FormItem>
                                     )} />
                                 </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
 
                 {/* Common Parameters */}
                 <Card>
@@ -479,7 +479,7 @@ export default function DiagnosticTestPage() {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                        </div>
+            </div>
 
                         <div>
                             <FormField name="dropoutRate" render={({ field }) => (
@@ -521,7 +521,7 @@ export default function DiagnosticTestPage() {
                 <Button type="submit" className="w-full" size="lg">
                     Calculate Sample Size
                 </Button>
-            </form>
+        </form>
         </Form>
     );
 

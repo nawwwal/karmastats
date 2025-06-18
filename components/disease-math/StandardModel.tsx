@@ -1,12 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { LineChart } from './LineChart';
-import { MetricsDisplay } from './MetricsDisplay';
 import { DiseaseModel, DiseaseModelParams, InterventionParams } from '@/lib/infectious';
 
 interface Parameters {
@@ -18,7 +15,11 @@ interface Parameters {
   days: number;
 }
 
-export function StandardModel() {
+interface StandardModelProps {
+  onResultsChange?: (results: any) => void;
+}
+
+export function StandardModel({ onResultsChange }: StandardModelProps) {
   const [params, setParams] = useState<Parameters>({
     population: 1000000,
     initialInfected: 100,
@@ -28,16 +29,17 @@ export function StandardModel() {
     days: 365
   });
 
-  const [results, setResults] = useState<any>(null);
-  const [rawResults, setRawResults] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const updateParam = (key: keyof Parameters, value: number) => {
     setParams(prev => ({ ...prev, [key]: value }));
   };
 
-  const runSimulation = useCallback(async () => {
+  const runSimulation = async () => {
     setIsLoading(true);
+    setError(null);
+
     try {
       const diseaseParams: DiseaseModelParams = {
         populationSize: params.population,
@@ -45,7 +47,7 @@ export function StandardModel() {
         transmissionRate: params.transmissionRate,
         incubationPeriod: 1 / params.incubationRate, // Convert rate to days
         recoveryRate: params.recoveryRate,
-        mortalityRate: 0.01, // Default mortality rate
+        mortalityRate: 0.01, // Default mortality rate for SEIR
         simulationDays: params.days,
         seasonality: 0.1, // Default seasonality
       };
@@ -63,45 +65,40 @@ export function StandardModel() {
       // Transform results to match the expected format
       const transformedResults = {
         susceptible: simulationResults.susceptible,
+        exposed: simulationResults.exposed || [],
         infected: simulationResults.infected,
         recovered: simulationResults.recovered,
         deceased: simulationResults.deceased,
+        vaccinated: simulationResults.vaccinated || [],
+        populationSize: params.population,
+        simulationDays: params.days,
         metrics: {
           peakInfected: simulationResults.peakInfection,
           peakDay: simulationResults.peakDay,
           totalDeaths: simulationResults.totalDeaths,
+          totalCases: simulationResults.totalCases,
           attackRate: simulationResults.totalCases / params.population,
           r0: simulationResults.r0,
           herdImmunityThreshold: 1 - (1 / simulationResults.r0),
+          mortalityRate: 0.01,
         }
       };
 
-      setResults(transformedResults);
-      setRawResults(simulationResults);
+      onResultsChange?.(transformedResults);
     } catch (error) {
       console.error('Simulation failed:', error);
+      setError('Simulation failed. Please check your parameters and try again.');
     } finally {
       setIsLoading(false);
     }
-  }, [params]);
-
-  useEffect(() => {
-    runSimulation();
-  }, [runSimulation]);
+  };
 
   return (
     <div className="space-y-6">
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Parameters Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2 className="text-2xl font-semibold tracking-tight mb-4">Model Parameters</h2>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+      {/* Model Parameters */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
                 <Label htmlFor="population">Population Size</Label>
                 <Input
                   id="population"
@@ -110,10 +107,14 @@ export function StandardModel() {
                   onChange={(e) => updateParam('population', Number(e.target.value))}
                   min="1000"
                   max="100000000"
+              placeholder="Total population"
                 />
+            <p className="text-xs text-muted-foreground">
+              Total number of individuals in the population
+            </p>
               </div>
 
-              <div>
+          <div className="space-y-2">
                 <Label htmlFor="initialInfected">Initial Infected</Label>
                 <Input
                   id="initialInfected"
@@ -122,10 +123,16 @@ export function StandardModel() {
                   onChange={(e) => updateParam('initialInfected', Number(e.target.value))}
                   min="1"
                   max="10000"
+              placeholder="Initial cases"
                 />
+            <p className="text-xs text-muted-foreground">
+              Number of infected individuals at start
+            </p>
+          </div>
               </div>
 
-              <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
                 <Label htmlFor="transmissionRate">Transmission Rate (β)</Label>
                 <Input
                   id="transmissionRate"
@@ -135,10 +142,14 @@ export function StandardModel() {
                   onChange={(e) => updateParam('transmissionRate', Number(e.target.value))}
                   min="0"
                   max="2"
+              placeholder="0.3"
                 />
+            <p className="text-xs text-muted-foreground">
+              Rate of disease transmission per contact
+            </p>
               </div>
 
-              <div>
+          <div className="space-y-2">
                 <Label htmlFor="incubationRate">Incubation Rate (σ)</Label>
                 <Input
                   id="incubationRate"
@@ -148,10 +159,16 @@ export function StandardModel() {
                   onChange={(e) => updateParam('incubationRate', Number(e.target.value))}
                   min="0"
                   max="1"
+              placeholder="0.1"
                 />
+            <p className="text-xs text-muted-foreground">
+              Rate of progression from exposed to infected
+            </p>
+          </div>
               </div>
 
-              <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
                 <Label htmlFor="recoveryRate">Recovery Rate (γ)</Label>
                 <Input
                   id="recoveryRate"
@@ -161,10 +178,14 @@ export function StandardModel() {
                   onChange={(e) => updateParam('recoveryRate', Number(e.target.value))}
                   min="0"
                   max="1"
+              placeholder="0.05"
                 />
+            <p className="text-xs text-muted-foreground">
+              Rate of recovery from infection
+            </p>
               </div>
 
-              <div>
+          <div className="space-y-2">
                 <Label htmlFor="days">Simulation Days</Label>
                 <Input
                   id="days"
@@ -173,7 +194,12 @@ export function StandardModel() {
                   onChange={(e) => updateParam('days', Number(e.target.value))}
                   min="30"
                   max="1095"
+              placeholder="365"
                 />
+            <p className="text-xs text-muted-foreground">
+              Duration of simulation in days
+            </p>
+          </div>
               </div>
             </div>
 
@@ -181,66 +207,16 @@ export function StandardModel() {
               onClick={runSimulation}
               disabled={isLoading}
               className="w-full"
+        size="lg"
             >
-              {isLoading ? 'Running Simulation...' : 'Run Simulation'}
+        {isLoading ? 'Running Simulation...' : 'Run SEIR Simulation'}
             </Button>
-          </CardContent>
-        </Card>
 
-        {/* Key Metrics */}
-        {results && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Key Metrics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <MetricsDisplay results={rawResults} />
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Simulation Results */}
-      {results && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h2 className="text-2xl font-semibold tracking-tight mb-4">Results</h2>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Peak Values</h3>
-                  <div className="space-y-2 text-sm">
-                    <div>Peak Infected: {results.metrics.peakInfected.toLocaleString()}</div>
-                    <div>Peak Day: {results.metrics.peakDay}</div>
-                    <div>Total Deaths: {results.metrics.totalDeaths.toLocaleString()}</div>
-                    <div>Attack Rate: {(results.metrics.attackRate * 100).toFixed(1)}%</div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Reproduction Numbers</h3>
-                  <div className="space-y-2 text-sm">
-                    <div>R₀: {results.metrics.r0.toFixed(2)}</div>
-                    <div>Herd Immunity: {(results.metrics.herdImmunityThreshold * 100).toFixed(1)}%</div>
-                  </div>
-                </div>
+      {error && (
+        <div className="p-4 border border-destructive/20 bg-destructive/10 rounded-lg">
+          <div className="text-destructive text-sm font-medium">
+            Error: {error}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h2 className="text-2xl font-semibold tracking-tight mb-4">Disease Spread Over Time</h2>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LineChart results={rawResults} />
-            </CardContent>
-          </Card>
         </div>
       )}
     </div>

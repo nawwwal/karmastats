@@ -256,8 +256,8 @@ export default function FamilyStudyPage() {
   const renderResults = () => {
     if (!showReport) return null;
 
-    return (
-      <Card>
+  return (
+                <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-emerald-600" />
@@ -271,24 +271,24 @@ export default function FamilyStudyPage() {
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-primary">{familyMembers.length}</div>
                 <div className="text-sm text-muted-foreground">Family Members</div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
             <Card className="bg-secondary/5 border-secondary/20">
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-secondary">₹{formData.perCapitaIncome}</div>
                 <div className="text-sm text-muted-foreground">Per Capita Income</div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
             <Card className="bg-accent/5 border-accent/20">
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-accent-foreground">{formData.sesClass.split(' ')[0] || 'N/A'}</div>
                 <div className="text-sm text-muted-foreground">SES Class</div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
           </div>
 
           {/* Family Composition */}
-          <Card>
+                <Card>
             <CardHeader>
               <CardTitle className="text-lg">Family Composition</CardTitle>
             </CardHeader>
@@ -307,8 +307,8 @@ export default function FamilyStudyPage() {
                   <span className="font-medium">Elderly (≥60):</span> {familyMembers.filter(m => m.age >= 60).length}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+                  </CardContent>
+                </Card>
 
           {/* Export Options */}
           <div className="flex flex-wrap gap-3">
@@ -324,7 +324,7 @@ export default function FamilyStudyPage() {
               <Printer className="h-4 w-4 mr-2" />
               Print Report
             </Button>
-          </div>
+              </div>
         </CardContent>
       </Card>
     );
@@ -340,8 +340,8 @@ export default function FamilyStudyPage() {
               <div>
                 <p className="font-medium">Loading Assessment Tools...</p>
                 <p className="text-sm text-muted-foreground">Initializing ICMR-NIN database</p>
-              </div>
-            </div>
+                    </div>
+                  </div>
           </CardContent>
         </Card>
       );
@@ -350,8 +350,8 @@ export default function FamilyStudyPage() {
     return (
       <div className="space-y-6">
         {/* Progress Header */}
-        <Card>
-          <CardHeader>
+                  <Card>
+                    <CardHeader>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -364,7 +364,7 @@ export default function FamilyStudyPage() {
               </div>
               <Progress value={getCompletionProgress()} className="h-2" />
             </div>
-          </CardHeader>
+                    </CardHeader>
         </Card>
 
         {/* Assessment Sections */}
@@ -384,98 +384,98 @@ export default function FamilyStudyPage() {
             <AccordionContent className="pt-4">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="studyDate">Study Date</Label>
-                    <Input
-                      id="studyDate"
-                      name="studyDate"
-                      type="date"
-                      value={formData.studyDate}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="familyId">Family ID</Label>
-                    <Input
-                      id="familyId"
-                      name="familyId"
-                      value={formData.familyId}
-                      readOnly
+                        <div>
+                          <Label htmlFor="studyDate">Study Date</Label>
+                          <Input
+                            id="studyDate"
+                            name="studyDate"
+                            type="date"
+                            value={formData.studyDate}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="familyId">Family ID</Label>
+                          <Input
+                            id="familyId"
+                            name="familyId"
+                            value={formData.familyId}
+                            readOnly
                       className="bg-muted"
-                    />
-                  </div>
-                </div>
+                          />
+                        </div>
+                      </div>
 
                 <div>
                   <Label htmlFor="familyHead">Head of Family</Label>
-                  <Input
-                    id="familyHead"
-                    name="familyHead"
-                    value={formData.familyHead}
-                    onChange={handleInputChange}
+                        <Input
+                          id="familyHead"
+                          name="familyHead"
+                          value={formData.familyHead}
+                          onChange={handleInputChange}
                     placeholder="Enter full name"
-                  />
-                </div>
+                        />
+                      </div>
 
                 <div>
-                  <Label htmlFor="address">Complete Address</Label>
-                  <Textarea
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    rows={3}
+                        <Label htmlFor="address">Complete Address</Label>
+                        <Textarea
+                          id="address"
+                          name="address"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                          rows={3}
                     placeholder="Enter complete residential address"
-                  />
-                </div>
+                        />
+                      </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="pincode">Pincode</Label>
-                    <Input
-                      id="pincode"
-                      name="pincode"
-                      value={formData.pincode}
-                      onChange={handleInputChange}
-                      maxLength={6}
+                        <div>
+                          <Label htmlFor="pincode">Pincode</Label>
+                          <Input
+                            id="pincode"
+                            name="pincode"
+                            value={formData.pincode}
+                            onChange={handleInputChange}
+                            maxLength={6}
                       placeholder="6-digit pincode"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="area">Area Type</Label>
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="area">Area Type</Label>
                     <Select value={formData.area} onValueChange={(value) => handleSelectChange('area', value)}>
-                      <SelectTrigger>
+                            <SelectTrigger>
                         <SelectValue placeholder="Select area type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="urban">Urban</SelectItem>
-                        <SelectItem value="peri-urban">Peri-urban</SelectItem>
-                        <SelectItem value="rural">Rural</SelectItem>
-                        <SelectItem value="slum">Slum</SelectItem>
-                        <SelectItem value="tribal">Tribal</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="urban">Urban</SelectItem>
+                              <SelectItem value="peri-urban">Peri-urban</SelectItem>
+                              <SelectItem value="rural">Rural</SelectItem>
+                              <SelectItem value="slum">Slum</SelectItem>
+                              <SelectItem value="tribal">Tribal</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="religion">Religion</Label>
+                        <div>
+                          <Label htmlFor="religion">Religion</Label>
                     <Select value={formData.religion} onValueChange={(value) => handleSelectChange('religion', value)}>
-                      <SelectTrigger>
+                            <SelectTrigger>
                         <SelectValue placeholder="Select religion" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="hindu">Hindu</SelectItem>
-                        <SelectItem value="muslim">Muslim</SelectItem>
-                        <SelectItem value="christian">Christian</SelectItem>
-                        <SelectItem value="sikh">Sikh</SelectItem>
-                        <SelectItem value="buddhist">Buddhist</SelectItem>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="hindu">Hindu</SelectItem>
+                              <SelectItem value="muslim">Muslim</SelectItem>
+                              <SelectItem value="christian">Christian</SelectItem>
+                              <SelectItem value="sikh">Sikh</SelectItem>
+                              <SelectItem value="buddhist">Buddhist</SelectItem>
                         <SelectItem value="jain">Jain</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                   <div>
                     <Label htmlFor="caste">Caste Category</Label>
                     <Select value={formData.caste} onValueChange={(value) => handleSelectChange('caste', value)}>
@@ -490,7 +490,7 @@ export default function FamilyStudyPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
+                      </div>
 
                 <div>
                   <Label htmlFor="familyType">Family Type</Label>
@@ -504,14 +504,14 @@ export default function FamilyStudyPage() {
                       <SelectItem value="extended">Extended</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                      </div>
 
                 <div className="pt-4">
                   <Button onClick={() => markSectionComplete('general')} className="w-full">
                     Complete General Information
                   </Button>
-                </div>
-              </div>
+                          </div>
+                          </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -523,35 +523,35 @@ export default function FamilyStudyPage() {
                 <div className="text-left">
                   <div className="font-medium">Socio-Economic Status</div>
                   <div className="text-sm text-muted-foreground">Income assessment and SES classification</div>
-                </div>
+                      </div>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pt-4">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="primaryIncome">Primary Income (₹/month)</Label>
-                    <Input
-                      id="primaryIncome"
-                      name="primaryIncome"
-                      type="number"
-                      value={formData.primaryIncome}
+                        <div>
+                          <Label htmlFor="primaryIncome">Primary Income (₹/month)</Label>
+                          <Input
+                            id="primaryIncome"
+                            name="primaryIncome"
+                            type="number"
+                            value={formData.primaryIncome}
                       onChange={handleInputChange}
                       placeholder="0"
-                    />
-                  </div>
-                  <div>
+                          />
+                        </div>
+                        <div>
                     <Label htmlFor="otherIncome">Other Income (₹/month)</Label>
-                    <Input
-                      id="otherIncome"
-                      name="otherIncome"
-                      type="number"
-                      value={formData.otherIncome}
+                          <Input
+                            id="otherIncome"
+                            name="otherIncome"
+                            type="number"
+                            value={formData.otherIncome}
                       onChange={handleInputChange}
                       placeholder="0"
-                    />
-                  </div>
-                </div>
+                          />
+                        </div>
+                      </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Card className="p-4">
@@ -559,37 +559,37 @@ export default function FamilyStudyPage() {
                     <div className="text-lg font-semibold text-primary">₹{formData.totalIncome}</div>
                   </Card>
                   <Card className="p-4">
-                    <Label>Per Capita Income</Label>
+                              <Label>Per Capita Income</Label>
                     <div className="text-lg font-semibold text-secondary">₹{formData.perCapitaIncome}</div>
-                  </Card>
-                </div>
+                      </Card>
+                          </div>
 
                 <Card className="p-4">
                   <Label>SES Classification</Label>
                   <div className="text-sm font-medium">{formData.sesClass || 'Not calculated'}</div>
-                </Card>
+                      </Card>
 
-                <div>
+                            <div>
                   <Label htmlFor="rationCard">Ration Card Type</Label>
                   <Select value={formData.rationCard} onValueChange={(value) => handleSelectChange('rationCard', value)}>
-                    <SelectTrigger>
+                                <SelectTrigger>
                       <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
+                                </SelectTrigger>
+                                <SelectContent>
                       <SelectItem value="none">None</SelectItem>
                       <SelectItem value="apl">APL (Above Poverty Line)</SelectItem>
                       <SelectItem value="bpl">BPL (Below Poverty Line)</SelectItem>
                       <SelectItem value="aay">Antyodaya Anna Yojana</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                                </SelectContent>
+                              </Select>
+                            </div>
 
                 <div className="pt-4">
                   <Button onClick={() => { calculateSES(); markSectionComplete('socioeconomic'); }} className="w-full">
                     Calculate SES & Complete Section
                   </Button>
-                </div>
-              </div>
+                            </div>
+                          </div>
             </AccordionContent>
           </AccordionItem>
           {/* Environmental Conditions */}
@@ -600,97 +600,97 @@ export default function FamilyStudyPage() {
                 <div className="text-left">
                   <div className="font-medium">Environmental Conditions</div>
                   <div className="text-sm text-muted-foreground">Housing, utilities, and living conditions</div>
-                </div>
+                            </div>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pt-4">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                            <div>
                     <Label htmlFor="houseType">House Type</Label>
                     <Select value={formData.houseType} onValueChange={(value) => handleSelectChange('houseType', value)}>
-                      <SelectTrigger>
+                                <SelectTrigger>
                         <SelectValue placeholder="Select house type" />
-                      </SelectTrigger>
-                      <SelectContent>
+                                </SelectTrigger>
+                                <SelectContent>
                         <SelectItem value="pucca">Pucca (Concrete)</SelectItem>
                         <SelectItem value="semi-pucca">Semi-Pucca</SelectItem>
                         <SelectItem value="kutcha">Kutcha (Temporary)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          <div>
                     <Label htmlFor="houseOwnership">House Ownership</Label>
                     <Select value={formData.houseOwnership} onValueChange={(value) => handleSelectChange('houseOwnership', value)}>
-                      <SelectTrigger>
+                                <SelectTrigger>
                         <SelectValue placeholder="Select ownership" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="owned">Owned</SelectItem>
-                        <SelectItem value="rented">Rented</SelectItem>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="owned">Owned</SelectItem>
+                                  <SelectItem value="rented">Rented</SelectItem>
                         <SelectItem value="employer-provided">Employer Provided</SelectItem>
                         <SelectItem value="others">Others</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="waterSupply">Water Supply</Label>
+                              <div>
+                                <Label htmlFor="waterSupply">Water Supply</Label>
                     <Select value={formData.waterSupply} onValueChange={(value) => handleSelectChange('waterSupply', value)}>
-                      <SelectTrigger>
+                                  <SelectTrigger>
                         <SelectValue placeholder="Select water source" />
-                      </SelectTrigger>
-                      <SelectContent>
+                                  </SelectTrigger>
+                                  <SelectContent>
                         <SelectItem value="piped">Piped Water</SelectItem>
                         <SelectItem value="bore-well">Bore Well</SelectItem>
                         <SelectItem value="hand-pump">Hand Pump</SelectItem>
                         <SelectItem value="well">Open Well</SelectItem>
                         <SelectItem value="tanker">Water Tanker</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="toiletFacility">Toilet Facility</Label>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label htmlFor="toiletFacility">Toilet Facility</Label>
                     <Select value={formData.toiletFacility} onValueChange={(value) => handleSelectChange('toiletFacility', value)}>
-                      <SelectTrigger>
+                                  <SelectTrigger>
                         <SelectValue placeholder="Select toilet type" />
-                      </SelectTrigger>
-                      <SelectContent>
+                                  </SelectTrigger>
+                                  <SelectContent>
                         <SelectItem value="individual-flush">Individual Flush</SelectItem>
                         <SelectItem value="individual-pit">Individual Pit</SelectItem>
                         <SelectItem value="shared">Shared</SelectItem>
                         <SelectItem value="community">Community</SelectItem>
                         <SelectItem value="open-defecation">Open Defecation</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
 
-                <div>
-                  <Label htmlFor="cookingFuel">Cooking Fuel</Label>
+                              <div>
+                                <Label htmlFor="cookingFuel">Cooking Fuel</Label>
                   <Select value={formData.cookingFuel} onValueChange={(value) => handleSelectChange('cookingFuel', value)}>
-                    <SelectTrigger>
+                                  <SelectTrigger>
                       <SelectValue placeholder="Select fuel type" />
-                    </SelectTrigger>
-                    <SelectContent>
+                                  </SelectTrigger>
+                                  <SelectContent>
                       <SelectItem value="lpg">LPG</SelectItem>
                       <SelectItem value="png">PNG</SelectItem>
-                      <SelectItem value="kerosene">Kerosene</SelectItem>
+                                    <SelectItem value="kerosene">Kerosene</SelectItem>
                       <SelectItem value="wood">Wood</SelectItem>
                       <SelectItem value="coal">Coal</SelectItem>
                       <SelectItem value="crop-residue">Crop Residue</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                                  </SelectContent>
+                                </Select>
+                            </div>
 
                 <div className="pt-4">
                   <Button onClick={() => markSectionComplete('environment')} className="w-full">
                     Complete Environmental Assessment
                   </Button>
-                </div>
-              </div>
+                              </div>
+                              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -702,11 +702,11 @@ export default function FamilyStudyPage() {
                 <div className="text-left">
                   <div className="font-medium">Family Members</div>
                   <div className="text-sm text-muted-foreground">Individual details and demographics</div>
-                </div>
+                            </div>
                 {familyMembers.length > 0 && (
                   <Badge variant="secondary">{familyMembers.length} members</Badge>
                 )}
-              </div>
+                          </div>
             </AccordionTrigger>
             <AccordionContent className="pt-4">
               <div className="space-y-4">
@@ -721,29 +721,29 @@ export default function FamilyStudyPage() {
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>No family members added</AlertTitle>
-                    <AlertDescription>
+                        <AlertDescription>
                       Click "Add Member" to start adding family member details.
-                    </AlertDescription>
-                  </Alert>
+                        </AlertDescription>
+                      </Alert>
                 ) : (
                   <div className="space-y-4">
-                    {familyMembers.map((member, index) => (
+                            {familyMembers.map((member, index) => (
                       <Card key={member.id} className="border-l-4 border-l-primary">
                         <CardContent className="pt-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <Label>Name</Label>
-                              <Input
-                                value={member.name}
-                                onChange={(e) => updateFamilyMember(index, 'name', e.target.value)}
+                                  <Input
+                                    value={member.name}
+                                    onChange={(e) => updateFamilyMember(index, 'name', e.target.value)}
                                 placeholder="Full name"
-                              />
+                                  />
                             </div>
                             <div>
                               <Label>Age</Label>
-                              <Input
-                                type="number"
-                                value={member.age}
+                                  <Input
+                                    type="number"
+                                    value={member.age}
                                 onChange={(e) => updateFamilyMember(index, 'age', parseInt(e.target.value) || 0)}
                                 min="0"
                                 max="120"
@@ -752,58 +752,58 @@ export default function FamilyStudyPage() {
                             <div>
                               <Label>Sex</Label>
                               <Select value={member.sex} onValueChange={(value) => updateFamilyMember(index, 'sex', value)}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="male">Male</SelectItem>
-                                  <SelectItem value="female">Female</SelectItem>
-                                </SelectContent>
-                              </Select>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="male">Male</SelectItem>
+                                      <SelectItem value="female">Female</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                             </div>
                             <div>
                               <Label>Relation</Label>
                               <Select value={member.relation} onValueChange={(value) => updateFamilyMember(index, 'relation', value)}>
-                                <SelectTrigger>
+                                    <SelectTrigger>
                                   <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
+                                    </SelectTrigger>
+                                    <SelectContent>
                                   <SelectItem value="head">Head</SelectItem>
-                                  <SelectItem value="spouse">Spouse</SelectItem>
-                                  <SelectItem value="son">Son</SelectItem>
-                                  <SelectItem value="daughter">Daughter</SelectItem>
-                                  <SelectItem value="father">Father</SelectItem>
-                                  <SelectItem value="mother">Mother</SelectItem>
-                                  <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                              </Select>
+                                      <SelectItem value="spouse">Spouse</SelectItem>
+                                      <SelectItem value="son">Son</SelectItem>
+                                      <SelectItem value="daughter">Daughter</SelectItem>
+                                      <SelectItem value="father">Father</SelectItem>
+                                      <SelectItem value="mother">Mother</SelectItem>
+                                      <SelectItem value="other">Other</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                             </div>
                           </div>
                           <div className="flex justify-end mt-4">
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => removeFamilyMember(member.id)}
-                            >
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => removeFamilyMember(member.id)}
+                                  >
                               Remove
-                            </Button>
+                                  </Button>
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
-                  </div>
+                            ))}
+                      </div>
                 )}
 
                 <div className="pt-4">
-                  <Button
+                      <Button
                     onClick={() => markSectionComplete('family')}
                     className="w-full"
                     disabled={familyMembers.length === 0}
-                  >
+                      >
                     Complete Family Information
-                  </Button>
-                </div>
-              </div>
+                      </Button>
+                        </div>
+                              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -815,40 +815,40 @@ export default function FamilyStudyPage() {
                 <div className="text-left">
                   <div className="font-medium">Nutritional Assessment</div>
                   <div className="text-sm text-muted-foreground">Dietary analysis and consumption units</div>
-                </div>
-              </div>
+                              </div>
+                              </div>
             </AccordionTrigger>
             <AccordionContent className="pt-4">
               <div className="space-y-4">
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>ICMR-NIN 2020 Guidelines</AlertTitle>
-                  <AlertDescription>
+                        <AlertDescription>
                     Nutritional assessment based on consumption units and IFCT 2017 food database.
-                  </AlertDescription>
-                </Alert>
+                        </AlertDescription>
+                      </Alert>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Card>
                     <CardContent className="p-4">
                       <h4 className="font-medium mb-2">Total Consumption Units</h4>
                       <div className="text-2xl font-bold text-primary">{formData.totalFamilyCU}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
+                              </CardContent>
+                            </Card>
+                      <Card>
                     <CardContent className="p-4">
                       <h4 className="font-medium mb-2">Average CU per Person</h4>
                       <div className="text-2xl font-bold text-secondary">{formData.averageCUPerPerson}</div>
-                    </CardContent>
-                  </Card>
-                </div>
+                            </CardContent>
+                          </Card>
+                          </div>
 
                 <div className="pt-4">
                   <Button onClick={() => markSectionComplete('nutrition')} className="w-full">
                     Complete Nutritional Assessment
-                  </Button>
-                </div>
-              </div>
+                          </Button>
+                                </div>
+                                </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -860,44 +860,44 @@ export default function FamilyStudyPage() {
                 <div className="text-left">
                   <div className="font-medium">Health Assessment</div>
                   <div className="text-sm text-muted-foreground">Medical history and health status</div>
-                </div>
-              </div>
+                      </div>
+                          </div>
             </AccordionTrigger>
             <AccordionContent className="pt-4">
               <div className="space-y-6">
-                <div>
+                          <div>
                   <h4 className="font-medium mb-4">Chronic Diseases in Family</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {[
-                      { id: 'diabetes', value: 'diabetes', label: 'Diabetes Mellitus' },
-                      { id: 'hypertension', value: 'hypertension', label: 'Hypertension' },
-                      { id: 'heart-disease', value: 'heart-disease', label: 'Heart Disease' },
-                      { id: 'asthma', value: 'asthma', label: 'Asthma/COPD' },
-                      { id: 'arthritis', value: 'arthritis', label: 'Arthritis' },
-                      { id: 'thyroid', value: 'thyroid', label: 'Thyroid Disorders' },
-                      { id: 'kidney', value: 'kidney', label: 'Kidney Disease' },
-                      { id: 'cancer', value: 'cancer', label: 'Cancer' }
-                    ].map((disease) => (
+                              {[
+                                { id: 'diabetes', value: 'diabetes', label: 'Diabetes Mellitus' },
+                                { id: 'hypertension', value: 'hypertension', label: 'Hypertension' },
+                                { id: 'heart-disease', value: 'heart-disease', label: 'Heart Disease' },
+                                { id: 'asthma', value: 'asthma', label: 'Asthma/COPD' },
+                                { id: 'arthritis', value: 'arthritis', label: 'Arthritis' },
+                                { id: 'thyroid', value: 'thyroid', label: 'Thyroid Disorders' },
+                                { id: 'kidney', value: 'kidney', label: 'Kidney Disease' },
+                                { id: 'cancer', value: 'cancer', label: 'Cancer' }
+                              ].map((disease) => (
                       <div key={disease.id} className="flex items-center space-x-3 p-3 border rounded-lg">
-                        <Checkbox
-                          id={disease.id}
-                          checked={formData.chronicDiseases.includes(disease.value)}
-                          onCheckedChange={(checked) =>
-                            handleCheckboxChange('chronicDiseases', disease.value, checked as boolean)
-                          }
-                        />
+                                  <Checkbox
+                                    id={disease.id}
+                                    checked={formData.chronicDiseases.includes(disease.value)}
+                                    onCheckedChange={(checked) =>
+                                      handleCheckboxChange('chronicDiseases', disease.value, checked as boolean)
+                                    }
+                                  />
                         <Label htmlFor={disease.id} className="font-normal">{disease.label}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
 
                 <div className="pt-4">
                   <Button onClick={() => markSectionComplete('health')} className="w-full">
                     Complete Health Assessment
-                  </Button>
-                </div>
-              </div>
+                      </Button>
+                            </div>
+                            </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -917,10 +917,10 @@ export default function FamilyStudyPage() {
               className="w-full md:w-auto"
             >
               Generate Complete Report
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+                          </Button>
+                    </CardContent>
+                  </Card>
+    </div>
     );
   };
 

@@ -215,7 +215,7 @@ export default function ClinicalTrialsPage() {
         }
     }
 
-        const renderResults = () => {
+    const renderResults = () => {
         if (!results) return null;
 
         let resultItems: any[] = [];
@@ -246,7 +246,7 @@ export default function ClinicalTrialsPage() {
                 'No interim analyses affecting alpha level'
             ];
         } else if ('effectSize' in results) { // Superiority Continuous
-            title = 'Superiority Trial Results (Continuous Outcome)';
+             title = 'Superiority Trial Results (Continuous Outcome)';
             resultItems = [
                 { label: 'Total Sample Size', value: results.totalSize, category: 'primary', highlight: true, format: 'integer' },
                 { label: "Cohen's d (Effect Size)", value: results.effectSize, category: 'primary', highlight: true, format: 'decimal' },
@@ -270,7 +270,7 @@ export default function ClinicalTrialsPage() {
                 'Linear relationship between predictors and outcome'
             ];
         } else if ('treatmentSize' in results) { // Non-inferiority
-            title = 'Non-Inferiority Trial Results';
+             title = 'Non-Inferiority Trial Results';
             resultItems = [
                 { label: 'Total Sample Size', value: results.totalSize, category: 'primary', highlight: true, format: 'integer' },
                 { label: 'Treatment Group Size', value: results.treatmentSize, category: 'secondary', format: 'integer' },
@@ -292,7 +292,7 @@ export default function ClinicalTrialsPage() {
                 'No selection bias in study population'
             ];
         } else if ('testSize' in results) { // Equivalence
-            title = 'Equivalence Trial Results';
+             title = 'Equivalence Trial Results';
             resultItems = [
                 { label: 'Total Sample Size', value: results.totalSize, category: 'primary', highlight: true, format: 'integer' },
                 { label: 'Test Group Size', value: results.testSize, category: 'secondary', format: 'integer' },
@@ -357,7 +357,7 @@ export default function ClinicalTrialsPage() {
                                 onChange={handleFileUpload}
                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />
-                        </div>
+                </div>
                     </CardContent>
                 </Card>
 
@@ -379,13 +379,13 @@ export default function ClinicalTrialsPage() {
                                 <TabsTrigger value="equivalence" className="text-sm font-medium">
                                     🎯 Equivalence
                                 </TabsTrigger>
-                            </TabsList>
+                    </TabsList>
 
                             <TabsContent value="superiority" className="space-y-4">
                                 {/* Outcome Type Selection - Secondary Tab */}
                                 <Card className="bg-white/50 dark:bg-gray-800/50">
                                     <CardContent className="pt-6">
-                                        <FormField name="superiorityOutcome" render={({ field }) => (
+                        <FormField name="superiorityOutcome" render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-base font-semibold">Outcome Type</FormLabel>
                                                 <FormControl>
@@ -717,7 +717,7 @@ export default function ClinicalTrialsPage() {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                        </div>
+                    </div>
                     </CardContent>
                 </Card>
 

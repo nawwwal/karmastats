@@ -69,42 +69,42 @@ export default function SampleSizeLayout({
 
   // If on main sample-size page, show the full catalogue
   if (isMainSampleSizePage) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Sample Size Calculators</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comprehensive suite of sample size calculators for various study designs,
-            powered by statistical precision and validated methodologies.
-          </p>
-        </div>
+  return (
+    <div className="space-y-6">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Sample Size Calculators</h1>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          Comprehensive suite of sample size calculators for various study designs,
+          powered by statistical precision and validated methodologies.
+        </p>
+      </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sampleSizeTools.map((tool, index) => (
-            <Link key={tool.href} href={tool.href}>
-              <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <tool.icon className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                      {tool.status}
-                    </span>
-                  </div>
-                  <CardTitle className="group-hover:text-primary transition-colors">
-                    {tool.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {tool.description}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
-        </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sampleSizeTools.map((tool, index) => (
+          <Link key={tool.href} href={tool.href}>
+            <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <tool.icon className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                    {tool.status}
+                  </span>
+                </div>
+                <CardTitle className="group-hover:text-primary transition-colors">
+                  {tool.title}
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  {tool.description}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        ))}
+      </div>
 
         {children}
-      </div>
-    );
+    </div>
+  );
   }
 
   // For individual tool pages, just render the children without catalogue

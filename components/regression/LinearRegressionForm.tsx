@@ -132,9 +132,9 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
 
       // Create enhanced chart data with better interactions
       const chartData = {
-        datasets: [
-          {
-            label: "Data Points",
+    datasets: [
+      {
+        label: "Data Points",
             data: regressionResult.xValues.map((val, i) => ({ x: val, y: regressionResult.yValues[i] })),
             backgroundColor: "hsl(var(--primary) / 0.7)",
             borderColor: "hsl(var(--primary))",
@@ -142,64 +142,64 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
             pointRadius: 6,
             pointHoverRadius: 8,
             type: 'scatter' as const,
-          },
-          {
-            label: "Regression Line",
+      },
+      {
+        label: "Regression Line",
             data: regressionResult.xValues.map((val) => ({
               x: val,
               y: regressionResult.intercept + regressionResult.slope * val
             })),
-            type: 'line' as const,
+        type: 'line' as const,
             borderColor: "hsl(var(--secondary))",
             backgroundColor: "hsl(var(--secondary) / 0.1)",
             borderWidth: 3,
-            fill: false,
-            pointRadius: 0,
+        fill: false,
+        pointRadius: 0,
             pointHoverRadius: 0,
             tension: 0,
-          },
-        ],
+      },
+    ],
       };
 
-      const chartOptions = {
+  const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         interaction: {
           intersect: false,
           mode: 'index' as const,
         },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: xLabel,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: xLabel,
               font: { size: 14, weight: 'bold' }
-            },
-            grid: {
-              color: 'hsl(var(--border))',
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: yLabel,
-              font: { size: 14, weight: 'bold' }
-            },
-            grid: {
-              color: 'hsl(var(--border))',
-            }
-          },
         },
-        plugins: {
-          legend: {
-            position: 'top' as const,
+            grid: {
+              color: 'hsl(var(--border))',
+            }
+      },
+      y: {
+        title: {
+          display: true,
+          text: yLabel,
+              font: { size: 14, weight: 'bold' }
+        },
+            grid: {
+              color: 'hsl(var(--border))',
+            }
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'top' as const,
             labels: {
               usePointStyle: true,
               font: { size: 12 }
             }
-          },
-          title: {
-            display: true,
+      },
+      title: {
+        display: true,
             text: `${yLabel} vs ${xLabel}`,
             font: { size: 16, weight: 'bold' }
           },
@@ -422,9 +422,9 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
       <Separator />
 
       {/* Data Input */}
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
             <Label htmlFor="xLabel">X-Axis Label</Label>
             <Input
               id="xLabel"
@@ -432,8 +432,8 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
               onChange={(e) => setXLabel(e.target.value)}
               placeholder="Independent variable name"
             />
-          </div>
-          <div className="space-y-2">
+        </div>
+        <div className="space-y-2">
             <Label htmlFor="yLabel">Y-Axis Label</Label>
             <Input
               id="yLabel"
@@ -538,8 +538,8 @@ Two rows format:
             <div className="text-destructive flex items-center gap-2">
               <span className="text-sm font-medium">Error:</span>
               <span className="text-sm">{error}</span>
-            </div>
-          </CardContent>
+                </div>
+            </CardContent>
         </Card>
       )}
     </div>

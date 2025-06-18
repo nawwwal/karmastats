@@ -1,21 +1,22 @@
 'use client';
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
 import {
   DiseaseModel,
   DiseaseModelParams,
-  DiseaseModelResult,
   InterventionParams,
 } from "@/lib/infectious";
-import { LineChart } from "./LineChart";
-import { MetricsDisplay } from "./MetricsDisplay";
 
-export function AdvancedModel() {
+interface AdvancedModelProps {
+  onResultsChange?: (results: any) => void;
+}
+
+export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
   const [params, setParams] = useState<DiseaseModelParams>({
     populationSize: 1000000,
     initialCases: 10,
@@ -34,21 +35,57 @@ export function AdvancedModel() {
     vaccineEffectiveness: 0.9, // 90% effective
   });
 
-  const [results, setResults] = useState<DiseaseModelResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
     const model = new DiseaseModel(params, interventions);
-    const result = model.calculate();
-    setResults(result);
+      const simulationResults = model.calculate();
+
+      // Transform results to match the expected format
+      const transformedResults = {
+        susceptible: simulationResults.susceptible,
+        exposed: simulationResults.exposed || [],
+        infected: simulationResults.infected,
+        recovered: simulationResults.recovered,
+        deceased: simulationResults.deceased,
+        vaccinated: simulationResults.vaccinated || [],
+        populationSize: params.populationSize,
+        simulationDays: params.simulationDays,
+        interventions,
+        metrics: {
+          peakInfected: simulationResults.peakInfection,
+          peakDay: simulationResults.peakDay,
+          totalDeaths: simulationResults.totalDeaths,
+          totalCases: simulationResults.totalCases,
+          attackRate: simulationResults.totalCases / params.populationSize,
+          r0: simulationResults.r0,
+          herdImmunityThreshold: 1 - (1 / simulationResults.r0),
+          mortalityRate: params.mortalityRate,
+        }
+      };
+
+      onResultsChange?.(transformedResults);
+    } catch (error) {
+      console.error('Simulation failed:', error);
+      setError('Simulation failed. Please check your parameters and try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold tracking-tight mb-4">Model Parameters</h2>
+      {/* Disease Parameters */}
           <div className="space-y-4">
-            <div>
+        <h3 className="text-lg font-medium">Disease Parameters</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
               <Label htmlFor="population">Population Size</Label>
               <Input
                 id="population"
@@ -57,9 +94,16 @@ export function AdvancedModel() {
                 onChange={(e) =>
                   setParams({ ...params, populationSize: Number(e.target.value) })
                 }
+              min="1000"
+              max="100000000"
+              placeholder="Total population"
               />
+            <p className="text-xs text-muted-foreground">
+              Total number of individuals in the population
+            </p>
             </div>
-            <div>
+
+          <div className="space-y-2">
               <Label htmlFor="initialCases">Initial Cases</Label>
               <Input
                 id="initialCases"
@@ -68,9 +112,18 @@ export function AdvancedModel() {
                 onChange={(e) =>
                   setParams({ ...params, initialCases: Number(e.target.value) })
                 }
+              min="1"
+              max="10000"
+              placeholder="Initial infected"
               />
+            <p className="text-xs text-muted-foreground">
+              Number of infected individuals at start
+            </p>
+          </div>
             </div>
-            <div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
               <Label htmlFor="transmissionRate">Base Transmission Rate (R₀)</Label>
               <Input
                 id="transmissionRate"
@@ -80,9 +133,16 @@ export function AdvancedModel() {
                 onChange={(e) =>
                   setParams({ ...params, transmissionRate: Number(e.target.value) })
                 }
+              min="0"
+              max="10"
+              placeholder="2.5"
               />
+            <p className="text-xs text-muted-foreground">
+              Basic reproduction number without interventions
+            </p>
             </div>
-            <div>
+
+          <div className="space-y-2">
               <Label htmlFor="incubationPeriod">Incubation Period (days)</Label>
               <Input
                 id="incubationPeriod"
@@ -91,9 +151,18 @@ export function AdvancedModel() {
                 onChange={(e) =>
                   setParams({ ...params, incubationPeriod: Number(e.target.value) })
                 }
+              min="1"
+              max="30"
+              placeholder="5"
               />
+            <p className="text-xs text-muted-foreground">
+              Average time from exposure to becoming infectious
+            </p>
+          </div>
             </div>
-            <div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
               <Label htmlFor="recoveryRate">Recovery Rate (γ)</Label>
               <Input
                 id="recoveryRate"
@@ -103,22 +172,38 @@ export function AdvancedModel() {
                 onChange={(e) =>
                   setParams({ ...params, recoveryRate: Number(e.target.value) })
                 }
+              min="0"
+              max="1"
+              placeholder="0.1"
               />
+            <p className="text-xs text-muted-foreground">
+              Rate of recovery from infection (1/infectious period)
+            </p>
             </div>
-            <div>
+
+          <div className="space-y-2">
               <Label htmlFor="mortalityRate">Mortality Rate (μ)</Label>
               <Input
                 id="mortalityRate"
                 type="number"
-                step="0.01"
+              step="0.001"
                 value={params.mortalityRate}
                 onChange={(e) =>
                   setParams({ ...params, mortalityRate: Number(e.target.value) })
                 }
+              min="0"
+              max="0.1"
+              placeholder="0.02"
               />
+            <p className="text-xs text-muted-foreground">
+              Case fatality rate (proportion of infected who die)
+            </p>
+          </div>
             </div>
-            <div>
-                <Label htmlFor="seasonality">Seasonality</Label>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="seasonality">Seasonality ({Math.round(params.seasonality * 100)}%)</Label>
                 <Slider
                     id="seasonality"
                     value={[params.seasonality * 100]}
@@ -128,14 +213,16 @@ export function AdvancedModel() {
                         seasonality: value / 100,
                     })
                     }
-                    max={100}
+              max={50}
                     step={1}
+              className="mt-2"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                    {Math.round(params.seasonality * 100)}% seasonal variation
+            <p className="text-xs text-muted-foreground">
+              Seasonal variation in transmission rate
                 </p>
             </div>
-            <div>
+
+          <div className="space-y-2">
               <Label htmlFor="simulationDays">Simulation Days</Label>
               <Input
                 id="simulationDays"
@@ -144,16 +231,27 @@ export function AdvancedModel() {
                 onChange={(e) =>
                   setParams({ ...params, simulationDays: Number(e.target.value) })
                 }
+              min="30"
+              max="1095"
+              placeholder="180"
               />
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Duration of simulation in days
+            </p>
           </div>
-        </Card>
+        </div>
+      </div>
 
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold tracking-tight mb-4">Intervention Parameters</h2>
-          <div className="space-y-6">
-            <div>
-              <Label>Social Distancing Effectiveness</Label>
+      <Separator />
+
+      {/* Intervention Parameters */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Intervention Parameters</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Social Distancing Effectiveness ({Math.round(interventions.socialDistancing * 100)}%)</Label>
               <Slider
                 value={[interventions.socialDistancing * 100]}
                 onValueChange={([value]) =>
@@ -162,34 +260,57 @@ export function AdvancedModel() {
                     socialDistancing: value / 100,
                   })
                 }
-                max={100}
+                max={80}
                 step={1}
+                className="mt-2"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {Math.round(interventions.socialDistancing * 100)}% reduction
+              <p className="text-xs text-muted-foreground">
+                Reduction in transmission due to social distancing
               </p>
             </div>
 
-            <div>
-              <Label>Daily Vaccination Rate</Label>
+            <div className="space-y-2">
+              <Label>Mask Effectiveness ({Math.round(interventions.maskEffectiveness * 100)}%)</Label>
               <Slider
-                value={[interventions.vaccinationRate * 1000]} // Scale for better slider sensitivity
+                value={[interventions.maskEffectiveness * 100]}
+                onValueChange={([value]) =>
+                  setInterventions({
+                    ...interventions,
+                    maskEffectiveness: value / 100,
+                  })
+                }
+                max={70}
+                step={1}
+                className="mt-2"
+              />
+              <p className="text-xs text-muted-foreground">
+                Reduction in transmission due to mask wearing
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Daily Vaccination Rate ({(interventions.vaccinationRate * 100).toFixed(2)}%)</Label>
+              <Slider
+                value={[interventions.vaccinationRate * 1000]}
                 onValueChange={([value]) =>
                   setInterventions({
                     ...interventions,
                     vaccinationRate: value / 1000,
                   })
                 }
-                max={100} // Represents 10%
+                max={50} // Represents 5%
                 step={1}
+                className="mt-2"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {(interventions.vaccinationRate * 100).toFixed(2)}% of susceptibles per day
+              <p className="text-xs text-muted-foreground">
+                Percentage of susceptible population vaccinated per day
               </p>
             </div>
 
-             <div>
-                <Label>Vaccine Effectiveness</Label>
+            <div className="space-y-2">
+              <Label>Vaccine Effectiveness ({Math.round(interventions.vaccineEffectiveness * 100)}%)</Label>
                 <Slider
                     value={[interventions.vaccineEffectiveness * 100]}
                     onValueChange={([value]) =>
@@ -200,55 +321,31 @@ export function AdvancedModel() {
                     }
                     max={100}
                     step={1}
+                className="mt-2"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                    {Math.round(interventions.vaccineEffectiveness * 100)}% effective
-                </p>
-            </div>
-
-            <div>
-              <Label>Mask Effectiveness</Label>
-              <Slider
-                value={[interventions.maskEffectiveness * 100]}
-                onValueChange={([value]) =>
-                  setInterventions({
-                    ...interventions,
-                    maskEffectiveness: value / 100,
-                  })
-                }
-                max={100}
-                step={1}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                {Math.round(interventions.maskEffectiveness * 100)}% reduction
+              <p className="text-xs text-muted-foreground">
+                Effectiveness of vaccination in preventing infection
               </p>
             </div>
-
-            <Button onClick={handleCalculate} className="w-full">
-              Run Simulation
-            </Button>
           </div>
-        </Card>
+        </div>
       </div>
 
-      {results && (
-        <>
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold tracking-tight mb-4">
-              Results
-            </h2>
-            <MetricsDisplay results={results} />
-          </Card>
+      <Button
+        onClick={handleCalculate}
+        disabled={isLoading}
+        className="w-full"
+        size="lg"
+      >
+        {isLoading ? 'Running Simulation...' : 'Run SEIRDV Simulation'}
+      </Button>
 
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold tracking-tight mb-4">
-              Disease Spread Over Time
-            </h2>
-            <div className="h-[400px]">
-              <LineChart results={results} />
+      {error && (
+        <div className="p-4 border border-destructive/20 bg-destructive/10 rounded-lg">
+          <div className="text-destructive text-sm font-medium">
+            Error: {error}
+          </div>
             </div>
-          </Card>
-        </>
       )}
     </div>
   );
