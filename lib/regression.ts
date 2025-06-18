@@ -1,3 +1,4 @@
+import React from 'react';
 import { invertMatrix, matrixMultiply, transpose } from "./math/matrix";
 import { fcdf, tcdf, erf } from "./math/statistics";
 import { z } from 'zod';
@@ -53,6 +54,8 @@ export interface LinearRegressionResult {
   standardError: number;
   xValues: number[];
   yValues: number[];
+  chartData?: any;
+  chartComponent?: React.ReactNode;
 }
 
 export function linearRegression(xValues: number[], yValues: number[]): LinearRegressionResult | { error: string } {
@@ -124,6 +127,8 @@ export interface LogisticRegressionResult {
     logLikelihood: number;
     aic: number;
     iterations: number;
+    chartData?: any;
+    chartComponent?: React.ReactNode;
 }
 
 function sigmoid(z: number): number {
@@ -213,6 +218,8 @@ export interface MultipleRegressionResult {
   p: number;
   X: number[][];
   y: number[];
+  chartData?: any;
+  chartComponent?: React.ReactNode;
 }
 
 export function multipleRegression(y: number[], X: number[][]): MultipleRegressionResult | { error: string } {
