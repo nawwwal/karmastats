@@ -13,14 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-import { useState } from "react";
 import { calculateCaseControlSampleSize } from "@/lib/math/sample-size/comparativeStudy";
 
 const formSchema = z.object({
@@ -33,9 +25,11 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function CaseControlForm() {
-  const [result, setResult] = useState<{ n_cases: number; n_controls: number } | null>(null);
+interface CaseControlFormProps {
+  onResultsChange: (results: any) => void;
+}
 
+export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,19 +50,38 @@ export function CaseControlForm() {
       p0,
       p1,
     );
-    setResult(sampleSize);
+
+    // Structure results for display
+    const results = {
+      type: 'case-control',
+      sampleSize,
+      parameters: values,
+      interpretation: {
+        nCases: sampleSize.n_cases,
+        nControls: sampleSize.n_controls,
+        totalSample: sampleSize.n_cases + sampleSize.n_controls,
+        oddsRatio: ((values.p1 / (1 - values.p1)) / (values.p0 / (1 - values.p0))).toFixed(2),
+        effectSize: Math.abs(values.p1 - values.p0).toFixed(3)
+      }
+    };
+
+    onResultsChange(results);
     // Scroll to top to show results
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Case-Control Study</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...(form as any)}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Case-Control Study Parameters</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Calculate sample size for retrospective case-control studies comparing exposure rates between cases and controls.
+        </p>
+      </div>
+
+      <Form {...(form as any)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="confidenceLevel"
@@ -76,7 +89,12 @@ export function CaseControlForm() {
                 <FormItem>
                   <FormLabel>Confidence Level (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      placeholder="95"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -87,69 +105,86 @@ export function CaseControlForm() {
               name="power"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Power (%)</FormLabel>
+                  <FormLabel>Statistical Power (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      placeholder="80"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="ratio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ratio of Controls to Cases</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="ratio"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ratio of Controls to Cases</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="1"
+                    {...field}
+                    onChange={e => field.onChange(parseFloat(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="p0"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Proportion of Controls with Exposure (p0)</FormLabel>
+                  <FormLabel>Exposure in Controls (p₀)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.10"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="p1"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Proportion of Cases with Exposure (p1)</FormLabel>
+                  <FormLabel>Exposure in Cases (p₁)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.20"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Calculate</Button>
-          </form>
-        </Form>
-        {result && (
-           <Card className="mt-4">
-            <CardHeader>
-                <CardTitle>Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>Sample Size for Cases (n1): {result.n_cases}</p>
-                <p>Sample Size for Controls (n0): {result.n_controls}</p>
-                <p>Total Sample Size: {result.n_cases + result.n_controls}</p>
-            </CardContent>
-           </Card>
-        )}
-      </CardContent>
-    </Card>
+          </div>
+
+          <Button type="submit" className="w-full">
+            Calculate Sample Size
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }

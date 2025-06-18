@@ -13,14 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-import { useState } from "react";
 import { calculateCohortSampleSize } from "@/lib/math/sample-size/comparativeStudy";
 
 const formSchema = z.object({
@@ -33,9 +25,11 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function CohortForm() {
-  const [result, setResult] = useState<{ n_exposed: number; n_unexposed: number } | null>(null);
+interface CohortFormProps {
+  onResultsChange: (results: any) => void;
+}
 
+export function CohortForm({ onResultsChange }: CohortFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,19 +50,39 @@ export function CohortForm() {
       p1,
       p2,
     );
-    setResult(sampleSize);
+
+    // Structure results for display
+    const results = {
+      type: 'cohort',
+      sampleSize,
+      parameters: values,
+      interpretation: {
+        nExposed: sampleSize.n_exposed,
+        nUnexposed: sampleSize.n_unexposed,
+        totalSample: sampleSize.n_exposed + sampleSize.n_unexposed,
+        relativeRisk: (values.p1 / values.p2).toFixed(2),
+        riskDifference: Math.abs(values.p1 - values.p2).toFixed(3),
+        effectSize: Math.abs(values.p1 - values.p2).toFixed(3)
+      }
+    };
+
+    onResultsChange(results);
     // Scroll to top to show results
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Cohort Study</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...(form as any)}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Cohort Study Parameters</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Calculate sample size for prospective cohort studies comparing disease incidence between exposed and unexposed groups.
+        </p>
+      </div>
+
+      <Form {...(form as any)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="confidenceLevel"
@@ -76,7 +90,12 @@ export function CohortForm() {
                 <FormItem>
                   <FormLabel>Confidence Level (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      placeholder="95"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -87,69 +106,86 @@ export function CohortForm() {
               name="power"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Power (%)</FormLabel>
+                  <FormLabel>Statistical Power (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      placeholder="80"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="ratio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ratio of Unexposed to Exposed</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="ratio"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ratio of Unexposed to Exposed</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="1"
+                    {...field}
+                    onChange={e => field.onChange(parseFloat(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="p1"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Proportion of Exposed with Disease (p1)</FormLabel>
+                  <FormLabel>Disease Rate in Exposed (p₁)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.20"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="p2"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Proportion of Unexposed with Disease (p2)</FormLabel>
+                  <FormLabel>Disease Rate in Unexposed (p₂)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.10"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Calculate</Button>
-          </form>
-        </Form>
-        {result && (
-           <Card className="mt-4">
-            <CardHeader>
-                <CardTitle>Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>Sample Size for Exposed Group (n1): {result.n_exposed}</p>
-                <p>Sample Size for Unexposed Group (n2): {result.n_unexposed}</p>
-                <p>Total Sample Size: {result.n_exposed + result.n_unexposed}</p>
-            </CardContent>
-           </Card>
-        )}
-      </CardContent>
-    </Card>
+          </div>
+
+          <Button type="submit" className="w-full">
+            Calculate Sample Size
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }
