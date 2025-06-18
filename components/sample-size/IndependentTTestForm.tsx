@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/card";
 import { useState, useRef } from "react";
 import { jsPDF } from "jspdf";
-import * as pdfjs from "pdfjs-dist";
 import {
     calculateIndependentSampleSize,
     IndependentSampleSizeSchema,
@@ -58,25 +57,19 @@ export function IndependentTTestForm() {
 
     const reader = new FileReader();
     reader.onload = async (e) => {
-      const typedArray = new Uint8Array(e.target?.result as ArrayBuffer);
-      const pdf = await pdfjs.getDocument(typedArray).promise;
-      let textContent = '';
+      const { extractTextFromPDF, extractParameters } = await import("@/lib/pdf-utils");
+      const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const text = await page.getTextContent();
-        textContent += text.items.map((s: any) => s.str).join(' ');
-      }
+      const patterns = {
+        group1Mean: [/group 1 mean[^0-9]*([0-9.]+)/i],
+        group2Mean: [/group 2 mean[^0-9]*([0-9.]+)/i],
+        pooledSD: [/pooled standard deviation[^0-9]*([0-9.]+)/i],
+      };
 
-      // Very basic regex for demonstration.
-      // A more robust solution would be needed for production.
-      const group1MeanMatch = textContent.match(/group 1 mean[^0-9]*([0-9.]+)/i);
-      const group2MeanMatch = textContent.match(/group 2 mean[^0-9]*([0-9.]+)/i);
-      const pooledSDMatch = textContent.match(/pooled standard deviation[^0-9]*([0-9.]+)/i);
-
-      if (group1MeanMatch) form.setValue("group1Mean", parseFloat(group1MeanMatch[1]));
-      if (group2MeanMatch) form.setValue("group2Mean", parseFloat(group2MeanMatch[1]));
-      if (pooledSDMatch) form.setValue("pooledSD", parseFloat(pooledSDMatch[1]));
+      const values = extractParameters(textContent, patterns);
+      if (values.group1Mean) form.setValue("group1Mean", values.group1Mean);
+      if (values.group2Mean) form.setValue("group2Mean", values.group2Mean);
+      if (values.pooledSD) form.setValue("pooledSD", values.pooledSD);
     };
     reader.readAsArrayBuffer(file);
   }

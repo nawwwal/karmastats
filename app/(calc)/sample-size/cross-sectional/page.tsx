@@ -62,22 +62,19 @@ export default function CrossSectionalPage() {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
-                // Dynamic import to prevent SSR issues
-                const { extractTextFromPDF } = await import('@/lib/pdf-utils');
+                const { extractTextFromPDF, extractParameters } = await import('@/lib/pdf-utils');
                 const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
-                const extractValue = (regex: RegExp) => {
-                    const match = textContent.match(regex);
-                    return match ? parseFloat(match[1]) : undefined;
+                const patterns = {
+                    prevalence: [/prevalence of ([\d\.]+)/i],
+                    marginOfError: [/margin of error of ([\d\.]+)/i],
+                    populationSize: [/population size of ([\d\.]+)/i]
                 };
 
-                const prevalence = extractValue(/prevalence of ([\d\.]+)/i);
-                const marginOfError = extractValue(/margin of error of ([\d\.]+)/i);
-                const populationSize = extractValue(/population size of ([\d\.]+)/i);
-
-                if (prevalence !== undefined) form.setValue('prevalence', prevalence);
-                if (marginOfError !== undefined) form.setValue('marginOfError', marginOfError);
-                if (populationSize !== undefined) form.setValue('populationSize', populationSize);
+                const values = extractParameters(textContent, patterns);
+                if (values.prevalence) form.setValue('prevalence', values.prevalence);
+                if (values.marginOfError) form.setValue('marginOfError', values.marginOfError);
+                if (values.populationSize) form.setValue('populationSize', values.populationSize);
 
             } catch (err: any) {
                 setError(`Failed to process PDF: ${err.message}`);

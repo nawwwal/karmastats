@@ -115,24 +115,29 @@ export default function ClinicalTrialsPage() {
         reader.onload = async (e) => {
             try {
                 // Dynamic import to prevent SSR issues
-                const { extractTextFromPDF } = await import('@/lib/pdf-utils');
+                const { extractTextFromPDF, extractParameters } = await import('@/lib/pdf-utils');
                 const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
-                const extractValue = (regex: RegExp) => {
-                    const match = textContent.match(regex);
-                    return match ? parseFloat(match[1]) : undefined;
+                const patterns = {
+                    controlRate: [/control group rate of ([\d\.]+)/i],
+                    treatmentRate: [/treatment group rate of ([\d\.]+)/i],
+                    meanDifference: [/mean difference of ([\d\.]+)/i],
+                    stdDev: [/standard deviation of ([\d\.]+)/i],
+                    margin: [/margin of ([\d\.]+)/i]
                 };
+
+                const values = extractParameters(textContent, patterns);
 
                 if (activeTab === 'superiority') {
                     if (superiorityOutcome === 'binary') {
-                        form.setValue('controlRate', extractValue(/control group rate of ([\d\.]+)/i));
-                        form.setValue('treatmentRate', extractValue(/treatment group rate of ([\d\.]+)/i));
+                        if (values.controlRate) form.setValue('controlRate', values.controlRate);
+                        if (values.treatmentRate) form.setValue('treatmentRate', values.treatmentRate);
                     } else {
-                        form.setValue('meanDifference', extractValue(/mean difference of ([\d\.]+)/i));
-                        form.setValue('stdDev', extractValue(/standard deviation of ([\d\.]+)/i));
+                        if (values.meanDifference) form.setValue('meanDifference', values.meanDifference);
+                        if (values.stdDev) form.setValue('stdDev', values.stdDev);
                     }
                 } else if (activeTab === 'non-inferiority' || activeTab === 'equivalence') {
-                    form.setValue('margin', extractValue(/margin of ([\d\.]+)/i));
+                    if (values.margin) form.setValue('margin', values.margin);
                 }
 
             } catch (err: any) {
