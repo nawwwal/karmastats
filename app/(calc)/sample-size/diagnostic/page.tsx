@@ -116,25 +116,29 @@ export default function DiagnosticTestPage() {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
-                // Dynamic import to prevent SSR issues
-                const { extractTextFromPDF } = await import('@/lib/pdf-utils');
+                const { extractTextFromPDF, extractParameters } = await import('@/lib/pdf-utils');
                 const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
-                // Simplified regex - a robust solution is complex
-                const extractValue = (regex: RegExp) => {
-                    const match = textContent.match(regex);
-                    return match ? parseFloat(match[1]) : undefined;
+                const basePatterns = {
+                    expectedSensitivity: [/sensitivity of ([\d\.]+)/i],
+                    expectedSpecificity: [/specificity of ([\d\.]+)/i],
+                    diseasePrevalence: [/prevalence of ([\d\.]+)/i],
+                    test1Performance: [/test 1 performance of ([\d\.]+)/i],
+                    test2Performance: [/test 2 performance of ([\d\.]+)/i],
+                    expectedAUC: [/auc of ([\d\.]+)/i]
                 };
 
+                const values = extractParameters(textContent, basePatterns);
+
                 if (activeTab === 'single') {
-                    form.setValue('expectedSensitivity', extractValue(/sensitivity of ([\d\.]+)/i));
-                    form.setValue('expectedSpecificity', extractValue(/specificity of ([\d\.]+)/i));
-                    form.setValue('diseasePrevalence', extractValue(/prevalence of ([\d\.]+)/i));
+                    if (values.expectedSensitivity) form.setValue('expectedSensitivity', values.expectedSensitivity);
+                    if (values.expectedSpecificity) form.setValue('expectedSpecificity', values.expectedSpecificity);
+                    if (values.diseasePrevalence) form.setValue('diseasePrevalence', values.diseasePrevalence);
                 } else if (activeTab === 'comparative') {
-                    form.setValue('test1Performance', extractValue(/test 1 performance of ([\d\.]+)/i));
-                    form.setValue('test2Performance', extractValue(/test 2 performance of ([\d\.]+)/i));
+                    if (values.test1Performance) form.setValue('test1Performance', values.test1Performance);
+                    if (values.test2Performance) form.setValue('test2Performance', values.test2Performance);
                 } else if (activeTab === 'roc') {
-                    form.setValue('expectedAUC', extractValue(/auc of ([\d\.]+)/i));
+                    if (values.expectedAUC) form.setValue('expectedAUC', values.expectedAUC);
                 }
 
             } catch (err: any) {
