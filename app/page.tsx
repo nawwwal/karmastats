@@ -22,37 +22,73 @@ const tools = {
   calculators: [
     {
       title: "Sample Size Calculator",
-      description: "Comprehensive suite of sample size calculation tools for various study designs with statistical power analysis",
+      description: "Comprehensive suite of 7 specialized sample size calculation tools covering all major study designs with statistical power analysis",
       href: "/sample-size",
       icon: <Calculator className="h-8 w-8" />,
-      features: ["Multiple study designs", "Power analysis", "Effect size calculations"],
-      status: "Complete"
+      features: [
+        "Intelligent Study Detector (AI-powered)",
+        "Survival Analysis (Log-rank, Cox, One-arm)",
+        "Comparative Studies (Case-control & Cohort)",
+        "T-Test Calculator (Independent & Paired)",
+        "Diagnostic Studies (Sensitivity & Specificity)",
+        "Clinical Trials (RCT, Non-inferiority, Equivalence)",
+        "Cross-sectional Studies (Prevalence & Survey)"
+      ],
+      status: "Complete",
+      toolCount: "7 Tools"
     },
     {
       title: "Regression Analysis",
-      description: "Perform linear, polynomial, and logistic regression to model relationships between variables",
+      description: "Advanced statistical modeling suite with interactive visualizations, sample datasets, and comprehensive file upload capabilities",
       href: "/regression",
       icon: <Activity className="h-8 w-8" />,
-      features: ["Linear regression", "Polynomial regression", "Logistic regression"],
-      status: "Complete"
+      features: [
+        "Linear Regression (Simple & Multiple variables)",
+        "Polynomial Regression (2nd-6th degree fitting)",
+        "Multiple Regression (Multi-variable analysis)",
+        "Logistic Regression (Binary classification)",
+        "Interactive Charts & Visualizations",
+        "CSV/TXT File Upload Support",
+        "Sample Datasets Included"
+      ],
+      status: "Complete",
+      toolCount: "4 Models"
     },
     {
       title: "Disease Modeling",
-      description: "Advanced epidemiological modeling with SEIRDV compartments and intervention analysis",
+      description: "Advanced epidemiological modeling with SEIRDV compartments, intervention analysis, and real-time parameter adjustment",
       href: "/disease-math",
       icon: <Microscope className="h-8 w-8" />,
-      features: ["SEIRDV models", "Intervention analysis", "Geographic modeling"],
-      status: "Complete"
+      features: [
+        "Standard SEIR Model (Basic epidemic modeling)",
+        "Advanced SEIRDV Model (Deaths & Vaccination)",
+        "Intervention Analysis (Policy impact assessment)",
+        "Real-time Parameter Adjustment",
+        "Interactive Epidemic Curves",
+        "R₀ & Herd Immunity Calculations",
+        "Population Impact Metrics"
+      ],
+      status: "Complete",
+      toolCount: "2 Models"
     }
   ],
   studies: [
     {
       title: "Family Health Study",
-      description: "Comprehensive family health assessment based on ICMR-NIN 2020 guidelines",
+      description: "Comprehensive family health assessment platform based on ICMR-NIN 2020 guidelines with nutritional analysis and health tracking",
       href: "/family-study",
       icon: <Users className="h-8 w-8" />,
-      features: ["ICMR-NIN 2020 compliance", "Nutritional analysis", "Health records"],
-      status: "Complete"
+      features: [
+        "ICMR-NIN 2020 Compliance",
+        "Family Member Demographics",
+        "Nutritional Adequacy Analysis",
+        "Health Records Management",
+        "Immunization Tracking",
+        "Socioeconomic Status Assessment",
+        "Consumption Unit Calculations"
+      ],
+      status: "Complete",
+      toolCount: "7 Modules"
     }
   ]
 };
@@ -78,13 +114,14 @@ const impactStats = [
   }
 ];
 
-const CalcCard = ({ title, description, href, icon, features, status }: {
+const CalcCard = ({ title, description, href, icon, features, status, toolCount }: {
   title: string;
   description: string;
   href: string;
   icon: React.ReactNode;
   features: string[];
   status: string;
+  toolCount?: string;
 }) => (
   <Link href={href} className="block group">
     <Card className="h-full hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border-2 hover:border-primary/20">
@@ -93,9 +130,16 @@ const CalcCard = ({ title, description, href, icon, features, status }: {
           <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
             {icon}
           </div>
-          <Badge variant={status === "Complete" ? "default" : "secondary"} className="text-xs">
-            {status}
-          </Badge>
+          <div className="flex flex-col items-end gap-1">
+            <Badge variant={status === "Complete" ? "default" : "secondary"} className="text-xs">
+              {status}
+            </Badge>
+            {toolCount && (
+              <Badge variant="outline" className="text-xs">
+                {toolCount}
+              </Badge>
+            )}
+          </div>
         </div>
         <div>
           <CardTitle className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors">
@@ -107,11 +151,11 @@ const CalcCard = ({ title, description, href, icon, features, status }: {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-40 overflow-y-auto">
           {features.map((feature, index) => (
-            <div key={index} className="flex items-center text-sm text-muted-foreground">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2" />
-              {feature}
+            <div key={index} className="flex items-start text-sm text-muted-foreground">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2 mt-2 flex-shrink-0" />
+              <span className="leading-relaxed">{feature}</span>
             </div>
           ))}
         </div>
@@ -148,29 +192,30 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden gradient-bg text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent opacity-90" />
-        <div className="relative container mx-auto px-4 py-24 text-center">
+      <section className="relative overflow-hidden gradient-bg text-white min-h-screen flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative container mx-auto px-4 text-center w-full">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="space-y-4">
-              <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight lg:text-7xl animate-fadeInDown">
+              <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight lg:text-7xl animate-fadeInDown text-white drop-shadow-lg">
                 KARMASTAT
               </h1>
-              <p className="text-xl lg:text-2xl text-white/90 font-light animate-fadeInUp animate-delay-200">
+              <p className="text-xl lg:text-2xl text-white font-light animate-fadeInUp animate-delay-200 drop-shadow-sm">
                 Where Selfless Work Meets Calculated Precision
               </p>
             </div>
             <div className="max-w-3xl mx-auto space-y-6 animate-fadeInUp animate-delay-300">
-              <p className="text-lg text-white/80">
+              <p className="text-lg text-white drop-shadow-sm">
                 A powerful fusion of KARMA (selfless work performed with dedication and compassion)
                 and STAT (commitment to precision with scientific rigor) - creating statistical tools
                 that empower researchers to make informed decisions benefiting humanity.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
+                <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 shadow-lg">
                   <Link href="#tools">Explore Tools</Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary">
+                <Button asChild variant="outline" size="lg" className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-primary shadow-lg">
                   <Link href="#mission">Our Mission</Link>
                 </Button>
               </div>

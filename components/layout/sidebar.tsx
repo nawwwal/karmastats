@@ -12,9 +12,7 @@ import {
   ChevronDown,
   ChevronRight,
   Search,
-  Star,
   Heart,
-  Bookmark,
   Settings,
   Sun,
   Moon,
@@ -189,40 +187,7 @@ const ThemeToggle: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => {
   );
 };
 
-const SidebarFavorites: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => {
-  const favorites = [
-    { title: "Sample Size Calculator", href: "/sample-size", icon: <Calculator size={16} /> },
-    { title: "Disease Modeling", href: "/disease-math", icon: <Microscope size={16} /> }
-  ];
-
-  if (favorites.length === 0) return null;
-
-  return (
-    <div className="mb-6">
-      {!isCollapsed && (
-        <h3 className="px-3 mb-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Favorites
-        </h3>
-      )}
-      <ul className="space-y-1">
-        {favorites.map((item, index) => (
-          <li key={index}>
-            <Link
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200 group",
-                isCollapsed && "justify-center px-2"
-              )}
-            >
-              <Star size={16} className="text-primary flex-shrink-0" />
-              {!isCollapsed && <span className="truncate">{item.title}</span>}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+// Favorites removed to save space and improve navigation clarity
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -406,9 +371,6 @@ export function Sidebar({ isCollapsed, onToggle, isHovered = false }: SidebarPro
         {/* Main Navigation */}
         <ScrollArea className="flex-1 px-3 overflow-y-auto">
           <div className="space-y-2">
-            {/* Favorites */}
-            <SidebarFavorites isCollapsed={isCollapsed} />
-
             {/* Navigation Items */}
             <nav>
               <ul className="space-y-1">
