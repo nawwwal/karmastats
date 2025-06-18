@@ -130,6 +130,8 @@ export function LogisticRegressionForm({ onResultsChange }: LogisticRegressionFo
             } else {
                 setResult(regressionResult);
                 onResultsChange?.(regressionResult);
+                // Scroll to top to show results
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         } catch (e: any) {
             setError("Invalid data format. Please check your input.");

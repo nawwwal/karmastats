@@ -19,6 +19,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Upload, BarChart3, Shuffle } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamically import Chart.js components
+const Scatter = dynamic(() => import("react-chartjs-2").then((mod) => mod.Scatter), { ssr: false });
+const Bar = dynamic(() => import("react-chartjs-2").then((mod) => mod.Bar), { ssr: false });
+
+// Chart.js registration (only on client side)
+if (typeof window !== "undefined") {
+  import("chart.js").then((ChartJS) => {
+    ChartJS.Chart.register(
+      ChartJS.CategoryScale,
+      ChartJS.LinearScale,
+      ChartJS.PointElement,
+      ChartJS.LineElement,
+      ChartJS.BarElement,
+      ChartJS.Title,
+      ChartJS.Tooltip,
+      ChartJS.Legend
+    );
+  });
+}
 
 const parseMatrixInput = (input: string): { y: number[], X: number[][] } => {
     const rows = input.trim().split('\n').map(row => row.split(/[\s,]+/).map(Number));
@@ -33,36 +54,57 @@ const sampleDatasets = {
     data: `250000, 1200, 2
 300000, 1500, 3
 180000, 900, 1
-420000, 2000, 4
-380000, 1800, 3
-220000, 1000, 2
-500000, 2500, 4
-320000, 1600, 3`,
+350000, 1800, 4
+220000, 1100, 2
+450000, 2200, 5
+280000, 1300, 3
+320000, 1600, 3
+200000, 1000, 2
+380000, 1900, 4
+260000, 1250, 2
+400000, 2000, 4
+190000, 950, 1
+340000, 1700, 3
+290000, 1400, 3`,
     variables: "Area (sq ft), Bedrooms"
   },
-  studentGrades: {
-    name: "Student Performance (Study Hours, Previous GPA → Final Grade)",
-    data: `85, 8, 3.2
-92, 12, 3.8
-78, 5, 2.9
-88, 9, 3.5
-95, 15, 3.9
-82, 7, 3.1
-90, 11, 3.7
-76, 4, 2.8`,
-    variables: "Study Hours, Previous GPA"
+  studentPerformance: {
+    name: "Student Performance (Study Hours, Sleep → Test Score)",
+    data: `85, 8, 7
+72, 5, 6
+91, 10, 8
+68, 4, 5
+88, 9, 7
+76, 6, 6
+94, 11, 8
+63, 3, 4
+82, 7, 7
+79, 6, 6
+87, 8, 8
+71, 5, 5
+93, 10, 9
+66, 4, 5
+89, 9, 7`,
+    variables: "Study Hours, Sleep Hours"
   },
   salesPerformance: {
-    name: "Sales Performance (Advertising, Experience → Sales)",
-    data: `120000, 5000, 2
-180000, 8000, 5
-95000, 3000, 1
-220000, 12000, 8
-160000, 6500, 4
-140000, 7000, 3
-200000, 10000, 7
-110000, 4000, 2`,
-    variables: "Advertising Budget, Years Experience"
+    name: "Sales Performance (Ads, Experience → Sales)",
+    data: `120, 10, 3
+89, 6, 1
+145, 15, 5
+72, 4, 1
+134, 12, 4
+98, 8, 2
+156, 18, 6
+81, 5, 1
+127, 11, 3
+103, 9, 2
+149, 16, 5
+85, 6, 1
+138, 13, 4
+95, 7, 2
+142, 14, 4`,
+    variables: "Ad Spend ($1000s), Experience (years)"
   }
 };
 
@@ -108,7 +150,196 @@ export function MultipleRegressionForm({ onResultsChange }: MultipleRegressionFo
                 setError(regressionResult.error);
             } else {
                 setResult(regressionResult);
-                onResultsChange?.(regressionResult);
+
+                // Create chart data for visualization
+                const chartData = {
+                    datasets: [
+                        {
+                            label: "Actual vs Predicted",
+                            data: regressionResult.y.map((y, i) => ({
+                                x: y,
+                                y: regressionResult.predictedY[i]
+                            })),
+                            backgroundColor: "hsl(var(--primary) / 0.6)",
+                            borderColor: "hsl(var(--primary))",
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                        },
+                        {
+                            label: "Perfect Prediction Line",
+                            data: [
+                                { x: Math.min(...regressionResult.y), y: Math.min(...regressionResult.y) },
+                                { x: Math.max(...regressionResult.y), y: Math.max(...regressionResult.y) },
+                            ],
+                            borderColor: "hsl(var(--secondary))",
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            type: "line" as const,
+                            fill: false,
+                            showLine: true,
+                        },
+                    ],
+                };
+
+                const residualsData = {
+                    datasets: [
+                        {
+                            label: "Residuals vs Predicted",
+                            data: regressionResult.predictedY.map((pred, i) => ({
+                                x: pred,
+                                y: regressionResult.residuals[i]
+                            })),
+                            backgroundColor: "hsl(var(--warning) / 0.6)",
+                            borderColor: "hsl(var(--warning))",
+                            pointRadius: 5,
+                        },
+                    ],
+                };
+
+                const coefficientsData = {
+                    labels: ['Intercept', ...variableNames.split(',').map(name => name.trim())],
+                    datasets: [
+                        {
+                            label: "Coefficient Values",
+                            data: regressionResult.coefficients,
+                            backgroundColor: [
+                                "hsl(var(--primary) / 0.6)",
+                                "hsl(var(--secondary) / 0.6)",
+                                "hsl(var(--accent) / 0.6)",
+                                "hsl(var(--muted) / 0.6)",
+                                "hsl(var(--warning) / 0.6)",
+                            ],
+                            borderColor: [
+                                "hsl(var(--primary))",
+                                "hsl(var(--secondary))",
+                                "hsl(var(--accent))",
+                                "hsl(var(--muted))",
+                                "hsl(var(--warning))",
+                            ],
+                            borderWidth: 1,
+                        },
+                    ],
+                };
+
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: "top" as const },
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context: any) {
+                                    if (context.dataset.label === "Actual vs Predicted") {
+                                        return `Actual: ${context.parsed.x.toFixed(2)}, Predicted: ${context.parsed.y.toFixed(2)}`;
+                                    }
+                                    if (context.dataset.label === "Residuals vs Predicted") {
+                                        return `Predicted: ${context.parsed.x.toFixed(2)}, Residual: ${context.parsed.y.toFixed(2)}`;
+                                    }
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(4);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: "Actual Values" },
+                            type: "linear" as const,
+                        },
+                        y: {
+                            title: { display: true, text: "Predicted Values" },
+                        },
+                    },
+                };
+
+                const residualsOptions = {
+                    ...chartOptions,
+                    scales: {
+                        x: {
+                            title: { display: true, text: "Predicted Values" },
+                            type: "linear" as const,
+                        },
+                        y: {
+                            title: { display: true, text: "Residuals" },
+                        },
+                    },
+                };
+
+                const coefficientsOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context: any) {
+                                    return `${context.label}: ${context.parsed.y.toFixed(4)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: "Variables" },
+                        },
+                        y: {
+                            title: { display: true, text: "Coefficient Value" },
+                        },
+                    },
+                };
+
+                // Multiple visualization tabs
+                const MultipleCharts = () => {
+                    const [activeChart, setActiveChart] = useState<'predicted' | 'residuals' | 'coefficients'>('predicted');
+
+                    return (
+                        <div className="space-y-4">
+                            <div className="flex gap-2 justify-center">
+                                <Button
+                                    variant={activeChart === 'predicted' ? "default" : "outline"}
+                                    onClick={() => setActiveChart('predicted')}
+                                    size="sm"
+                                >
+                                    Actual vs Predicted
+                                </Button>
+                                <Button
+                                    variant={activeChart === 'residuals' ? "default" : "outline"}
+                                    onClick={() => setActiveChart('residuals')}
+                                    size="sm"
+                                >
+                                    Residuals Plot
+                                </Button>
+                                <Button
+                                    variant={activeChart === 'coefficients' ? "default" : "outline"}
+                                    onClick={() => setActiveChart('coefficients')}
+                                    size="sm"
+                                >
+                                    Coefficients
+                                </Button>
+                            </div>
+                            <div className="h-[450px]">
+                                {activeChart === 'predicted' && (
+                                    <Scatter data={chartData} options={chartOptions} />
+                                )}
+                                {activeChart === 'residuals' && (
+                                    <Scatter data={residualsData} options={residualsOptions} />
+                                )}
+                                {activeChart === 'coefficients' && (
+                                    <Bar data={coefficientsData} options={coefficientsOptions} />
+                                )}
+                            </div>
+                        </div>
+                    );
+                };
+
+                onResultsChange?.({
+                    ...regressionResult,
+                    chartData,
+                    chartComponent: <MultipleCharts />
+                });
+                // Scroll to top to show results
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         } catch (e: any) {
             setError("Invalid data format. Please check your input.");
