@@ -85,8 +85,8 @@ export default function SurvivalAnalysisPage() {
       title = "Log-Rank Test Results";
       resultItems = [
         { label: 'Total Sample Size', value: results.totalSampleSize, category: 'primary' as const, highlight: true, format: 'integer' as const },
-        { label: 'Sample Size Group 1', value: results.n1, category: 'secondary' as const, format: 'integer' as const },
-        { label: 'Sample Size Group 2', value: results.n2, category: 'secondary' as const, format: 'integer' as const },
+        { label: 'Sample Size Group 1', value: results.group1SampleSize, category: 'secondary' as const, format: 'integer' as const },
+        { label: 'Sample Size Group 2', value: results.group2SampleSize, category: 'secondary' as const, format: 'integer' as const },
         { label: 'Total Events Required', value: results.totalEvents, category: 'statistical' as const, format: 'integer' as const },
       ];
     } else if (activeTab === "cox") {

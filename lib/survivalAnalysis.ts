@@ -152,8 +152,8 @@ export class SurvivalAnalysis {
         dropoutRate = 0
     } = params;
 
-    const za = z_alpha[significanceLevel.toString() as keyof typeof z_alpha];
-    const zb = z_beta[power.toString() as keyof typeof z_beta];
+    const za = z_alpha[significanceLevel.toFixed(2) as keyof typeof z_alpha];
+    const zb = z_beta[power.toFixed(2) as keyof typeof z_beta];
 
     const lambda1 = this.LN2 / medianSurvival1;
     const lambda2 = this.LN2 / medianSurvival2;
@@ -205,8 +205,8 @@ export class SurvivalAnalysis {
         followupPeriod,
     } = params;
 
-    const za = z_alpha[significanceLevel.toString() as keyof typeof z_alpha];
-    const zb = z_beta[power.toString() as keyof typeof z_beta];
+    const za = z_alpha[significanceLevel.toFixed(2) as keyof typeof z_alpha];
+    const zb = z_beta[power.toFixed(2) as keyof typeof z_beta];
 
     const totalEvents = Math.pow(za + zb, 2) / (Math.pow(Math.log(hazardRatio), 2) * (1 - rSquared));
     const totalSampleSize = dropoutRate >= 100
@@ -248,8 +248,8 @@ export class SurvivalAnalysis {
         dropoutRate = 0
     } = params;
 
-    const za = z_alpha[significanceLevel.toString() as keyof typeof z_alpha];
-    const zb = z_beta[power.toString() as keyof typeof z_beta];
+    const za = z_alpha[significanceLevel.toFixed(2) as keyof typeof z_alpha];
+    const zb = z_beta[power.toFixed(2) as keyof typeof z_beta];
 
     const lambda0 = this.LN2 / historicalMedianSurvival;
     const lambda1 = this.LN2 / targetMedianSurvival;
