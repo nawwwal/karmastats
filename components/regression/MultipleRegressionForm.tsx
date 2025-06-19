@@ -320,10 +320,10 @@ export function MultipleRegressionForm({ onResultsChange }: MultipleRegressionFo
                             </div>
                             <div className="h-[450px]">
                                 {activeChart === 'predicted' && (
-                                    <Scatter data={chartData} options={chartOptions} />
+                                    <Scatter data={chartData as any} options={chartOptions} />
                                 )}
                                 {activeChart === 'residuals' && (
-                                    <Scatter data={residualsData} options={residualsOptions} />
+                                    <Scatter data={residualsData as any} options={residualsOptions} />
                                 )}
                                 {activeChart === 'coefficients' && (
                                     <Bar data={coefficientsData} options={coefficientsOptions} />

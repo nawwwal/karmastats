@@ -173,7 +173,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
         title: {
           display: true,
           text: xLabel,
-              font: { size: 14, weight: 'bold' }
+              font: { size: 14, weight: 'bold' as const }
         },
             grid: {
               color: 'hsl(var(--border))',
@@ -183,7 +183,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
         title: {
           display: true,
           text: yLabel,
-              font: { size: 14, weight: 'bold' }
+              font: { size: 14, weight: 'bold' as const }
         },
             grid: {
               color: 'hsl(var(--border))',
@@ -201,7 +201,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
       title: {
         display: true,
             text: `${yLabel} vs ${xLabel}`,
-            font: { size: 16, weight: 'bold' }
+            font: { size: 16, weight: 'bold' as const }
           },
           tooltip: {
             backgroundColor: 'hsl(var(--popover))',
@@ -238,7 +238,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
       onResultsChange?.({
         ...regressionResult,
         chartData,
-        chartComponent: <Scatter options={chartOptions} data={chartData} />
+        chartComponent: <Scatter options={chartOptions} data={chartData as any} />
       });
     }
   };
