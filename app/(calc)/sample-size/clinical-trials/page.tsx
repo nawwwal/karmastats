@@ -362,28 +362,28 @@ export default function ClinicalTrialsPage() {
                 </Card>
 
                 {/* Main Trial Type Tabs - Enhanced Visual Distinction */}
-                <Card className="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-950/20 dark:to-indigo-950/20">
+                <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
                     <CardHeader>
                         <CardTitle>Select Trial Type</CardTitle>
                         <CardDescription>Choose the appropriate clinical trial design for your study</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
-                            <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/50">
-                                <TabsTrigger value="superiority" className="text-sm font-medium">
+                            <TabsList className="grid w-full grid-cols-3 h-12 bg-primary/10 border border-primary/20">
+                                <TabsTrigger value="superiority" className="text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-white">
                                     🏆 Superiority
                                 </TabsTrigger>
-                                <TabsTrigger value="non-inferiority" className="text-sm font-medium">
+                                <TabsTrigger value="non-inferiority" className="text-sm font-medium data-[state=active]:bg-secondary data-[state=active]:text-white">
                                     ⚖️ Non-Inferiority
                                 </TabsTrigger>
-                                <TabsTrigger value="equivalence" className="text-sm font-medium">
+                                <TabsTrigger value="equivalence" className="text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-white">
                                     🎯 Equivalence
                                 </TabsTrigger>
                     </TabsList>
 
                             <TabsContent value="superiority" className="space-y-4">
                                 {/* Outcome Type Selection - Secondary Tab */}
-                                <Card className="bg-white/50 dark:bg-gray-800/50">
+                                <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
                                     <CardContent className="pt-6">
                         <FormField name="superiorityOutcome" render={({ field }) => (
                                             <FormItem>
@@ -395,7 +395,7 @@ export default function ClinicalTrialsPage() {
                                                         className="flex justify-center gap-6 mt-4"
                                                     >
                                                         <div className={`flex items-center space-x-3 border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                                                            field.value === 'binary' ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/50'
+                                                            field.value === 'binary' ? 'border-primary bg-primary/10 shadow-md' : 'border-muted hover:border-primary/30 hover:bg-primary/5'
                                                         }`}>
                                                             <RadioGroupItem value="binary" id="binary" />
                                                             <Label htmlFor="binary" className="cursor-pointer font-medium">
@@ -403,7 +403,7 @@ export default function ClinicalTrialsPage() {
                                                             </Label>
                                                         </div>
                                                         <div className={`flex items-center space-x-3 border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                                                            field.value === 'continuous' ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/50'
+                                                            field.value === 'continuous' ? 'border-secondary bg-secondary/10 shadow-md' : 'border-muted hover:border-secondary/30 hover:bg-secondary/5'
                                                         }`}>
                                                             <RadioGroupItem value="continuous" id="continuous" />
                                                             <Label htmlFor="continuous" className="cursor-pointer font-medium">
@@ -420,7 +420,7 @@ export default function ClinicalTrialsPage() {
 
                                 {/* Conditional Parameter Cards */}
                                 {superiorityOutcome === 'binary' && (
-                                    <Card>
+                                    <Card className="border-primary/20">
                                         <CardHeader>
                                             <CardTitle className="text-lg">Binary Outcome Parameters</CardTitle>
                                             <CardDescription>Event rates for treatment and control groups</CardDescription>
@@ -465,7 +465,7 @@ export default function ClinicalTrialsPage() {
                                 )}
 
                                 {superiorityOutcome === 'continuous' && (
-                                    <Card>
+                                    <Card className="border-secondary/20">
                                         <CardHeader>
                                             <CardTitle className="text-lg">Continuous Outcome Parameters</CardTitle>
                                             <CardDescription>Mean difference and variability parameters</CardDescription>
@@ -508,7 +508,7 @@ export default function ClinicalTrialsPage() {
                             </TabsContent>
 
                             <TabsContent value="non-inferiority" className="space-y-4">
-                                <Card>
+                                <Card className="border-secondary/20">
                                     <CardHeader>
                                         <CardTitle className="text-lg">Non-Inferiority Parameters</CardTitle>
                                         <CardDescription>Testing that new treatment is not worse than control by more than margin</CardDescription>
@@ -571,7 +571,7 @@ export default function ClinicalTrialsPage() {
                             </TabsContent>
 
                             <TabsContent value="equivalence" className="space-y-4">
-                                <Card>
+                                <Card className="border-primary/20">
                                     <CardHeader>
                                         <CardTitle className="text-lg">Equivalence Parameters</CardTitle>
                                         <CardDescription>Testing that treatments are equivalent within specified margin</CardDescription>
@@ -637,7 +637,7 @@ export default function ClinicalTrialsPage() {
                 </Card>
 
                 {/* Study Parameters */}
-                <Card>
+                <Card className="border-primary/20">
                     <CardHeader>
                         <CardTitle>Study Parameters</CardTitle>
                         <CardDescription>Statistical power and design parameters</CardDescription>
