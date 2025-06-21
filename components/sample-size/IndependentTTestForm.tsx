@@ -74,28 +74,76 @@ export function IndependentTTestForm() {
     reader.readAsArrayBuffer(file);
   }
 
-  function generatePdf(values: IndependentSampleSizeInput, result: IndependentSampleSizeOutput) {
-    const doc = new jsPDF();
+  async function generatePdf(values: IndependentSampleSizeInput, result: IndependentSampleSizeOutput) {
+    const { generateModernPDF } = await import("@/lib/pdf-utils");
 
-    doc.text("Karmastat - Independent T-Test Results", 20, 20);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
+    const config = {
+      title: "Independent T-Test Sample Size Analysis",
+      subtitle: "Two-Sample Independent Groups Design",
+      calculatorType: "Independent T-Test",
+      inputs: [
+        { label: "Group 1 Mean", value: values.group1Mean },
+        { label: "Group 2 Mean", value: values.group2Mean },
+        { label: "Pooled Standard Deviation", value: values.pooledSD },
+        { label: "Allocation Ratio (Group 2/Group 1)", value: values.allocationRatio },
+        { label: "Significance Level", value: values.significanceLevel, unit: "%" },
+        { label: "Statistical Power", value: values.power, unit: "%" },
+        { label: "Expected Dropout Rate", value: values.dropoutRate, unit: "%" }
+      ],
+      results: [
+        {
+          label: "Total Required Sample Size",
+          value: result.totalSize,
+          highlight: true,
+          category: "primary" as const,
+          format: "integer" as const
+        },
+        {
+          label: "Effect Size (Cohen's d)",
+          value: result.cohensD,
+          highlight: true,
+          category: "primary" as const,
+          format: "decimal" as const,
+          precision: 3
+        },
+        {
+          label: "Group 1 Sample Size",
+          value: result.group1Size,
+          category: "secondary" as const,
+          format: "integer" as const
+        },
+        {
+          label: "Group 2 Sample Size",
+          value: result.group2Size,
+          category: "secondary" as const,
+          format: "integer" as const
+        },
+        {
+          label: "Effect Size Interpretation",
+          value: result.effectSizeInterpretation,
+          category: "secondary" as const
+        }
+      ],
+      interpretation: {
+        summary: `This analysis determines the required sample size for comparing means between two independent groups. The calculated effect size (Cohen's d = ${result.cohensD.toFixed(3)}) indicates a ${result.effectSizeInterpretation.toLowerCase()} effect. With ${values.power}% power and α = ${values.significanceLevel/100}, you need ${result.totalSize} total participants (${result.group1Size} in Group 1, ${result.group2Size} in Group 2).`,
+        recommendations: [
+          "Ensure random allocation to groups to minimize selection bias",
+          "Consider stratified randomization if important prognostic factors exist",
+          "Plan for the specified dropout rate in your recruitment strategy",
+          "Verify assumptions of normality and equal variances between groups",
+          "Consider using intention-to-treat analysis as the primary approach"
+        ],
+        assumptions: [
+          "Continuous outcome variable with normal distribution",
+          "Independent observations within and between groups",
+          "Equal variances between the two groups (homoscedasticity)",
+          "No systematic differences between groups except the intervention",
+          "Dropout is random and not related to the outcome"
+        ]
+      }
+    };
 
-    doc.text("Parameters:", 20, 40);
-    doc.text(`Group 1 Mean: ${values.group1Mean}`, 30, 50);
-    doc.text(`Group 2 Mean: ${values.group2Mean}`, 30, 60);
-    doc.text(`Pooled SD: ${values.pooledSD}`, 30, 70);
-    doc.text(`Allocation Ratio: ${values.allocationRatio}`, 30, 80);
-    doc.text(`Significance Level: ${values.significanceLevel}%`, 30, 90);
-    doc.text(`Power: ${values.power}%`, 30, 100);
-    doc.text(`Dropout Rate: ${values.dropoutRate}%`, 30, 110);
-
-    doc.text("Results:", 20, 130);
-    doc.text(`Group 1 Size: ${result.group1Size}`, 30, 140);
-    doc.text(`Group 2 Size: ${result.group2Size}`, 30, 150);
-    doc.text(`Total Size: ${result.totalSize}`, 30, 160);
-    doc.text(`Cohen's d: ${result.cohensD.toFixed(3)} (${result.effectSizeInterpretation})`, 30, 170);
-
-    doc.save("independent-t-test-results.pdf");
+    await generateModernPDF(config);
   }
 
   return (

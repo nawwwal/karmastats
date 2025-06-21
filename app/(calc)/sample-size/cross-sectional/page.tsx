@@ -96,31 +96,75 @@ export default function CrossSectionalPage() {
         if (!results) return;
 
         try {
-            const { jsPDF } = await import('jspdf');
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text(`Karmastat Cross-Sectional Study Report`, 105, 20, { align: 'center' });
-            doc.setFontSize(12);
+            const { generateModernPDF } = await import('@/lib/pdf-utils');
+            const formData = form.getValues();
 
-            let y = 40;
+            const config = {
+                title: "Cross-Sectional Study Sample Size Analysis",
+                subtitle: "Population-Based Prevalence Study Design",
+                calculatorType: "Cross-Sectional Study",
+                inputs: [
+                    { label: "Expected Prevalence", value: formData.prevalence, unit: "%" },
+                    { label: "Margin of Error", value: formData.marginOfError, unit: "%" },
+                    { label: "Confidence Level", value: formData.confidenceLevel, unit: "%" },
+                    { label: "Population Size", value: formData.populationSize || "Not specified" },
+                    { label: "Design Effect (DEFF)", value: formData.designEffect || 1.0 },
+                    { label: "Non-Response Rate", value: formData.nonResponseRate || 0, unit: "%" },
+                    { label: "Clustering Effect (ICC)", value: formData.clusteringEffect || 0 }
+                ],
+                results: [
+                    {
+                        label: "Final Required Sample Size",
+                        value: results.finalSize,
+                        highlight: true,
+                        category: "primary" as const,
+                        format: "integer" as const
+                    },
+                    {
+                        label: "Base Sample Size (Cochran's)",
+                        value: results.baseSize,
+                        category: "secondary" as const,
+                        format: "integer" as const
+                    },
+                    {
+                        label: "After Design Effect",
+                        value: results.designAdjustedSize,
+                        category: "secondary" as const,
+                        format: "integer" as const
+                    },
+                    {
+                        label: "After Population Correction",
+                        value: results.populationAdjustedSize,
+                        category: "secondary" as const,
+                        format: "integer" as const
+                    },
+                    {
+                        label: "After Clustering Adjustment",
+                        value: results.clusterAdjustedSize,
+                        category: "secondary" as const,
+                        format: "integer" as const
+                    }
+                ],
+                interpretation: {
+                    summary: `This cross-sectional study requires ${results.finalSize} participants to estimate a prevalence of ${formData.prevalence}% with a margin of error of ±${formData.marginOfError}% at ${formData.confidenceLevel}% confidence level. The calculation accounts for design effects, finite population correction (if applicable), clustering effects, and expected non-response.`,
+                    recommendations: [
+                        'Ensure random sampling from the target population',
+                        'Consider stratification to improve precision for subgroups',
+                        'Plan for potential non-response and implement follow-up procedures',
+                        'Use appropriate sampling frame that covers target population',
+                        'Validate prevalence assumptions with pilot data if possible'
+                    ],
+                    assumptions: [
+                        'Simple random sampling or equivalent design',
+                        'Response rate assumptions are met',
+                        'Population size estimate is accurate (if finite)',
+                        'Clustering effects are correctly specified',
+                        'Prevalence estimate is reasonable for the population'
+                    ]
+                }
+            };
 
-            const resultData = [
-                { label: 'Base Sample Size (Cochran\'s)', value: results.baseSize },
-                { label: 'After Design Effect', value: results.designAdjustedSize },
-                { label: 'After Finite Population Correction', value: results.populationAdjustedSize },
-                { label: 'After Clustering Adjustment', value: results.clusterAdjustedSize },
-                { label: 'Final Size (inc. Non-Response)', value: results.finalSize },
-            ];
-
-            doc.text('Calculation Steps', 20, y);
-            y += 10;
-
-            resultData.forEach(row => {
-                doc.text(`${row.label}: ${row.value.toLocaleString()}`, 25, y);
-                y += 7;
-            });
-
-            doc.save('karmastat-cross-sectional-report.pdf');
+            await generateModernPDF(config);
         } catch (err: any) {
             setError(`Failed to generate PDF: ${err.message}`);
         }

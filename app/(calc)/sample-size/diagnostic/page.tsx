@@ -161,44 +161,83 @@ export default function DiagnosticTestPage() {
         if (!results) return;
 
         try {
-            // Dynamic import to prevent SSR issues
-            const { jsPDF } = await import('jspdf');
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text(`Karmastat Diagnostic Test Report`, 105, 20, { align: 'center' });
-            doc.setFontSize(12);
+            const { generateModernPDF } = await import('@/lib/pdf-utils');
+            const formData = form.getValues();
 
-        let y = 40;
+            let config: any = {
+                calculatorType: `Diagnostic Test ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`,
+                inputs: [],
+                results: [],
+                interpretation: {
+                    recommendations: [
+                        'Ensure proper randomization and blinding in diagnostic test evaluation',
+                        'Consider spectrum bias when selecting patient populations',
+                        'Account for verification bias in test result interpretation',
+                        'Plan for adequate reference standard procedures'
+                    ],
+                    assumptions: [
+                        'Reference standard has perfect sensitivity and specificity',
+                        'Test results are independent conditional on disease status',
+                        'Study population is representative of intended use population',
+                        'No spectrum or verification bias present'
+                    ]
+                }
+            };
 
-        if ('nSensitivity' in results) {
-            doc.text('Single Test Evaluation Results', 20, y);
-            y += 10;
-            doc.text(`Sample Size (Sensitivity): ${results.nSensitivity}`, 25, y);
-            y += 7;
-            doc.text(`Sample Size (Specificity): ${results.nSpecificity}`, 25, y);
-            y += 7;
-            doc.text(`Required Total Sample Size: ${results.totalSize}`, 25, y);
-            y += 7;
-            doc.text(`Number of Disease Positive: ${results.diseasePositive}`, 25, y);
-            y += 7;
-            doc.text(`Number of Disease Negative: ${results.diseaseNegative}`, 25, y);
-        } else if ('sampleSize' in results) {
-            doc.text('Comparative Test Study Results', 20, y);
-            y += 10;
-            doc.text(`Required Sample Size (per group if unpaired): ${results.sampleSize}`, 25, y);
-            y += 7;
-            doc.text(`Total Subjects to Screen: ${results.totalSize}`, 25, y);
-        } else if ('positiveSize' in results) {
-            doc.text('ROC Analysis Results', 20, y);
-            y += 10;
-            doc.text(`Required Disease-Positive Cases: ${results.positiveSize}`, 25, y);
-            y += 7;
-            doc.text(`Required Disease-Negative Cases: ${results.negativeSize}`, 25, y);
-            y += 7;
-            doc.text(`Total Required Sample Size: ${results.totalSize}`, 25, y);
-        }
+            if ('nSensitivity' in results) {
+                config.title = "Single Diagnostic Test Evaluation";
+                config.subtitle = "Sensitivity and Specificity Analysis";
+                config.inputs = [
+                    { label: "Expected Sensitivity", value: formData.expectedSensitivity, unit: "%" },
+                    { label: "Expected Specificity", value: formData.expectedSpecificity, unit: "%" },
+                    { label: "Disease Prevalence", value: formData.diseasePrevalence, unit: "%" },
+                    { label: "Margin of Error", value: formData.marginOfError, unit: "%" },
+                    { label: "Confidence Level", value: formData.confidenceLevel, unit: "%" }
+                ];
+                config.results = [
+                    { label: "Total Required Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Disease Positive Cases Needed", value: results.diseasePositive, highlight: true, category: "primary", format: "integer" },
+                    { label: "Disease Negative Cases Needed", value: results.diseaseNegative, highlight: true, category: "primary", format: "integer" },
+                    { label: "Sample Size for Sensitivity", value: results.nSensitivity, category: "secondary", format: "integer" },
+                    { label: "Sample Size for Specificity", value: results.nSpecificity, category: "secondary", format: "integer" }
+                ];
+                config.interpretation.summary = `This single test evaluation requires ${results.totalSize} total participants to adequately assess both sensitivity and specificity. The study will need ${results.diseasePositive} disease-positive and ${results.diseaseNegative} disease-negative cases based on the expected ${formData.diseasePrevalence}% prevalence.`;
+            } else if ('sampleSize' in results) {
+                config.title = "Comparative Diagnostic Test Study";
+                config.subtitle = "Two-Test Comparison Analysis";
+                config.inputs = [
+                    { label: "Study Design", value: formData.studyDesign },
+                    { label: "Test 1 Sensitivity", value: formData.test1Sensitivity, unit: "%" },
+                    { label: "Test 2 Sensitivity", value: formData.test2Sensitivity, unit: "%" },
+                    { label: "Test 1 Specificity", value: formData.test1Specificity, unit: "%" },
+                    { label: "Test 2 Specificity", value: formData.test2Specificity, unit: "%" },
+                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
+                    { label: "Statistical Power", value: formData.power * 100, unit: "%" }
+                ];
+                config.results = [
+                    { label: "Required Sample Size per Group", value: results.sampleSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Total Subjects to Screen", value: results.totalSize, highlight: true, category: "primary", format: "integer" }
+                ];
+                config.interpretation.summary = `This comparative study requires ${results.sampleSize} participants per group (if unpaired design) to detect differences between the two diagnostic tests. A total of ${results.totalSize} subjects need to be screened.`;
+            } else if ('positiveSize' in results) {
+                config.title = "ROC Curve Analysis Study";
+                config.subtitle = "Area Under Curve Evaluation";
+                config.inputs = [
+                    { label: "Expected AUC", value: formData.expectedAUC },
+                    { label: "Null Hypothesis AUC", value: formData.nullAUC },
+                    { label: "Disease Prevalence", value: formData.diseasePrevalence, unit: "%" },
+                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
+                    { label: "Statistical Power", value: formData.power * 100, unit: "%" }
+                ];
+                config.results = [
+                    { label: "Total Required Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Disease-Positive Cases", value: results.positiveSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Disease-Negative Cases", value: results.negativeSize, highlight: true, category: "primary", format: "integer" }
+                ];
+                config.interpretation.summary = `This ROC analysis requires ${results.totalSize} total participants to detect an AUC of ${formData.expectedAUC} versus the null hypothesis of ${formData.nullAUC}. The study needs ${results.positiveSize} disease-positive and ${results.negativeSize} disease-negative cases.`;
+            }
 
-            doc.save(`karmastat-diagnostic-report-${activeTab}.pdf`);
+            await generateModernPDF(config);
         } catch (err: any) {
             setError(`Failed to generate PDF: ${err.message}`);
         }

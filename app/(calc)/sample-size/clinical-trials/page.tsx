@@ -162,54 +162,142 @@ export default function ClinicalTrialsPage() {
         if (!results) return;
 
         try {
-            // Dynamic import to prevent SSR issues
-            const { jsPDF } = await import('jspdf');
-            const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text(`Karmastat Clinical Trials Report`, 105, 20, { align: 'center' });
-        doc.setFontSize(12);
+            const { generateModernPDF } = await import('@/lib/pdf-utils');
+            const formData = form.getValues();
 
-        let y = 40;
+            let config: any = {
+                calculatorType: `Clinical Trial ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`,
+                inputs: [],
+                results: [],
+                interpretation: {
+                    recommendations: [],
+                    assumptions: []
+                }
+            };
 
-        if ('nnt' in results) { // Superiority Binary
-            doc.text('Superiority Trial Results (Binary Outcome)', 20, y);
-            y += 10;
-            doc.text(`Treatment Group Size: ${results.treatmentSize}`, 25, y);
-            y += 7;
-            doc.text(`Control Group Size: ${results.controlSize}`, 25, y);
-            y += 7;
-            doc.text(`Total Sample Size: ${results.totalSize}`, 25, y);
-            y += 7;
-            doc.text(`Number Needed to Treat (NNT): ${results.nnt.toFixed(2)}`, 25, y);
-        } else if ('effectSize' in results) { // Superiority Continuous
-            doc.text('Superiority Trial Results (Continuous Outcome)', 20, y);
-            y += 10;
-            doc.text(`Treatment Group Size: ${results.treatmentSize}`, 25, y);
-            y += 7;
-            doc.text(`Control Group Size: ${results.controlSize}`, 25, y);
-            y += 7;
-            doc.text(`Total Sample Size: ${results.totalSize}`, 25, y);
-            y += 7;
-            doc.text(`Cohen's d (Effect Size): ${results.effectSize.toFixed(4)}`, 25, y);
-        } else if ('treatmentSize' in results) { // Non-inferiority
-            doc.text('Non-Inferiority Trial Results', 20, y);
-            y += 10;
-            doc.text(`Treatment Group Size: ${results.treatmentSize}`, 25, y);
-            y += 7;
-            doc.text(`Control Group Size: ${results.controlSize}`, 25, y);
-            y += 7;
-            doc.text(`Total Sample Size: ${results.totalSize}`, 25, y);
-        } else if ('testSize' in results) { // Equivalence
-            doc.text('Equivalence Trial Results', 20, y);
-            y += 10;
-            doc.text(`Test Group Size: ${results.testSize}`, 25, y);
-            y += 7;
-            doc.text(`Reference Group Size: ${results.referenceSize}`, 25, y);
-            y += 7;
-            doc.text(`Total Sample Size: ${results.totalSize}`, 25, y);
-        }
+            if ('nnt' in results) { // Superiority Binary
+                config.title = "Superiority Clinical Trial Design";
+                config.subtitle = "Binary Outcome Analysis";
+                config.inputs = [
+                    { label: "Control Group Event Rate", value: formData.controlRate, unit: "%" },
+                    { label: "Treatment Group Event Rate", value: formData.treatmentRate, unit: "%" },
+                    { label: "Allocation Ratio", value: formData.allocationRatio },
+                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
+                    { label: "Statistical Power", value: formData.power * 100, unit: "%" },
+                    { label: "Dropout Rate", value: formData.dropoutRate, unit: "%" }
+                ];
+                config.results = [
+                    { label: "Total Required Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Number Needed to Treat (NNT)", value: results.nnt, highlight: true, category: "primary", format: "decimal", precision: 1 },
+                    { label: "Treatment Group Size", value: results.treatmentSize, category: "secondary", format: "integer" },
+                    { label: "Control Group Size", value: results.controlSize, category: "secondary", format: "integer" }
+                ];
+                config.interpretation.summary = `This superiority trial requires ${results.totalSize} participants total to detect a difference between ${formData.controlRate}% and ${formData.treatmentRate}% event rates. The Number Needed to Treat (NNT = ${results.nnt.toFixed(1)}) indicates you need to treat ${Math.round(results.nnt)} patients to prevent one additional adverse event.`;
+                config.interpretation.recommendations = [
+                    'Ensure adequate randomization and blinding procedures',
+                    'Consider stratified randomization by key prognostic factors',
+                    'Plan for interim analyses if trial duration is long',
+                    'Account for potential protocol deviations in sample size'
+                ];
+                config.interpretation.assumptions = [
+                    'Binary outcome follows binomial distribution',
+                    'Independent observations',
+                    'Fixed event rates in each group',
+                    'No interim analyses affecting alpha level'
+                ];
+            } else if ('effectSize' in results) { // Superiority Continuous
+                config.title = "Superiority Clinical Trial Design";
+                config.subtitle = "Continuous Outcome Analysis";
+                config.inputs = [
+                    { label: "Control Group Mean", value: formData.controlMean },
+                    { label: "Treatment Group Mean", value: formData.treatmentMean },
+                    { label: "Standard Deviation", value: formData.standardDeviation },
+                    { label: "Allocation Ratio", value: formData.allocationRatio },
+                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
+                    { label: "Statistical Power", value: formData.power * 100, unit: "%" },
+                    { label: "Dropout Rate", value: formData.dropoutRate, unit: "%" }
+                ];
+                config.results = [
+                    { label: "Total Required Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Effect Size (Cohen's d)", value: results.effectSize, highlight: true, category: "primary", format: "decimal", precision: 3 },
+                    { label: "Treatment Group Size", value: results.treatmentSize, category: "secondary", format: "integer" },
+                    { label: "Control Group Size", value: results.controlSize, category: "secondary", format: "integer" }
+                ];
+                const effectMagnitude = results.effectSize < 0.3 ? 'small' : results.effectSize < 0.8 ? 'medium' : 'large';
+                config.interpretation.summary = `This superiority trial requires ${results.totalSize} participants total to detect a mean difference of ${Math.abs(formData.treatmentMean - formData.controlMean)} units. The calculated effect size (Cohen's d = ${results.effectSize.toFixed(3)}) indicates a ${effectMagnitude} effect.`;
+                config.interpretation.recommendations = [
+                    'Verify normality assumptions for continuous outcomes',
+                    'Consider using non-parametric tests if data is skewed',
+                    'Ensure consistent measurement procedures across sites',
+                    'Plan for missing data handling strategies'
+                ];
+                config.interpretation.assumptions = [
+                    'Continuous outcome follows normal distribution',
+                    'Independent observations',
+                    'Equal variances between groups',
+                    'Linear relationship between predictors and outcome'
+                ];
+            } else if ('treatmentSize' in results) { // Non-inferiority
+                config.title = "Non-Inferiority Clinical Trial Design";
+                config.subtitle = "Non-Inferiority Margin Analysis";
+                config.inputs = [
+                    { label: "Control Response Rate", value: formData.controlRate, unit: "%" },
+                    { label: "Non-Inferiority Margin", value: formData.margin, unit: "%" },
+                    { label: "Allocation Ratio", value: formData.allocationRatio },
+                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
+                    { label: "Statistical Power", value: formData.power * 100, unit: "%" },
+                    { label: "Dropout Rate", value: formData.dropoutRate, unit: "%" }
+                ];
+                config.results = [
+                    { label: "Total Required Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Treatment Group Size", value: results.treatmentSize, category: "secondary", format: "integer" },
+                    { label: "Control Group Size", value: results.controlSize, category: "secondary", format: "integer" }
+                ];
+                config.interpretation.summary = `This non-inferiority trial requires ${results.totalSize} participants total to demonstrate that the new treatment is not worse than the control by more than ${formData.margin}%.`;
+                config.interpretation.recommendations = [
+                    'Ensure non-inferiority margin is clinically justified',
+                    'Use intention-to-treat analysis as primary approach',
+                    'Consider per-protocol analysis as sensitivity analysis',
+                    'Pre-specify handling of missing data'
+                ];
+                config.interpretation.assumptions = [
+                    'Non-inferiority margin is clinically meaningful',
+                    'Control treatment effect is consistent with historical data',
+                    'Missing data is missing at random',
+                    'No selection bias in study population'
+                ];
+            } else if ('testSize' in results) { // Equivalence
+                config.title = "Equivalence Clinical Trial Design";
+                config.subtitle = "Bioequivalence Analysis";
+                config.inputs = [
+                    { label: "Control Response Rate", value: formData.controlRate, unit: "%" },
+                    { label: "Equivalence Margin", value: formData.margin, unit: "%" },
+                    { label: "Allocation Ratio", value: formData.allocationRatio },
+                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
+                    { label: "Statistical Power", value: formData.power * 100, unit: "%" },
+                    { label: "Dropout Rate", value: formData.dropoutRate, unit: "%" }
+                ];
+                config.results = [
+                    { label: "Total Required Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
+                    { label: "Test Group Size", value: results.testSize, category: "secondary", format: "integer" },
+                    { label: "Reference Group Size", value: results.referenceSize, category: "secondary", format: "integer" }
+                ];
+                config.interpretation.summary = `This equivalence trial requires ${results.totalSize} participants total to demonstrate that the treatments are equivalent within ±${formData.margin}%.`;
+                config.interpretation.recommendations = [
+                    'Ensure equivalence margin is clinically meaningful',
+                    'Use both intention-to-treat and per-protocol analyses',
+                    'Consider crossover design if appropriate',
+                    'Plan for bioequivalence testing if applicable'
+                ];
+                config.interpretation.assumptions = [
+                    'Equivalence margin is symmetric around zero',
+                    'Both treatments have similar safety profiles',
+                    'No carry-over effects in crossover designs',
+                    'Consistent treatment administration'
+                ];
+            }
 
-        doc.save(`karmastat-clinical-trial-report-${activeTab}.pdf`);
+            await generateModernPDF(config);
         } catch (err: any) {
             setError(`Failed to generate PDF: ${err.message}`);
         }
