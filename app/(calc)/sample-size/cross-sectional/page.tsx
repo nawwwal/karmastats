@@ -209,6 +209,39 @@ export default function CrossSectionalPage() {
     const renderInputForm = () => (
         <Form {...(form as any)}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* PDF Upload - Move to top with proper drop zone */}
+                <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <span>📄</span> Import from PDF (Optional)
+                        </CardTitle>
+                        <CardDescription>Upload a research paper to auto-extract study parameters</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div
+                            className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:bg-muted/50 transition-colors cursor-pointer"
+                            onClick={() => document.getElementById('pdf-upload-cross-sectional')?.click()}
+                        >
+                            <div className="space-y-2">
+                                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                                    <span className="text-2xl">📁</span>
+                                </div>
+                                <div>
+                                    <p className="font-medium">Click to upload or drag and drop</p>
+                                    <p className="text-sm text-muted-foreground">PDF files only, max 10MB</p>
+                                </div>
+                            </div>
+                            <Input
+                                id="pdf-upload-cross-sectional"
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleFileUpload}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Study Parameters</CardTitle>
@@ -314,22 +347,6 @@ export default function CrossSectionalPage() {
                         </CardContent>
                     </Card>
                 )}
-
-                {/* File Upload */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Import from PDF</CardTitle>
-                        <CardDescription>Upload a PDF file to auto-extract study parameters</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Input
-                            type="file"
-                            accept=".pdf"
-                            onChange={handleFileUpload}
-                            className="cursor-pointer"
-                        />
-                    </CardContent>
-                </Card>
 
                 {error && (
                     <Alert variant="destructive">

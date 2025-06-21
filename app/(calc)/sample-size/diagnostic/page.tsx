@@ -301,6 +301,39 @@ export default function DiagnosticTestPage() {
     const renderInputForm = () => (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* PDF Upload - Move to top with proper drop zone */}
+                <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <span>📄</span> Import from PDF (Optional)
+                        </CardTitle>
+                        <CardDescription>Upload a research paper to auto-extract diagnostic test parameters</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div
+                            className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:bg-muted/50 transition-colors cursor-pointer"
+                            onClick={() => document.getElementById('pdf-upload-diagnostic')?.click()}
+                        >
+                            <div className="space-y-2">
+                                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                                    <span className="text-2xl">📁</span>
+                                </div>
+                                <div>
+                                    <p className="font-medium">Click to upload or drag and drop</p>
+                                    <p className="text-sm text-muted-foreground">PDF files only, max 10MB</p>
+                                </div>
+                            </div>
+                            <Input
+                                id="pdf-upload-diagnostic"
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleFileUpload}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
                 <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="single">Single Test</TabsTrigger>
@@ -531,22 +564,6 @@ export default function DiagnosticTestPage() {
                                 </FormItem>
                             )} />
                         </div>
-                    </CardContent>
-                </Card>
-
-                {/* File Upload */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Import from PDF</CardTitle>
-                        <CardDescription>Upload a PDF file to auto-extract parameters</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Input
-                            type="file"
-                            accept=".pdf"
-                            onChange={handleFileUpload}
-                            className="cursor-pointer"
-                        />
                     </CardContent>
                 </Card>
 

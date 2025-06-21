@@ -148,11 +148,43 @@ export function IndependentTTestForm() {
 
   return (
     <Card>
+      {/* PDF Upload - Modern drop zone */}
+      <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span>📄</span> Import from PDF (Optional)
+          </CardTitle>
+          <CardDescription>Upload a research paper to auto-extract t-test parameters</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div
+            className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:bg-muted/50 transition-colors cursor-pointer"
+            onClick={() => document.getElementById('pdf-upload-ttest')?.click()}
+          >
+            <div className="space-y-2">
+              <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                <span className="text-2xl">📁</span>
+              </div>
+              <div>
+                <p className="font-medium">Click to upload or drag and drop</p>
+                <p className="text-sm text-muted-foreground">PDF files only, max 10MB</p>
+              </div>
+            </div>
+            <Input
+              id="pdf-upload-ttest"
+              type="file"
+              accept=".pdf"
+              onChange={handleFileUpload}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       <CardHeader>
         <CardTitle>Independent T-Test</CardTitle>
         <CardDescription>
-            <p>Upload a PDF to automatically fill fields.</p>
-            <Input type="file" accept=".pdf" onChange={handleFileUpload} className="mt-2" />
+          Calculate sample size for comparing means between two independent groups
         </CardDescription>
       </CardHeader>
       <CardContent>
