@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from './sidebar';
+import { FloatingParticles } from '@/components/ui/floating-particles';
 import { cn } from '@/lib/utils';
 
 interface LayoutWrapperProps {
@@ -52,16 +53,30 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
 
   if (isHomePage) {
     return (
-      <div className="min-h-screen bg-background">
-        {children}
-      </div>
+      <FloatingParticles
+        className="min-h-screen bg-background"
+        density="medium"
+        speed="slow"
+        colors="primary"
+        size="mixed"
+      >
+        <div className="relative z-10">
+          {children}
+        </div>
+      </FloatingParticles>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <FloatingParticles
+      className="min-h-screen bg-background flex"
+      density="light"
+      speed="slow"
+      colors="primary"
+      size="small"
+    >
       <div
-        className="relative"
+        className="relative z-20"
         onMouseEnter={handleSidebarMouseEnter}
         onMouseLeave={handleSidebarMouseLeave}
       >
@@ -73,16 +88,16 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
       </div>
       <main
         className={cn(
-          "flex-1 transition-all duration-300 ease-in-out",
+          "flex-1 transition-all duration-300 ease-in-out relative z-10",
           "min-h-screen",
           // Add proper margin for sidebar width with smooth transition
           isSidebarCollapsed ? "ml-16" : "ml-80"
         )}
       >
-        <div className="container mx-auto p-6 max-w-none">
+        <div className="container mx-auto p-6 max-w-none relative">
           {children}
         </div>
       </main>
-    </div>
+    </FloatingParticles>
   );
 }
