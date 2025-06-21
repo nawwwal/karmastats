@@ -13,6 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { FieldPopover } from "@/components/ui/field-popover";
+import { getFieldExplanation } from "@/lib/field-explanations";
 import { calculateCohortSampleSize } from "@/lib/math/sample-size/comparativeStudy";
 
 const formSchema = z.object({
@@ -36,8 +38,8 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
       confidenceLevel: 95,
       power: 80,
       ratio: 1,
-      p1: 0.1,
-      p2: 0.2,
+      p1: 0.2,
+      p2: 0.1,
     },
   });
 
@@ -62,7 +64,7 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
         totalSample: sampleSize.n_exposed + sampleSize.n_unexposed,
         relativeRisk: (values.p1 / values.p2).toFixed(2),
         riskDifference: Math.abs(values.p1 - values.p2).toFixed(3),
-        effectSize: Math.abs(values.p1 - values.p2).toFixed(3)
+        attributableRisk: ((values.p1 - values.p2) / values.p1 * 100).toFixed(1)
       }
     };
 
@@ -88,7 +90,12 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
               name="confidenceLevel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confidence Level (%)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('sampleSize', 'confidenceLevel')}
+                    side="top"
+                  >
+                    <FormLabel>Confidence Level (%)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"
@@ -106,7 +113,12 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
               name="power"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Statistical Power (%)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('sampleSize', 'power')}
+                    side="top"
+                  >
+                    <FormLabel>Statistical Power (%)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"
@@ -126,7 +138,19 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
             name="ratio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ratio of Unexposed to Exposed</FormLabel>
+                <FieldPopover
+                  title="Control to Exposed Ratio"
+                  content="The number of unexposed individuals recruited for each exposed individual. Higher ratios can increase statistical power but also increase study costs and complexity."
+                  examples={[
+                    "1:1 - Equal numbers, standard approach",
+                    "2:1 - Common for cohort studies",
+                    "3:1 - Higher precision, increased cost"
+                  ]}
+                  validRange={{ min: 1, max: 5 }}
+                  side="top"
+                >
+                  <FormLabel>Ratio of Unexposed to Exposed</FormLabel>
+                </FieldPopover>
                 <FormControl>
                   <Input
                     type="number"
@@ -146,7 +170,19 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
               name="p1"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Disease Rate in Exposed (p₁)</FormLabel>
+                  <FieldPopover
+                    title="Disease Rate in Exposed (p₁)"
+                    content="The expected proportion of exposed individuals who will develop the disease during the follow-up period. This represents the incidence rate in the exposed group."
+                    examples={[
+                      "0.15 (15%) - Moderate disease incidence",
+                      "0.25 (25%) - High disease incidence",
+                      "0.05 (5%) - Low disease incidence"
+                    ]}
+                    validRange={{ min: "0.01", max: "0.99" }}
+                    side="top"
+                  >
+                    <FormLabel>Disease Rate in Exposed (p₁)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"
@@ -165,7 +201,19 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
               name="p2"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Disease Rate in Unexposed (p₂)</FormLabel>
+                  <FieldPopover
+                    title="Disease Rate in Unexposed (p₂)"
+                    content="The expected proportion of unexposed individuals who will develop the disease during the follow-up period. This represents the baseline incidence rate in the unexposed group."
+                    examples={[
+                      "0.10 (10%) - When p₁ = 20%, detecting doubled risk",
+                      "0.05 (5%) - When p₁ = 15%, detecting tripled risk",
+                      "0.15 (15%) - When p₁ = 25%, detecting 67% increase"
+                    ]}
+                    validRange={{ min: "0.01", max: "0.99" }}
+                    side="top"
+                  >
+                    <FormLabel>Disease Rate in Unexposed (p₂)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"

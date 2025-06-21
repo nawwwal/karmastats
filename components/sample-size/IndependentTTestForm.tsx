@@ -12,6 +12,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { FieldPopover } from "@/components/ui/field-popover";
+import { getFieldExplanation } from "@/lib/field-explanations";
 import {
   Card,
   CardContent,
@@ -195,7 +197,12 @@ export function IndependentTTestForm() {
               name="group1Mean"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Group 1 Mean</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('tTest', 'group1Mean')}
+                    side="top"
+                  >
+                    <FormLabel>Group 1 Mean</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>
@@ -208,7 +215,12 @@ export function IndependentTTestForm() {
               name="group2Mean"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Group 2 Mean</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('tTest', 'group2Mean')}
+                    side="top"
+                  >
+                    <FormLabel>Group 2 Mean</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>
@@ -221,7 +233,12 @@ export function IndependentTTestForm() {
               name="pooledSD"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pooled Standard Deviation</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('tTest', 'pooledSD')}
+                    side="top"
+                  >
+                    <FormLabel>Pooled Standard Deviation</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>
@@ -234,7 +251,12 @@ export function IndependentTTestForm() {
               name="allocationRatio"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Allocation Ratio (Group 2 / Group 1)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('tTest', 'allocationRatio')}
+                    side="top"
+                  >
+                    <FormLabel>Allocation Ratio (Group 2 / Group 1)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>
@@ -247,7 +269,12 @@ export function IndependentTTestForm() {
               name="significanceLevel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Significance Level (%)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('sampleSize', 'significanceLevel')}
+                    side="top"
+                  >
+                    <FormLabel>Significance Level (%)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>
@@ -260,7 +287,12 @@ export function IndependentTTestForm() {
               name="power"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Power (%)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('sampleSize', 'power')}
+                    side="top"
+                  >
+                    <FormLabel>Power (%)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>
@@ -273,7 +305,12 @@ export function IndependentTTestForm() {
               name="dropoutRate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Dropout Rate (%)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('sampleSize', 'dropoutRate')}
+                    side="top"
+                  >
+                    <FormLabel>Dropout Rate (%)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>

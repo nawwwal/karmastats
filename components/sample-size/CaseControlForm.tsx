@@ -13,6 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { FieldPopover } from "@/components/ui/field-popover";
+import { getFieldExplanation } from "@/lib/field-explanations";
 import { calculateCaseControlSampleSize } from "@/lib/math/sample-size/comparativeStudy";
 
 const formSchema = z.object({
@@ -87,7 +89,12 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
               name="confidenceLevel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confidence Level (%)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('sampleSize', 'confidenceLevel')}
+                    side="top"
+                  >
+                    <FormLabel>Confidence Level (%)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"
@@ -105,7 +112,12 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
               name="power"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Statistical Power (%)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('sampleSize', 'power')}
+                    side="top"
+                  >
+                    <FormLabel>Statistical Power (%)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"
@@ -125,7 +137,12 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
             name="ratio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ratio of Controls to Cases</FormLabel>
+                <FieldPopover
+                  {...getFieldExplanation('comparativeStudy', 'ratio')}
+                  side="top"
+                >
+                  <FormLabel>Ratio of Controls to Cases</FormLabel>
+                </FieldPopover>
                 <FormControl>
                   <Input
                     type="number"
@@ -145,7 +162,12 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
               name="p0"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Exposure in Controls (p₀)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('comparativeStudy', 'p0')}
+                    side="top"
+                  >
+                    <FormLabel>Exposure in Controls (p₀)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"
@@ -164,7 +186,12 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
               name="p1"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Exposure in Cases (p₁)</FormLabel>
+                  <FieldPopover
+                    {...getFieldExplanation('comparativeStudy', 'p1')}
+                    side="top"
+                  >
+                    <FormLabel>Exposure in Cases (p₁)</FormLabel>
+                  </FieldPopover>
                   <FormControl>
                     <Input
                       type="number"

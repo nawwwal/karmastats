@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { FieldPopover } from "@/components/ui/field-popover";
+import { getFieldExplanation } from "@/lib/field-explanations";
 import {
   DiseaseModel,
   DiseaseModelParams,
@@ -86,7 +88,12 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'populationSize')}
+              side="top"
+            >
               <Label htmlFor="population">Population Size</Label>
+            </FieldPopover>
               <Input
                 id="population"
                 type="number"
@@ -104,7 +111,12 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
             </div>
 
           <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'initialCases')}
+              side="top"
+            >
               <Label htmlFor="initialCases">Initial Cases</Label>
+            </FieldPopover>
               <Input
                 id="initialCases"
                 type="number"
@@ -124,7 +136,12 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'transmissionRate')}
+              side="top"
+            >
               <Label htmlFor="transmissionRate">Base Transmission Rate (R₀)</Label>
+            </FieldPopover>
               <Input
                 id="transmissionRate"
                 type="number"
@@ -143,7 +160,12 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
             </div>
 
           <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'incubationPeriod')}
+              side="top"
+            >
               <Label htmlFor="incubationPeriod">Incubation Period (days)</Label>
+            </FieldPopover>
               <Input
                 id="incubationPeriod"
                 type="number"
@@ -163,7 +185,12 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'recoveryRate')}
+              side="top"
+            >
               <Label htmlFor="recoveryRate">Recovery Rate (γ)</Label>
+            </FieldPopover>
               <Input
                 id="recoveryRate"
                 type="number"
@@ -182,7 +209,12 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
             </div>
 
           <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'mortalityRate')}
+              side="top"
+            >
               <Label htmlFor="mortalityRate">Mortality Rate (μ)</Label>
+            </FieldPopover>
               <Input
                 id="mortalityRate"
                 type="number"
@@ -199,44 +231,53 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
               Case fatality rate (proportion of infected who die)
             </p>
           </div>
-            </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="seasonality">Seasonality ({Math.round(params.seasonality * 100)}%)</Label>
-                <Slider
-                    id="seasonality"
-                    value={[params.seasonality * 100]}
-                    onValueChange={([value]) =>
-                    setParams({
-                        ...params,
-                        seasonality: value / 100,
-                    })
-                    }
-              max={50}
-                    step={1}
-              className="mt-2"
-                />
-            <p className="text-xs text-muted-foreground">
-              Seasonal variation in transmission rate
-                </p>
-            </div>
-
-          <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'simulationDays')}
+              side="top"
+            >
               <Label htmlFor="simulationDays">Simulation Days</Label>
-              <Input
-                id="simulationDays"
-                type="number"
-                value={params.simulationDays}
-                onChange={(e) =>
-                  setParams({ ...params, simulationDays: Number(e.target.value) })
-                }
+            </FieldPopover>
+            <Input
+              id="simulationDays"
+              type="number"
+              value={params.simulationDays}
+              onChange={(e) =>
+                setParams({ ...params, simulationDays: Number(e.target.value) })
+              }
               min="30"
               max="1095"
               placeholder="180"
-              />
+            />
             <p className="text-xs text-muted-foreground">
               Duration of simulation in days
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'seasonality')}
+              side="top"
+            >
+              <Label htmlFor="seasonality">Seasonal Variation</Label>
+            </FieldPopover>
+            <Input
+              id="seasonality"
+              type="number"
+              step="0.01"
+              value={params.seasonality}
+              onChange={(e) =>
+                setParams({ ...params, seasonality: Number(e.target.value) })
+              }
+              min="0"
+              max="0.8"
+              placeholder="0.1"
+            />
+            <p className="text-xs text-muted-foreground">
+              Magnitude of seasonal transmission variation
             </p>
           </div>
         </div>
@@ -248,105 +289,135 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Intervention Parameters</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Social Distancing Effectiveness ({Math.round(interventions.socialDistancing * 100)}%)</Label>
-              <Slider
-                value={[interventions.socialDistancing * 100]}
-                onValueChange={([value]) =>
-                  setInterventions({
-                    ...interventions,
-                    socialDistancing: value / 100,
-                  })
-                }
-                max={80}
-                step={1}
-                className="mt-2"
-              />
-              <p className="text-xs text-muted-foreground">
-                Reduction in transmission due to social distancing
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Mask Effectiveness ({Math.round(interventions.maskEffectiveness * 100)}%)</Label>
-              <Slider
-                value={[interventions.maskEffectiveness * 100]}
-                onValueChange={([value]) =>
-                  setInterventions({
-                    ...interventions,
-                    maskEffectiveness: value / 100,
-                  })
-                }
-                max={70}
-                step={1}
-                className="mt-2"
-              />
-              <p className="text-xs text-muted-foreground">
-                Reduction in transmission due to mask wearing
-              </p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'socialDistancing')}
+              side="top"
+            >
+              <Label htmlFor="socialDistancing">Social Distancing Effectiveness</Label>
+            </FieldPopover>
+            <Input
+              id="socialDistancing"
+              type="number"
+              step="0.01"
+              value={interventions.socialDistancing}
+              onChange={(e) =>
+                setInterventions({
+                  ...interventions,
+                  socialDistancing: Number(e.target.value),
+                })
+              }
+              min="0"
+              max="0.9"
+              placeholder="0.2"
+            />
+            <p className="text-xs text-muted-foreground">
+              Reduction in transmission due to social distancing
+            </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Daily Vaccination Rate ({(interventions.vaccinationRate * 100).toFixed(2)}%)</Label>
-              <Slider
-                value={[interventions.vaccinationRate * 1000]}
-                onValueChange={([value]) =>
-                  setInterventions({
-                    ...interventions,
-                    vaccinationRate: value / 1000,
-                  })
-                }
-                max={50} // Represents 5%
-                step={1}
-                className="mt-2"
-              />
-              <p className="text-xs text-muted-foreground">
-                Percentage of susceptible population vaccinated per day
-              </p>
-            </div>
+          <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'maskEffectiveness')}
+              side="top"
+            >
+              <Label htmlFor="maskEffectiveness">Mask Effectiveness</Label>
+            </FieldPopover>
+            <Input
+              id="maskEffectiveness"
+              type="number"
+              step="0.01"
+              value={interventions.maskEffectiveness}
+              onChange={(e) =>
+                setInterventions({
+                  ...interventions,
+                  maskEffectiveness: Number(e.target.value),
+                })
+              }
+              min="0"
+              max="0.8"
+              placeholder="0.1"
+            />
+            <p className="text-xs text-muted-foreground">
+              Reduction in transmission due to mask wearing
+            </p>
+          </div>
+        </div>
 
-            <div className="space-y-2">
-              <Label>Vaccine Effectiveness ({Math.round(interventions.vaccineEffectiveness * 100)}%)</Label>
-                <Slider
-                    value={[interventions.vaccineEffectiveness * 100]}
-                    onValueChange={([value]) =>
-                    setInterventions({
-                        ...interventions,
-                        vaccineEffectiveness: value / 100,
-                    })
-                    }
-                    max={100}
-                    step={1}
-                className="mt-2"
-                />
-              <p className="text-xs text-muted-foreground">
-                Effectiveness of vaccination in preventing infection
-              </p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'vaccinationRate')}
+              side="top"
+            >
+              <Label htmlFor="vaccinationRate">Daily Vaccination Rate</Label>
+            </FieldPopover>
+            <Input
+              id="vaccinationRate"
+              type="number"
+              step="0.001"
+              value={interventions.vaccinationRate}
+              onChange={(e) =>
+                setInterventions({
+                  ...interventions,
+                  vaccinationRate: Number(e.target.value),
+                })
+              }
+              min="0"
+              max="0.05"
+              placeholder="0.005"
+            />
+            <p className="text-xs text-muted-foreground">
+              Proportion of susceptible population vaccinated daily
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <FieldPopover
+              {...getFieldExplanation('diseaseModel', 'vaccineEffectiveness')}
+              side="top"
+            >
+              <Label htmlFor="vaccineEffectiveness">Vaccine Effectiveness</Label>
+            </FieldPopover>
+            <Input
+              id="vaccineEffectiveness"
+              type="number"
+              step="0.01"
+              value={interventions.vaccineEffectiveness}
+              onChange={(e) =>
+                setInterventions({
+                  ...interventions,
+                  vaccineEffectiveness: Number(e.target.value),
+                })
+              }
+              min="0.3"
+              max="0.99"
+              placeholder="0.9"
+            />
+            <p className="text-xs text-muted-foreground">
+              Proportion of vaccinated who develop immunity
+            </p>
           </div>
         </div>
       </div>
 
-      <Button
-        onClick={handleCalculate}
-        disabled={isLoading}
-        className="w-full"
-        size="lg"
-      >
-        {isLoading ? 'Running Simulation...' : 'Run SEIRDV Simulation'}
-      </Button>
+      <Separator />
 
-      {error && (
-        <div className="p-4 border border-destructive/20 bg-destructive/10 rounded-lg">
-          <div className="text-destructive text-sm font-medium">
-            Error: {error}
-          </div>
-            </div>
-      )}
+      {/* Controls */}
+      <div className="space-y-4">
+        <Button
+          onClick={handleCalculate}
+          disabled={isLoading}
+          className="w-full"
+        >
+          {isLoading ? 'Running Simulation...' : 'Run Advanced Simulation'}
+        </Button>
+
+        {error && (
+          <p className="text-red-500 text-sm mt-2">{error}</p>
+        )}
+      </div>
     </div>
   );
 }

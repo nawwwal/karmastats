@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { FieldPopover } from "@/components/ui/field-popover";
+import { getFieldExplanation } from "@/lib/field-explanations";
 import { Upload, BarChart3, Shuffle } from "lucide-react";
 
 import dynamic from "next/dynamic";
@@ -238,7 +240,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
       onResultsChange?.({
         ...regressionResult,
         chartData,
-        chartComponent: <Scatter options={chartOptions} data={chartData as any} />
+        chartOptions
       });
     }
   };
@@ -313,235 +315,205 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
   };
 
   return (
-    <div className="space-y-6">
-      {/* Sample Data Selector */}
-      <Card className="bg-muted/30">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Try Sample Datasets
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <Select onValueChange={loadSampleData}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a sample dataset to get started..." />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(sampleDatasets).map(([key, dataset]) => (
-                  <SelectItem key={key} value={key}>
-                    {dataset.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              Select a dataset to automatically populate the fields and see how regression works
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Upload Your Data */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Upload className="h-5 w-5" />
-            Upload Your Data
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div
-            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
-            onClick={() => document.getElementById('csv-upload')?.click()}
-            onDrop={(e) => {
-              e.preventDefault();
-              const file = e.dataTransfer.files[0];
-              if (file) {
-                const event = { target: { files: [file] } } as any;
-                handleFileUpload(event);
-              }
-            }}
-            onDragOver={(e) => e.preventDefault()}
-            onDragEnter={(e) => e.preventDefault()}
-          >
-            <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="font-medium mb-2">Drop your CSV file here, or click to browse</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Supports .csv and .txt files with comma, space, or tab separation
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-muted-foreground">
-              <div className="p-2 bg-muted rounded">
-                <strong>Two columns:</strong><br/>
-                1.2, 2.1<br/>
-                2.4, 3.9
-              </div>
-              <div className="p-2 bg-muted rounded">
-                <strong>Two rows:</strong><br/>
-                1.2, 2.4, 3.1<br/>
-                2.1, 3.9, 6.2
-              </div>
-              <div className="p-2 bg-muted rounded">
-                <strong>Format:</strong><br/>
-                X values, Y values<br/>
-                {dataFormat} separated
-              </div>
-            </div>
-          </div>
-          <input
-            id="csv-upload"
-            type="file"
-            accept=".csv,.txt"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-
-          <div className="mt-4 flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="data-format" className="text-sm">Format:</Label>
-              <Select onValueChange={setDataFormat} defaultValue={dataFormat}>
-                <SelectTrigger className="w-auto">
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          Linear Regression Analysis
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Input Method Selection */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Input Method</Label>
+              <Select value={inputMethod} onValueChange={setInputMethod}>
+                <SelectTrigger className="w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="comma">Comma (,)</SelectItem>
-                  <SelectItem value="space">Space ( )</SelectItem>
-                  <SelectItem value="tab">Tab</SelectItem>
+                  <SelectItem value="manual">Manual Entry</SelectItem>
+                  <SelectItem value="file">File Upload</SelectItem>
+                  <SelectItem value="sample">Sample Datasets</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="outline" onClick={clearData} size="sm">
-              <Shuffle className="h-4 w-4 mr-2" />
-              Clear All Data
-            </Button>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-chart"
+                checked={showChart}
+                onCheckedChange={setShowChart}
+              />
+              <Label htmlFor="show-chart" className="text-sm">Show Chart</Label>
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <Separator />
+          {inputMethod === 'file' && (
+            <div className="space-y-4 p-4 border border-dashed border-muted-foreground/25 rounded-lg">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Data Format</Label>
+                <Select value={dataFormat} onValueChange={setDataFormat}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="comma">Comma Separated (x,y)</SelectItem>
+                    <SelectItem value="space">Space/Tab Separated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-      {/* Data Input */}
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-            <Label htmlFor="xLabel">X-Axis Label</Label>
-            <Input
-              id="xLabel"
-              value={xLabel}
-              onChange={(e) => setXLabel(e.target.value)}
-              placeholder="Independent variable name"
-            />
+              <div className="flex items-center justify-center w-full">
+                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="w-8 h-8 mb-3 text-muted-foreground" />
+                    <p className="mb-2 text-sm text-muted-foreground">
+                      <span className="font-semibold">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="text-xs text-muted-foreground">CSV, TXT files (MAX. 1MB)</p>
+                  </div>
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                    accept=".csv,.txt"
+                    onChange={handleFileUpload}
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
+          {inputMethod === 'sample' && (
+            <div className="space-y-4">
+              <Label className="text-sm font-medium">Choose Sample Dataset</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {Object.entries(sampleDatasets).map(([key, dataset]) => (
+                  <Button
+                    key={key}
+                    variant="outline"
+                    onClick={() => loadSampleData(key)}
+                    className="justify-start h-auto p-4 text-left"
+                  >
+                    <div>
+                      <div className="font-medium text-sm">{dataset.name}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {dataset.xLabel} → {dataset.yLabel}
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                onClick={clearData}
+                className="w-full"
+              >
+                <Shuffle className="w-4 h-4 mr-2" />
+                Clear Data
+              </Button>
+            </div>
+          )}
         </div>
-        <div className="space-y-2">
-            <Label htmlFor="yLabel">Y-Axis Label</Label>
-            <Input
-              id="yLabel"
-              value={yLabel}
-              onChange={(e) => setYLabel(e.target.value)}
-              placeholder="Dependent variable name"
-            />
-          </div>
-        </div>
 
-        <div className="flex items-center justify-center mb-4">
-          <div className="flex gap-2 p-1 bg-muted rounded-lg">
-            <Button
-              variant={inputMethod === 'manual' ? 'default' : 'ghost'}
-              onClick={() => setInputMethod('manual')}
-              size="sm"
-            >
-              Manual Entry
-            </Button>
-            <Button
-              variant={inputMethod === 'paste' ? 'default' : 'ghost'}
-              onClick={() => setInputMethod('paste')}
-              size="sm"
-            >
-              Paste Data
-            </Button>
-          </div>
-        </div>
+        <Separator />
 
-        {inputMethod === 'manual' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Data Input Fields */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="xValues">X Values (Independent Variable)</Label>
+              <FieldPopover
+                {...getFieldExplanation('regression', 'xValues')}
+                side="top"
+              >
+                <Label htmlFor="x-values" className="text-sm font-medium">Independent Variable (X)</Label>
+              </FieldPopover>
               <Textarea
-                id="xValues"
+                id="x-values"
+                placeholder="Enter X values (comma or space separated): 1, 2, 3, 4, 5"
                 value={xValues}
                 onChange={(e) => setXValues(e.target.value)}
-                placeholder="Enter values separated by comma or space"
-                rows={6}
+                className="min-h-[120px] font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground">
-                Enter numbers separated by commas or spaces
-              </p>
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="yValues">Y Values (Dependent Variable)</Label>
-              <Textarea
-                id="yValues"
-                value={yValues}
-                onChange={(e) => setYValues(e.target.value)}
-                placeholder="Enter values separated by comma or space"
-                rows={6}
+              <FieldPopover
+                {...getFieldExplanation('regression', 'xLabel')}
+                side="top"
+              >
+                <Label htmlFor="x-label" className="text-sm font-medium">X-Axis Label</Label>
+              </FieldPopover>
+              <Input
+                id="x-label"
+                placeholder="e.g., Study Hours, Age, Temperature"
+                value={xLabel}
+                onChange={(e) => setXLabel(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">
-                Must have same number of values as X
-              </p>
             </div>
           </div>
-        ) : (
-          <div className="space-y-2">
-            <Label htmlFor="pasteData">Paste Your Data</Label>
-            <Textarea
-              id="pasteData"
-              placeholder={`Paste data in ${dataFormat === 'comma' ? 'comma' : dataFormat === 'space' ? 'space' : 'tab'} separated format:
 
-Two columns format:
-1.2${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}2.1
-2.4${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}3.9
-3.1${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}6.2
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <FieldPopover
+                {...getFieldExplanation('regression', 'yValues')}
+                side="top"
+              >
+                <Label htmlFor="y-values" className="text-sm font-medium">Dependent Variable (Y)</Label>
+              </FieldPopover>
+              <Textarea
+                id="y-values"
+                placeholder="Enter Y values (comma or space separated): 2.1, 3.9, 6.2, 7.8, 10.1"
+                value={yValues}
+                onChange={(e) => setYValues(e.target.value)}
+                className="min-h-[120px] font-mono text-sm"
+              />
+            </div>
 
-Two rows format:
-1.2${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}2.4${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}3.1
-2.1${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}3.9${dataFormat === 'comma' ? ',' : dataFormat === 'space' ? ' ' : '\t'}6.2`}
-              rows={8}
-              onChange={(e) => handlePasteData(e.target.value)}
-              className="font-mono text-sm"
-            />
-            <p className="text-xs text-muted-foreground">
-              Data will be automatically parsed when you paste it here
-            </p>
+            <div className="space-y-2">
+              <FieldPopover
+                {...getFieldExplanation('regression', 'yLabel')}
+                side="top"
+              >
+                <Label htmlFor="y-label" className="text-sm font-medium">Y-Axis Label</Label>
+              </FieldPopover>
+              <Input
+                id="y-label"
+                placeholder="e.g., Test Score, Income, Ice Cream Sales"
+                value={yLabel}
+                onChange={(e) => setYLabel(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <Button
+          onClick={handleCalculate}
+          className="w-full"
+          size="lg"
+          disabled={!xValues.trim() || !yValues.trim()}
+        >
+          <BarChart3 className="w-4 h-4 mr-2" />
+          Calculate Linear Regression
+        </Button>
+
+        {/* Error Display */}
+        {error && (
+          <div className="p-4 border border-destructive/20 bg-destructive/10 rounded-lg">
+            <p className="text-destructive text-sm font-medium">{error}</p>
           </div>
         )}
 
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            {xValues && yValues && (
-              <span>
-                {parseInput(xValues).length} data points ready
-              </span>
-            )}
+        {/* Results Visualization */}
+        {result && showChart && 'chartData' in result && (
+          <div className="w-full h-[400px] p-4 border rounded-lg bg-card">
+            <Scatter data={result.chartData} options={result.chartOptions} />
           </div>
-        </div>
-      </div>
-
-      <Button onClick={handleCalculate} className="w-full" size="lg">
-        Calculate Linear Regression
-      </Button>
-
-      {error && (
-        <Card className="border-destructive">
-          <CardContent className="pt-6">
-            <div className="text-destructive flex items-center gap-2">
-              <span className="text-sm font-medium">Error:</span>
-              <span className="text-sm">{error}</span>
-                </div>
-            </CardContent>
-        </Card>
-      )}
-    </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

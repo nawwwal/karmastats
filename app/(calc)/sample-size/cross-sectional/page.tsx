@@ -19,6 +19,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FieldPopover } from "@/components/ui/field-popover";
+import { getFieldExplanation } from "@/lib/field-explanations";
 import { Label } from "@/components/ui/label";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { ResultsDisplay } from '@/components/ui/results-display';
@@ -251,7 +253,12 @@ export default function CrossSectionalPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField name="prevalence" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Expected Prevalence (%)</FormLabel>
+                                    <FieldPopover
+                                        {...getFieldExplanation('sampleSize', 'prevalence')}
+                                        side="top"
+                                    >
+                                        <FormLabel>Expected Prevalence (%)</FormLabel>
+                                    </FieldPopover>
                                     <FormControl>
                                         <Input type="number" step="0.1" min="0" max="100" {...field} />
                                     </FormControl>
@@ -260,7 +267,12 @@ export default function CrossSectionalPage() {
                             )} />
                             <FormField name="marginOfError" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Margin of Error (%)</FormLabel>
+                                    <FieldPopover
+                                        {...getFieldExplanation('sampleSize', 'marginOfError')}
+                                        side="top"
+                                    >
+                                        <FormLabel>Margin of Error (%)</FormLabel>
+                                    </FieldPopover>
                                     <FormControl>
                                         <Input type="number" step="0.1" min="0.1" max="50" {...field} />
                                     </FormControl>
@@ -309,7 +321,12 @@ export default function CrossSectionalPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField name="populationSize" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Population Size (Optional)</FormLabel>
+                                        <FieldPopover
+                                            {...getFieldExplanation('crossSectional', 'populationSize')}
+                                            side="top"
+                                        >
+                                            <FormLabel>Population Size (Optional)</FormLabel>
+                                        </FieldPopover>
                                         <FormControl>
                                             <Input type="number" step="1" min="1" {...field} />
                                         </FormControl>
@@ -318,7 +335,12 @@ export default function CrossSectionalPage() {
                                 )} />
                                 <FormField name="designEffect" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Design Effect (DEFF)</FormLabel>
+                                        <FieldPopover
+                                            {...getFieldExplanation('crossSectional', 'designEffect')}
+                                            side="top"
+                                        >
+                                            <FormLabel>Design Effect (DEFF)</FormLabel>
+                                        </FieldPopover>
                                         <FormControl>
                                             <Input type="number" step="0.1" min="0.1" {...field} />
                                         </FormControl>
@@ -327,7 +349,12 @@ export default function CrossSectionalPage() {
                                 )} />
                                 <FormField name="nonResponseRate" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Non-Response Rate (%)</FormLabel>
+                                        <FieldPopover
+                                            {...getFieldExplanation('crossSectional', 'nonResponseRate')}
+                                            side="top"
+                                        >
+                                            <FormLabel>Non-Response Rate (%)</FormLabel>
+                                        </FieldPopover>
                                         <FormControl>
                                             <Input type="number" step="0.1" min="0" max="99" {...field} />
                                         </FormControl>
@@ -336,7 +363,12 @@ export default function CrossSectionalPage() {
                                 )} />
                                 <FormField name="clusteringEffect" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Clustering Effect (ICC)</FormLabel>
+                                        <FieldPopover
+                                            {...getFieldExplanation('crossSectional', 'clusteringEffect')}
+                                            side="top"
+                                        >
+                                            <FormLabel>Clustering Effect (ICC)</FormLabel>
+                                        </FieldPopover>
                                         <FormControl>
                                             <Input type="number" step="0.01" min="0" max="1" {...field} />
                                         </FormControl>

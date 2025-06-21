@@ -24,6 +24,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { ResultsDisplay } from '@/components/ui/results-display';
+import { FieldPopover } from "@/components/ui/field-popover";
+import { getFieldExplanation } from "@/lib/field-explanations";
 
 type Results = SingleTestOutput | ComparativeTestOutput | ROCAnalysisOutput;
 
@@ -371,7 +373,12 @@ export default function DiagnosticTestPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <FormField name="diseasePrevalence" render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Disease Prevalence (%)</FormLabel>
+                                            <FieldPopover
+                                                {...getFieldExplanation('diagnostic', 'diseasePrevalence')}
+                                                side="top"
+                                            >
+                                                <FormLabel>Disease Prevalence (%)</FormLabel>
+                                            </FieldPopover>
                                             <FormControl>
                                                 <Input type="number" step="0.1" {...field} className="w-full" />
                                             </FormControl>
@@ -380,7 +387,12 @@ export default function DiagnosticTestPage() {
                                     )} />
                                     <FormField name="marginOfError" render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Margin of Error (%)</FormLabel>
+                                            <FieldPopover
+                                                {...getFieldExplanation('sampleSize', 'marginOfError')}
+                                                side="top"
+                                            >
+                                                <FormLabel>Margin of Error (%)</FormLabel>
+                                            </FieldPopover>
                                             <FormControl>
                                                 <Input type="number" step="0.1" {...field} className="w-full" />
                                             </FormControl>
