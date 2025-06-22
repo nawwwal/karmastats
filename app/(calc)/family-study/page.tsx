@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Circle, AlertCircle, Download, Save, Printer } from "lucide-react";
+import { CheckCircle, Circle, AlertCircle, Download, Save, Printer, Users } from "lucide-react";
 import { consumptionUnits, sesClassifications } from "@/lib/family-study";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 
@@ -184,7 +184,7 @@ export default function FamilyStudyPage() {
   const generateReport = () => {
     setShowReport(true);
     // Scroll to top to show results
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+;
   };
 
   const handleReset = () => {
@@ -928,17 +928,12 @@ export default function FamilyStudyPage() {
     <ToolPageWrapper
       title="Family Health Study Assessment"
       description="Comprehensive family health assessment based on ICMR-NIN Guidelines 2020 and Community Medicine standards"
-      onReset={handleReset}
-      backHref="/family-study"
-      backLabel="Family Study"
+      icon={Users}
+      layout="single-column"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          {renderInputForm()}
-        </div>
-        <div>
-          {renderResults()}
-        </div>
+      <div className="space-y-8">
+        {renderInputForm()}
+        {renderResults()}
       </div>
     </ToolPageWrapper>
   );

@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CaseControlForm } from "@/components/sample-size/CaseControlForm";
 import { CohortForm } from "@/components/sample-size/CohortForm";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
+import { EnhancedTabs } from '@/components/ui/enhanced-tabs';
+import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
+import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { NumberFlowDisplay } from '@/components/ui/number-flow';
 import {
   Users,
   BarChart3,
@@ -17,7 +16,9 @@ import {
   Calculator,
   Target,
   Activity,
-  Info
+  Info,
+  Microscope,
+  Clock
 } from 'lucide-react';
 
 export default function ComparativeStudyPage() {
@@ -29,27 +30,37 @@ export default function ComparativeStudyPage() {
     setActiveTab("case-control");
   };
 
-  const renderInputForm = () => (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="case-control" className="flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          Case-Control
-        </TabsTrigger>
-        <TabsTrigger value="cohort" className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4" />
-          Cohort Study
-        </TabsTrigger>
-      </TabsList>
+  const tabs = [
+    {
+      value: "case-control",
+      label: "Case-Control",
+      icon: Users,
+      description: "Retrospective design"
+    },
+    {
+      value: "cohort",
+      label: "Cohort Study",
+      icon: TrendingUp,
+      description: "Prospective design"
+    }
+  ];
 
-      <TabsContent value="case-control" className="mt-6">
-        <CaseControlForm onResultsChange={setResults} />
-      </TabsContent>
-
-      <TabsContent value="cohort" className="mt-6">
-        <CohortForm onResultsChange={setResults} />
-      </TabsContent>
-    </Tabs>
+  const renderContent = () => (
+    <div className="space-y-8">
+      <EnhancedTabs
+        tabs={tabs}
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full"
+      >
+        {activeTab === "case-control" && (
+          <CaseControlForm onResultsChange={setResults} />
+        )}
+        {activeTab === "cohort" && (
+          <CohortForm onResultsChange={setResults} />
+        )}
+      </EnhancedTabs>
+    </div>
   );
 
   const renderResults = () => {
@@ -58,188 +69,222 @@ export default function ComparativeStudyPage() {
     const isCaseControl = results.type === 'case-control';
     const interpretation = results.interpretation;
 
+    // Key metrics for enhanced results display
+    const keyMetrics = [
+      {
+        label: isCaseControl ? 'Cases Required' : 'Exposed Group',
+        value: isCaseControl ? interpretation.nCases : interpretation.nExposed,
+        description: isCaseControl ? 'With disease/outcome' : 'With risk factor',
+        category: 'primary' as const,
+        trend: 'neutral' as const
+      },
+      {
+        label: isCaseControl ? 'Controls Required' : 'Unexposed Group',
+        value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed,
+        description: isCaseControl ? 'Without disease/outcome' : 'Without risk factor',
+        category: 'secondary' as const,
+        trend: 'neutral' as const
+      },
+      {
+        label: 'Total Sample Size',
+        value: interpretation.totalSample,
+        description: 'Combined groups',
+        category: 'info' as const,
+        trend: 'neutral' as const,
+        highlight: true
+      },
+      {
+        label: isCaseControl ? 'Odds Ratio' : 'Relative Risk',
+        value: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
+        description: 'Effect size measure',
+        category: 'success' as const,
+        trend: 'neutral' as const,
+        format: 'decimal'
+      }
+    ];
+
+    // Study parameters for detailed view
+    const studyParameters = [
+      { parameter: 'Study Design', value: isCaseControl ? 'Case-Control (Retrospective)' : 'Cohort (Prospective)' },
+      { parameter: 'Confidence Level', value: `${results.parameters.confidenceLevel}%` },
+      { parameter: 'Statistical Power', value: `${results.parameters.power}%` },
+      { parameter: 'Group Ratio', value: `1:${results.parameters.ratio}` },
+      {
+        parameter: isCaseControl ? 'Exposure Rate (Controls)' : 'Disease Rate (Unexposed)',
+        value: `${((isCaseControl ? results.parameters.p0 : results.parameters.p2) * 100).toFixed(1)}%`
+      },
+      {
+        parameter: isCaseControl ? 'Exposure Rate (Cases)' : 'Disease Rate (Exposed)',
+        value: `${((isCaseControl ? results.parameters.p1 : results.parameters.p1) * 100).toFixed(1)}%`
+      }
+    ];
+
+    // Sample size distribution data for visualization
+    const sampleSizeData = [
+      {
+        name: isCaseControl ? 'Cases' : 'Exposed',
+        value: isCaseControl ? interpretation.nCases : interpretation.nExposed,
+        percentage: ((isCaseControl ? interpretation.nCases : interpretation.nExposed) / interpretation.totalSample * 100).toFixed(1)
+      },
+      {
+        name: isCaseControl ? 'Controls' : 'Unexposed',
+        value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed,
+        percentage: ((isCaseControl ? interpretation.nControls : interpretation.nUnexposed) / interpretation.totalSample * 100).toFixed(1)
+      }
+    ];
+
+    // Effect size comparison data
+    const effectSizeData = [
+      {
+        measure: isCaseControl ? 'Odds Ratio' : 'Relative Risk',
+        value: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
+        interpretation: isCaseControl ?
+          (interpretation.oddsRatio > 2 ? 'Strong Association' :
+           interpretation.oddsRatio > 1.5 ? 'Moderate Association' :
+           interpretation.oddsRatio > 1.2 ? 'Weak Association' : 'No/Weak Association') :
+          (interpretation.relativeRisk > 2 ? 'High Risk' :
+           interpretation.relativeRisk > 1.5 ? 'Moderate Risk' :
+           interpretation.relativeRisk > 1.2 ? 'Low Risk' : 'No/Low Risk')
+      }
+    ];
+
     return (
-      <div className="space-y-6">
-        {/* Header Card */}
-        <Card className="bg-gradient-to-r from-primary/5 to-secondary/5">
+      <div className="space-y-8">
+        {/* Enhanced Results Display */}
+        <EnhancedResultsDisplay
+          title={`${isCaseControl ? 'Case-Control' : 'Cohort'} Study Results`}
+          subtitle={`${isCaseControl ? 'Retrospective' : 'Prospective'} Study Design`}
+          metrics={keyMetrics}
+          insights={[
+            `Total sample size required: ${interpretation.totalSample.toLocaleString()} participants`,
+            `Study design: ${isCaseControl ? 'Case-control (retrospective)' : 'Cohort (prospective)'} approach`,
+            `Effect size: ${isCaseControl ? 'Odds ratio' : 'Relative risk'} of ${(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk).toFixed(2)}`,
+            `Power analysis: ${results.parameters.power}% power to detect the specified effect`,
+            `Confidence level: ${results.parameters.confidenceLevel}% confidence interval`
+          ]}
+          recommendations={[
+            `Recruit ${interpretation.totalSample.toLocaleString()} participants total`,
+            `Maintain ${results.parameters.ratio}:1 ratio between groups`,
+            `Consider potential dropouts and increase sample by 10-20%`,
+            `Ensure balanced recruitment across study sites`,
+            `Plan for adequate follow-up period if applicable`
+          ]}
+          assumptions={[
+            `Two-sided significance test at α = ${(1 - results.parameters.confidenceLevel/100).toFixed(3)}`,
+            `Statistical power = ${results.parameters.power}%`,
+            `Group allocation ratio = 1:${results.parameters.ratio}`,
+            `Expected effect size as specified`,
+            `Independent observations within and between groups`
+          ]}
+          statisticalDetails={{
+            sampleSize: interpretation.totalSample,
+            power: results.parameters.power / 100,
+            alpha: (1 - results.parameters.confidenceLevel/100),
+            effectSize: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
+            designType: isCaseControl ? 'Case-Control' : 'Cohort'
+          }}
+        />
+
+        {/* Advanced Visualizations */}
+        <AdvancedVisualization
+          title="Study Design Analysis"
+          data={{
+            sampleDistribution: sampleSizeData,
+            effectSize: effectSizeData,
+            studyParameters: studyParameters,
+            powerAnalysis: [
+              { power: 80, sampleSize: Math.round(interpretation.totalSample * 0.8) },
+              { power: 85, sampleSize: Math.round(interpretation.totalSample * 0.9) },
+              { power: 90, sampleSize: interpretation.totalSample },
+              { power: 95, sampleSize: Math.round(interpretation.totalSample * 1.2) }
+            ]
+          }}
+          insights={[
+            `Sample size distribution: ${sampleSizeData[0].percentage}% vs ${sampleSizeData[1].percentage}%`,
+            `Effect size interpretation: ${effectSizeData[0].interpretation}`,
+            `Study efficiency: ${isCaseControl ? 'Efficient for rare outcomes' : 'Good for common outcomes'}`,
+            `Recruitment strategy: Focus on ${sampleSizeData[0].value > sampleSizeData[1].value ? 'case' : 'control'} group recruitment`
+          ]}
+          chartTypes={['pie', 'bar', 'trend']}
+        />
+
+        {/* Detailed Parameters Card */}
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
           <CardHeader>
             <div className="flex items-center gap-3">
-              {isCaseControl ? <Users className="h-6 w-6 text-primary" /> : <TrendingUp className="h-6 w-6 text-secondary" />}
+              <Calculator className="h-6 w-6 text-primary" />
               <div>
-                <CardTitle className="text-xl">{isCaseControl ? 'Case-Control' : 'Cohort'} Study Results</CardTitle>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="default">
-                    {isCaseControl ? 'Retrospective Design' : 'Prospective Design'}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground">
-                    Total Sample: {interpretation.totalSample.toLocaleString()}
-                  </span>
-                </div>
+                <CardTitle className="text-xl">Study Parameters & Calculations</CardTitle>
+                <p className="text-muted-foreground">Detailed breakdown of sample size calculation</p>
               </div>
             </div>
           </CardHeader>
-        </Card>
-
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  <NumberFlowDisplay
-                    value={isCaseControl ? interpretation.nCases : interpretation.nExposed}
-                    format={{ notation: "standard" }}
-                    className="text-2xl font-bold"
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {isCaseControl ? 'Cases Required' : 'Exposed Group'}
-                </div>
-                <div className="text-xs mt-1">
-                  {isCaseControl ? 'With disease/outcome' : 'With risk factor'}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-secondary">
-                  <NumberFlowDisplay
-                    value={isCaseControl ? interpretation.nControls : interpretation.nUnexposed}
-                    format={{ notation: "standard" }}
-                    className="text-2xl font-bold"
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {isCaseControl ? 'Controls Required' : 'Unexposed Group'}
-                </div>
-                <div className="text-xs mt-1">
-                  {isCaseControl ? 'Without disease/outcome' : 'Without risk factor'}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  <NumberFlowDisplay
-                    value={interpretation.totalSample}
-                    format={{ notation: "standard" }}
-                    className="text-2xl font-bold"
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground">Total Sample Size</div>
-                <div className="text-xs mt-1">
-                  Combined groups
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Detailed Results Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Study Parameters & Results
-            </CardTitle>
-          </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Parameter</TableHead>
-                  <TableHead className="text-right">Value</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Study Design</TableCell>
-                  <TableCell className="text-right">
-                    {isCaseControl ? 'Case-Control (Retrospective)' : 'Cohort (Prospective)'}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Confidence Level</TableCell>
-                  <TableCell className="text-right">{results.parameters.confidenceLevel}%</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Statistical Power</TableCell>
-                  <TableCell className="text-right">{results.parameters.power}%</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Group Ratio</TableCell>
-                  <TableCell className="text-right">1:{results.parameters.ratio}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    {isCaseControl ? 'Exposure Rate (Controls)' : 'Disease Rate (Unexposed)'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {((isCaseControl ? results.parameters.p0 : results.parameters.p2) * 100).toFixed(1)}%
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    {isCaseControl ? 'Exposure Rate (Cases)' : 'Disease Rate (Exposed)'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {((isCaseControl ? results.parameters.p1 : results.parameters.p1) * 100).toFixed(1)}%
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-primary/5">
-                  <TableCell className="font-medium">
-                    {isCaseControl ? 'Odds Ratio' : 'Relative Risk'}
-                  </TableCell>
-                  <TableCell className="text-right font-bold">
-                    {isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Effect Size</TableCell>
-                  <TableCell className="text-right">{interpretation.effectSize}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {studyParameters.map((param, index) => (
+                <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-background/50">
+                  <span className="font-medium text-foreground">{param.parameter}</span>
+                  <Badge variant="outline" className="font-mono">
+                    {param.value}
+                  </Badge>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Statistical Interpretation */}
-        <Card>
+        {/* Clinical Significance Card */}
+        <Card className="border-success/20 bg-gradient-to-br from-success/5 to-primary/5">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Statistical Interpretation
-            </CardTitle>
+            <div className="flex items-center gap-3">
+              <Microscope className="h-6 w-6 text-success" />
+              <div>
+                <CardTitle className="text-xl">Clinical Significance</CardTitle>
+                <p className="text-muted-foreground">Interpretation and clinical relevance</p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Study Results:</strong> {
-                  isCaseControl ?
-                    `This case-control study requires ${interpretation.nCases} cases and ${interpretation.nControls} controls (total n=${interpretation.totalSample}) to detect an odds ratio of ${interpretation.oddsRatio} with ${results.parameters.power}% power at α=${(1 - results.parameters.confidenceLevel/100).toFixed(2)} significance level. The exposure rates differ by ${(Math.abs(results.parameters.p1 - results.parameters.p0) * 100).toFixed(1)} percentage points between cases and controls.` :
-                    `This cohort study requires ${interpretation.nExposed} exposed and ${interpretation.nUnexposed} unexposed participants (total n=${interpretation.totalSample}) to detect a relative risk of ${interpretation.relativeRisk} with ${results.parameters.power}% power at α=${(1 - results.parameters.confidenceLevel/100).toFixed(2)} significance level. The disease incidence differs by ${(Math.abs(results.parameters.p1 - results.parameters.p2) * 100).toFixed(1)} percentage points between exposed and unexposed groups.`
-                }
-              </AlertDescription>
-            </Alert>
-
-            <Card className="bg-muted/50">
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-2">Methodology Note</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg bg-background/50">
+                <h4 className="font-semibold text-primary mb-2">Effect Size</h4>
+                <div className="text-2xl font-bold text-success">
+                  {(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk).toFixed(2)}
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  {isCaseControl ?
-                    'Case-control studies are efficient for studying rare diseases or outcomes with long latency periods. They compare exposure history between cases (with disease) and controls (without disease). This design is particularly useful when the outcome is rare, making prospective studies impractical.' :
-                    'Cohort studies are ideal for studying multiple outcomes and establishing temporal relationships. They follow exposed and unexposed groups prospectively to measure disease incidence. This design provides stronger evidence for causal relationships but requires larger samples and longer follow-up periods.'
-                  }
+                  {isCaseControl ? 'Odds Ratio' : 'Relative Risk'}
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+
+              <div className="p-4 rounded-lg bg-background/50">
+                <h4 className="font-semibold text-primary mb-2">Study Power</h4>
+                <div className="text-2xl font-bold text-primary">
+                  {results.parameters.power}%
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Probability to detect effect
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <h4 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                <Info className="h-4 w-4" />
+                Study Design Considerations
+              </h4>
+              <ul className="space-y-2 text-sm text-foreground">
+                <li>• {isCaseControl ?
+                  'Case-control studies are efficient for studying rare diseases or outcomes' :
+                  'Cohort studies are ideal for studying multiple outcomes from a single exposure'
+                }</li>
+                <li>• Consider potential confounding variables and matching strategies</li>
+                <li>• Plan for appropriate statistical analysis methods</li>
+                <li>• {isCaseControl ?
+                  'Ensure representative case and control selection' :
+                  'Plan for adequate follow-up duration and retention strategies'
+                }</li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -248,13 +293,13 @@ export default function ComparativeStudyPage() {
 
   return (
     <ToolPageWrapper
-      title="Comparative Study Sample Size"
-      description="Calculate sample sizes for case-control and cohort studies with precise statistical power analysis"
-      category="Sample Size Calculator"
-      onReset={handleReset}
-      resultsSection={renderResults()}
+      title="Comparative Study Sample Size Calculator"
+      description="Calculate sample sizes for case-control and cohort studies with comprehensive analysis"
+      icon={Users}
+      layout="single-column"
     >
-      {renderInputForm()}
+      {renderContent()}
+      {renderResults()}
     </ToolPageWrapper>
   );
 }

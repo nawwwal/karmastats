@@ -1,5 +1,7 @@
 'use client';
 
+import { karmaTheme, lightTheme, darkTheme } from './theme';
+
 export interface ExtractionPatterns {
   [key: string]: RegExp[];
 }
@@ -56,39 +58,7 @@ export const extractParameters = (
   return results;
 };
 
-// Modern PDF Generation Utilities
-export interface PDFTheme {
-  primary: string;
-  secondary: string;
-  accent: string;
-  neutral: string;
-  text: {
-    primary: string;
-    secondary: string;
-    muted: string;
-  };
-  gradients: {
-    primary: string[];
-    secondary: string[];
-  };
-}
-
-export const karmaTheme: PDFTheme = {
-  primary: '#f97316', // orange-500
-  secondary: '#eab308', // yellow-500
-  accent: '#F8FDCF',
-  neutral: '#F6F1F1',
-  text: {
-    primary: '#1f2937', // gray-800
-    secondary: '#4b5563', // gray-600
-    muted: '#9ca3af', // gray-400
-  },
-  gradients: {
-    primary: ['#f97316', '#fb923c'], // orange-500 to orange-400
-    secondary: ['#eab308', '#fbbf24'], // yellow-500 to yellow-400
-  },
-};
-
+// PDF Generation Types and Utilities
 export interface PDFInputField {
   label: string;
   value: string | number;
@@ -116,8 +86,36 @@ export interface PDFReportConfig {
     assumptions?: string[];
     limitations?: string[];
   };
-  theme?: PDFTheme;
 }
+
+// Use centralized theme colors for PDF generation
+export const pdfTheme = {
+  colors: {
+    primary: karmaTheme.colors.primary.DEFAULT, // #FF8C42
+    secondary: karmaTheme.colors.secondary.DEFAULT, // #2C5282
+    accent: karmaTheme.colors.accent.DEFAULT, // #F6AD55
+    success: karmaTheme.colors.success.DEFAULT, // #38A169
+    warning: karmaTheme.colors.warning.DEFAULT, // #D69E2E
+    error: karmaTheme.colors.error.DEFAULT, // #E53E3E
+  },
+
+  textColors: {
+    primary: karmaTheme.colors.gray[700], // #2D3748
+    secondary: karmaTheme.colors.gray[600], // #4A5568
+    muted: karmaTheme.colors.gray[500], // #718096
+  },
+
+  backgrounds: {
+    light: '#F7FAFC', // bg-secondary from theme
+    card: '#FFFFFF', // bg-primary from theme
+    border: karmaTheme.colors.gray[200], // #E2E8F0
+  },
+
+  gradients: {
+    primary: [karmaTheme.colors.primary.DEFAULT, karmaTheme.colors.primary[400]], // Orange gradient
+    secondary: [karmaTheme.colors.secondary.DEFAULT, karmaTheme.colors.secondary[400]], // Blue gradient
+  },
+};
 
 /**
  * Formats a number based on the specified format type
@@ -142,12 +140,25 @@ export function formatValue(
 }
 
 /**
- * Generates a modern, themed PDF report
+ * Convert hex color to RGB array for jsPDF
+ */
+function hexToRgb(hex: string): [number, number, number] {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+      ]
+    : [0, 0, 0];
+}
+
+/**
+ * Generates a modern, themed PDF report using centralized Karmastat theme
  */
 export async function generateModernPDF(config: PDFReportConfig): Promise<void> {
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF();
-  const theme = config.theme || karmaTheme;
 
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
@@ -156,13 +167,16 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
 
   let yPosition = margin;
 
-  // Header with gradient effect simulation
+  // Header with gradient effect simulation using theme colors
   const headerHeight = 35;
-  doc.setFillColor(247, 115, 22); // primary color
+  const primaryRgb = hexToRgb(pdfTheme.colors.primary);
+  const secondaryRgb = hexToRgb(pdfTheme.colors.secondary);
+
+  doc.setFillColor(primaryRgb[0], primaryRgb[1], primaryRgb[2]);
   doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
   // Add a subtle secondary color strip
-  doc.setFillColor(234, 179, 8); // secondary color
+  doc.setFillColor(secondaryRgb[0], secondaryRgb[1], secondaryRgb[2]);
   doc.rect(0, headerHeight - 3, pageWidth, 3, 'F');
 
   // Logo/Brand area
@@ -196,7 +210,10 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
   yPosition = headerHeight + 20;
 
   // Report Title
-  doc.setTextColor(31, 41, 55); // text primary
+  const textPrimaryRgb = hexToRgb(pdfTheme.textColors.primary);
+  const textSecondaryRgb = hexToRgb(pdfTheme.textColors.secondary);
+
+  doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.text(config.title, margin, yPosition);
@@ -205,7 +222,7 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
   if (config.subtitle) {
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(75, 85, 99); // text secondary
+    doc.setTextColor(textSecondaryRgb[0], textSecondaryRgb[1], textSecondaryRgb[2]);
     doc.text(config.subtitle, margin, yPosition);
     yPosition += 8;
   }
@@ -215,14 +232,17 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
   // Input Parameters Section
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(31, 41, 55);
+  doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
   doc.text('Input Parameters', margin, yPosition);
   yPosition += 8;
 
   // Input parameters in a styled box
   const inputBoxHeight = (config.inputs.length * 6) + 10;
-  doc.setFillColor(249, 250, 251); // very light gray
-  doc.setDrawColor(229, 231, 235); // border gray
+  const bgLightRgb = hexToRgb(pdfTheme.backgrounds.light);
+  const borderRgb = hexToRgb(pdfTheme.backgrounds.border);
+
+  doc.setFillColor(bgLightRgb[0], bgLightRgb[1], bgLightRgb[2]);
+  doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
   doc.roundedRect(margin, yPosition, contentWidth, inputBoxHeight, 3, 3, 'FD');
 
   yPosition += 8;
@@ -230,18 +250,16 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
   config.inputs.forEach((input, index) => {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(75, 85, 99);
+    doc.setTextColor(textSecondaryRgb[0], textSecondaryRgb[1], textSecondaryRgb[2]);
 
     const valueText = input.unit ? `${input.value} ${input.unit}` : input.value.toString();
-    const labelWidth = contentWidth * 0.6;
-    const valueWidth = contentWidth * 0.4;
 
     // Parameter label
     doc.text(input.label, margin + 5, yPosition);
 
     // Parameter value (right-aligned in its column)
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(31, 41, 55);
+    doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
     const valueTextWidth = doc.getTextWidth(valueText);
     doc.text(valueText, margin + contentWidth - 5 - valueTextWidth, yPosition);
 
@@ -253,7 +271,7 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
   // Results Section
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(31, 41, 55);
+  doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
   doc.text('Results', margin, yPosition);
   yPosition += 8;
 
@@ -266,9 +284,9 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
     primaryResults.forEach((result, index) => {
       const resultBoxHeight = 25;
 
-      // Alternating colors for primary results
+      // Alternating colors for primary results using theme colors
       const isOrange = index % 2 === 0;
-      const bgColor = isOrange ? [247, 115, 22] : [234, 179, 8]; // primary : secondary
+      const bgColor = isOrange ? primaryRgb : secondaryRgb;
       const textColor = [255, 255, 255];
 
       doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
@@ -297,13 +315,13 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
   if (secondaryResults.length > 0) {
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(75, 85, 99);
+    doc.setTextColor(textSecondaryRgb[0], textSecondaryRgb[1], textSecondaryRgb[2]);
     doc.text('Additional Details', margin, yPosition);
     yPosition += 8;
 
     const detailsBoxHeight = (secondaryResults.length * 5) + 10;
-    doc.setFillColor(249, 250, 251);
-    doc.setDrawColor(229, 231, 235);
+    doc.setFillColor(bgLightRgb[0], bgLightRgb[1], bgLightRgb[2]);
+    doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
     doc.roundedRect(margin, yPosition, contentWidth, detailsBoxHeight, 3, 3, 'FD');
 
     yPosition += 8;
@@ -311,14 +329,14 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
     secondaryResults.forEach((result) => {
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(75, 85, 99);
+      doc.setTextColor(textSecondaryRgb[0], textSecondaryRgb[1], textSecondaryRgb[2]);
 
       const formattedValue = formatValue(result.value, result.format, result.precision);
       const valueWidth = doc.getTextWidth(formattedValue);
 
       doc.text(result.label, margin + 5, yPosition);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(31, 41, 55);
+      doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
       doc.text(formattedValue, margin + contentWidth - 5 - valueWidth, yPosition);
 
       yPosition += 5;
@@ -339,14 +357,14 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
 
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(31, 41, 55);
+    doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
     doc.text('Interpretation & Recommendations', margin, yPosition);
     yPosition += 10;
 
     if (interpretation.summary) {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(75, 85, 99);
+      doc.setTextColor(textSecondaryRgb[0], textSecondaryRgb[1], textSecondaryRgb[2]);
       const lines = doc.splitTextToSize(interpretation.summary, contentWidth);
       doc.text(lines, margin, yPosition);
       yPosition += lines.length * 5 + 8;
@@ -355,14 +373,14 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
     if (interpretation.recommendations && interpretation.recommendations.length > 0) {
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(31, 41, 55);
+      doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
       doc.text('Recommendations:', margin, yPosition);
       yPosition += 8;
 
       interpretation.recommendations.forEach((rec) => {
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(75, 85, 99);
+        doc.setTextColor(textSecondaryRgb[0], textSecondaryRgb[1], textSecondaryRgb[2]);
         doc.text('• ', margin + 5, yPosition);
         const lines = doc.splitTextToSize(rec, contentWidth - 10);
         doc.text(lines, margin + 10, yPosition);
@@ -375,14 +393,14 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
     if (interpretation.assumptions && interpretation.assumptions.length > 0) {
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(31, 41, 55);
+      doc.setTextColor(textPrimaryRgb[0], textPrimaryRgb[1], textPrimaryRgb[2]);
       doc.text('Assumptions:', margin, yPosition);
       yPosition += 8;
 
       interpretation.assumptions.forEach((assumption) => {
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(75, 85, 99);
+        doc.setTextColor(textSecondaryRgb[0], textSecondaryRgb[1], textSecondaryRgb[2]);
         doc.text('• ', margin + 5, yPosition);
         const lines = doc.splitTextToSize(assumption, contentWidth - 10);
         doc.text(lines, margin + 10, yPosition);
@@ -393,9 +411,11 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
 
   // Footer
   const footerY = pageHeight - 15;
+  const mutedRgb = hexToRgb(pdfTheme.textColors.muted);
+
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(156, 163, 175); // muted text
+  doc.setTextColor(mutedRgb[0], mutedRgb[1], mutedRgb[2]);
   doc.text('Generated by Karmastat - Statistical Analysis Platform', margin, footerY);
 
   const pageNumberText = `Page 1 of ${doc.internal.pages.length - 1}`;

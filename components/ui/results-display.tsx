@@ -7,112 +7,125 @@ import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { TrendingUp, Target, Info, AlertCircle } from 'lucide-react';
-import { NumberFlowDisplay } from './number-flow';
-import { AnimatedGradient } from './animated-gradient';
+import { Button } from '@/components/ui/button';
+import { Copy, Download, FileText, TrendingDown, Minus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface ResultItem {
+// Helper function to format numbers
+const formatNumber = (
+  value: number,
+  format?: 'integer' | 'decimal' | 'percentage' | 'currency',
+  minimumFractionDigits?: number,
+  maximumFractionDigits?: number
+) => {
+  if (format === 'integer') {
+    return Math.round(value).toLocaleString();
+  }
+  if (format === 'percentage') {
+    return `${value.toFixed(minimumFractionDigits || 1)}%`;
+  }
+  if (format === 'currency') {
+    return value.toLocaleString(undefined, {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: minimumFractionDigits || 2,
+      maximumFractionDigits: maximumFractionDigits || 2
+    });
+  }
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: minimumFractionDigits || 0,
+    maximumFractionDigits: maximumFractionDigits || 3
+  });
+};
+
+export interface ResultItem {
   label: string;
-  value: string | number;
-  unit?: string;
-  category?: 'primary' | 'secondary' | 'statistical';
+  value: number;
+  category?: 'primary' | 'secondary' | 'tertiary' | 'statistical' | 'warning' | 'error';
   highlight?: boolean;
-  format?: 'number' | 'percentage' | 'decimal' | 'integer';
+  format?: 'integer' | 'decimal' | 'percentage' | 'currency';
+  trend?: 'up' | 'down' | 'neutral';
+  description?: string;
+  minimumFractionDigits?: number;
+  maximumFractionDigits?: number;
+}
+
+export interface Interpretation {
+  summary?: string;
+  recommendations?: string[];
+  assumptions?: string[];
+  limitations?: string[];
+  references?: string[];
 }
 
 interface ResultsDisplayProps {
   title: string;
+  subtitle?: string;
   results: ResultItem[];
-  interpretation?: {
-    effectSize?: string;
-    recommendations?: string[];
-    assumptions?: string[];
-  };
-  additionalContent?: React.ReactNode;
+  interpretation?: Interpretation;
   showInterpretation?: boolean;
-  animated?: boolean;
-  animationColors?: string[];
+  className?: string;
+  onExport?: () => void;
 }
+
+const ResultValueDisplay: React.FC<{
+  item: ResultItem;
+  size?: 'sm' | 'md' | 'lg'
+}> = ({ item, size = 'md' }) => {
+  const sizeClasses = {
+    sm: 'text-lg font-semibold',
+    md: 'text-xl font-bold',
+    lg: 'text-2xl font-bold'
+  };
+
+  const trendIcon = {
+    up: <TrendingUp className="h-4 w-4 text-green-500" />,
+    down: <TrendingDown className="h-4 w-4 text-red-500" />,
+    neutral: <Minus className="h-4 w-4 text-gray-500" />
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className={cn(sizeClasses[size])}>
+        {formatNumber(
+          item.value,
+          item.format,
+          item.minimumFractionDigits,
+          item.maximumFractionDigits
+        )}
+      </span>
+      {item.trend && trendIcon[item.trend]}
+    </div>
+  );
+};
 
 export function ResultsDisplay({
   title,
+  subtitle,
   results,
   interpretation,
-  additionalContent,
   showInterpretation = true,
-  animated = true,
-  animationColors = [
-    "hsl(var(--primary) / 0.3)",
-    "hsl(var(--secondary) / 0.25)",
-    "hsl(var(--accent) / 0.2)"
-  ]
+  className,
+  onExport
 }: ResultsDisplayProps) {
-  const formatValue = (value: string | number, format?: string, unit?: string) => {
-    if (typeof value === 'number') {
-      switch (format) {
-        case 'percentage':
-          return (
-            <NumberFlowDisplay
-              value={value}
-              suffix="%"
-              format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-            />
-          );
-        case 'decimal':
-          return (
-            <NumberFlowDisplay
-              value={value}
-              suffix={unit ? ` ${unit}` : ''}
-              format={{ minimumFractionDigits: 4, maximumFractionDigits: 4 }}
-            />
-          );
-        case 'integer':
-          return (
-            <NumberFlowDisplay
-              value={Math.round(value)}
-              suffix={unit ? ` ${unit}` : ''}
-              format={{ maximumFractionDigits: 0 }}
-            />
-          );
-        default:
-          return (
-            <NumberFlowDisplay
-              value={value}
-              suffix={unit ? ` ${unit}` : ''}
-              format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-            />
-          );
-      }
-    }
-
-    return unit ? `${value} ${unit}` : value;
-  };
-
   // Group results by category
   const primaryResults = results.filter(r => r.category === 'primary' || r.highlight);
   const secondaryResults = results.filter(r => r.category === 'secondary' && !r.highlight);
   const statisticalResults = results.filter(r => r.category === 'statistical');
 
   return (
-    <div className="space-y-6">
+    <div className={cn("space-y-4", className)}>
       {/* Key Results Cards */}
       {primaryResults.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {primaryResults.map((result, index) => (
-            <Card key={index} className="relative bg-primary/5 border-primary/20 overflow-hidden">
-              {animated && (
-                <AnimatedGradient
-                  colors={animationColors}
-                  speed={3}
-                  blur="medium"
-                  className="pointer-events-none"
-                />
-              )}
-              <CardContent className="relative z-10 p-4 text-center">
+            <Card key={index} className="bg-indigo-50 border-indigo-300">
+              <CardContent className="p-4 text-center">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">{result.label}</p>
-                  <p className="text-2xl font-bold text-primary">
-                    {formatValue(result.value, result.format, result.unit)}
-                  </p>
+                  <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">{result.label}</h3>
+                  <div className="text-4xl font-black text-indigo-700 tracking-tight">
+                    <ResultValueDisplay item={result} />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -121,42 +134,34 @@ export function ResultsDisplay({
       )}
 
       {/* Detailed Results Table */}
-      <Card className="relative overflow-hidden">
-        {animated && (
-          <AnimatedGradient
-            colors={animationColors}
-            speed={4}
-            blur="heavy"
-            className="pointer-events-none opacity-40"
-          />
-        )}
-        <CardHeader className="relative z-10">
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Target className="h-5 w-5 text-primary" />
-            <span>{title}</span>
+            <Target className="h-6 w-6 text-indigo-600" />
+            <span className="text-xl font-bold text-gray-900">{title}</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative z-10">
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Parameter</TableHead>
-                <TableHead className="text-right">Value</TableHead>
+                <TableHead className="text-base font-bold text-gray-700">Parameter</TableHead>
+                <TableHead className="text-right text-base font-bold text-gray-700">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {results.map((result, index) => (
-                <TableRow key={index} className={result.highlight ? 'bg-primary/5' : ''}>
-                  <TableCell className="font-medium">
+                <TableRow key={index} className={result.highlight ? 'bg-indigo-50' : ''}>
+                  <TableCell className="font-semibold text-gray-800">
                     <div className="flex items-center space-x-2">
-                      <span>{result.label}</span>
+                      <span className="text-base">{result.label}</span>
                       {result.highlight && (
-                        <Badge variant="secondary" className="text-xs">Key Result</Badge>
+                        <Badge variant="secondary" className="text-sm font-bold">Key Result</Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {formatValue(result.value, result.format, result.unit)}
+                  <TableCell className="text-right font-mono text-lg font-bold text-gray-900">
+                    <ResultValueDisplay item={result} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -167,12 +172,12 @@ export function ResultsDisplay({
 
       {/* Statistical Interpretation */}
       {showInterpretation && interpretation && (
-        <div className="space-y-4">
-          {interpretation.effectSize && (
+        <div className="space-y-3">
+          {interpretation.summary && (
             <Alert>
-              <TrendingUp className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Effect Size:</strong> {interpretation.effectSize}
+              <TrendingUp className="h-5 w-5" />
+              <AlertDescription className="text-base font-medium">
+                <strong className="text-lg">Summary:</strong> {interpretation.summary}
               </AlertDescription>
             </Alert>
           )}
@@ -181,12 +186,12 @@ export function ResultsDisplay({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Info className="h-5 w-5 text-blue-600" />
-                  <span>Methodological Recommendations</span>
+                  <Info className="h-6 w-6 text-cyan-600" />
+                  <span className="text-lg font-bold text-gray-900">Methodological Recommendations</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="list-disc pl-5 space-y-1 text-sm">
+                <ul className="list-disc pl-5 space-y-2 text-base font-medium text-gray-700">
                   {interpretation.recommendations.map((rec, index) => (
                     <li key={index}>{rec}</li>
                   ))}
@@ -199,12 +204,12 @@ export function ResultsDisplay({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <AlertCircle className="h-5 w-5 text-orange-600" />
-                  <span>Statistical Assumptions</span>
+                  <AlertCircle className="h-6 w-6 text-amber-600" />
+                  <span className="text-lg font-bold text-gray-900">Statistical Assumptions</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                <ul className="list-disc pl-5 space-y-2 text-base font-medium text-gray-600">
                   {interpretation.assumptions.map((assumption, index) => (
                     <li key={index}>{assumption}</li>
                   ))}
@@ -216,10 +221,22 @@ export function ResultsDisplay({
       )}
 
       {/* Additional Content */}
-      {additionalContent && (
+      {onExport && (
         <>
           <Separator />
-          {additionalContent}
+          <div className="flex items-center justify-between">
+            <span className="text-base font-bold text-gray-700">Export Results</span>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" onClick={onExport}>
+                <Copy className="mr-2 h-4 w-4" />
+                Copy
+              </Button>
+              <Button variant="outline" size="sm" onClick={onExport}>
+                <Download className="mr-2 h-4 w-4" />
+                Download
+              </Button>
+            </div>
+          </div>
         </>
       )}
     </div>

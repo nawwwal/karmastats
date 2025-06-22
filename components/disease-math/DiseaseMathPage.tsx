@@ -2,14 +2,16 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StandardModel } from './StandardModel';
 import { AdvancedModel } from './AdvancedModel';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { LineChart } from './LineChart';
-import { Activity, TrendingUp, Users, AlertTriangle } from 'lucide-react';
+import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
+import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
+import { EnhancedTabs, EnhancedTabsList, EnhancedTabsTrigger, EnhancedTabsContent } from '@/components/ui/enhanced-tabs';
+import { Activity, TrendingUp, Users, AlertTriangle, BarChart3, Target } from 'lucide-react';
 
 export function DiseaseMathPage() {
   const [activeTab, setActiveTab] = useState('standard');
@@ -21,50 +23,73 @@ export function DiseaseMathPage() {
 
   const handleResultsChange = (newResults: any) => {
     setResults({ ...newResults, modelType: activeTab });
-    // Scroll to top to show results
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const renderInputForm = () => (
     <ErrorBoundary>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="standard">Standard SEIR</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced SEIRDV</TabsTrigger>
-        </TabsList>
+      <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl flex items-center space-x-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Activity className="h-6 w-6 text-primary" />
+            </div>
+            <span>Disease Modeling Configuration</span>
+          </CardTitle>
+          <CardDescription className="text-lg">
+            Configure your infectious disease model parameters and run simulations
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EnhancedTabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <EnhancedTabsList className="grid w-full grid-cols-2" variant="modern">
+              <EnhancedTabsTrigger value="standard" variant="modern">
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>Standard SEIR</span>
+                </div>
+              </EnhancedTabsTrigger>
+              <EnhancedTabsTrigger value="advanced" variant="modern">
+                <div className="flex items-center space-x-2">
+                  <Activity className="h-4 w-4" />
+                  <span>Advanced SEIRDV</span>
+                </div>
+              </EnhancedTabsTrigger>
+            </EnhancedTabsList>
 
-        <TabsContent value="standard">
-          <Card>
-            <CardHeader>
-              <CardTitle>Standard SEIR Model</CardTitle>
-              <CardDescription>
-                Basic susceptible-exposed-infected-recovered model for disease spread analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ErrorBoundary>
-                <StandardModel onResultsChange={handleResultsChange} />
-              </ErrorBoundary>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            <EnhancedTabsContent value="standard">
+              <Card className="border-blue-200 bg-blue-50/50">
+                <CardHeader>
+                  <CardTitle className="text-lg">Standard SEIR Model</CardTitle>
+                  <CardDescription>
+                    Basic susceptible-exposed-infected-recovered model for disease spread analysis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ErrorBoundary>
+                    <StandardModel onResultsChange={handleResultsChange} />
+                  </ErrorBoundary>
+                </CardContent>
+              </Card>
+            </EnhancedTabsContent>
 
-        <TabsContent value="advanced">
-          <Card>
-            <CardHeader>
-              <CardTitle>Advanced SEIRDV Model</CardTitle>
-              <CardDescription>
-                Extended model with deaths and vaccination compartments including intervention analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ErrorBoundary>
-                <AdvancedModel onResultsChange={handleResultsChange} />
-              </ErrorBoundary>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            <EnhancedTabsContent value="advanced">
+              <Card className="border-purple-200 bg-purple-50/50">
+                <CardHeader>
+                  <CardTitle className="text-lg">Advanced SEIRDV Model</CardTitle>
+                  <CardDescription>
+                    Extended model with deaths and vaccination compartments including intervention analysis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ErrorBoundary>
+                    <AdvancedModel onResultsChange={handleResultsChange} />
+                  </ErrorBoundary>
+                </CardContent>
+              </Card>
+            </EnhancedTabsContent>
+          </EnhancedTabs>
+        </CardContent>
+      </Card>
     </ErrorBoundary>
   );
 
@@ -79,199 +104,173 @@ export function DiseaseMathPage() {
       return results.modelType === 'advanced' ? 'Advanced SEIRDV Model' : 'Standard SEIR Model';
     };
 
-    const getSeverityBadge = () => {
+    const getSeverityCategory = () => {
       const attackRate = results.metrics?.attackRate || 0;
-      if (attackRate >= 0.6) return { text: "High Impact", color: "destructive" };
-      if (attackRate >= 0.3) return { text: "Moderate Impact", color: "warning" };
-      if (attackRate >= 0.1) return { text: "Low Impact", color: "secondary" };
-      return { text: "Minimal Impact", color: "default" };
+      if (attackRate >= 0.6) return 'critical';
+      if (attackRate >= 0.3) return 'warning';
+      if (attackRate >= 0.1) return 'secondary';
+      return 'success';
     };
 
-    const severity = getSeverityBadge();
+    // Prepare results for enhanced display
+    const enhancedResults = [
+      {
+        label: "Peak Infected Cases",
+        value: results.metrics?.peakInfected || 0,
+        format: "integer" as const,
+        category: "primary" as const,
+        highlight: true,
+        interpretation: `Maximum simultaneous infections on day ${results.metrics?.peakDay || 'N/A'}`,
+        confidence: results.metrics?.peakInfected ? {
+          lower: results.metrics.peakInfected * 0.85,
+          upper: results.metrics.peakInfected * 1.15,
+          level: 95
+        } : undefined
+      },
+      {
+        label: "Attack Rate",
+        value: (results.metrics?.attackRate || 0) * 100,
+        format: "percentage" as const,
+        unit: "%",
+        category: getSeverityCategory(),
+        highlight: true,
+        interpretation: "Percentage of population that gets infected",
+        benchmark: {
+          value: 30,
+          label: "Moderate epidemic threshold",
+          comparison: (results.metrics?.attackRate || 0) * 100 > 30 ? 'above' : 'below'
+        }
+      },
+      {
+        label: "R₀ (Basic Reproduction Number)",
+        value: results.metrics?.r0 || 0,
+        format: "decimal" as const,
+        category: (results.metrics?.r0 || 0) > 1 ? "warning" : "success",
+        interpretation: (results.metrics?.r0 || 0) > 1 ? "Epidemic potential (R₀ > 1)" : "Disease will die out (R₀ < 1)"
+      },
+      {
+        label: "Total Deaths",
+        value: results.metrics?.totalDeaths || 0,
+        format: "integer" as const,
+        category: "critical" as const,
+        interpretation: `Mortality rate: ${((results.metrics?.mortalityRate || 0) * 100).toFixed(2)}%`
+      },
+      {
+        label: "Herd Immunity Threshold",
+        value: (results.metrics?.herdImmunityThreshold || 0) * 100,
+        format: "percentage" as const,
+        category: "statistical" as const,
+        interpretation: "Population immunity needed to stop transmission"
+      },
+      {
+        label: "Total Cases",
+        value: results.metrics?.totalCases || 0,
+        format: "integer" as const,
+        category: "secondary" as const
+      }
+    ];
+
+    // Prepare visualization data
+    const compartmentData = [
+      { label: "Susceptible", value: results.susceptible?.[results.susceptible.length - 1] || 0, color: "#3b82f6" },
+      { label: "Exposed", value: results.exposed?.[results.exposed.length - 1] || 0, color: "#f59e0b" },
+      { label: "Infected", value: results.infected?.[results.infected.length - 1] || 0, color: "#ef4444" },
+      { label: "Recovered", value: results.recovered?.[results.recovered.length - 1] || 0, color: "#10b981" }
+    ];
+
+    if (results.modelType === 'advanced') {
+      compartmentData.push(
+        { label: "Deaths", value: results.dead?.[results.dead.length - 1] || 0, color: "#6b7280" },
+        { label: "Vaccinated", value: results.vaccinated?.[results.vaccinated.length - 1] || 0, color: "#8b5cf6" }
+      );
+    }
+
+    const timelineData = results.infected?.map((value: number, index: number) => ({
+      label: `Day ${index}`,
+      value: value,
+      category: "infected"
+    })).slice(0, Math.min(30, results.infected?.length || 0)) || [];
 
     return (
-      <div className="space-y-6">
-        {/* Header Card */}
-        <Card className="bg-gradient-to-r from-primary/5 to-secondary/5">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              {getModelIcon()}
-              <div>
-                <CardTitle className="text-xl">{getModelName()} Results</CardTitle>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant={severity.color as any}>{severity.text}</Badge>
-                  <span className="text-sm text-muted-foreground">
-                    Attack Rate: {((results.metrics?.attackRate || 0) * 100).toFixed(1)}%
-                  </span>
-                </div>
-              </div>
+      <div className="space-y-8">
+        <EnhancedResultsDisplay
+          title={`${getModelName()} Results`}
+          subtitle="Comprehensive epidemic simulation analysis"
+          results={enhancedResults}
+          interpretation={{
+            effectSize: `Attack rate of ${((results.metrics?.attackRate || 0) * 100).toFixed(1)}% indicates ${getSeverityCategory() === 'critical' ? 'severe' : getSeverityCategory() === 'warning' ? 'moderate' : 'mild'} epidemic impact`,
+            statisticalSignificance: `R₀ = ${(results.metrics?.r0 || 0).toFixed(2)} ${(results.metrics?.r0 || 0) > 1 ? 'confirms epidemic potential' : 'suggests disease will not spread'}`,
+            clinicalSignificance: `Peak healthcare demand: ${(results.metrics?.peakInfected || 0).toLocaleString()} simultaneous cases on day ${results.metrics?.peakDay || 'N/A'}`,
+            recommendations: [
+              "Monitor R₀ value - values above 1.0 indicate sustained transmission",
+              "Prepare healthcare capacity for peak infected cases",
+              "Consider intervention measures if attack rate exceeds 30%",
+              "Track vaccination coverage progress toward herd immunity threshold",
+              "Implement contact tracing during early epidemic phases"
+            ],
+            assumptions: [
+              "Homogeneous population mixing patterns",
+              "Constant transmission and recovery rates",
+              "No seasonal effects or behavioral changes",
+              "Perfect immunity after recovery",
+              "No demographic or spatial structure"
+            ]
+          }}
+          visualizations={
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AdvancedVisualization
+                title="Final Population Distribution"
+                type="pie"
+                data={compartmentData}
+                insights={[
+                  {
+                    key: "Most affected",
+                    value: compartmentData.reduce((max, current) =>
+                      current.label !== "Susceptible" && current.value > max.value ? current : max
+                    ).label,
+                    significance: "high"
+                  },
+                  {
+                    key: "Immunity level",
+                    value: `${(((results.recovered?.[results.recovered.length - 1] || 0) + (results.vaccinated?.[results.vaccinated.length - 1] || 0)) / (results.populationSize || 1) * 100).toFixed(1)}%`,
+                    trend: "up",
+                    significance: "medium"
+                  }
+                ]}
+              />
+
+              <AdvancedVisualization
+                title="Infection Timeline (First 30 Days)"
+                type="trend"
+                data={timelineData}
+                insights={[
+                  {
+                    key: "Peak infections",
+                    value: `Day ${results.metrics?.peakDay || 'N/A'}`,
+                    significance: "high"
+                  },
+                  {
+                    key: "Growth phase",
+                    value: timelineData.findIndex((d: any) => d.value === Math.max(...timelineData.map((t: any) => t.value))) > 15 ? "Slow" : "Rapid",
+                    trend: timelineData.findIndex((d: any) => d.value === Math.max(...timelineData.map((t: any) => t.value))) > 15 ? "down" : "up",
+                    significance: "medium"
+                  }
+                ]}
+              />
             </div>
-          </CardHeader>
-        </Card>
+          }
+        />
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {results.metrics?.peakInfected?.toLocaleString() || 'N/A'}
-                </div>
-                <div className="text-sm text-muted-foreground">Peak Infected</div>
-                <div className="text-xs mt-1">
-                  Day {results.metrics?.peakDay || 'N/A'}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-destructive">
-                  {results.metrics?.totalDeaths?.toLocaleString() || 'N/A'}
-                </div>
-                <div className="text-sm text-muted-foreground">Total Deaths</div>
-                <div className="text-xs mt-1">
-                  {results.metrics?.mortalityRate ? `${(results.metrics.mortalityRate * 100).toFixed(2)}% mortality` : ''}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-secondary">
-                  {results.metrics?.r0?.toFixed(2) || 'N/A'}
-                </div>
-                <div className="text-sm text-muted-foreground">R₀ Value</div>
-                <div className="text-xs mt-1">
-                  {results.metrics?.r0 > 1 ? 'Epidemic spread' : 'Disease dies out'}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-accent-foreground">
-                  {results.metrics?.herdImmunityThreshold ? `${(results.metrics.herdImmunityThreshold * 100).toFixed(1)}%` : 'N/A'}
-                </div>
-                <div className="text-sm text-muted-foreground">Herd Immunity</div>
-                <div className="text-xs mt-1">
-                  Threshold for protection
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Epidemic Summary */}
+        {/* Traditional Line Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Epidemic Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-medium mb-3 flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Population Impact
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Attack Rate:</span>
-                    <span className="font-medium">{((results.metrics?.attackRate || 0) * 100).toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Total Cases:</span>
-                    <span className="font-medium">{results.metrics?.totalCases?.toLocaleString() || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Final Recovered:</span>
-                    <span className="font-medium">{results.recovered?.[results.recovered.length - 1]?.toLocaleString() || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Population Size:</span>
-                    <span className="font-medium">{results.populationSize?.toLocaleString() || 'N/A'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium mb-3 flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  Disease Dynamics
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Reproduction Number (R₀):</span>
-                    <span className="font-medium">{results.metrics?.r0?.toFixed(2) || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Peak Day:</span>
-                    <span className="font-medium">Day {results.metrics?.peakDay || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Simulation Days:</span>
-                    <span className="font-medium">{results.simulationDays || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Model Type:</span>
-                    <span className="font-medium">{results.modelType === 'advanced' ? 'SEIRDV' : 'SEIR'}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Statistical Interpretation */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Model Interpretation</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
-              <h4 className="font-medium mb-2">Epidemic Trajectory:</h4>
-              <p className="text-sm text-muted-foreground">
-                {results.metrics?.r0 > 1
-                  ? `With R₀ = ${results.metrics.r0.toFixed(2)}, this disease will spread exponentially. The epidemic peaks on day ${results.metrics?.peakDay} with ${results.metrics?.peakInfected?.toLocaleString()} infected individuals.`
-                  : `With R₀ = ${results.metrics?.r0?.toFixed(2) || 'N/A'}, this disease will not sustain epidemic spread and will eventually die out naturally.`
-                }
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-medium mb-2">Population Impact:</h4>
-              <p className="text-sm text-muted-foreground">
-                Approximately {((results.metrics?.attackRate || 0) * 100).toFixed(1)}% of the population ({results.metrics?.totalCases?.toLocaleString() || 'N/A'} individuals)
-                will be infected during this epidemic. The estimated total deaths are {results.metrics?.totalDeaths?.toLocaleString() || 'N/A'} people.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-medium mb-2">Herd Immunity:</h4>
-              <p className="text-sm text-muted-foreground">
-                To achieve herd immunity and stop the spread, {((results.metrics?.herdImmunityThreshold || 0) * 100).toFixed(1)}%
-                of the population needs to be immune (through infection or vaccination).
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Visualization */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Disease Spread Visualization
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-6 w-6 text-indigo-600" />
+              <span>Epidemic Curve - Complete Timeline</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="w-full h-[500px]">
+            <div className="h-96">
               <LineChart results={results} />
             </div>
           </CardContent>
@@ -283,12 +282,20 @@ export function DiseaseMathPage() {
   return (
     <ToolPageWrapper
       title="Infectious Disease Modeling"
-      description="Advanced compartmental models for analyzing the spread of infectious diseases with intervention strategies"
-      category="Disease Modeling"
+      description="Model and simulate infectious disease spread using advanced mathematical models with comprehensive visualization and analysis"
+      backHref="/sample-size"
+      backLabel="Sample Size Calculator"
       onReset={handleReset}
-      resultsSection={renderResults()}
+      icon={Activity}
+      layout="single-column"
     >
-      {renderInputForm()}
+      <div className="space-y-8">
+        {/* Input Form */}
+        {renderInputForm()}
+
+        {/* Results */}
+        {results && renderResults()}
+      </div>
     </ToolPageWrapper>
   );
 }

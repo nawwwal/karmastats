@@ -31,14 +31,9 @@ const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
       <div
         className={cn(
           "relative rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300",
-          glass && "glass-card border-white/20",
-          glow && "glow-hover",
-          hover && "card-hover cursor-pointer",
+          glass && "border-white/20 backdrop-blur-sm bg-card/80",
+          hover && "hover:shadow-lg cursor-pointer transition-shadow",
           gradient && "bg-gradient-to-br from-card to-card/80",
-          float === 'gentle' && "float-gentle",
-          float === 'slow' && "float-slow",
-          float === 'fast' && "float-fast",
-          delay > 0 && `animate-fadeIn-delay-${delay * 100}`,
           className
         )}
         ref={ref}

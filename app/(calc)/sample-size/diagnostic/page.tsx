@@ -24,8 +24,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { ResultsDisplay } from '@/components/ui/results-display';
+import { StatisticalSummary } from '@/components/ui/statistical-summary';
 import { FieldPopover } from "@/components/ui/field-popover";
 import { getFieldExplanation } from "@/lib/field-explanations";
+import { Target } from "lucide-react";
 
 type Results = SingleTestOutput | ComparativeTestOutput | ROCAnalysisOutput;
 
@@ -103,7 +105,7 @@ export default function DiagnosticTestPage() {
             }
             setResults(result);
             // Scroll to top to show results
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
         } catch (err: any) {
             if (err instanceof z.ZodError) {
                 const formattedErrors = err.errors.map(e => `${e.path.join('.')} - ${e.message}`).join(', ');
@@ -290,13 +292,31 @@ export default function DiagnosticTestPage() {
             'No spectrum or verification bias present'
         ];
 
+        // Provide modern summary format
+        const totalSize = 'totalSize' in results ? results.totalSize :
+                         'sampleSize' in results ? results.sampleSize :
+                         results.positiveSize + results.negativeSize;
+
+        const modernResults = {
+            totalSize: totalSize,
+            power: 0.8, // Default assumption
+            alpha: 0.05, // Default assumption
+        };
+
         return (
-            <ResultsDisplay
-                title={title}
-                results={resultItems}
-                interpretation={interpretation}
-                showInterpretation={true}
-            />
+            <div className="space-y-6">
+                <StatisticalSummary
+                    results={modernResults}
+                    type="sample-size"
+                    title={title}
+                />
+                <ResultsDisplay
+                    title={title}
+                    results={resultItems}
+                    interpretation={interpretation}
+                    showInterpretation={true}
+                />
+            </div>
         );
     };
 
@@ -595,15 +615,13 @@ export default function DiagnosticTestPage() {
 
     return (
         <ToolPageWrapper
-            title="Diagnostic Test Sample Size"
+            title="Diagnostic Test Sample Size Calculator"
             description="Calculate sample sizes for diagnostic test evaluation, comparison studies, and ROC analysis"
-            category="Sample Size Calculator"
-            onReset={handleReset}
-            onExportPDF={generatePdf}
-            showExportButton={!!results}
-            resultsSection={renderResults()}
+            icon={Target}
+            layout="single-column"
         >
             {renderInputForm()}
+            {renderResults()}
         </ToolPageWrapper>
     );
 }

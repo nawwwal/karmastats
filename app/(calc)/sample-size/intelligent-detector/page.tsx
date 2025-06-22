@@ -5,6 +5,7 @@ import { StudyDetectorForm } from '@/components/sample-size/StudyDetectorForm';
 import { StudyResults } from '@/components/sample-size/StudyResults';
 import { StudyRecommendation } from '@/lib/studyDetector';
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
+import { Brain } from 'lucide-react';
 
 export default function IntelligentDetectorPage() {
     const [recommendations, setRecommendations] = useState<StudyRecommendation[] | null>(null);
@@ -19,30 +20,29 @@ export default function IntelligentDetectorPage() {
         setIsLoading(false);
     };
 
-    const renderResults = () => {
-        if (!recommendations) return null;
-        return <StudyResults recommendations={recommendations} onReset={handleReset} />;
+    const renderContent = () => {
+        if (recommendations) {
+            return <StudyResults recommendations={recommendations} onReset={handleReset} />;
+        }
+
+        return (
+            <StudyDetectorForm
+                onAnalysisComplete={handleAnalysis}
+                setIsLoading={setIsLoading}
+                isLoading={isLoading}
+            />
+        );
     };
 
     return (
         <ToolPageWrapper
             title="Intelligent Study Detector"
             description="Let AI help you choose the right study design and calculate appropriate sample sizes"
-            category="Sample Size Calculator"
+            icon={Brain}
+            layout="single-column"
             onReset={recommendations ? handleReset : undefined}
-            resultsSection={renderResults()}
         >
-            {!recommendations ? (
-                <StudyDetectorForm
-                    onAnalysisComplete={handleAnalysis}
-                    setIsLoading={setIsLoading}
-                    isLoading={isLoading}
-                />
-            ) : (
-                <div className="text-center text-muted-foreground">
-                    <p>Your analysis is complete! Review the results on the right.</p>
-                </div>
-            )}
+            {renderContent()}
         </ToolPageWrapper>
     );
 }

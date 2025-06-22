@@ -20,10 +20,10 @@ const enhancedButtonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl glow-primary font-semibold",
-        glass: "glass-card text-foreground hover:text-foreground border-primary/20 hover:border-primary/40 shadow-lg hover:shadow-xl backdrop-blur-md bg-background/60 hover:bg-background/80",
-        glow: "bg-primary text-white shadow-lg glow-primary hover:glow-hover transition-all duration-400 font-medium",
-        shimmer: "bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] text-white hover:animate-shimmer shadow-lg hover:shadow-xl font-semibold"
+        gradient: "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl font-semibold",
+        glass: "border border-primary/20 hover:border-primary/40 shadow-lg hover:shadow-xl backdrop-blur-md bg-background/60 hover:bg-background/80",
+        glow: "bg-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 font-medium",
+        shimmer: "bg-gradient-to-r from-primary to-secondary text-white shadow-lg hover:shadow-xl font-semibold"
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -34,10 +34,10 @@ const enhancedButtonVariants = cva(
       },
       animation: {
         none: "",
-        hover: "hover:scale-102 hover:-translate-y-0.5",
-        bounce: "hover:animate-bounce",
-        pulse: "hover:animate-pulse",
-        wiggle: "hover:animate-wiggle",
+        hover: "hover:scale-105 transition-transform",
+        bounce: "hover:scale-105 transition-transform",
+        pulse: "hover:scale-105 transition-transform",
+        wiggle: "hover:scale-105 transition-transform",
       },
     },
     defaultVariants: {

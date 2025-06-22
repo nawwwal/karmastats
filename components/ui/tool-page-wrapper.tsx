@@ -1,10 +1,14 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ChevronLeft, Calculator } from "lucide-react";
+import { ChevronLeft, Calculator, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useDevice } from "@/hooks/use-mobile";
+import { haptics } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 
 export interface ToolPageWrapperProps {
   title: string;
@@ -15,6 +19,8 @@ export interface ToolPageWrapperProps {
   onReset?: () => void;
   children: ReactNode;
   lastModified?: string;
+  layout?: 'single-column' | 'side-by-side';
+  resultsSection?: ReactNode;
 }
 
 export function ToolPageWrapper({
@@ -26,66 +32,156 @@ export function ToolPageWrapper({
   onReset,
   children,
   lastModified,
+  layout = 'single-column',
+  resultsSection,
 }: ToolPageWrapperProps) {
+  const { isMobile, touchDevice } = useDevice();
+
+  const handleResetClick = async () => {
+    if (touchDevice) {
+      await haptics.light();
+    }
+    onReset?.();
+  };
+
+  const handleBackClick = async () => {
+    if (touchDevice) {
+      await haptics.selection();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 space-y-6">
-        {/* Breadcrumb and Back Navigation */}
-        <div className="flex flex-col space-y-4">
-          {backHref && (
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Link
-                href={backHref}
-                className="flex items-center space-x-1 hover:text-primary transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span>{backLabel || "Back"}</span>
-              </Link>
-            </div>
-          )}
-
-          {/* Header Section */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Icon className="h-6 w-6 text-primary" />
-                <span className="text-sm font-medium text-primary">
-                  {backLabel?.includes("Calculator") ? backLabel : "Sample Size Calculator"}
-                </span>
-              </div>
-              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
-                {title}
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl">
-                {description}
-              </p>
-              {lastModified && (
-                <p className="text-sm text-muted-foreground">
-                  Last updated: {lastModified}
-                </p>
+    <div className={cn(
+      "min-h-screen bg-gradient-to-br from-background via-muted/30 to-accent/20",
+      // Mobile: adjust for bottom navigation
+      isMobile && "pb-safe-area-inset-bottom"
+    )}>
+      {/* Header - Mobile optimized */}
+      <div className={cn(
+        "sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40",
+        // Mobile: add safe area for notched devices
+        isMobile && "pt-safe-area-inset-top"
+      )}>
+        <div className={cn(
+          "w-full max-w-none mx-auto",
+          // Mobile: optimized padding
+          isMobile ? "px-4" : "px-4 sm:px-6 lg:px-8 xl:px-12"
+        )}>
+          <div className={cn(
+            "flex items-center justify-between",
+            // Mobile: reduced height for more content space
+            isMobile ? "h-14" : "h-16 sm:h-18"
+          )}>
+            <div className="flex items-center gap-4">
+              {/* Back button for mobile */}
+              {isMobile && backHref && (
+                <Link
+                  href={backHref}
+                  onClick={handleBackClick}
+                  className={cn(
+                    "p-2 rounded-xl bg-background/50 border border-border/50",
+                    "touch-manipulation active:scale-95 transition-transform",
+                    "hover:bg-accent/50"
+                  )}
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Link>
               )}
+
+              {/* Icon and title */}
+              {Icon && (
+                <div className={cn(
+                  "p-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary",
+                  // Mobile: slightly smaller icon container
+                  isMobile && "p-2"
+                )}>
+                  <Icon className={cn(
+                    "h-5 w-5",
+                    isMobile && "h-4 w-4"
+                  )} />
+                </div>
+              )}
+              <div>
+                <h1 className={cn(
+                  "font-bold text-foreground tracking-tight",
+                  // Mobile: responsive text sizing
+                  isMobile ? "text-lg" : "text-xl sm:text-2xl"
+                )}>
+                  {title}
+                </h1>
+                {/* Description hidden on mobile in header, shown below */}
+                {!isMobile && (
+                  <p className="text-sm text-muted-foreground mt-0.5 hidden sm:block">
+                    {description}
+                  </p>
+                )}
+              </div>
             </div>
 
-            {onReset && (
-              <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-3">
+              {onReset && (
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={onReset}
-                  className="flex items-center space-x-1"
+                  size={isMobile ? "sm" : "sm"}
+                  onClick={handleResetClick}
+                  className={cn(
+                    "touch-manipulation active:scale-95 transition-transform",
+                    isMobile ? "h-10 px-3" : "hidden sm:flex items-center gap-2"
+                  )}
                 >
-                  <Calculator className="h-4 w-4" />
-                  <span>Reset</span>
+                  <RefreshCw className="h-4 w-4" />
+                  {!isMobile && "Reset"}
                 </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile: Show description below header */}
+          {isMobile && (
+            <div className="pb-3 pt-1">
+              <p className="text-sm text-muted-foreground">
+                {description}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content - Mobile optimized */}
+      <div className={cn(
+        "w-full max-w-none mx-auto",
+        // Mobile: optimized padding and spacing
+        isMobile ? "px-4 py-4" : "px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8"
+      )}>
+        {layout === 'single-column' ? (
+          <div className={cn(
+            "w-full mx-auto space-y-6",
+            // Mobile: full width, desktop: constrained
+            !isMobile && "max-w-6xl",
+            isMobile && "space-y-4"
+          )}>
+            {children}
+          </div>
+        ) : (
+          <div className={cn(
+            "gap-8 xl:gap-12",
+            // Mobile: single column, desktop: two columns
+            isMobile ? "space-y-6" : "grid grid-cols-1 lg:grid-cols-2"
+          )}>
+            <div className={cn(
+              isMobile ? "space-y-4" : "space-y-6"
+            )}>
+              {children}
+            </div>
+            {resultsSection && (
+              <div className={cn(
+                isMobile ? "space-y-4" : "space-y-6"
+              )}>
+                {resultsSection}
               </div>
             )}
           </div>
-        </div>
-
-        <Separator />
-
-        {/* Main Content */}
-        {children}
+        )}
       </div>
     </div>
   );

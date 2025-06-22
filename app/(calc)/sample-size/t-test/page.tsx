@@ -19,12 +19,16 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
-import { ResultsDisplay } from '@/components/ui/results-display';
+import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
+import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
+import { EnhancedTabs, EnhancedTabsList, EnhancedTabsTrigger, EnhancedTabsContent } from '@/components/ui/enhanced-tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Calculator, BarChart3, TrendingUp, Users, Target, AlertCircle, CheckCircle
+} from 'lucide-react';
 
 type Results = IndependentSampleSizeOutput | PairedSampleSizeOutput | OneSampleSampleSizeOutput;
 
@@ -90,8 +94,6 @@ export default function TTestPage() {
           throw new Error("Invalid tab selection");
       }
       setResults(result);
-      // Scroll to top to show results
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       if (err instanceof z.ZodError) {
         setError("Please fill in all required fields for the selected test type.");
@@ -110,44 +112,123 @@ export default function TTestPage() {
   const renderResults = () => {
     if (!results) return null;
 
-    let resultItems: any[] = [];
+    let enhancedResults: any[] = [];
     let title = '';
-    let interpretation: any = {};
+    let interpretationData: any = {};
+    let visualizationData: any[] = [];
 
     if ('totalSize' in results) {
       title = 'Independent Samples t-Test Results';
-      resultItems = [
-        { label: 'Required Sample Size (Group 1)', value: results.group1Size, category: 'primary', highlight: true, format: 'integer' },
-        { label: 'Required Sample Size (Group 2)', value: results.group2Size, category: 'primary', highlight: true, format: 'integer' },
-        { label: 'Total Required Sample Size', value: results.totalSize, category: 'primary', highlight: true, format: 'integer' },
-        { label: "Cohen's d (Effect Size)", value: results.cohensD, category: 'statistical', format: 'decimal' },
+      enhancedResults = [
+        {
+          label: 'Total Sample Size',
+          value: results.totalSize,
+          category: 'primary',
+          highlight: true,
+          format: 'integer',
+          interpretation: 'Total participants needed across both groups'
+        },
+        {
+          label: 'Group 1 Sample Size',
+          value: results.group1Size,
+          category: 'secondary',
+          format: 'integer'
+        },
+        {
+          label: 'Group 2 Sample Size',
+          value: results.group2Size,
+          category: 'secondary',
+          format: 'integer'
+        },
+        {
+          label: "Cohen's d (Effect Size)",
+          value: results.cohensD,
+          category: 'statistical',
+          format: 'decimal',
+          interpretation: results.effectSizeInterpretation
+        },
       ];
-      interpretation.effectSize = results.effectSizeInterpretation;
+
+      visualizationData = [
+        { label: "Group 1", value: results.group1Size, color: "#3b82f6" },
+        { label: "Group 2", value: results.group2Size, color: "#10b981" }
+      ];
+
+      interpretationData.effectSize = results.effectSizeInterpretation;
     } else if ('pairsSize' in results) {
       title = 'Paired Samples t-Test Results';
-      resultItems = [
-        { label: 'Required Number of Pairs', value: results.pairsSize, category: 'primary', highlight: true, format: 'integer' },
-        { label: 'Total Observations', value: results.totalObservations, category: 'secondary', format: 'integer' },
-        { label: "Cohen's d (Effect Size)", value: results.cohensD, category: 'statistical', format: 'decimal' },
+      enhancedResults = [
+        {
+          label: 'Required Number of Pairs',
+          value: results.pairsSize,
+          category: 'primary',
+          highlight: true,
+          format: 'integer',
+          interpretation: 'Matched pairs needed for adequate power'
+        },
+        {
+          label: 'Total Observations',
+          value: results.totalObservations,
+          category: 'secondary',
+          format: 'integer'
+        },
+        {
+          label: "Cohen's d (Effect Size)",
+          value: results.cohensD,
+          category: 'statistical',
+          format: 'decimal',
+          interpretation: results.effectSizeInterpretation
+        },
       ];
-      interpretation.effectSize = results.effectSizeInterpretation;
+
+      visualizationData = [
+        { label: "Pairs Required", value: results.pairsSize, color: "#3b82f6" },
+        { label: "Total Observations", value: results.totalObservations, color: "#10b981" }
+      ];
+
+      interpretationData.effectSize = results.effectSizeInterpretation;
     } else if ('sampleSize' in results) {
       title = 'One-Sample t-Test Results';
-      resultItems = [
-        { label: 'Required Sample Size', value: results.sampleSize, category: 'primary', highlight: true, format: 'integer' },
-        { label: "Cohen's d (Effect Size)", value: results.cohensD, category: 'statistical', format: 'decimal' },
+      enhancedResults = [
+        {
+          label: 'Required Sample Size',
+          value: results.sampleSize,
+          category: 'primary',
+          highlight: true,
+          format: 'integer',
+          interpretation: 'Participants needed to detect the specified effect'
+        },
+        {
+          label: "Cohen's d (Effect Size)",
+          value: results.cohensD,
+          category: 'statistical',
+          format: 'decimal',
+          interpretation: results.effectSizeInterpretation
+        },
       ];
-      interpretation.effectSize = results.effectSizeInterpretation;
+
+      visualizationData = [
+        { label: "Sample Size", value: results.sampleSize, color: "#3b82f6" }
+      ];
+
+      interpretationData.effectSize = results.effectSizeInterpretation;
     }
 
-    interpretation.recommendations = [
+    const effectSizeData = [
+      { label: "Small Effect (d=0.2)", value: 0.2 },
+      { label: "Medium Effect (d=0.5)", value: 0.5 },
+      { label: "Large Effect (d=0.8)", value: 0.8 },
+      { label: "Current Study", value: results.cohensD }
+    ];
+
+    interpretationData.statisticalSignificance = `Cohen's d = ${results.cohensD.toFixed(3)} indicates ${results.effectSizeInterpretation.toLowerCase()} effect size`;
+    interpretationData.recommendations = [
       'Ensure data meets normality assumptions or consider non-parametric alternatives (e.g., Wilcoxon test).',
-      'For independent tests, verify homogeneity of variances (Levene\'s test).',
+      'For independent tests, verify homogeneity of variances (Levene test).',
       'Report the effect size (Cohen\'s d) and its confidence interval alongside p-values.',
       'Consider increasing sample size by 10-20% to account for potential data quality issues.'
     ];
-
-    interpretation.assumptions = [
+    interpretationData.assumptions = [
       'Data follows a normal distribution',
       'Independent observations',
       'Equal variances between groups (for independent t-test)',
@@ -155,220 +236,296 @@ export default function TTestPage() {
     ];
 
     return (
-      <ResultsDisplay
-        title={title}
-        results={resultItems}
-        interpretation={interpretation}
-        showInterpretation={true}
-      />
+      <div className="space-y-8">
+        <EnhancedResultsDisplay
+          title={title}
+          subtitle="Statistical power analysis and sample size determination"
+          results={enhancedResults}
+          interpretation={interpretationData}
+          visualizations={
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AdvancedVisualization
+                title="Sample Size Distribution"
+                type="pie"
+                data={visualizationData}
+                insights={[
+                  {
+                    key: "Total required",
+                    value: ('totalSize' in results ? results.totalSize :
+                           'pairsSize' in results ? results.pairsSize :
+                           results.sampleSize).toString(),
+                    significance: "high"
+                  },
+                  {
+                    key: "Effect size",
+                    value: results.effectSizeInterpretation,
+                    significance: "medium"
+                  }
+                ]}
+              />
+
+              <AdvancedVisualization
+                title="Effect Size Comparison"
+                type="comparison"
+                data={effectSizeData}
+                insights={[
+                  {
+                    key: "Cohen's d",
+                    value: results.cohensD.toFixed(3),
+                    significance: "high"
+                  },
+                  {
+                    key: "Interpretation",
+                    value: results.effectSizeInterpretation,
+                    significance: "medium"
+                  }
+                ]}
+              />
+            </div>
+          }
+        />
+      </div>
     );
   };
 
   const renderInputForm = () => (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="independent">Independent</TabsTrigger>
-            <TabsTrigger value="paired">Paired</TabsTrigger>
-            <TabsTrigger value="one-sample">One-Sample</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="independent">
-            <Card>
-              <CardHeader>
-                <CardTitle>Independent Samples T-Test</CardTitle>
-                <CardDescription>Compare means of two independent groups</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField name="group1Mean" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Group 1 Mean</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField name="group2Mean" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Group 2 Mean</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField name="pooledSD" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pooled Standard Deviation</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField name="allocationRatio" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Allocation Ratio (n2/n1)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="paired">
-            <Card>
-              <CardHeader>
-                <CardTitle>Paired Samples T-Test</CardTitle>
-                <CardDescription>Compare paired observations (before/after)</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <FormField name="meanDifference" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Expected Mean Difference</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField name="sdDifference" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Standard Deviation of Differences</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField name="correlation" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Correlation Coefficient</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" min="0" max="1" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="one-sample">
-            <Card>
-              <CardHeader>
-                <CardTitle>One-Sample T-Test</CardTitle>
-                <CardDescription>Compare sample mean to population mean</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField name="sampleMean" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Expected Sample Mean</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField name="populationMean" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Population Mean</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
-                <FormField name="populationSD" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Population Standard Deviation</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Common Parameters */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Study Parameters</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField name="significanceLevel" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Significance Level (%)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.1" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField name="power" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Power (%)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="1" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-
-            <div>
-              <FormField name="dropoutRate" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dropout Rate (%)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.1" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-          </CardContent>
-        </Card>
-
+    <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+      <CardHeader>
+        <CardTitle className="text-2xl flex items-center space-x-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Calculator className="h-6 w-6 text-primary" />
+          </div>
+          <span>T-Test Sample Size Calculator</span>
+        </CardTitle>
+        <CardDescription className="text-lg">
+          Calculate sample sizes for independent, paired, and one-sample t-tests with power analysis
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
+          <Alert className="mb-6 border-red-200 bg-red-50">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-700">{error}</AlertDescription>
           </Alert>
         )}
 
-        <Button type="submit" className="w-full" size="lg">
-          Calculate Sample Size
-        </Button>
-      </form>
-    </Form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <EnhancedTabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
+              <EnhancedTabsList className="grid w-full grid-cols-3" variant="modern">
+                <EnhancedTabsTrigger value="independent" variant="modern">
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-4 w-4" />
+                    <span>Independent</span>
+                  </div>
+                </EnhancedTabsTrigger>
+                <EnhancedTabsTrigger value="paired" variant="modern">
+                  <div className="flex items-center space-x-2">
+                    <Target className="h-4 w-4" />
+                    <span>Paired</span>
+                  </div>
+                </EnhancedTabsTrigger>
+                <EnhancedTabsTrigger value="one-sample" variant="modern">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>One-Sample</span>
+                  </div>
+                </EnhancedTabsTrigger>
+              </EnhancedTabsList>
+
+              <EnhancedTabsContent value="independent">
+                <Card className="border-blue-200 bg-blue-50/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Independent Samples T-Test</CardTitle>
+                    <CardDescription>Compare means of two independent groups</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <FormField name="group1Mean" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Group 1 Mean</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="group2Mean" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Group 2 Mean</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="pooledSD" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pooled Standard Deviation</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="allocationRatio" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Allocation Ratio (Group 1:Group 2)</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.1" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </EnhancedTabsContent>
+
+              <EnhancedTabsContent value="paired">
+                <Card className="border-green-200 bg-green-50/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Paired Samples T-Test</CardTitle>
+                    <CardDescription>Compare paired observations (before/after, matched pairs)</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <FormField name="meanDifference" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Expected Mean Difference</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="sdDifference" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Standard Deviation of Differences</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="correlation" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Correlation between Pairs</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" min="0" max="1" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </EnhancedTabsContent>
+
+              <EnhancedTabsContent value="one-sample">
+                <Card className="border-purple-200 bg-purple-50/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">One-Sample T-Test</CardTitle>
+                    <CardDescription>Compare sample mean to a known population value</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <FormField name="sampleMean" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Expected Sample Mean</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="populationMean" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Population Mean (H₀)</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField name="populationSD" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Population Standard Deviation</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </EnhancedTabsContent>
+
+              {/* Common Parameters */}
+              <Card className="border-gray-200 bg-gray-50/50">
+                <CardHeader>
+                  <CardTitle className="text-lg">Statistical Parameters</CardTitle>
+                  <CardDescription>Configure significance level, power, and other study parameters</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <FormField name="significanceLevel" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Significance Level (%)</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.1" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField name="power" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Statistical Power (%)</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="1" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex justify-center pt-6">
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="px-8 py-3 text-lg font-semibold"
+                >
+                  <Calculator className="h-5 w-5 mr-2" />
+                  Calculate Sample Size
+                </Button>
+              </div>
+            </EnhancedTabs>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 
   return (
     <ToolPageWrapper
       title="T-Test Sample Size Calculator"
-      description="Calculate sample size for Independent, Paired, and One-Sample T-Tests"
-      category="Sample Size Calculator"
+      description="Calculate sample sizes for independent, paired, and one-sample t-tests with comprehensive power analysis and advanced visualizations"
+      backHref="/sample-size"
+      backLabel="Sample Size Calculator"
       onReset={handleReset}
-      resultsSection={renderResults()}
+      icon={Calculator}
+      layout="single-column"
     >
-      {renderInputForm()}
+      <div className="space-y-8">
+        {/* Input Form */}
+        {renderInputForm()}
+
+        {/* Results */}
+        {results && renderResults()}
+      </div>
     </ToolPageWrapper>
   );
 }

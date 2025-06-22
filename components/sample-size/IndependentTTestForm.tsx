@@ -30,6 +30,19 @@ import {
     type IndependentSampleSizeInput,
     type IndependentSampleSizeOutput
 } from "@/lib/math/sample-size/tTest";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertCircle, Target, Calculator, Users, TrendingUp } from "lucide-react";
+
+const formatNumber = (value: number, format?: 'integer' | 'decimal' | 'percentage') => {
+  if (format === 'integer') {
+    return Math.round(value).toLocaleString();
+  }
+  if (format === 'percentage') {
+    return `${value.toFixed(1)}%`;
+  }
+  return value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+};
 
 export function IndependentTTestForm() {
   const [result, setResult] = useState<IndependentSampleSizeOutput | null>(null);
@@ -329,28 +342,16 @@ export function IndependentTTestForm() {
             </CardHeader>
             <CardContent>
                 <p>Required sample size for Group 1: <strong>
-                  <NumberFlowDisplay
-                    value={result.group1Size}
-                    format={{ maximumFractionDigits: 0 }}
-                  />
+                  {formatNumber(result.group1Size, 'integer')}
                 </strong></p>
                 <p>Required sample size for Group 2: <strong>
-                  <NumberFlowDisplay
-                    value={result.group2Size}
-                    format={{ maximumFractionDigits: 0 }}
-                  />
+                  {formatNumber(result.group2Size, 'integer')}
                 </strong></p>
                 <p>Total required sample size: <strong>
-                  <NumberFlowDisplay
-                    value={result.totalSize}
-                    format={{ maximumFractionDigits: 0 }}
-                  />
+                  {formatNumber(result.totalSize, 'integer')}
                 </strong></p>
                 <p>Effect size (Cohen's d): <strong>
-                  <NumberFlowDisplay
-                    value={result.cohensD}
-                    format={{ minimumFractionDigits: 3, maximumFractionDigits: 3 }}
-                  />
+                  {formatNumber(result.cohensD, 'decimal')}
                 </strong> ({result.effectSizeInterpretation})</p>
                 <Button onClick={() => generatePdf(form.getValues(), result)} className="mt-4">Download PDF</Button>
             </CardContent>

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from './sidebar';
-import { FloatingParticles } from '@/components/ui/floating-particles';
 import { cn } from '@/lib/utils';
 
 interface LayoutWrapperProps {
@@ -11,7 +10,7 @@ interface LayoutWrapperProps {
 }
 
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true); // Default to collapsed for more space
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
@@ -21,83 +20,68 @@ export function LayoutWrapper({ children }: LayoutWrapperProps) {
   // Set client flag to prevent SSR issues
   useEffect(() => {
     setIsClient(true);
-  }, []);
 
-  // Persist sidebar state in localStorage (only on client)
-  useEffect(() => {
-    if (!isClient) return;
-
+    // Load sidebar state from localStorage only after hydration
     const saved = localStorage.getItem('sidebar-collapsed');
     if (saved !== null) {
       setIsSidebarCollapsed(JSON.parse(saved));
     }
-  }, [isClient]);
+  }, []);
 
   const handleSidebarMouseEnter = () => {
+    if (!isClient) return;
     setIsSidebarCollapsed(false);
   };
 
   const handleSidebarMouseLeave = () => {
+    if (!isClient) return;
     setIsSidebarCollapsed(true);
   };
 
   const toggleSidebar = () => {
+    if (!isClient) return;
+
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
-
-    // Only access localStorage on client side
-    if (isClient) {
-      localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
-    }
+    localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
   };
+
+  // During SSR and initial hydration, use consistent default state
+  const shouldCollapse = isClient ? isSidebarCollapsed : true;
 
   if (isHomePage) {
     return (
-      <FloatingParticles
-        className="min-h-screen bg-background"
-        density="medium"
-        speed="slow"
-        colors="primary"
-        size="mixed"
-      >
-        <div className="relative z-10">
-          {children}
-        </div>
-      </FloatingParticles>
+      <div className="min-h-screen bg-background">
+        {children}
+      </div>
     );
   }
 
   return (
-    <FloatingParticles
-      className="min-h-screen bg-background flex"
-      density="light"
-      speed="slow"
-      colors="primary"
-      size="small"
-    >
+    <div className="min-h-screen bg-background flex">
       <div
         className="relative z-20"
         onMouseEnter={handleSidebarMouseEnter}
         onMouseLeave={handleSidebarMouseLeave}
       >
         <Sidebar
-          isCollapsed={isSidebarCollapsed}
+          isCollapsed={shouldCollapse}
           onToggle={toggleSidebar}
-          isHovered={!isSidebarCollapsed}
+          isHovered={!shouldCollapse}
         />
       </div>
       <main
         className={cn(
           "flex-1 transition-all duration-300 ease-in-out relative z-10",
           "min-h-screen",
-          // Add proper margin for sidebar width with smooth transition
-          isSidebarCollapsed ? "ml-16" : "ml-80"
+          // Use consistent state for SSR and initial render
+          shouldCollapse ? "ml-16" : "ml-80"
         )}
       >
         <div className="container mx-auto p-6 max-w-none relative">
           {children}
         </div>
       </main>
-    </FloatingParticles>
+    </div>
   );
 }

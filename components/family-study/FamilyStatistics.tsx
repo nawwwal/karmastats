@@ -85,10 +85,10 @@ export function FamilyStatistics({ members, animated = true }: FamilyStatisticsP
   ];
 
   return (
-    <ModernResultsDisplay
+        <ModernResultsDisplay
       title="Family Demographics"
       metrics={familyMetrics}
-      layout="grid-auto"
+      layout="grid-2"
       animated={animated}
       showComparisons={true}
     />

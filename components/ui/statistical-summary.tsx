@@ -6,7 +6,7 @@ import { ModernResultsDisplay } from './modern-results-display';
 // Helper function to determine statistical significance
 const getStatisticalSignificance = (pValue?: number) => {
   if (!pValue) return { level: 'low' as const, indicator: 'Not available' };
-  
+
   if (pValue < 0.001) return { level: 'critical' as const, indicator: 'p < 0.001 (****)' };
   if (pValue < 0.01) return { level: 'high' as const, indicator: 'p < 0.01 (***)' };
   if (pValue < 0.05) return { level: 'medium' as const, indicator: 'p < 0.05 (**)' };
@@ -21,20 +21,20 @@ const getEffectSizeInterpretation = (value: number, type: 'correlation' | 'rsqua
       if (absCorr >= 0.7) return { level: 'high' as const, indicator: 'Strong relationship' };
       if (absCorr >= 0.3) return { level: 'medium' as const, indicator: 'Moderate relationship' };
       return { level: 'low' as const, indicator: 'Weak relationship' };
-      
+
     case 'rsquared':
       if (value >= 0.7) return { level: 'high' as const, indicator: 'Strong model fit' };
       if (value >= 0.5) return { level: 'medium' as const, indicator: 'Moderate model fit' };
       if (value >= 0.3) return { level: 'low' as const, indicator: 'Weak model fit' };
       return { level: 'critical' as const, indicator: 'Poor model fit' };
-      
+
     case 'cohen':
       const absCohen = Math.abs(value);
       if (absCohen >= 0.8) return { level: 'high' as const, indicator: 'Large effect' };
       if (absCohen >= 0.5) return { level: 'medium' as const, indicator: 'Medium effect' };
       if (absCohen >= 0.2) return { level: 'low' as const, indicator: 'Small effect' };
       return { level: 'critical' as const, indicator: 'Negligible effect' };
-      
+
     default:
       return { level: 'low' as const, indicator: 'No interpretation' };
   }
@@ -96,7 +96,7 @@ export function StatisticalSummary({ results, type, title, className }: Statisti
       case 'disease-model':
         const attackRate = results.metrics?.attackRate || 0;
         const r0 = results.metrics?.r0 || 0;
-        
+
         return [
           {
             label: 'Peak Infections',
@@ -200,7 +200,7 @@ export function StatisticalSummary({ results, type, title, className }: Statisti
     <ModernResultsDisplay
       title={title}
       metrics={metrics}
-      layout="grid-auto"
+      layout="grid-2"
       animated={true}
       showComparisons={true}
       className={className}

@@ -45,7 +45,6 @@ export function LogRankForm({ onResultsChange }: LogRankFormProps) {
     const calculatedResult = calculateLogRank(data as LogRankParams);
     onResultsChange(calculatedResult);
     // Scroll to top to show results
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (

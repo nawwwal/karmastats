@@ -47,7 +47,6 @@ export function OneArmSurvivalForm({ onResultsChange }: OneArmSurvivalFormProps)
       const result = calculateOneArm(data);
       onResultsChange(result);
       // Scroll to top to show results
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       setError(err.message);
     }

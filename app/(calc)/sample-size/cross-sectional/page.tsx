@@ -24,6 +24,8 @@ import { getFieldExplanation } from "@/lib/field-explanations";
 import { Label } from "@/components/ui/label";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { ResultsDisplay } from '@/components/ui/results-display';
+import { StatisticalSummary } from '@/components/ui/statistical-summary';
+import { BarChart } from 'lucide-react';
 
 export default function CrossSectionalPage() {
     const [results, setResults] = useState<CrossSectionalOutput | null>(null);
@@ -48,8 +50,7 @@ export default function CrossSectionalPage() {
             setError(null);
             const result = calculateCrossSectionalSampleSize(data);
             setResults(result);
-            // Scroll to top to show results
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Remove scroll behavior as requested
         } catch (err: any) {
             if (err instanceof z.ZodError) {
                 setError(`Validation failed: ${err.errors.map(e => e.message).join(', ')}`);
@@ -198,13 +199,27 @@ export default function CrossSectionalPage() {
             ]
         };
 
+        // Provide modern summary format
+        const modernResults = {
+            totalSize: results.finalSize,
+            power: 0.8, // Default assumption
+            alpha: 0.05, // Default assumption
+        };
+
         return (
-            <ResultsDisplay
-                title="Cross-Sectional Study Sample Size"
-                results={resultItems}
-                interpretation={interpretation}
-                showInterpretation={true}
-            />
+            <div className="space-y-6">
+                <StatisticalSummary
+                    results={modernResults}
+                    type="sample-size"
+                    title="Cross-Sectional Study Results"
+                />
+                <ResultsDisplay
+                    title="Cross-Sectional Study Sample Size"
+                    results={resultItems}
+                    interpretation={interpretation}
+                    showInterpretation={true}
+                />
+            </div>
         );
     };
 
@@ -396,15 +411,13 @@ export default function CrossSectionalPage() {
 
     return (
         <ToolPageWrapper
-            title="Cross-Sectional Study Sample Size"
+            title="Cross-Sectional Study Sample Size Calculator"
             description="Calculate sample sizes for prevalence studies with advanced adjustments for design effects and clustering"
-            category="Sample Size Calculator"
-            onReset={handleReset}
-            onExportPDF={generatePdf}
-            showExportButton={!!results}
-            resultsSection={renderResults()}
+            icon={BarChart}
+            layout="single-column"
         >
             {renderInputForm()}
+            {renderResults()}
         </ToolPageWrapper>
     );
 }

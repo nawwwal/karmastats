@@ -1,88 +1,99 @@
 // Centralized Theme Configuration for Karmastat
-// Based on ICMR-NIN 2020 Guidelines and medical design standards
+// Based on legacy karmastat_comparative_fixed.html and ICMR-NIN 2020 Guidelines
 
 export const karmaTheme = {
-  // Core color palette - KARMASTAT vibrant orange-yellow theme
+  // Core color palette - KARMASTAT Academic Orange-Blue theme
   colors: {
-    // Primary colors - Vibrant orange-yellow spectrum
+    // Primary colors - Academic orange spectrum
     primary: {
       50: '#fff7ed',
       100: '#ffedd5',
       200: '#fed7aa',
       300: '#fdba74',
-      400: '#fb923c',
-      500: '#f97316', // Brand primary - vibrant orange
-      600: '#ea580c', // Deeper orange
+      400: '#FFB570', // primary-light from legacy
+      500: '#FF8C42', // Brand primary - vibrant orange (legacy)
+      600: '#E67A2F', // primary-dark from legacy
       700: '#c2410c',
       800: '#9a3412',
       900: '#7c2d12',
-      DEFAULT: '#f97316',
+      DEFAULT: '#FF8C42',
     },
 
-    // Secondary colors - Complementary yellows and warm tones
+    // Secondary colors - Academic blue spectrum
     secondary: {
-      50: '#fefce8',
-      100: '#fef9c3',
-      200: '#fef08a',
-      300: '#fde047',
-      400: '#facc15',
-      500: '#eab308', // Brand secondary - golden yellow
-      600: '#ca8a04',
-      700: '#a16207',
-      800: '#854d0e',
-      900: '#713f12',
-      DEFAULT: '#eab308',
+      50: '#eff6ff',
+      100: '#dbeafe',
+      200: '#bfdbfe',
+      300: '#93c5fd',
+      400: '#60a5fa',
+      500: '#2C5282', // Brand secondary - academic blue (legacy)
+      600: '#1e40af',
+      700: '#1d4ed8',
+      800: '#1e3a8a',
+      900: '#1e3a8a',
+      DEFAULT: '#2C5282',
     },
 
-    // Accent colors - Warm peach and cream tones
+    // Accent color - From legacy
     accent: {
-      light: '#fef3c7', // Light warm cream
-      neutral: '#fdf4e6', // Warm neutral
-      DEFAULT: '#fef3c7',
+      light: '#F8FDCF', // accent from legacy
+      neutral: '#fdf4e6',
+      DEFAULT: '#F6AD55', // accent from legacy
     },
 
-    // Semantic colors
+    // Additional legacy colors
     success: {
       light: '#a5d6a7',
-      DEFAULT: '#4caf50',
+      DEFAULT: '#38A169', // success from legacy
       dark: '#2e7d32',
     },
     warning: {
       light: '#fff59d',
-      DEFAULT: '#ffeb3b',
+      DEFAULT: '#D69E2E', // warning from legacy
       dark: '#f57f17',
     },
     error: {
       light: '#ef9a9a',
-      DEFAULT: '#f44336',
+      DEFAULT: '#E53E3E', // danger from legacy
       dark: '#c62828',
     },
     info: {
       light: '#81d4fa',
-      DEFAULT: '#03a9f4',
+      DEFAULT: '#3182CE', // info from legacy
       dark: '#0288d1',
     },
 
-    // Neutral grays
+    // Neutral grays - From legacy
     gray: {
-      50: '#fafafa',
+      50: '#F7FAFC', // bg-secondary from legacy light theme
       100: '#f5f5f5',
-      200: '#eeeeee',
+      200: '#E2E8F0', // border-color from legacy
       300: '#e0e0e0',
       400: '#bdbdbd',
-      500: '#9e9e9e',
-      600: '#757575',
-      700: '#616161',
+      500: '#718096', // text-muted from legacy
+      600: '#4A5568', // text-secondary from legacy
+      700: '#2D3748', // text-primary from legacy
       800: '#424242',
       900: '#212121',
     },
+
+    // Dark theme colors - From legacy
+    dark: {
+      bgPrimary: '#1A202C',
+      bgSecondary: '#2D3748',
+      bgCard: '#2D3748',
+      textPrimary: '#F7FAFC',
+      textSecondary: '#E2E8F0',
+      textMuted: '#A0AEC0',
+      borderColor: '#4A5568',
+    },
   },
 
-  // Typography system
+  // Typography system - From legacy
   typography: {
     fontFamily: {
-      primary: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-      secondary: ['Space Mono', 'monospace'],
+      primary: ['Segoe UI', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'], // font-main from legacy
+      secondary: ['Courier New', 'Monaco', 'Menlo', 'monospace'], // font-mono from legacy
       heading: ['Montserrat', 'sans-serif'],
     },
     fontSize: {
@@ -157,7 +168,7 @@ export const karmaTheme = {
     6: '1.5rem',
     8: '2rem',
     10: '2.5rem',
-    12: '3rem',
+    12: '3rem', // radius from legacy
     16: '4rem',
     20: '5rem',
     24: '6rem',
@@ -168,19 +179,20 @@ export const karmaTheme = {
     64: '16rem',
   },
 
-  // Shadows
+  // Shadows - From legacy
   shadows: {
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+    DEFAULT: '0 4px 12px rgba(0, 0, 0, 0.1)', // shadow from legacy
     md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
     '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+    hover: '0 8px 20px rgba(0, 0, 0, 0.15)', // shadow-hover from legacy
     inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
     none: 'none',
   },
 
-  // Border radius
+  // Border radius - From legacy
   borderRadius: {
     none: '0',
     sm: '0.125rem',
@@ -191,19 +203,32 @@ export const karmaTheme = {
     '2xl': '1rem',
     '3xl': '1.5rem',
     full: '9999px',
+    radius: '12px', // radius from legacy
   },
 
-  // Gradients - Vibrant orange-yellow combinations
+  // Gradients - From legacy academic design
   gradients: {
-    primary: 'linear-gradient(135deg, #f97316, #fb923c)', // Orange gradient
-    secondary: 'linear-gradient(135deg, #eab308, #fde047)', // Yellow gradient
-    accent: 'linear-gradient(135deg, #fef3c7, #fdf4e6)', // Cream gradient
-    success: 'linear-gradient(135deg, #4caf50, #8bc34a)',
-    warning: 'linear-gradient(135deg, #ff9800, #ffeb3b)',
-    error: 'linear-gradient(135deg, #f44336, #ff5722)',
-    hero: 'linear-gradient(135deg, #f97316 0%, #eab308 50%, #fef3c7 100%)', // Orange to yellow to cream
-    sunset: 'linear-gradient(135deg, #fb923c 0%, #f97316 25%, #eab308 75%, #fde047 100%)', // Full spectrum
-    warm: 'linear-gradient(135deg, #fed7aa, #fef3c7)', // Soft warm gradient
+    primary: 'linear-gradient(135deg, #FF8C42, #F6AD55, #FFB570)', // gradient-primary from legacy
+    secondary: 'linear-gradient(135deg, #2C5282, #3182CE, #4299E1)', // gradient-secondary from legacy
+    bg: 'linear-gradient(135deg, #FFF5F0, #FEEBC8, #FED7AA)', // gradient-bg from legacy
+    card: 'linear-gradient(145deg, #FFFFFF, #F7FAFC)', // gradient-card from legacy
+    magic: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // gradient-magic from legacy
+    analytical: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', // gradient-analytical from legacy
+    formula: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // gradient-formula from legacy
+    accent: 'linear-gradient(135deg, #F8FDCF, #F6AD55)', // Accent gradient
+    success: 'linear-gradient(135deg, #38A169, #68D391)',
+    warning: 'linear-gradient(135deg, #D69E2E, #F6E05E)',
+    error: 'linear-gradient(135deg, #E53E3E, #FC8181)',
+    hero: 'linear-gradient(135deg, #FF8C42 0%, #2C5282 50%, #F8FDCF 100%)', // Orange to blue to cream
+    sunset: 'linear-gradient(135deg, #FFB570 0%, #FF8C42 25%, #2C5282 75%, #3182CE 100%)', // Full spectrum
+    warm: 'linear-gradient(135deg, #FFF5F0, #F8FDCF)', // Soft warm gradient
+  },
+
+  // Transitions - From legacy
+  transitions: {
+    DEFAULT: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // transition from legacy
+    fast: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+    slow: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
   },
 
   // Breakpoints
@@ -227,66 +252,99 @@ export const karmaTheme = {
     auto: 'auto',
   },
 
-  // Transitions
-  transitions: {
-    DEFAULT: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    fast: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
-    slow: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+  // Mobile-specific extensions
+  mobile: {
+    touchTargets: {
+      minimum: '44px',
+      comfortable: '48px',
+      large: '56px',
+      extraLarge: '64px',
+    },
+    safeAreas: {
+      top: 'env(safe-area-inset-top)',
+      bottom: 'env(safe-area-inset-bottom)',
+      left: 'env(safe-area-inset-left)',
+      right: 'env(safe-area-inset-right)',
+    },
+    haptics: {
+      light: 'light',
+      medium: 'medium',
+      heavy: 'heavy',
+      success: 'success',
+      warning: 'warning',
+      error: 'error',
+    },
+    navigation: {
+      bottomBarHeight: '4rem', // 64px
+      fabSize: '3.5rem', // 56px
+      tabBarHeight: '5rem', // 80px (with safe area)
+    },
+    gestures: {
+      swipeThreshold: 50, // pixels
+      longPressDelay: 500, // milliseconds
+      doubleTapDelay: 300, // milliseconds
+    },
+    animations: {
+      fast: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
+      normal: '300ms cubic-bezier(0.4, 0, 0.2, 1)',
+      slow: '500ms cubic-bezier(0.4, 0, 0.2, 1)',
+      spring: '400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+    },
   },
 };
 
-// Light theme configuration - Warm orange-yellow palette
+// Light theme configuration - Academic orange-blue palette (from legacy)
 export const lightTheme = {
-  background: 'oklch(0.99 0.005 85)', // Warm white with hint of yellow
-  foreground: 'oklch(0.15 0.01 45)', // Warm dark brown
-  card: 'oklch(0.98 0.01 85)', // Slightly warm card background
-  cardForeground: 'oklch(0.15 0.01 45)', // Warm dark text
-  popover: 'oklch(0.98 0.01 85)', // Warm popover background
-  popoverForeground: 'oklch(0.15 0.01 45)', // Warm dark text
-  primary: 'oklch(0.65 0.18 35)', // Vibrant orange #f97316
-  primaryForeground: 'oklch(0.98 0.01 85)', // Warm white text
-  secondary: 'oklch(0.75 0.15 85)', // Golden yellow #eab308
-  secondaryForeground: 'oklch(0.15 0.01 45)', // Dark text on yellow
-  muted: 'oklch(0.95 0.02 85)', // Warm light background
-  mutedForeground: 'oklch(0.45 0.02 45)', // Medium warm brown
-  accent: 'oklch(0.93 0.03 75)', // Warm cream accent
-  accentForeground: 'oklch(0.15 0.01 45)', // Dark text on cream
-  destructive: 'oklch(0.577 0.245 27.325)', // Red (unchanged)
-  destructiveForeground: 'oklch(1 0 0)', // White
-  border: 'oklch(0.88 0.02 75)', // Warm border color
-  input: 'oklch(0.88 0.02 75)', // Warm input border
-  ring: 'oklch(0.65 0.18 35)', // Orange focus ring
-  success: 'oklch(0.548 0.166 142.495)', // Green (unchanged)
-  warning: 'oklch(0.75 0.15 85)', // Our golden yellow
-  error: 'oklch(0.577 0.245 27.325)', // Red (unchanged)
-  info: 'oklch(0.65 0.18 35)', // Orange for info
+  background: '#FFFFFF', // bg-primary from legacy
+  foreground: '#2D3748', // text-primary from legacy
+  card: '#FFFFFF', // bg-card from legacy
+  cardForeground: '#2D3748', // text-primary from legacy
+  popover: '#FFFFFF', // bg-primary from legacy
+  popoverForeground: '#2D3748', // text-primary from legacy
+  primary: '#FF8C42', // primary from legacy
+  primaryForeground: '#FFFFFF', // white text on orange
+  secondary: '#2C5282', // secondary from legacy
+  secondaryForeground: '#FFFFFF', // white text on blue
+  muted: '#F7FAFC', // bg-secondary from legacy
+  mutedForeground: '#718096', // text-muted from legacy
+  accent: '#F6AD55', // accent from legacy
+  accentForeground: '#2D3748', // text-primary from legacy
+  destructive: '#E53E3E', // danger from legacy
+  destructiveForeground: '#FFFFFF', // white text
+  border: '#E2E8F0', // border-color from legacy
+  input: '#E2E8F0', // border-color from legacy
+  ring: '#FF8C42', // primary focus ring
+  success: '#38A169', // success from legacy
+  warning: '#D69E2E', // warning from legacy
+  error: '#E53E3E', // danger from legacy
+  info: '#3182CE', // info from legacy
 };
 
-// Dark theme configuration - Warm dark with orange accents
+// Dark theme configuration - From legacy dark theme
 export const darkTheme = {
-  background: 'oklch(0.12 0.01 45)', // Warm dark brown
-  foreground: 'oklch(0.95 0.02 75)', // Warm light cream
-  card: 'oklch(0.18 0.01 45)', // Warmer dark card
-  cardForeground: 'oklch(0.95 0.02 75)', // Warm light text
-  popover: 'oklch(0.18 0.01 45)', // Warmer dark popover
-  popoverForeground: 'oklch(0.95 0.02 75)', // Warm light text
-  primary: 'oklch(0.75 0.15 35)', // Lighter vibrant orange for dark mode
-  primaryForeground: 'oklch(0.12 0.01 45)', // Dark text on orange
-  secondary: 'oklch(0.85 0.12 85)', // Lighter golden yellow for dark mode
-  secondaryForeground: 'oklch(0.12 0.01 45)', // Dark text on yellow
-  muted: 'oklch(0.25 0.01 45)', // Warm muted dark
-  mutedForeground: 'oklch(0.65 0.02 75)', // Warm medium light
-  accent: 'oklch(0.35 0.02 55)', // Warm accent background
-  accentForeground: 'oklch(0.95 0.02 75)', // Light text on accent
-  destructive: 'oklch(0.704 0.191 22.216)', // Red (unchanged)
-  destructiveForeground: 'oklch(0.985 0 0)', // White
-  border: 'oklch(0.35 0.02 55)', // Warm border
-  input: 'oklch(0.35 0.02 55)', // Warm input border
-  ring: 'oklch(0.75 0.15 35)', // Orange focus ring
-  success: 'oklch(0.649 0.169 152.511)', // Green (unchanged)
-  warning: 'oklch(0.85 0.12 85)', // Light golden yellow
-  error: 'oklch(0.704 0.191 22.216)', // Red (unchanged)
-  info: 'oklch(0.75 0.15 35)', // Orange for info
+  background: '#1A202C', // bg-primary from legacy dark
+  foreground: '#F7FAFC', // text-primary from legacy dark
+  card: '#2D3748', // bg-card from legacy dark
+  cardForeground: '#F7FAFC', // text-primary from legacy dark
+  popover: '#2D3748', // bg-secondary from legacy dark
+  popoverForeground: '#F7FAFC', // text-primary from legacy dark
+  primary: '#FF8C42', // primary from legacy (same in dark)
+  primaryForeground: '#1A202C', // dark text on orange
+  secondary: '#2C5282', // secondary from legacy (same in dark)
+  secondaryForeground: '#F7FAFC', // light text on blue
+  muted: '#2D3748', // bg-secondary from legacy dark
+  mutedForeground: '#A0AEC0', // text-muted from legacy dark
+  accent: '#F6AD55', // accent from legacy (same in dark)
+  accentForeground: '#1A202C', // dark text on accent
+  destructive: '#E53E3E', // danger from legacy
+  destructiveForeground: '#F7FAFC', // light text
+  border: '#4A5568', // border-color from legacy dark
+  input: '#4A5568', // border-color from legacy dark
+  ring: '#FF8C42', // primary focus ring
+  success: '#38A169', // success from legacy
+  warning: '#D69E2E', // warning from legacy
+  error: '#E53E3E', // danger from legacy
+  info: '#3182CE', // info from legacy
 };
 
 // Medical color tokens for specific use cases

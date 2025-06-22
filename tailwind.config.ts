@@ -318,7 +318,7 @@ const config = {
         "accent-gradient": karmaTheme.gradients.accent,
         "sunset-gradient": karmaTheme.gradients.sunset,
         "warm-gradient": karmaTheme.gradients.warm,
-        "mesh-gradient": "radial-gradient(circle at 25% 25%, #f97316 0%, transparent 50%), radial-gradient(circle at 75% 75%, #eab308 0%, transparent 50%), radial-gradient(circle at 50% 50%, #fb923c 0%, transparent 50%)",
+        "mesh-gradient": `radial-gradient(circle at 25% 25%, ${karmaTheme.colors.primary.DEFAULT} 0%, transparent 50%), radial-gradient(circle at 75% 75%, ${karmaTheme.colors.secondary.DEFAULT} 0%, transparent 50%), radial-gradient(circle at 50% 50%, ${karmaTheme.colors.primary[400]} 0%, transparent 50%)`,
         "rainbow-gradient": "linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff)",
         "glass-gradient": "linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))",
       },

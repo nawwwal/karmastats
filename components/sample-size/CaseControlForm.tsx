@@ -69,7 +69,6 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
 
     onResultsChange(results);
     // Scroll to top to show results
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (

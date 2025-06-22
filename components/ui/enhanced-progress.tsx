@@ -3,7 +3,8 @@
 import * as React from "react"
 import * as ProgressPrimitive from "@radix-ui/react-progress"
 import { cn } from "@/lib/utils"
-import { NumberFlowDisplay } from "./number-flow"
+import { Badge } from "@/components/ui/badge"
+import { karmaTheme } from '@/lib/theme';
 
 export interface EnhancedProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
@@ -88,6 +89,26 @@ const EnhancedProgress = React.forwardRef<
     }
   }
 
+  const getProgressColor = (percentage: number): string => {
+    if (percentage >= 70) {
+      return karmaTheme.colors.primary.DEFAULT // #FF8C42
+    } else if (percentage >= 40) {
+      return karmaTheme.colors.secondary.DEFAULT // #2C5282
+    } else {
+      return karmaTheme.colors.warning.DEFAULT // #D69E2E
+    }
+  }
+
+  const getGlowColor = (percentage: number): string => {
+    if (percentage >= 70) {
+      return karmaTheme.colors.primary.DEFAULT // #FF8C42
+    } else if (percentage >= 40) {
+      return karmaTheme.colors.secondary.DEFAULT // #2C5282
+    } else {
+      return karmaTheme.colors.warning.DEFAULT // #D69E2E
+    }
+  }
+
   return (
     <div className="space-y-2">
       <ProgressPrimitive.Root
@@ -131,11 +152,7 @@ const EnhancedProgress = React.forwardRef<
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>Progress</span>
           <span className="font-medium">
-            <NumberFlowDisplay
-              value={Math.round(displayValue || 0)}
-              suffix="%"
-              format={{ maximumFractionDigits: 0 }}
-            />
+            {formatNumber(displayValue || 0)}%
           </span>
         </div>
       )}
@@ -185,17 +202,17 @@ const CircularProgress = React.forwardRef<
   const getStrokeColor = () => {
     switch (color) {
       case 'primary':
-        return '#f97316'
+        return karmaTheme.colors.primary.DEFAULT // #FF8C42
       case 'secondary':
-        return '#eab308'
+        return karmaTheme.colors.secondary.DEFAULT // #2C5282
       case 'success':
-        return '#10b981'
+        return karmaTheme.colors.success.DEFAULT // #38A169
       case 'warning':
-        return '#f59e0b'
+        return karmaTheme.colors.warning.DEFAULT // #D69E2E
       case 'error':
-        return '#ef4444'
+        return karmaTheme.colors.error.DEFAULT // #E53E3E
       default:
-        return '#f97316'
+        return karmaTheme.colors.primary.DEFAULT // #FF8C42
     }
   }
 
@@ -248,7 +265,7 @@ const CircularProgress = React.forwardRef<
       <div className="absolute inset-0 flex items-center justify-center">
         {children || (showValue && (
           <span className="text-lg font-semibold text-foreground">
-            {Math.round(displayValue)}%
+            {formatNumber(displayValue)}%
           </span>
         ))}
       </div>
@@ -257,5 +274,9 @@ const CircularProgress = React.forwardRef<
 })
 
 CircularProgress.displayName = "CircularProgress"
+
+const formatNumber = (value: number) => {
+  return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
+};
 
 export { EnhancedProgress, CircularProgress }

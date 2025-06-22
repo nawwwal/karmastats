@@ -1,11 +1,10 @@
 "use client";
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Minus, Target, AlertCircle, CheckCircle, Info } from 'lucide-react';
-import { NumberFlowDisplay } from './number-flow';
-import { AnimatedGradient } from './animated-gradient';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import { Badge } from './badge';
+import { TrendingUp, TrendingDown, Minus, Target, AlertCircle, CheckCircle, Info, Lightbulb } from 'lucide-react';
+import { Progress } from './progress';
 import { cn } from '@/lib/utils';
 
 interface ModernMetricCard {
@@ -39,6 +38,34 @@ interface ModernResultsDisplayProps {
   className?: string;
 }
 
+// Helper function to format numbers
+const formatNumber = (
+  value: number,
+  format?: 'integer' | 'decimal' | 'percentage' | 'currency'
+) => {
+  if (format === 'integer') {
+    return Math.round(value).toLocaleString();
+  }
+  if (format === 'percentage') {
+    return `${value.toFixed(1)}%`;
+  }
+  if (format === 'currency') {
+    return value.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+  }
+  return value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+};
+
+export interface ModernResultItem {
+  label: string;
+  value: number;
+  category?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+  highlight?: boolean;
+  format?: 'integer' | 'decimal' | 'percentage' | 'currency';
+  trend?: 'up' | 'down' | 'neutral';
+  description?: string;
+  progress?: number; // 0-100 for progress bars
+}
+
 export function ModernResultsDisplay({
   title,
   metrics,
@@ -48,65 +75,14 @@ export function ModernResultsDisplay({
   className
 }: ModernResultsDisplayProps) {
 
-  const formatValue = (value: string | number, format?: string, unit?: string) => {
-    if (typeof value === 'number') {
-      switch (format) {
-        case 'percentage':
-          return (
-            <NumberFlowDisplay
-              value={value}
-              suffix="%"
-              format={{ minimumFractionDigits: 1, maximumFractionDigits: 2 }}
-            />
-          );
-        case 'decimal':
-          return (
-            <NumberFlowDisplay
-              value={value}
-              suffix={unit ? ` ${unit}` : ''}
-              format={{ minimumFractionDigits: 2, maximumFractionDigits: 4 }}
-            />
-          );
-        case 'integer':
-          return (
-            <NumberFlowDisplay
-              value={Math.round(value)}
-              suffix={unit ? ` ${unit}` : ''}
-              format={{ maximumFractionDigits: 0 }}
-            />
-          );
-        case 'currency':
-          return (
-            <NumberFlowDisplay
-              value={value}
-              prefix="$"
-              format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-            />
-          );
-        default:
-          return (
-            <NumberFlowDisplay
-              value={value}
-              suffix={unit ? ` ${unit}` : ''}
-              format={{ minimumFractionDigits: 0, maximumFractionDigits: 3 }}
-            />
-          );
-      }
-    }
-    return unit ? `${value} ${unit}` : value;
-  };
-
   const getGridCols = () => {
     switch (layout) {
       case 'grid-2': return 'grid-cols-1 sm:grid-cols-2';
-      case 'grid-3': return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
-      case 'grid-4': return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+      case 'grid-3': return 'grid-cols-1 sm:grid-cols-2'; // Limited to 2 columns max
+      case 'grid-4': return 'grid-cols-1 sm:grid-cols-2'; // Limited to 2 columns max
       default:
-        const count = metrics.length;
-        if (count <= 2) return 'grid-cols-1 sm:grid-cols-2';
-        if (count <= 3) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
-        if (count <= 4) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
-        return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+        // Always limit to maximum 2 columns to avoid clutter
+        return 'grid-cols-1 sm:grid-cols-2';
     }
   };
 
@@ -114,48 +90,54 @@ export function ModernResultsDisplay({
     switch (category) {
       case 'primary':
         return {
-          gradient: ["hsl(var(--primary) / 0.1)", "hsl(var(--primary) / 0.05)"],
-          text: "text-primary",
-          border: "border-primary/20"
+          text: "text-indigo-700",
+          border: "border-indigo-300",
+          bg: "bg-indigo-50"
         };
       case 'success':
         return {
-          gradient: ["hsl(var(--success) / 0.1)", "hsl(var(--success) / 0.05)"],
-          text: "text-success",
-          border: "border-success/20"
+          text: "text-emerald-700",
+          border: "border-emerald-300",
+          bg: "bg-emerald-50"
         };
       case 'warning':
         return {
-          gradient: ["hsl(var(--warning) / 0.1)", "hsl(var(--warning) / 0.05)"],
-          text: "text-warning",
-          border: "border-warning/20"
+          text: "text-amber-700",
+          border: "border-amber-300",
+          bg: "bg-amber-50"
         };
       case 'destructive':
         return {
-          gradient: ["hsl(var(--destructive) / 0.1)", "hsl(var(--destructive) / 0.05)"],
-          text: "text-destructive",
-          border: "border-destructive/20"
+          text: "text-rose-700",
+          border: "border-rose-300",
+          bg: "bg-rose-50"
         };
       case 'info':
         return {
-          gradient: ["hsl(var(--info) / 0.1)", "hsl(var(--info) / 0.05)"],
-          text: "text-info",
-          border: "border-info/20"
+          text: "text-cyan-700",
+          border: "border-cyan-300",
+          bg: "bg-cyan-50"
+        };
+      case 'secondary':
+        return {
+          text: "text-purple-700",
+          border: "border-purple-300",
+          bg: "bg-purple-50"
         };
       default:
         return {
-          gradient: ["hsl(var(--muted) / 0.1)", "hsl(var(--muted) / 0.05)"],
-          text: "text-foreground",
-          border: "border-border"
+          text: "text-slate-700",
+          border: "border-slate-300",
+          bg: "bg-slate-50"
         };
     }
   };
 
   const getTrendIcon = (trend?: string) => {
     switch (trend) {
-      case 'up': return <TrendingUp className="h-4 w-4 text-success" />;
-      case 'down': return <TrendingDown className="h-4 w-4 text-destructive" />;
-      default: return <Minus className="h-4 w-4 text-muted-foreground" />;
+      case 'up': return <TrendingUp className="h-6 w-6 text-emerald-600" />;
+      case 'down': return <TrendingDown className="h-6 w-6 text-rose-600" />;
+      default: return <Minus className="h-6 w-6 text-slate-500" />;
     }
   };
 
@@ -169,119 +151,97 @@ export function ModernResultsDisplay({
 
   const getChangeColor = (type?: string) => {
     switch (type) {
-      case 'increase': return 'text-success bg-success/10';
-      case 'decrease': return 'text-destructive bg-destructive/10';
-      default: return 'text-muted-foreground bg-muted/50';
+      case 'increase': return 'text-green-700 bg-green-100 border-green-200';
+      case 'decrease': return 'text-red-700 bg-red-100 border-red-200';
+      default: return 'text-gray-700 bg-gray-100 border-gray-200';
     }
   };
 
   const getSignificanceIcon = (level?: string) => {
     switch (level) {
-      case 'critical': return <AlertCircle className="h-3 w-3 text-destructive" />;
-      case 'high': return <CheckCircle className="h-3 w-3 text-success" />;
-      case 'medium': return <Info className="h-3 w-3 text-warning" />;
-      default: return <Target className="h-3 w-3 text-muted-foreground" />;
+      case 'critical': return <AlertCircle className="h-4 w-4 text-rose-600" />;
+      case 'high': return <CheckCircle className="h-4 w-4 text-emerald-600" />;
+      case 'medium': return <Info className="h-4 w-4 text-amber-600" />;
+      default: return <Target className="h-4 w-4 text-slate-500" />;
     }
+  };
+
+  const ResultCard: React.FC<{ item: ModernResultItem }> = ({ item }) => {
+    const getCategoryStyles = (category?: string) => {
+      switch (category) {
+        case 'primary':
+          return 'border-blue-200 bg-blue-50/50 text-blue-900';
+        case 'secondary':
+          return 'border-gray-200 bg-gray-50/50 text-gray-900';
+        case 'success':
+          return 'border-green-200 bg-green-50/50 text-green-900';
+        case 'warning':
+          return 'border-yellow-200 bg-yellow-50/50 text-yellow-900';
+        case 'error':
+          return 'border-red-200 bg-red-50/50 text-red-900';
+        default:
+          return 'border-gray-200 bg-white text-gray-900';
+      }
+    };
+
+    const getTrendIcon = (trend?: string) => {
+      switch (trend) {
+        case 'up':
+          return <TrendingUp className="h-4 w-4 text-green-500" />;
+        case 'down':
+          return <TrendingDown className="h-4 w-4 text-red-500" />;
+        default:
+          return null;
+      }
+    };
+
+    return (
+      <Card className={`${getCategoryStyles(item.category)} ${item.highlight ? 'ring-2 ring-blue-500' : ''}`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-600">{item.label}</h3>
+            {getTrendIcon(item.trend)}
+          </div>
+          <div className="space-y-2">
+            <div className="text-2xl font-bold">
+              {formatNumber(item.value, item.format)}
+            </div>
+            {item.description && (
+              <p className="text-xs text-gray-500">{item.description}</p>
+            )}
+            {item.progress !== undefined && (
+              <Progress value={item.progress} className="h-2" />
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
     <div className={cn("space-y-6", className)}>
       {title && (
         <div className="space-y-2">
-          <h3 className="text-2xl font-semibold tracking-tight">{title}</h3>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
+          <p className="text-lg text-gray-600">
             Statistical analysis results
           </p>
         </div>
       )}
 
-      <div className={cn("grid gap-6", getGridCols())}>
+      <div className={cn("grid gap-4", getGridCols())}>
         {metrics.map((metric, index) => {
           const colors = getCategoryColors(metric.category);
 
           return (
-            <Card
-              key={index}
-              className={cn(
-                "relative overflow-hidden transition-all duration-300 hover:shadow-lg bg-white/50 backdrop-blur-sm",
-                colors.border
-              )}
-            >
-              {animated && (
-                <AnimatedGradient
-                  colors={colors.gradient}
-                  speed={2 + (index * 0.3)}
-                  blur="light"
-                  className="pointer-events-none opacity-60"
-                />
-              )}
-
-              <CardContent className="relative z-10 p-6">
-                {/* Header with label and trend */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {metric.label}
-                    </p>
-                    {metric.significance && (
-                      <div className="flex items-center gap-1">
-                        {getSignificanceIcon(metric.significance.level)}
-                        <span className="text-xs text-muted-foreground">
-                          {metric.significance.indicator}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  {metric.trend && (
-                    <div className="flex items-center">
-                      {getTrendIcon(metric.trend)}
-                    </div>
-                  )}
-                </div>
-
-                {/* Main value */}
-                <div className="space-y-3">
-                  <div className={cn("text-3xl font-bold tracking-tight", colors.text)}>
-                    {formatValue(metric.value, metric.format, metric.unit)}
-                  </div>
-
-                  {/* Change indicator */}
-                  {metric.change && (
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "px-2 py-1 text-xs font-medium border-0",
-                          getChangeColor(metric.change.type)
-                        )}
-                      >
-                        <div className="flex items-center gap-1">
-                          {getChangeIcon(metric.change.type)}
-                          {Math.abs(metric.change.value)}%
-                        </div>
-                      </Badge>
-                      {metric.change.label && (
-                        <span className="text-xs text-muted-foreground">
-                          {metric.change.label}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Comparison baseline */}
-                  {showComparisons && metric.comparison && (
-                    <div className="pt-3 border-t border-border/50">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{metric.comparison.label || 'vs. baseline'}</span>
-                        <span className="font-mono">
-                          {formatValue(metric.comparison.baseline, metric.format, metric.unit)}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <ResultCard key={index} item={{
+              label: metric.label,
+              value: metric.value,
+              category: metric.category,
+              format: metric.format,
+              trend: metric.trend,
+              description: metric.significance?.indicator
+            }} />
           );
         })}
       </div>

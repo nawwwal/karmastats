@@ -1,10 +1,11 @@
+"use client"
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EnhancedCard, EnhancedCardContent, EnhancedCardDescription, EnhancedCardHeader, EnhancedCardTitle } from '@/components/ui/enhanced-card';
 import { EnhancedButton } from '@/components/ui/enhanced-button';
-import { NumberFlowDisplay } from '@/components/ui/number-flow';
 import Link from 'next/link';
 import {
   Calculator,
@@ -165,8 +166,8 @@ const CalcCard = ({ title, description, href, icon, features, status, toolCount 
       <EnhancedCardContent className="space-y-4">
         <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-hide">
           {features.map((feature, index) => (
-            <div key={index} className="flex items-start text-sm text-muted-foreground animate-slideInLeft" style={{ animationDelay: `${index * 100}ms` }}>
-              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-primary to-secondary mr-2 mt-2 flex-shrink-0 glow-primary" />
+            <div key={index} className="flex items-start text-sm text-muted-foreground">
+              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-primary to-secondary mr-2 mt-2 flex-shrink-0" />
               <span className="leading-relaxed">{feature}</span>
             </div>
           ))}
@@ -198,12 +199,8 @@ const StatCard = ({ icon, number, description, detail }: {
       </div>
       <div className="space-y-2">
         <div className="text-3xl font-semibold tracking-tight text-gradient">
-          <NumberFlowDisplay
-            value={parseFloat(number.replace(/[^\d.-]/g, '')) || 0}
-            suffix={number.replace(/[\d.-]/g, '')}
-            format={{ notation: "standard" }}
-            className="text-3xl font-semibold"
-          />
+          {parseFloat(number.replace(/[^\d.-]/g, '')) || 0}
+          {number.replace(/[\d.-]/g, '')}
         </div>
         <div className="font-medium text-foreground">{description}</div>
         <div className="text-sm text-muted-foreground">{detail}</div>
@@ -217,20 +214,19 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 mesh-gradient animate-meshMove" />
+        {/* Simple gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-secondary/60 to-accent/40" />
         <div className="absolute inset-0 bg-black/10" />
 
-        {/* Static decorative elements - no floating animations */}
+        {/* Static decorative elements */}
         <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl" />
         <div className="absolute top-40 right-32 w-24 h-24 bg-secondary/20 rounded-full blur-xl" />
         <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-primary/15 rounded-full blur-xl" />
 
         <div className="relative container mx-auto px-4 text-center w-full text-white">
-          <div className="max-w-4xl mx-auto space-y-8 animate-fadeInUp">
+          <div className="max-w-4xl mx-auto space-y-8">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6 animate-fadeInDown">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6">
                 <Sparkles className="w-4 h-4 text-yellow-300" />
                 <span>Enhanced Visual Experience</span>
                 <Sparkles className="w-4 h-4 text-yellow-300" />
@@ -252,7 +248,7 @@ export default function HomePage() {
                 variant="glass"
                 size="lg"
                 animation="hover"
-                icon={<Calculator className="w-5 h-5" />}
+                icon={<Calculator className="h-4 w-4" />}
                 className="min-w-[200px] text-white border-white/30 hover:text-white"
               >
                 <Link href="/sample-size">
@@ -264,7 +260,7 @@ export default function HomePage() {
                 variant="outline"
                 size="lg"
                 animation="bounce"
-                icon={<Heart className="w-5 h-5 text-red-400" />}
+                icon={<Heart className="h-4 w-4" />}
                 className="min-w-[200px] border-white/30 text-white hover:bg-white/10 hover:text-white"
               >
                 <Link href="#mission">
@@ -279,7 +275,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="py-24 bg-gradient-to-b from-background to-muted/20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fadeInUp">
+          <div className="text-center mb-16">
             <h2 className="text-4xl font-bold tracking-tight text-gradient mb-4">
               Powerful Statistical Tools
             </h2>
@@ -294,15 +290,40 @@ export default function HomePage() {
               Statistical Calculators
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {tools.calculators.map((tool, index) => (
-                <div
-                  key={tool.title}
-                  className="animate-slideInUp"
-                  style={{ animationDelay: `${index * 800}ms` }}
-                >
-                  <CalcCard {...tool} />
-                </div>
-              ))}
+              <CalcCard
+                icon={<Calculator className="h-8 w-8" />}
+                title="Sample Size Calculator"
+                description="Calculate required sample sizes for various study designs"
+                href="/sample-size"
+                features={[
+                  "Intelligent Study Detector (AI-powered)",
+                  "Survival Analysis (Log-rank, Cox, One-arm)",
+                  "Comparative Studies (Case-control & Cohort)",
+                  "T-Test Calculator (Independent & Paired)",
+                  "Diagnostic Studies (Sensitivity & Specificity)",
+                  "Clinical Trials (RCT, Non-inferiority, Equivalence)",
+                  "Cross-sectional Studies (Prevalence & Survey)"
+                ]}
+                status="Complete"
+                toolCount="7 Tools"
+              />
+              <CalcCard
+                icon={<Heart className="h-8 w-8" />}
+                title="Infectious Disease Modeling"
+                description="Model disease spread and predict outcomes"
+                href="/disease-math"
+                features={[
+                  "Standard SEIR Model (Basic epidemic modeling)",
+                  "Advanced SEIRDV Model (Deaths & Vaccination)",
+                  "Intervention Analysis (Policy impact assessment)",
+                  "Real-time Parameter Adjustment",
+                  "Interactive Epidemic Curves",
+                  "R₀ & Herd Immunity Calculations",
+                  "Population Impact Metrics"
+                ]}
+                status="Complete"
+                toolCount="2 Models"
+              />
             </div>
           </div>
 
@@ -313,11 +334,7 @@ export default function HomePage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {tools.studies.map((tool, index) => (
-                <div
-                  key={tool.title}
-                  className="animate-slideInUp"
-                  style={{ animationDelay: `${index * 800}ms` }}
-                >
+                <div key={tool.title}>
                   <CalcCard {...tool} />
                 </div>
               ))}
@@ -329,7 +346,7 @@ export default function HomePage() {
       {/* Impact Stats Section */}
       <section className="py-16 bg-gradient-to-r from-muted/20 to-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12 animate-fadeInUp">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight text-gradient mb-4">
               Environmental Impact Awareness
             </h2>
@@ -340,11 +357,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {impactStats.map((stat, index) => (
-              <div
-                key={stat.number}
-                className="animate-slideInUp"
-                style={{ animationDelay: `${index * 600}ms` }}
-              >
+              <div key={stat.number}>
                 <StatCard {...stat} />
               </div>
             ))}
@@ -355,7 +368,7 @@ export default function HomePage() {
       {/* Mission Section */}
       <section id="mission" className="py-20 bg-gradient-to-b from-background to-muted/10">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fadeInUp">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
             <h2 className="text-4xl font-bold tracking-tight text-gradient">
               Our Mission
             </h2>
@@ -382,7 +395,7 @@ export default function HomePage() {
                 variant="gradient"
                 size="lg"
                 animation="hover"
-                icon={<Calculator className="w-5 h-5" />}
+                icon={<Calculator className="h-4 w-4" />}
                 className="min-w-[200px] text-white"
               >
                 <Link href="/sample-size">
@@ -394,7 +407,7 @@ export default function HomePage() {
                 variant="outline"
                 size="lg"
                 animation="wiggle"
-                icon={<Users className="w-5 h-5" />}
+                icon={<Users className="h-4 w-4" />}
                 className="min-w-[200px]"
               >
                 <Link href="/family-study">
@@ -409,7 +422,7 @@ export default function HomePage() {
       {/* Call to Action Section */}
       <section className="py-20 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto space-y-8 animate-fadeInUp">
+          <div className="max-w-3xl mx-auto space-y-8">
             <h2 className="text-4xl font-bold tracking-tight text-gradient">
               Ready to Transform Your Research?
             </h2>
@@ -422,7 +435,7 @@ export default function HomePage() {
                 variant="gradient"
                 size="xl"
                 animation="hover"
-                icon={<Target className="w-5 h-5" />}
+                icon={<Target className="h-4 w-4" />}
                 className="min-w-[240px] text-white"
               >
                 <Link href="/sample-size">
@@ -434,7 +447,7 @@ export default function HomePage() {
                 variant="outline"
                 size="xl"
                 animation="wiggle"
-                icon={<Award className="w-5 h-5" />}
+                icon={<Award className="h-4 w-4" />}
                 className="min-w-[240px]"
               >
                 <Link href="/regression">
