@@ -39,7 +39,6 @@ export default function SurvivalAnalysisPage() {
   const renderContent = () => (
     <div className="space-y-8">
       <EnhancedTabs
-        tabs={tabs}
         value={activeTab}
         onValueChange={setActiveTab}
         className="w-full"
@@ -103,29 +102,25 @@ export default function SurvivalAnalysisPage() {
           value: results.totalSampleSize,
           category: 'primary' as const,
           highlight: true,
-          format: 'integer' as const,
-          description: 'Total participants needed'
+          format: 'integer' as const
         },
         {
           label: 'Sample Size Group 1',
           value: results.group1SampleSize,
           category: 'secondary' as const,
-          format: 'integer' as const,
-          description: 'First group size'
+          format: 'integer' as const
         },
         {
           label: 'Sample Size Group 2',
           value: results.group2SampleSize,
           category: 'secondary' as const,
-          format: 'integer' as const,
-          description: 'Second group size'
+          format: 'integer' as const
         },
         {
           label: 'Total Events Required',
           value: results.totalEvents,
           category: 'info' as const,
-          format: 'integer' as const,
-          description: 'Events needed for analysis'
+          format: 'integer' as const
         },
       ];
     } else if (activeTab === "cox") {
@@ -136,15 +131,13 @@ export default function SurvivalAnalysisPage() {
           value: results.totalSampleSize,
           category: 'primary' as const,
           highlight: true,
-          format: 'integer' as const,
-          description: 'Total participants needed'
+          format: 'integer' as const
         },
         {
           label: 'Total Events Required',
           value: results.totalEvents,
           category: 'info' as const,
-          format: 'integer' as const,
-          description: 'Events needed for analysis'
+          format: 'integer' as const
         },
       ];
     } else if (activeTab === "one-arm") {
@@ -155,86 +148,81 @@ export default function SurvivalAnalysisPage() {
           value: results.totalSampleSize,
           category: 'primary' as const,
           highlight: true,
-          format: 'integer' as const,
-          description: 'Total participants needed'
+          format: 'integer' as const
         },
         {
           label: 'Total Events Required',
           value: results.totalEvents,
           category: 'secondary' as const,
-          format: 'integer' as const,
-          description: 'Events needed for analysis'
+          format: 'integer' as const
         },
         {
           label: 'Study Duration',
           value: results.studyDuration,
           category: 'info' as const,
-          format: 'integer' as const,
-          description: 'Expected study length'
+          format: 'integer' as const
         },
         {
           label: 'Statistical Power',
           value: (results.power || 0.8) * 100,
           category: 'success' as const,
-          format: 'percentage' as const,
-          description: 'Power to detect effect'
+          format: 'percentage' as const
         },
       ];
     }
+
+    const interpretationData = {
+      statisticalSignificance: `Power ${(results.power || 0.8) * 100}%`,
+      recommendations: [
+        'Ensure adequate follow-up time to observe required events',
+        'Consider interim analyses for early stopping if appropriate',
+        'Plan for potential loss to follow-up in the study design',
+        'Validate assumptions about event rates and hazard ratios'
+      ],
+      assumptions: [
+        'Proportional hazards assumption holds throughout study',
+        'Event rates are consistent with historical data',
+        'Censoring is non-informative and independent',
+        'Study population is representative of target population'
+      ]
+    };
 
     return (
       <div className="space-y-8">
         <EnhancedResultsDisplay
           title={title}
           subtitle="Time-to-Event Analysis"
-          metrics={keyMetrics}
-          insights={[
-            `Total sample size: ${results.totalSampleSize} participants`,
-            `Events required: ${results.totalEvents} for adequate power`,
-            'Survival analysis accounts for censoring and time-to-event',
-            'Consider loss to follow-up in study planning'
-          ]}
-          recommendations={[
-            'Ensure adequate follow-up time to observe required events',
-            'Consider interim analyses for early stopping if appropriate',
-            'Plan for potential loss to follow-up in the study design',
-            'Validate assumptions about event rates and hazard ratios'
-          ]}
-          assumptions={[
-            'Proportional hazards assumption holds throughout study',
-            'Event rates are consistent with historical data',
-            'Censoring is non-informative and independent',
-            'Study population is representative of target population'
-          ]}
-          statisticalDetails={{
-            sampleSize: results.totalSampleSize,
-            power: results.power || 0.8,
-            alpha: 0.05,
-            effectSize: activeTab === "log-rank" ? 0.5 : 0.7,
-            designType: 'Survival Analysis'
-          }}
+          results={keyMetrics}
+          interpretation={interpretationData}
         />
 
-        <AdvancedVisualization
-          title="Survival Study Design Analysis"
-          data={{
-            sampleSize: keyMetrics,
-            studyDesign: activeTab,
-            powerAnalysis: [
-              { power: 70, sampleSize: Math.round(results.totalSampleSize * 0.7) },
-              { power: 80, sampleSize: results.totalSampleSize },
-              { power: 90, sampleSize: Math.round(results.totalSampleSize * 1.3) },
-              { power: 95, sampleSize: Math.round(results.totalSampleSize * 1.6) }
-            ]
-          }}
-          insights={[
-            `Study design: ${activeTab.replace('-', ' ')} analysis`,
-            `Power-sample size trade-off: Higher power requires more participants`,
-            'Events drive the analysis power, not just sample size',
-            'Consider recruitment timeline and follow-up duration'
-          ]}
-          chartTypes={['bar', 'trend']}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AdvancedVisualization
+            title="Event Distribution"
+            type="pie"
+            data={[
+              { label: 'Events', value: results.totalEvents },
+              { label: 'Non-events', value: results.totalSampleSize - results.totalEvents }
+            ]}
+            insights={[
+              { key: 'Total Events', value: results.totalEvents.toString(), significance: 'high' as const }
+            ]}
+          />
+
+          <AdvancedVisualization
+            title="Power Analysis"
+            type="trend"
+            data={[
+              { label: '70%', value: Math.round(results.totalSampleSize * 0.7) },
+              { label: '80%', value: results.totalSampleSize },
+              { label: '90%', value: Math.round(results.totalSampleSize * 1.3) },
+              { label: '95%', value: Math.round(results.totalSampleSize * 1.6) }
+            ]}
+            insights={[
+              { key: 'Design', value: activeTab.replace('-', ' '), significance: 'medium' as const }
+            ]}
+          />
+        </div>
       </div>
     );
   };

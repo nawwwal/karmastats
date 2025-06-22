@@ -55,6 +55,7 @@ export interface LinearRegressionResult {
   xValues: number[];
   yValues: number[];
   chartData?: any;
+  chartOptions?: any;
   chartComponent?: React.ReactNode;
 }
 

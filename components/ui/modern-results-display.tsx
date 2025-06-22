@@ -236,10 +236,10 @@ export function ModernResultsDisplay({
           return (
             <ResultCard key={index} item={{
               label: metric.label,
-              value: metric.value,
-              category: metric.category,
-              format: metric.format,
-              trend: metric.trend,
+              value: typeof metric.value === 'number' ? metric.value : parseFloat(metric.value),
+              category: metric.category as 'primary' | 'secondary' | 'success' | 'warning' | 'error' | undefined,
+              format: metric.format as any,
+              trend: metric.trend as any,
               description: metric.significance?.indicator
             }} />
           );

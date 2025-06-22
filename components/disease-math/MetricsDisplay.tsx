@@ -24,12 +24,12 @@ export function MetricsDisplay({ results, animated = true }: MetricsDisplayProps
     metrics: {
       peakInfected: Math.round(results.peakInfection),
       r0: results.r0,
-      attackRate: results.totalCases / (results.populationSize || 100000), // Assuming population size
+      attackRate: results.totalCases / (((results as any).populationSize) || 100000), // Assuming population size
       totalDeaths: Math.round(results.totalDeaths),
       mortalityRate: results.totalDeaths / results.totalCases,
       peakDay: results.peakDay
     },
-    populationSize: results.populationSize || 100000
+    populationSize: (results as any).populationSize || 100000
   };
 
   return (
