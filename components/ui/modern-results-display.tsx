@@ -40,28 +40,29 @@ interface ModernResultsDisplayProps {
 
 // Helper function to format numbers
 const formatNumber = (
-  value: number,
-  format?: 'integer' | 'decimal' | 'percentage' | 'currency'
+  value: number | string,
+  format?: 'integer' | 'decimal' | 'percentage' | 'currency' | 'number'
 ) => {
+  const num = typeof value === 'number' ? value : parseFloat(value);
   if (format === 'integer') {
-    return Math.round(value).toLocaleString();
+    return Math.round(num).toLocaleString();
   }
   if (format === 'percentage') {
-    return `${value.toFixed(1)}%`;
+    return `${num.toFixed(1)}%`;
   }
   if (format === 'currency') {
-    return value.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+    return num.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
   }
-  return value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+  return num.toLocaleString(undefined, { maximumFractionDigits: 3 });
 };
 
 export interface ModernResultItem {
   label: string;
-  value: number;
-  category?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+  value: number | string;
+  category?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'destructive';
   highlight?: boolean;
-  format?: 'integer' | 'decimal' | 'percentage' | 'currency';
-  trend?: 'up' | 'down' | 'neutral';
+  format?: 'integer' | 'decimal' | 'percentage' | 'currency' | 'number';
+  trend?: 'up' | 'down' | 'neutral' | 'stable';
   description?: string;
   progress?: number; // 0-100 for progress bars
 }

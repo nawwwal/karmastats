@@ -56,6 +56,7 @@ export interface LinearRegressionResult {
   yValues: number[];
   chartData?: any;
   chartComponent?: React.ReactNode;
+  chartOptions?: any;
 }
 
 export function linearRegression(xValues: number[], yValues: number[]): LinearRegressionResult | { error: string } {

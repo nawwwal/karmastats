@@ -211,12 +211,11 @@ export default function DiagnosticTestPage() {
                 config.subtitle = "Two-Test Comparison Analysis";
                 config.inputs = [
                     { label: "Study Design", value: formData.studyDesign },
-                    { label: "Test 1 Sensitivity", value: formData.test1Sensitivity, unit: "%" },
-                    { label: "Test 2 Sensitivity", value: formData.test2Sensitivity, unit: "%" },
-                    { label: "Test 1 Specificity", value: formData.test1Specificity, unit: "%" },
-                    { label: "Test 2 Specificity", value: formData.test2Specificity, unit: "%" },
-                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
-                    { label: "Statistical Power", value: formData.power * 100, unit: "%" }
+                    { label: "Test 1 Performance", value: formData.test1Performance, unit: "%" },
+                    { label: "Test 2 Performance", value: formData.test2Performance, unit: "%" },
+                    { label: "Test Correlation", value: formData.testCorrelation, unit: "%" },
+                    { label: "Significance Level", value: formData.significanceLevel, unit: "%" },
+                    { label: "Statistical Power", value: (formData.power ?? 0) * 100, unit: "%" }
                 ];
                 config.results = [
                     { label: "Required Sample Size per Group", value: results.sampleSize, highlight: true, category: "primary", format: "integer" },
@@ -230,8 +229,8 @@ export default function DiagnosticTestPage() {
                     { label: "Expected AUC", value: formData.expectedAUC },
                     { label: "Null Hypothesis AUC", value: formData.nullAUC },
                     { label: "Disease Prevalence", value: formData.diseasePrevalence, unit: "%" },
-                    { label: "Significance Level", value: formData.alpha * 100, unit: "%" },
-                    { label: "Statistical Power", value: formData.power * 100, unit: "%" }
+                    { label: "Significance Level", value: (formData.significanceLevel ?? 0) * 100, unit: "%" },
+                    { label: "Statistical Power", value: (formData.power ?? 0) * 100, unit: "%" }
                 ];
                 config.results = [
                     { label: "Total Required Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
@@ -293,9 +292,9 @@ export default function DiagnosticTestPage() {
         ];
 
         // Provide modern summary format
-        const totalSize = 'totalSize' in results ? results.totalSize :
-                         'sampleSize' in results ? results.sampleSize :
-                         results.positiveSize + results.negativeSize;
+        const totalSize = 'totalSize' in results ? (results as any).totalSize :
+                         'sampleSize' in results ? (results as any).sampleSize :
+                         (results as any).positiveSize + (results as any).negativeSize;
 
         const modernResults = {
             totalSize: totalSize,

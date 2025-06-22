@@ -4,14 +4,16 @@ import { useState } from "react";
 import { CaseControlForm } from "@/components/sample-size/CaseControlForm";
 import { CohortForm } from "@/components/sample-size/CohortForm";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
-import { EnhancedTabs } from '@/components/ui/enhanced-tabs';
+import {
+  EnhancedTabs,
+  EnhancedTabsList,
+  EnhancedTabsTrigger
+} from '@/components/ui/enhanced-tabs';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
-import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Users,
-  BarChart3,
   TrendingUp,
   Calculator,
   Target,
@@ -48,11 +50,20 @@ export default function ComparativeStudyPage() {
   const renderContent = () => (
     <div className="space-y-8">
       <EnhancedTabs
-        tabs={tabs}
         value={activeTab}
         onValueChange={setActiveTab}
         className="w-full"
       >
+        <EnhancedTabsList className="grid w-full grid-cols-2" variant="modern">
+          {tabs.map((tab) => (
+            <EnhancedTabsTrigger key={tab.value} value={tab.value} variant="modern">
+              <div className="flex items-center space-x-2">
+                <tab.icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </div>
+            </EnhancedTabsTrigger>
+          ))}
+        </EnhancedTabsList>
         {activeTab === "case-control" && (
           <CaseControlForm onResultsChange={setResults} />
         )}
@@ -74,32 +85,24 @@ export default function ComparativeStudyPage() {
       {
         label: isCaseControl ? 'Cases Required' : 'Exposed Group',
         value: isCaseControl ? interpretation.nCases : interpretation.nExposed,
-        description: isCaseControl ? 'With disease/outcome' : 'With risk factor',
-        category: 'primary' as const,
-        trend: 'neutral' as const
+        category: 'primary' as const
       },
       {
         label: isCaseControl ? 'Controls Required' : 'Unexposed Group',
         value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed,
-        description: isCaseControl ? 'Without disease/outcome' : 'Without risk factor',
-        category: 'secondary' as const,
-        trend: 'neutral' as const
+        category: 'secondary' as const
       },
       {
         label: 'Total Sample Size',
         value: interpretation.totalSample,
-        description: 'Combined groups',
-        category: 'info' as const,
-        trend: 'neutral' as const,
+        category: 'statistical' as const,
         highlight: true
       },
       {
         label: isCaseControl ? 'Odds Ratio' : 'Relative Risk',
         value: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
-        description: 'Effect size measure',
         category: 'success' as const,
-        trend: 'neutral' as const,
-        format: 'decimal'
+        format: 'decimal' as const
       }
     ];
 
@@ -154,59 +157,26 @@ export default function ComparativeStudyPage() {
         <EnhancedResultsDisplay
           title={`${isCaseControl ? 'Case-Control' : 'Cohort'} Study Results`}
           subtitle={`${isCaseControl ? 'Retrospective' : 'Prospective'} Study Design`}
-          metrics={keyMetrics}
-          insights={[
-            `Total sample size required: ${interpretation.totalSample.toLocaleString()} participants`,
-            `Study design: ${isCaseControl ? 'Case-control (retrospective)' : 'Cohort (prospective)'} approach`,
-            `Effect size: ${isCaseControl ? 'Odds ratio' : 'Relative risk'} of ${(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk).toFixed(2)}`,
-            `Power analysis: ${results.parameters.power}% power to detect the specified effect`,
-            `Confidence level: ${results.parameters.confidenceLevel}% confidence interval`
-          ]}
-          recommendations={[
-            `Recruit ${interpretation.totalSample.toLocaleString()} participants total`,
-            `Maintain ${results.parameters.ratio}:1 ratio between groups`,
-            `Consider potential dropouts and increase sample by 10-20%`,
-            `Ensure balanced recruitment across study sites`,
-            `Plan for adequate follow-up period if applicable`
-          ]}
-          assumptions={[
-            `Two-sided significance test at α = ${(1 - results.parameters.confidenceLevel/100).toFixed(3)}`,
-            `Statistical power = ${results.parameters.power}%`,
-            `Group allocation ratio = 1:${results.parameters.ratio}`,
-            `Expected effect size as specified`,
-            `Independent observations within and between groups`
-          ]}
-          statisticalDetails={{
-            sampleSize: interpretation.totalSample,
-            power: results.parameters.power / 100,
-            alpha: (1 - results.parameters.confidenceLevel/100),
-            effectSize: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
-            designType: isCaseControl ? 'Case-Control' : 'Cohort'
+          results={keyMetrics}
+          interpretation={{
+            recommendations: [
+              `Recruit ${interpretation.totalSample.toLocaleString()} participants total`,
+              `Maintain ${results.parameters.ratio}:1 ratio between groups`,
+              'Consider potential dropouts and increase sample by 10-20%',
+              'Ensure balanced recruitment across study sites',
+              'Plan for adequate follow-up period if applicable'
+            ],
+            assumptions: [
+              `Two-sided significance test at α = ${(1 - results.parameters.confidenceLevel/100).toFixed(3)}`,
+              `Statistical power = ${results.parameters.power}%`,
+              `Group allocation ratio = 1:${results.parameters.ratio}`,
+              'Expected effect size as specified',
+              'Independent observations within and between groups'
+            ]
           }}
         />
 
-        {/* Advanced Visualizations */}
-        <AdvancedVisualization
-          title="Study Design Analysis"
-          data={{
-            sampleDistribution: sampleSizeData,
-            effectSize: effectSizeData,
-            studyParameters: studyParameters,
-            powerAnalysis: [
-              { power: 80, sampleSize: Math.round(interpretation.totalSample * 0.8) },
-              { power: 85, sampleSize: Math.round(interpretation.totalSample * 0.9) },
-              { power: 90, sampleSize: interpretation.totalSample },
-              { power: 95, sampleSize: Math.round(interpretation.totalSample * 1.2) }
-            ]
-          }}
-          insights={[
-            `Sample size distribution: ${sampleSizeData[0].percentage}% vs ${sampleSizeData[1].percentage}%`,
-            `Effect size interpretation: ${effectSizeData[0].interpretation}`,
-            `Study efficiency: ${isCaseControl ? 'Efficient for rare outcomes' : 'Good for common outcomes'}`,
-            `Recruitment strategy: Focus on ${sampleSizeData[0].value > sampleSizeData[1].value ? 'case' : 'control'} group recruitment`
-          ]}
-          chartTypes={['pie', 'bar', 'trend']}
-        />
+
 
         {/* Detailed Parameters Card */}
         <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
