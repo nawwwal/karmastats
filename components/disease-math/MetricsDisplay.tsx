@@ -19,17 +19,24 @@ const formatNumber = (value: number) => {
 };
 
 export function MetricsDisplay({ results, animated = true }: MetricsDisplayProps) {
-  // Transform the results into the format expected by StatisticalSummary
+  const populationSize =
+    (results.susceptible?.[0] || 0) +
+    (results.exposed?.[0] || 0) +
+    (results.infected?.[0] || 0) +
+    (results.recovered?.[0] || 0) +
+    (results.deceased?.[0] || 0) +
+    (results.vaccinated?.[0] || 0);
+
   const diseaseModelResults = {
     metrics: {
       peakInfected: Math.round(results.peakInfection),
       r0: results.r0,
-      attackRate: results.totalCases / (((results as any).populationSize) || 100000), // Assuming population size
+      attackRate: results.totalCases / (populationSize || 1),
       totalDeaths: Math.round(results.totalDeaths),
       mortalityRate: results.totalDeaths / results.totalCases,
       peakDay: results.peakDay
     },
-    populationSize: (results as any).populationSize || 100000
+    populationSize
   };
 
   return (

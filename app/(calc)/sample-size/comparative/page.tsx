@@ -4,7 +4,12 @@ import { useState } from "react";
 import { CaseControlForm } from "@/components/sample-size/CaseControlForm";
 import { CohortForm } from "@/components/sample-size/CohortForm";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
-import { EnhancedTabs } from '@/components/ui/enhanced-tabs';
+import {
+  EnhancedTabs,
+  EnhancedTabsList,
+  EnhancedTabsTrigger,
+  EnhancedTabsContent,
+} from '@/components/ui/enhanced-tabs';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,14 +55,28 @@ export default function ComparativeStudyPage() {
       <EnhancedTabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="w-full"
+        className="space-y-4"
       >
-        {activeTab === "case-control" && (
+        <EnhancedTabsList className="grid w-full grid-cols-2" variant="modern">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <EnhancedTabsTrigger key={tab.value} value={tab.value} variant="modern">
+                <div className="flex items-center gap-2">
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </div>
+              </EnhancedTabsTrigger>
+            );
+          })}
+        </EnhancedTabsList>
+
+        <EnhancedTabsContent value="case-control">
           <CaseControlForm onResultsChange={setResults} />
-        )}
-        {activeTab === "cohort" && (
+        </EnhancedTabsContent>
+        <EnhancedTabsContent value="cohort">
           <CohortForm onResultsChange={setResults} />
-        )}
+        </EnhancedTabsContent>
       </EnhancedTabs>
     </div>
   );
