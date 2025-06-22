@@ -7,7 +7,12 @@ import { OneArmSurvivalForm } from "@/components/sample-size/OneArmSurvivalForm"
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
-import { EnhancedTabs } from '@/components/ui/enhanced-tabs';
+import {
+  EnhancedTabs,
+  EnhancedTabsList,
+  EnhancedTabsTrigger,
+  EnhancedTabsContent,
+} from '@/components/ui/enhanced-tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, Target, Activity } from 'lucide-react';
 
@@ -41,9 +46,23 @@ export default function SurvivalAnalysisPage() {
       <EnhancedTabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="w-full"
+        className="space-y-4"
       >
-        {activeTab === "log-rank" && (
+        <EnhancedTabsList className="grid w-full grid-cols-3" variant="modern">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <EnhancedTabsTrigger key={tab.value} value={tab.value} variant="modern">
+                <div className="flex items-center gap-2">
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </div>
+              </EnhancedTabsTrigger>
+            );
+          })}
+        </EnhancedTabsList>
+
+        <EnhancedTabsContent value="log-rank">
           <Card>
             <CardHeader>
               <CardTitle>Log-Rank Test Sample Size</CardTitle>
@@ -55,9 +74,9 @@ export default function SurvivalAnalysisPage() {
               <LogRankForm onResultsChange={setResults} />
             </CardContent>
           </Card>
-        )}
+        </EnhancedTabsContent>
 
-        {activeTab === "cox" && (
+        <EnhancedTabsContent value="cox">
           <Card>
             <CardHeader>
               <CardTitle>Cox Proportional Hazards Sample Size</CardTitle>
@@ -69,9 +88,9 @@ export default function SurvivalAnalysisPage() {
               <CoxRegressionForm onResultsChange={setResults} />
             </CardContent>
           </Card>
-        )}
+        </EnhancedTabsContent>
 
-        {activeTab === "one-arm" && (
+        <EnhancedTabsContent value="one-arm">
           <Card>
             <CardHeader>
               <CardTitle>One-Arm Survival Study Sample Size</CardTitle>
@@ -83,7 +102,7 @@ export default function SurvivalAnalysisPage() {
               <OneArmSurvivalForm onResultsChange={setResults} />
             </CardContent>
           </Card>
-        )}
+        </EnhancedTabsContent>
       </EnhancedTabs>
     </div>
   );

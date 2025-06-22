@@ -129,6 +129,7 @@ export interface LogisticRegressionResult {
     aic: number;
     iterations: number;
     chartData?: any;
+    chartOptions?: any;
     chartComponent?: React.ReactNode;
 }
 
@@ -220,6 +221,7 @@ export interface MultipleRegressionResult {
   X: number[][];
   y: number[];
   chartData?: any;
+  chartOptions?: any;
   chartComponent?: React.ReactNode;
 }
 
