@@ -2,19 +2,22 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AnimatedGradient } from "@/components/ui/animated-gradient";
 
 interface NutritionalAnalysisProps {
   calorieAdequacy: number;
   proteinAdequacy: number;
   perCUCalories: number;
   perCUProtein: number;
+  animated?: boolean;
 }
 
 export function NutritionalAnalysis({
   calorieAdequacy,
   proteinAdequacy,
   perCUCalories,
-  perCUProtein
+  perCUProtein,
+  animated = true
 }: NutritionalAnalysisProps) {
   // Helper functions
   const getAdequacyColor = (percentage: number) => {
@@ -86,8 +89,16 @@ export function NutritionalAnalysis({
     <>
       <h4 className="font-semibold text-lg mb-4">📊 Nutritional Adequacy Analysis</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-4 text-center">
+        <Card className="relative overflow-hidden">
+          {animated && (
+            <AnimatedGradient
+              colors={["hsl(var(--warning) / 0.3)", "hsl(var(--primary) / 0.2)"]}
+              speed={3}
+              blur="medium"
+              className="pointer-events-none"
+            />
+          )}
+          <CardContent className="relative z-10 p-4 text-center">
             <div className={`text-3xl font-bold ${getAdequacyColor(calorieAdequacy)}`}>
               {calorieAdequacy.toFixed(1)}%
             </div>
@@ -97,8 +108,16 @@ export function NutritionalAnalysis({
             </Badge>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+        <Card className="relative overflow-hidden">
+          {animated && (
+            <AnimatedGradient
+              colors={["hsl(var(--success) / 0.3)", "hsl(var(--secondary) / 0.2)"]}
+              speed={2.5}
+              blur="medium"
+              className="pointer-events-none"
+            />
+          )}
+          <CardContent className="relative z-10 p-4 text-center">
             <div className={`text-3xl font-bold ${getAdequacyColor(proteinAdequacy)}`}>
               {proteinAdequacy.toFixed(1)}%
             </div>

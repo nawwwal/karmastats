@@ -928,11 +928,18 @@ export default function FamilyStudyPage() {
     <ToolPageWrapper
       title="Family Health Study Assessment"
       description="Comprehensive family health assessment based on ICMR-NIN Guidelines 2020 and Community Medicine standards"
-      category="Family Health Study"
       onReset={handleReset}
-      resultsSection={renderResults()}
+      backHref="/family-study"
+      backLabel="Family Study"
     >
-      {renderInputForm()}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          {renderInputForm()}
+        </div>
+        <div>
+          {renderResults()}
+        </div>
+      </div>
     </ToolPageWrapper>
   );
 }

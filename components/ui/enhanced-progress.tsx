@@ -3,6 +3,7 @@
 import * as React from "react"
 import * as ProgressPrimitive from "@radix-ui/react-progress"
 import { cn } from "@/lib/utils"
+import { NumberFlowDisplay } from "./number-flow"
 
 export interface EnhancedProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
@@ -130,7 +131,11 @@ const EnhancedProgress = React.forwardRef<
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>Progress</span>
           <span className="font-medium">
-            {Math.round(displayValue || 0)}%
+            <NumberFlowDisplay
+              value={Math.round(displayValue || 0)}
+              suffix="%"
+              format={{ maximumFractionDigits: 0 }}
+            />
           </span>
         </div>
       )}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EnhancedCard, EnhancedCardContent, EnhancedCardDescription, EnhancedCardHeader, EnhancedCardTitle } from '@/components/ui/enhanced-card';
 import { EnhancedButton } from '@/components/ui/enhanced-button';
+import { NumberFlowDisplay } from '@/components/ui/number-flow';
 import Link from 'next/link';
 import {
   Calculator,
@@ -196,7 +197,14 @@ const StatCard = ({ icon, number, description, detail }: {
         {icon}
       </div>
       <div className="space-y-2">
-        <div className="text-3xl font-semibold tracking-tight text-gradient">{number}</div>
+        <div className="text-3xl font-semibold tracking-tight text-gradient">
+          <NumberFlowDisplay
+            value={parseFloat(number.replace(/[^\d.-]/g, '')) || 0}
+            suffix={number.replace(/[\d.-]/g, '')}
+            format={{ notation: "standard" }}
+            className="text-3xl font-semibold"
+          />
+        </div>
         <div className="font-medium text-foreground">{description}</div>
         <div className="text-sm text-muted-foreground">{detail}</div>
       </div>

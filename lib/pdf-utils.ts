@@ -271,11 +271,11 @@ export async function generateModernPDF(config: PDFReportConfig): Promise<void> 
       const bgColor = isOrange ? [247, 115, 22] : [234, 179, 8]; // primary : secondary
       const textColor = [255, 255, 255];
 
-      doc.setFillColor(...bgColor);
+      doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
       doc.roundedRect(margin, yPosition, contentWidth, resultBoxHeight, 5, 5, 'F');
 
       // Result label
-      doc.setTextColor(...textColor);
+      doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       doc.text(result.label, margin + 10, yPosition + 8);

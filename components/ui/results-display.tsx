@@ -7,6 +7,8 @@ import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { TrendingUp, Target, Info, AlertCircle } from 'lucide-react';
+import { NumberFlowDisplay } from './number-flow';
+import { AnimatedGradient } from './animated-gradient';
 
 interface ResultItem {
   label: string;
@@ -27,6 +29,8 @@ interface ResultsDisplayProps {
   };
   additionalContent?: React.ReactNode;
   showInterpretation?: boolean;
+  animated?: boolean;
+  animationColors?: string[];
 }
 
 export function ResultsDisplay({
@@ -34,28 +38,53 @@ export function ResultsDisplay({
   results,
   interpretation,
   additionalContent,
-  showInterpretation = true
+  showInterpretation = true,
+  animated = true,
+  animationColors = [
+    "hsl(var(--primary) / 0.3)",
+    "hsl(var(--secondary) / 0.25)",
+    "hsl(var(--accent) / 0.2)"
+  ]
 }: ResultsDisplayProps) {
   const formatValue = (value: string | number, format?: string, unit?: string) => {
-    let formattedValue = value;
-
     if (typeof value === 'number') {
       switch (format) {
         case 'percentage':
-          formattedValue = `${value.toFixed(2)}%`;
-          break;
+          return (
+            <NumberFlowDisplay
+              value={value}
+              suffix="%"
+              format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+            />
+          );
         case 'decimal':
-          formattedValue = value.toFixed(4);
-          break;
+          return (
+            <NumberFlowDisplay
+              value={value}
+              suffix={unit ? ` ${unit}` : ''}
+              format={{ minimumFractionDigits: 4, maximumFractionDigits: 4 }}
+            />
+          );
         case 'integer':
-          formattedValue = Math.round(value).toString();
-          break;
+          return (
+            <NumberFlowDisplay
+              value={Math.round(value)}
+              suffix={unit ? ` ${unit}` : ''}
+              format={{ maximumFractionDigits: 0 }}
+            />
+          );
         default:
-          formattedValue = value.toFixed(2);
+          return (
+            <NumberFlowDisplay
+              value={value}
+              suffix={unit ? ` ${unit}` : ''}
+              format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+            />
+          );
       }
     }
 
-    return unit ? `${formattedValue} ${unit}` : formattedValue;
+    return unit ? `${value} ${unit}` : value;
   };
 
   // Group results by category
@@ -69,8 +98,16 @@ export function ResultsDisplay({
       {primaryResults.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {primaryResults.map((result, index) => (
-            <Card key={index} className="bg-primary/5 border-primary/20">
-              <CardContent className="p-4 text-center">
+            <Card key={index} className="relative bg-primary/5 border-primary/20 overflow-hidden">
+              {animated && (
+                <AnimatedGradient
+                  colors={animationColors}
+                  speed={3}
+                  blur="medium"
+                  className="pointer-events-none"
+                />
+              )}
+              <CardContent className="relative z-10 p-4 text-center">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">{result.label}</p>
                   <p className="text-2xl font-bold text-primary">
@@ -84,14 +121,22 @@ export function ResultsDisplay({
       )}
 
       {/* Detailed Results Table */}
-      <Card>
-        <CardHeader>
+      <Card className="relative overflow-hidden">
+        {animated && (
+          <AnimatedGradient
+            colors={animationColors}
+            speed={4}
+            blur="heavy"
+            className="pointer-events-none opacity-40"
+          />
+        )}
+        <CardHeader className="relative z-10">
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-5 w-5 text-primary" />
             <span>{title}</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative z-10">
           <Table>
             <TableHeader>
               <TableRow>

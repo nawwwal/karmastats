@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { NumberFlowDisplay } from "@/components/ui/number-flow";
 import {
   Form,
   FormControl,
@@ -327,10 +328,30 @@ export function IndependentTTestForm() {
                 <CardTitle>Results</CardTitle>
             </CardHeader>
             <CardContent>
-                <p>Required sample size for Group 1: <strong>{result.group1Size}</strong></p>
-                <p>Required sample size for Group 2: <strong>{result.group2Size}</strong></p>
-                <p>Total required sample size: <strong>{result.totalSize}</strong></p>
-                <p>Effect size (Cohen's d): <strong>{result.cohensD.toFixed(3)}</strong> ({result.effectSizeInterpretation})</p>
+                <p>Required sample size for Group 1: <strong>
+                  <NumberFlowDisplay
+                    value={result.group1Size}
+                    format={{ maximumFractionDigits: 0 }}
+                  />
+                </strong></p>
+                <p>Required sample size for Group 2: <strong>
+                  <NumberFlowDisplay
+                    value={result.group2Size}
+                    format={{ maximumFractionDigits: 0 }}
+                  />
+                </strong></p>
+                <p>Total required sample size: <strong>
+                  <NumberFlowDisplay
+                    value={result.totalSize}
+                    format={{ maximumFractionDigits: 0 }}
+                  />
+                </strong></p>
+                <p>Effect size (Cohen's d): <strong>
+                  <NumberFlowDisplay
+                    value={result.cohensD}
+                    format={{ minimumFractionDigits: 3, maximumFractionDigits: 3 }}
+                  />
+                </strong> ({result.effectSizeInterpretation})</p>
                 <Button onClick={() => generatePdf(form.getValues(), result)} className="mt-4">Download PDF</Button>
             </CardContent>
            </Card>

@@ -5,10 +5,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import { HelpCircle, Info } from "lucide-react"
 
-interface FieldPopoverProps {
+export interface FieldPopoverProps {
   children: ReactNode
   title?: string
-  content: string
+  content?: string
   examples?: string[]
   validRange?: {
     min?: number | string
@@ -59,9 +59,11 @@ export function FieldPopover({
               </div>
             )}
 
-            <div className="text-sm text-muted-foreground leading-relaxed">
-              {content}
-            </div>
+            {content && (
+              <div className="text-sm text-muted-foreground leading-relaxed">
+                {content}
+              </div>
+            )}
 
             {validRange && (
               <div className="text-xs px-2 py-1 bg-secondary/10 rounded border border-secondary/20">

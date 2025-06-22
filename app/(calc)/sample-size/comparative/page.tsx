@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { NumberFlowDisplay } from '@/components/ui/number-flow';
 import {
   Users,
   BarChart3,
@@ -85,7 +86,11 @@ export default function ComparativeStudyPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
-                  {(isCaseControl ? interpretation.nCases : interpretation.nExposed).toLocaleString()}
+                  <NumberFlowDisplay
+                    value={isCaseControl ? interpretation.nCases : interpretation.nExposed}
+                    format={{ notation: "standard" }}
+                    className="text-2xl font-bold"
+                  />
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {isCaseControl ? 'Cases Required' : 'Exposed Group'}
@@ -101,7 +106,11 @@ export default function ComparativeStudyPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-secondary">
-                  {(isCaseControl ? interpretation.nControls : interpretation.nUnexposed).toLocaleString()}
+                  <NumberFlowDisplay
+                    value={isCaseControl ? interpretation.nControls : interpretation.nUnexposed}
+                    format={{ notation: "standard" }}
+                    className="text-2xl font-bold"
+                  />
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {isCaseControl ? 'Controls Required' : 'Unexposed Group'}
@@ -117,7 +126,11 @@ export default function ComparativeStudyPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
-                  {interpretation.totalSample.toLocaleString()}
+                  <NumberFlowDisplay
+                    value={interpretation.totalSample}
+                    format={{ notation: "standard" }}
+                    className="text-2xl font-bold"
+                  />
                 </div>
                 <div className="text-sm text-muted-foreground">Total Sample Size</div>
                 <div className="text-xs mt-1">

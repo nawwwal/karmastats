@@ -164,6 +164,15 @@ const config = {
           "100%": { backgroundPosition: "400% 0%" },
         },
 
+        // Background gradient animation for AnimatedGradient component
+        backgroundGradient: {
+          "0%": { transform: `translate(calc(var(--tx-1) * 100%), calc(var(--ty-1) * 100%))` },
+          "25%": { transform: `translate(calc(var(--tx-2) * 100%), calc(var(--ty-2) * 100%))` },
+          "50%": { transform: `translate(calc(var(--tx-3) * 100%), calc(var(--ty-3) * 100%))` },
+          "75%": { transform: `translate(calc(var(--tx-4) * 100%), calc(var(--ty-4) * 100%))` },
+          "100%": { transform: `translate(calc(var(--tx-1) * 100%), calc(var(--ty-1) * 100%))` },
+        },
+
         // Floating animations - Gentler movements
         floatGentle: {
           "0%, 100%": { transform: "translateY(0px)" },
@@ -260,6 +269,9 @@ const config = {
         meshMove: "meshMove 60s ease-in-out infinite",
         rainbowShift: "rainbowShift 30s ease-in-out infinite",
         shimmer: "shimmer 8s ease-in-out infinite",
+
+        // Background gradient animation for AnimatedGradient component
+        "background-gradient": "backgroundGradient var(--background-gradient-speed, 20s) ease-in-out infinite",
 
         // Floating animations - Removed
         floatGentle: "none",

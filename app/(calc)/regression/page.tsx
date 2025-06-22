@@ -16,6 +16,8 @@ import { LogisticRegressionForm } from "@/components/regression/LogisticRegressi
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AnimatedGradient } from "@/components/ui/animated-gradient";
+import { StatisticalSummary } from "@/components/ui/statistical-summary";
 import { TrendingUp, BarChart3, Activity, Target } from "lucide-react";
 
 export default function RegressionPage() {
@@ -156,80 +158,12 @@ export default function RegressionPage() {
           </CardHeader>
         </Card>
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {(results.rSquared || 0).toFixed(3)}
-                </div>
-                <div className="text-sm text-muted-foreground">R-Squared</div>
-                <div className="text-xs mt-1">
-                  {((results.rSquared || 0) * 100).toFixed(1)}% variance explained
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {results.adjustedRSquared !== undefined && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-secondary">
-                    {results.adjustedRSquared.toFixed(3)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Adjusted R²</div>
-                  <div className="text-xs mt-1">Adjusted for predictors</div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {results.correlation !== undefined && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-accent-foreground">
-                    {results.correlation.toFixed(3)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Correlation</div>
-                  <div className="text-xs mt-1">Strength of relationship</div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {results.standardError !== undefined && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold">
-                    {results.standardError.toFixed(3)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Std. Error</div>
-                  <div className="text-xs mt-1">Prediction accuracy</div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {results.F !== undefined && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold">
-                    {results.F.toFixed(2)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">F-Statistic</div>
-                  <div className="text-xs mt-1">
-                    p = {results.fPValue?.toExponential(2) || 'N/A'}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        {/* Modern Key Metrics */}
+        <StatisticalSummary
+          results={results}
+          type="regression"
+          title="Key Statistical Metrics"
+        />
 
         {/* Model Equation */}
         <Card>
@@ -372,11 +306,18 @@ export default function RegressionPage() {
     <ToolPageWrapper
       title="Regression Analysis"
       description="Explore relationships between variables using various regression techniques"
-      category="Statistical Analysis"
       onReset={handleReset}
-      resultsSection={renderResults()}
+      backHref="/"
+      backLabel="Home"
     >
-      {renderInputForm()}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          {renderInputForm()}
+        </div>
+        <div>
+          {renderResults()}
+        </div>
+      </div>
     </ToolPageWrapper>
   );
 }
