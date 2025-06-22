@@ -104,7 +104,7 @@ export function DiseaseMathPage() {
       return results.modelType === 'advanced' ? 'Advanced SEIRDV Model' : 'Standard SEIR Model';
     };
 
-    const getSeverityCategory = () => {
+    const getSeverityCategory = (): 'critical' | 'warning' | 'secondary' | 'success' => {
       const attackRate = results.metrics?.attackRate || 0;
       if (attackRate >= 0.6) return 'critical';
       if (attackRate >= 0.3) return 'warning';
@@ -132,20 +132,20 @@ export function DiseaseMathPage() {
         value: (results.metrics?.attackRate || 0) * 100,
         format: "percentage" as const,
         unit: "%",
-        category: getSeverityCategory(),
+        category: getSeverityCategory() as 'critical' | 'warning' | 'secondary' | 'success',
         highlight: true,
         interpretation: "Percentage of population that gets infected",
         benchmark: {
           value: 30,
           label: "Moderate epidemic threshold",
-          comparison: (results.metrics?.attackRate || 0) * 100 > 30 ? 'above' : 'below'
+          comparison: ((results.metrics?.attackRate || 0) * 100 > 30 ? 'above' : 'below') as 'above' | 'below'
         }
       },
       {
         label: "R₀ (Basic Reproduction Number)",
         value: results.metrics?.r0 || 0,
         format: "decimal" as const,
-        category: (results.metrics?.r0 || 0) > 1 ? "warning" : "success",
+        category: ((results.metrics?.r0 || 0) > 1 ? "warning" : "success") as 'warning' | 'success',
         interpretation: (results.metrics?.r0 || 0) > 1 ? "Epidemic potential (R₀ > 1)" : "Disease will die out (R₀ < 1)"
       },
       {
