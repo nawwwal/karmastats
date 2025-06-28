@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -95,11 +95,11 @@ export default function DiagnosticTestPage() {
             onSubmit(defaultData);
         }, 100);
         return () => clearTimeout(timer);
-    }, []);
+    }, [form, onSubmit]);
 
     const watchStudyDesign = form.watch('studyDesign');
 
-    const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    const onSubmit = useCallback((data: z.infer<typeof FormSchema>) => {
         try {
             setError(null);
             setResults(null);
@@ -166,7 +166,7 @@ export default function DiagnosticTestPage() {
                 setError(err.message);
             }
         }
-    };
+    }, [activeTab, form]);
 
     const handleReset = () => {
         setResults(null);

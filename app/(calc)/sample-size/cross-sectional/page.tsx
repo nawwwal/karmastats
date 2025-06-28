@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -54,9 +54,9 @@ export default function CrossSectionalPage() {
             onSubmit(defaultData);
         }, 100);
         return () => clearTimeout(timer);
-    }, []);
+    }, [form, onSubmit]);
 
-    const onSubmit = (data: CrossSectionalInput) => {
+    const onSubmit = useCallback((data: CrossSectionalInput) => {
         try {
             setError(null);
             const result = calculateCrossSectionalSampleSize(data);
@@ -77,7 +77,7 @@ export default function CrossSectionalPage() {
                 setError(err.message);
             }
         }
-    };
+    }, [form]);
 
     const handleReset = () => {
         setResults(null);
