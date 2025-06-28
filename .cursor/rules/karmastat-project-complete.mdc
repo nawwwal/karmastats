@@ -44,7 +44,7 @@ alwaysApply: true
 - **PDF**: jsPDF for export, PDF.js for import
 
 ### **Project Structure**
-```txt
+\`\`\`txt
 /karmastats/
 ├─ app/                   # Next.js App Router
 │  ├─ (calc)/            # Calculator routes
@@ -66,7 +66,7 @@ alwaysApply: true
 │  ├─ sample-size/      # Sample size calculator components
 │  └─ family-study/     # Family study components
 └─ /karmastats-old/     # Legacy HTML reference (read-only)
-```
+\`\`\`
 
 ### **Validation Architecture**
 - **Backend**: Comprehensive Zod schemas for all calculation inputs
@@ -80,7 +80,7 @@ alwaysApply: true
 ## 3. Design System & UI Standards
 
 ### **Theme System** (Centralized in `lib/theme.ts`)
-```typescript
+\`\`\`typescript
 export const karmaTheme = {
   primary: '#FF8C42',    // Orange (from legacy karmastat_comparative_fixed.html)
   secondary: '#2C5282',  // Blue
@@ -90,7 +90,7 @@ export const karmaTheme = {
   warning: '#FFEB3B',    // Warning states
   destructive: '#F44336' // Error states
 }
-```
+\`\`\`
 
 ### **Typography**
 - **Primary**: Inter (body text, clean professional appearance)
@@ -107,7 +107,7 @@ export const karmaTheme = {
 ### **Enhanced UI Components**
 
 #### **ModernResultsDisplay** (`components/ui/modern-results-display.tsx`)
-```typescript
+\`\`\`typescript
 interface ModernResultsDisplayProps {
   title?: string;
   metrics: ModernMetricCard[];
@@ -128,7 +128,7 @@ interface ModernMetricCard {
   format?: 'number' | 'percentage' | 'decimal' | 'integer' | 'currency';
   category?: 'primary' | 'secondary' | 'success' | 'warning' | 'destructive' | 'info';
 }
-```
+\`\`\`
 
 #### **StatisticalSummary** (`components/ui/statistical-summary.tsx`)
 - **Automated Interpretation**: P-value significance (ns, *, **, ***, ****)
@@ -137,14 +137,14 @@ interface ModernMetricCard {
 - **Supported Types**: `regression`, `disease-model`, `sample-size`, `ttest`, `correlation`
 
 #### **AnimatedGradient System**
-```typescript
+\`\`\`typescript
 // Usage pattern for results cards
 <AnimatedGradient
   colors={["hsl(var(--primary) / 0.3)", "hsl(var(--secondary) / 0.2)"]}
   speed={3}
   blur="medium"
 />
-```
+\`\`\`
 - **Performance**: Debounced dimension tracking, hardware-accelerated CSS
 - **Accessibility**: Optional animations via `animated={false}` prop
 - **Color Schemes**: Module-specific (disease: destructive/warning, regression: primary/secondary)
@@ -201,7 +201,7 @@ interface ModernMetricCard {
 5. **Follow Constraints**: Maximum 2 fields per line, single-column layout
 
 ### **Form Implementation Pattern**
-```typescript
+\`\`\`typescript
 // Standard form implementation
 const form = useForm<z.infer<typeof CalculatorSchema>>({
   resolver: zodResolver(CalculatorSchema),
@@ -212,10 +212,10 @@ const onSubmit = (values: z.infer<typeof CalculatorSchema>) => {
   const results = calculateFunction(values);
   setResults(results);
 };
-```
+\`\`\`
 
 ### **UI Component Pattern**
-```typescript
+\`\`\`typescript
 // Consistent UI structure
 <ToolPageWrapper title="Calculator Name">
   <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -233,10 +233,10 @@ const onSubmit = (values: z.infer<typeof CalculatorSchema>) => {
     />
   )}
 </ToolPageWrapper>
-```
+\`\`\`
 
 ### **Validation Schema Pattern**
-```typescript
+\`\`\`typescript
 const CalculatorSchema = z.object({
   // Statistical parameters with proper constraints
   significanceLevel: z.number().min(0.01).max(0.10),
@@ -246,7 +246,7 @@ const CalculatorSchema = z.object({
 }).refine((data) => {
   // Cross-field validation logic
 }, { message: "Custom validation message" });
-```
+\`\`\`
 
 ---
 
@@ -333,7 +333,7 @@ const CalculatorSchema = z.object({
 - **Focus Indicators**: Clear focus states for keyboard navigation
 
 ### **Navigation Structure**
-```
+\`\`\`
 Main Navigation:
 ├── Home (Landing page)
 ├── Calculators
@@ -346,7 +346,7 @@ Main Navigation:
 │   ├── ICMR Guidelines
 │   └── WHO Standards
 └── About Us
-```
+\`\`\`
 
 **Responsive Behavior**:
 - **Desktop**: Full sidebar visible

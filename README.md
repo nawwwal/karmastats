@@ -42,7 +42,7 @@ First, make sure you've got Node.js (v18 or later is a good bet!) and your favor
 
 Then, fire up the development server:
 
-```bash
+\`\`\`bash
 npm run dev
 # or
 yarn dev
@@ -50,7 +50,7 @@ yarn dev
 pnpm dev
 # or
 bun dev
-```
+\`\`\`
 
 Point your browser to [http://localhost:3000](http://localhost:3000) and voilà!
 

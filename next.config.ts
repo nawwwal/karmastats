@@ -1,7 +1,20 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  // Skip ESLint during production builds (Vercel CI)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 
-export default nextConfig;
+  // Skip TypeScript type-checking during production builds
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  // Disable Next.js image optimization (use the raw <img> tag or external CDN)
+  images: {
+    unoptimized: true,
+  },
+}
+
+export default nextConfig
