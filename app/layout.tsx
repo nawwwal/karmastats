@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Suspense } from "react";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
@@ -39,7 +40,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LayoutWrapper>
-            {children}
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+              {children}
+            </Suspense>
           </LayoutWrapper>
           <SpeedInsightsAnalytics />
         </ThemeProvider>
