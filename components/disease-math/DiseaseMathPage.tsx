@@ -27,7 +27,7 @@ export function DiseaseMathPage() {
 
   const renderInputForm = () => (
     <ErrorBoundary>
-      <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+              <Card className="shadow-lg border-border bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-2xl flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-primary/10">

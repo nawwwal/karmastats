@@ -95,6 +95,7 @@ React.useEffect(() => {
 
 ### Form Visual Enhancement Standards
 **Card-based Organization:**
+- Main form card: `shadow-lg border-border bg-card/80 backdrop-blur-sm` (theme-aware background)
 - Parameter groups in themed cards: `border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5`
 - Study design parameters: Primary theme coloring
 - Calculator-specific sections: Success/warning theme variants
@@ -104,6 +105,11 @@ React.useEffect(() => {
 - Section titles: `text-xl font-semibold`
 - Card descriptions: `text-sm text-muted-foreground leading-relaxed`
 - Form buttons: `px-12 py-4 text-lg font-semibold h-14` for primary actions
+
+**Theme-Aware Styling:**
+- **NEVER use hardcoded colors**: `bg-white`, `bg-black`, `text-black`, etc.
+- **Always use CSS custom properties**: `bg-card`, `bg-background`, `text-foreground`, `border-border`
+- **Maintain transparency**: Use `/80` opacity for subtle backdrop effects with theme colors
 
 ### PDF Upload Integration
 **Standardized PDF Parameter Extraction:**

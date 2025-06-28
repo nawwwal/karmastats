@@ -137,7 +137,7 @@ const EnhancedProgress = React.forwardRef<
 
           {/* Pulse effect overlay */}
           {variant === 'pulse' && (
-            <div className="absolute inset-0 bg-white/20 animate-pulse" />
+            <div className="absolute inset-0 bg-foreground/20 animate-pulse" />
           )}
         </ProgressPrimitive.Indicator>
 

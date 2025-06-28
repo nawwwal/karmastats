@@ -449,7 +449,7 @@ export default function ClinicalTrialsPage() {
     };
 
     const renderInputForm = () => (
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+        <Card className="shadow-lg border-border bg-card/80 backdrop-blur-sm">
             <CardContent className="space-y-8 pt-8">
                 {error && (
                     <Alert className="border-destructive/20 bg-destructive/10 text-left">
