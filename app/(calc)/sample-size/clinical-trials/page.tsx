@@ -101,6 +101,7 @@ export default function ClinicalTrialsPage() {
             }, 100);
             return () => clearTimeout(timer);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
@@ -449,18 +450,7 @@ export default function ClinicalTrialsPage() {
 
     const renderInputForm = () => (
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="pb-6">
-                <CardTitle className="text-2xl flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                        <Activity className="h-6 w-6 text-primary" />
-                    </div>
-                    <span>Clinical Trial Design Calculator</span>
-                </CardTitle>
-                <CardDescription className="text-lg">
-                    Calculate sample sizes for superiority, non-inferiority, and equivalence trials with realistic clinical scenarios
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-8">
+            <CardContent className="space-y-8 pt-8">
                 {error && (
                     <Alert className="border-destructive/20 bg-destructive/10 text-left">
                         <AlertCircle className="h-4 w-4 text-destructive" />
@@ -597,22 +587,22 @@ export default function ClinicalTrialsPage() {
                                         {superiorityOutcome === 'binary' && (
                                             <div className="space-y-6">
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                                    <PercentageField
+                                    <PercentageField
                                                     control={form.control}
                                                     name="controlRate"
-                                                        label="Control Group Success Rate (%)"
-                                                        description="Expected percentage of participants in control group achieving the primary outcome (e.g., 60% cure rate with standard therapy)"
-                                                        calculatorType="clinical-trial"
-                                                        size="md"
-                                                    />
-                                                    <PercentageField
+                                        label="Control Group Success Rate (%)"
+                                        description="Expected percentage of participants in control group achieving the primary outcome (e.g., 60% cure rate with standard therapy)"
+                                        calculatorType="clinical-trial"
+                                        size="md"
+                                    />
+                                    <PercentageField
                                                     control={form.control}
                                                     name="treatmentRate"
-                                                        label="Treatment Group Success Rate (%)"
-                                                        description="Expected percentage of participants in treatment group achieving the primary outcome (e.g., 75% cure rate with new therapy - 25% relative improvement)"
-                                                        calculatorType="clinical-trial"
-                                                        size="md"
-                                                    />
+                                        label="Treatment Group Success Rate (%)"
+                                        description="Expected percentage of participants in treatment group achieving the primary outcome (e.g., 75% cure rate with new therapy - 25% relative improvement)"
+                                        calculatorType="clinical-trial"
+                                        size="md"
+                                    />
                                                 </div>
                                             </div>
                                         )}

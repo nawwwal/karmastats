@@ -209,7 +209,7 @@ export function StatisticalFormField<T extends FieldValues>({
             )}
                          <Select
               onValueChange={field.onChange}
-              defaultValue={field.value}
+              value={field.value || ""}
               disabled={disabled}
             >
               <FormControl>
@@ -273,7 +273,17 @@ export function StatisticalFormField<T extends FieldValues>({
               onChange={(e) => {
                 const value = e.target.value
                 if (variant === 'percentage' || variant === 'number' || variant === 'sample-size' || variant === 'probability') {
-                  field.onChange(value === '' ? '' : Number(value))
+                  // Handle empty string or invalid numbers properly
+                  if (value === '' || value === null || value === undefined) {
+                    field.onChange('')
+                  } else {
+                    const numValue = Number(value)
+                    if (!isNaN(numValue)) {
+                      field.onChange(numValue)
+                    } else {
+                      field.onChange(value) // Keep as string if invalid number
+                    }
+                  }
                 } else {
                   field.onChange(value)
                 }
