@@ -424,11 +424,11 @@ export default function ClinicalTrialsPage() {
 
                 {/* Download Results Button */}
                 <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-                    <CardContent className="pt-6">
+                    <CardContent className="py-6">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="space-y-1 text-center sm:text-left">
+                            <div className="space-y-2 text-center sm:text-left">
                                 <h3 className="font-semibold text-lg">Export Your Results</h3>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                     Download a comprehensive PDF report with all calculations and interpretations
                                 </p>
                             </div>
@@ -436,7 +436,7 @@ export default function ClinicalTrialsPage() {
                                 type="button"
                                 onClick={generatePdf}
                                 size="lg"
-                                className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-3 text-base font-semibold"
+                                className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-3 text-base font-semibold shrink-0"
                             >
                                 <Download className="h-5 w-5 mr-3" />
                                 Download PDF Report
