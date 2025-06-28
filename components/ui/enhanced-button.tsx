@@ -23,13 +23,15 @@ const enhancedButtonVariants = cva(
         gradient: "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl font-semibold",
         glass: "border border-primary/20 hover:border-primary/40 shadow-lg hover:shadow-xl backdrop-blur-md bg-background/60 hover:bg-background/80",
         glow: "bg-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 font-medium",
-        shimmer: "bg-gradient-to-r from-primary to-secondary text-white shadow-lg hover:shadow-xl font-semibold"
+        shimmer: "bg-gradient-to-r from-primary to-secondary text-white shadow-lg hover:shadow-xl font-semibold",
+        neuomorphic: "bg-[#2C5282] text-white font-semibold transition-all duration-200 ease-in-out shadow-[8px_8px_16px_#1a3a5c,_-8px_-8px_16px_#3e6aa8] hover:shadow-[6px_6px_12px_#1a3a5c,_-6px_-6px_12px_#3e6aa8] active:shadow-[inset_4px_4px_8px_#1a3a5c,_inset_-4px_-4px_8px_#3e6aa8] active:scale-[0.98] focus:shadow-[8px_8px_16px_#1a3a5c,_-8px_-8px_16px_#3e6aa8,_0_0_0_3px_rgba(44,82,130,0.3)]"
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         xl: "h-12 rounded-lg px-10 text-base",
+        xxl: "h-14 rounded-lg px-12 text-lg",
         icon: "h-10 w-10",
       },
       animation: {
@@ -120,7 +122,9 @@ const EnhancedButton = React.forwardRef<HTMLButtonElement, EnhancedButtonProps>(
           variant === "outline" && "text-foreground hover:text-foreground",
           variant === "gradient" && "text-white hover:text-white",
           variant === "shimmer" && "text-white hover:text-white",
-          variant === "glow" && "text-white hover:text-white"
+          variant === "glow" && "text-white hover:text-white",
+          // Add neuomorphic styling class
+          variant === "neuomorphic" && "neuomorphic-button"
         )}
         ref={ref}
         disabled={isDisabled}
@@ -133,4 +137,19 @@ const EnhancedButton = React.forwardRef<HTMLButtonElement, EnhancedButtonProps>(
 )
 EnhancedButton.displayName = "EnhancedButton"
 
-export { EnhancedButton, enhancedButtonVariants }
+// Convenience component for the neuomorphic blue button
+const NeuomorphicButton = React.forwardRef<HTMLButtonElement, Omit<EnhancedButtonProps, 'variant'>>(
+  ({ size = "xxl", ...props }, ref) => {
+    return (
+      <EnhancedButton
+        ref={ref}
+        variant="neuomorphic"
+        size={size}
+        {...props}
+      />
+    )
+  }
+)
+NeuomorphicButton.displayName = "NeuomorphicButton"
+
+export { EnhancedButton, enhancedButtonVariants, NeuomorphicButton }

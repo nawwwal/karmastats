@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { EnhancedFormField } from '@/components/ui/enhanced-form-field';
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from "@/components/ui/separator";
 import { FieldPopover } from "@/components/ui/field-popover";
 import { getFieldExplanation } from "@/lib/field-explanations";
@@ -14,38 +18,82 @@ import {
   InterventionParams,
 } from "@/lib/infectious";
 
+const FormSchema = z.object({
+  // Disease Parameters
+  populationSize: z.number().min(1000, 'Population must be at least 1,000').max(100000000, 'Population too large'),
+  initialCases: z.number().min(1, 'Must have at least 1 initial case').max(10000, 'Too many initial cases'),
+  transmissionRate: z.number().min(0.01, 'Rate must be positive').max(10, 'Rate too high'),
+  incubationPeriod: z.number().min(1, 'Minimum 1 day').max(30, 'Maximum 30 days'),
+  recoveryRate: z.number().min(0.01, 'Rate must be positive').max(1, 'Rate too high'),
+  mortalityRate: z.number().min(0, 'Rate cannot be negative').max(0.1, 'Rate too high'),
+  simulationDays: z.number().min(30, 'Minimum 30 days').max(1095, 'Maximum 3 years'),
+  seasonality: z.number().min(0, 'Cannot be negative').max(0.8, 'Too high'),
+
+  // Intervention Parameters
+  socialDistancing: z.number().min(0, 'Cannot be negative').max(0.9, 'Too high'),
+  maskEffectiveness: z.number().min(0, 'Cannot be negative').max(0.8, 'Too high'),
+  vaccinationRate: z.number().min(0, 'Cannot be negative').max(0.05, 'Too high'),
+  vaccineEffectiveness: z.number().min(0.3, 'Too low to be effective').max(0.99, 'Cannot exceed 99%')
+});
+
 interface AdvancedModelProps {
   onResultsChange?: (results: any) => void;
 }
 
 export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
-  const [params, setParams] = useState<DiseaseModelParams>({
-    populationSize: 1000000,
-    initialCases: 10,
-    transmissionRate: 0.3,
-    incubationPeriod: 5, // Average incubation period in days
-    recoveryRate: 0.1, // Equivalent to a 10-day infectious period
-    mortalityRate: 0.02,
-    simulationDays: 180,
-    seasonality: 0.1, // 10% seasonal variation
-  });
-
-  const [interventions, setInterventions] = useState<InterventionParams>({
-    socialDistancing: 0.2,
-    maskEffectiveness: 0.1,
-    vaccinationRate: 0.005, // 0.5% of susceptible population per day
-    vaccineEffectiveness: 0.9, // 90% effective
-  });
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCalculate = async () => {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+    populationSize: 1000000,
+    initialCases: 10,
+    transmissionRate: 0.3,
+      incubationPeriod: 5,
+      recoveryRate: 0.1,
+    mortalityRate: 0.02,
+    simulationDays: 180,
+      seasonality: 0.1,
+    socialDistancing: 0.2,
+    maskEffectiveness: 0.1,
+      vaccinationRate: 0.005,
+      vaccineEffectiveness: 0.9
+    }
+  });
+
+  // Auto-calculate on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      form.handleSubmit(onSubmit)();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     setError(null);
 
     try {
-    const model = new DiseaseModel(params, interventions);
+      const diseaseParams: DiseaseModelParams = {
+        populationSize: data.populationSize,
+        initialCases: data.initialCases,
+        transmissionRate: data.transmissionRate,
+        incubationPeriod: data.incubationPeriod,
+        recoveryRate: data.recoveryRate,
+        mortalityRate: data.mortalityRate,
+        simulationDays: data.simulationDays,
+        seasonality: data.seasonality,
+      };
+
+      const interventionParams: InterventionParams = {
+        socialDistancing: data.socialDistancing,
+        maskEffectiveness: data.maskEffectiveness,
+        vaccinationRate: data.vaccinationRate,
+        vaccineEffectiveness: data.vaccineEffectiveness,
+      };
+
+      const model = new DiseaseModel(diseaseParams, interventionParams);
       const simulationResults = model.calculate();
 
       // Transform results to match the expected format
@@ -56,18 +104,18 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
         recovered: simulationResults.recovered,
         deceased: simulationResults.deceased,
         vaccinated: simulationResults.vaccinated || [],
-        populationSize: params.populationSize,
-        simulationDays: params.simulationDays,
-        interventions,
+        populationSize: data.populationSize,
+        simulationDays: data.simulationDays,
+        interventions: interventionParams,
         metrics: {
           peakInfected: simulationResults.peakInfection,
           peakDay: simulationResults.peakDay,
           totalDeaths: simulationResults.totalDeaths,
           totalCases: simulationResults.totalCases,
-          attackRate: simulationResults.totalCases / params.populationSize,
+          attackRate: simulationResults.totalCases / data.populationSize,
           r0: simulationResults.r0,
           herdImmunityThreshold: 1 - (1 / simulationResults.r0),
-          mortalityRate: params.mortalityRate,
+          mortalityRate: data.mortalityRate,
         }
       };
 
@@ -81,343 +129,398 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       {/* Disease Parameters */}
-          <div className="space-y-4">
-        <h3 className="text-lg font-medium">Disease Parameters</h3>
-
+        <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-lg">Disease Parameters</CardTitle>
+            <CardDescription>Core epidemiological parameters for the advanced SEIRDV model</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="populationSize"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'populationSize')}
               side="top"
             >
-              <Label htmlFor="population">Population Size</Label>
+                      <FormLabel>Population Size</FormLabel>
             </FieldPopover>
-              <Input
-                id="population"
+                    <FormControl>
+                      <EnhancedFormField
                 type="number"
-                value={params.populationSize}
-                onChange={(e) =>
-                  setParams({ ...params, populationSize: Number(e.target.value) })
-                }
-              min="1000"
-              max="100000000"
-              placeholder="Total population"
+                        placeholder="1,000,000"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={1000}
+                        max={100000000}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            <p className="text-xs text-muted-foreground">
-              Total number of individuals in the population
-            </p>
-            </div>
 
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="initialCases"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'initialCases')}
               side="top"
             >
-              <Label htmlFor="initialCases">Initial Cases</Label>
+                      <FormLabel>Initial Cases</FormLabel>
             </FieldPopover>
-              <Input
-                id="initialCases"
+                    <FormControl>
+                      <EnhancedFormField
                 type="number"
-                value={params.initialCases}
-                onChange={(e) =>
-                  setParams({ ...params, initialCases: Number(e.target.value) })
-                }
-              min="1"
-              max="10000"
-              placeholder="Initial infected"
+                        placeholder="10"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={1}
+                        max={10000}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            <p className="text-xs text-muted-foreground">
-              Number of infected individuals at start
-            </p>
-          </div>
             </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="transmissionRate"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'transmissionRate')}
               side="top"
             >
-              <Label htmlFor="transmissionRate">Base Transmission Rate (R₀)</Label>
+                      <FormLabel>Base Transmission Rate (R₀)</FormLabel>
             </FieldPopover>
-              <Input
-                id="transmissionRate"
+                    <FormControl>
+                      <EnhancedFormField
                 type="number"
                 step="0.01"
-                value={params.transmissionRate}
-                onChange={(e) =>
-                  setParams({ ...params, transmissionRate: Number(e.target.value) })
-                }
-              min="0"
-              max="10"
-              placeholder="2.5"
+                        placeholder="0.30"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0}
+                        max={10}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            <p className="text-xs text-muted-foreground">
-              Basic reproduction number without interventions
-            </p>
-            </div>
 
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="incubationPeriod"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'incubationPeriod')}
               side="top"
             >
-              <Label htmlFor="incubationPeriod">Incubation Period (days)</Label>
+                      <FormLabel>Incubation Period (days)</FormLabel>
             </FieldPopover>
-              <Input
-                id="incubationPeriod"
+                    <FormControl>
+                      <EnhancedFormField
                 type="number"
-                value={params.incubationPeriod}
-                onChange={(e) =>
-                  setParams({ ...params, incubationPeriod: Number(e.target.value) })
-                }
-              min="1"
-              max="30"
               placeholder="5"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={1}
+                        max={30}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            <p className="text-xs text-muted-foreground">
-              Average time from exposure to becoming infectious
-            </p>
-          </div>
             </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="recoveryRate"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'recoveryRate')}
               side="top"
             >
-              <Label htmlFor="recoveryRate">Recovery Rate (γ)</Label>
+                      <FormLabel>Recovery Rate (γ)</FormLabel>
             </FieldPopover>
-              <Input
-                id="recoveryRate"
+                    <FormControl>
+                      <EnhancedFormField
                 type="number"
                 step="0.01"
-                value={params.recoveryRate}
-                onChange={(e) =>
-                  setParams({ ...params, recoveryRate: Number(e.target.value) })
-                }
-              min="0"
-              max="1"
-              placeholder="0.1"
+                        placeholder="0.10"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0}
+                        max={1}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            <p className="text-xs text-muted-foreground">
-              Rate of recovery from infection (1/infectious period)
-            </p>
-            </div>
 
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="mortalityRate"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'mortalityRate')}
               side="top"
             >
-              <Label htmlFor="mortalityRate">Mortality Rate (μ)</Label>
+                      <FormLabel>Mortality Rate (μ)</FormLabel>
             </FieldPopover>
-              <Input
-                id="mortalityRate"
+                    <FormControl>
+                      <EnhancedFormField
                 type="number"
               step="0.001"
-                value={params.mortalityRate}
-                onChange={(e) =>
-                  setParams({ ...params, mortalityRate: Number(e.target.value) })
-                }
-              min="0"
-              max="0.1"
-              placeholder="0.02"
+                        placeholder="0.020"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0}
+                        max={0.1}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            <p className="text-xs text-muted-foreground">
-              Case fatality rate (proportion of infected who die)
-            </p>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="simulationDays"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'simulationDays')}
               side="top"
             >
-              <Label htmlFor="simulationDays">Simulation Days</Label>
+                      <FormLabel>Simulation Days</FormLabel>
             </FieldPopover>
-            <Input
-              id="simulationDays"
+                    <FormControl>
+                      <EnhancedFormField
               type="number"
-              value={params.simulationDays}
-              onChange={(e) =>
-                setParams({ ...params, simulationDays: Number(e.target.value) })
-              }
-              min="30"
-              max="1095"
               placeholder="180"
-            />
-            <p className="text-xs text-muted-foreground">
-              Duration of simulation in days
-            </p>
-          </div>
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={30}
+                        max={1095}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="seasonality"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'seasonality')}
               side="top"
             >
-              <Label htmlFor="seasonality">Seasonal Variation</Label>
+                      <FormLabel>Seasonal Variation</FormLabel>
             </FieldPopover>
-            <Input
-              id="seasonality"
+                    <FormControl>
+                      <EnhancedFormField
               type="number"
               step="0.01"
-              value={params.seasonality}
-              onChange={(e) =>
-                setParams({ ...params, seasonality: Number(e.target.value) })
-              }
-              min="0"
-              max="0.8"
-              placeholder="0.1"
-            />
-            <p className="text-xs text-muted-foreground">
-              Magnitude of seasonal transmission variation
-            </p>
+                        placeholder="0.10"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0}
+                        max={0.8}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
           </div>
-        </div>
-      </div>
-
-      <Separator />
+          </CardContent>
+        </Card>
 
       {/* Intervention Parameters */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Intervention Parameters</h3>
-
+        <Card className="bg-gradient-to-br from-secondary/5 to-primary/5 border-secondary/20">
+          <CardHeader>
+            <CardTitle className="text-lg">Intervention Parameters</CardTitle>
+            <CardDescription>Public health interventions and control measures</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="socialDistancing"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'socialDistancing')}
               side="top"
             >
-              <Label htmlFor="socialDistancing">Social Distancing Effectiveness</Label>
+                      <FormLabel>Social Distancing Effectiveness</FormLabel>
             </FieldPopover>
-            <Input
-              id="socialDistancing"
+                    <FormControl>
+                      <EnhancedFormField
               type="number"
               step="0.01"
-              value={interventions.socialDistancing}
-              onChange={(e) =>
-                setInterventions({
-                  ...interventions,
-                  socialDistancing: Number(e.target.value),
-                })
-              }
-              min="0"
-              max="0.9"
-              placeholder="0.2"
-            />
-            <p className="text-xs text-muted-foreground">
-              Reduction in transmission due to social distancing
-            </p>
-          </div>
+                        placeholder="0.20"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0}
+                        max={0.9}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="maskEffectiveness"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'maskEffectiveness')}
               side="top"
             >
-              <Label htmlFor="maskEffectiveness">Mask Effectiveness</Label>
+                      <FormLabel>Mask Effectiveness</FormLabel>
             </FieldPopover>
-            <Input
-              id="maskEffectiveness"
+                    <FormControl>
+                      <EnhancedFormField
               type="number"
               step="0.01"
-              value={interventions.maskEffectiveness}
-              onChange={(e) =>
-                setInterventions({
-                  ...interventions,
-                  maskEffectiveness: Number(e.target.value),
-                })
-              }
-              min="0"
-              max="0.8"
-              placeholder="0.1"
-            />
-            <p className="text-xs text-muted-foreground">
-              Reduction in transmission due to mask wearing
-            </p>
-          </div>
+                        placeholder="0.10"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0}
+                        max={0.8}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="vaccinationRate"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'vaccinationRate')}
               side="top"
             >
-              <Label htmlFor="vaccinationRate">Daily Vaccination Rate</Label>
+                      <FormLabel>Daily Vaccination Rate</FormLabel>
             </FieldPopover>
-            <Input
-              id="vaccinationRate"
+                    <FormControl>
+                      <EnhancedFormField
               type="number"
               step="0.001"
-              value={interventions.vaccinationRate}
-              onChange={(e) =>
-                setInterventions({
-                  ...interventions,
-                  vaccinationRate: Number(e.target.value),
-                })
-              }
-              min="0"
-              max="0.05"
               placeholder="0.005"
-            />
-            <p className="text-xs text-muted-foreground">
-              Proportion of susceptible population vaccinated daily
-            </p>
-          </div>
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0}
+                        max={0.05}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="vaccineEffectiveness"
+                render={({ field }) => (
+                  <FormItem>
             <FieldPopover
               {...getFieldExplanation('diseaseModel', 'vaccineEffectiveness')}
               side="top"
             >
-              <Label htmlFor="vaccineEffectiveness">Vaccine Effectiveness</Label>
+                      <FormLabel>Vaccine Effectiveness</FormLabel>
             </FieldPopover>
-            <Input
-              id="vaccineEffectiveness"
+                    <FormControl>
+                      <EnhancedFormField
               type="number"
               step="0.01"
-              value={interventions.vaccineEffectiveness}
-              onChange={(e) =>
-                setInterventions({
-                  ...interventions,
-                  vaccineEffectiveness: Number(e.target.value),
-                })
-              }
-              min="0.3"
-              max="0.99"
-              placeholder="0.9"
-            />
-            <p className="text-xs text-muted-foreground">
-              Proportion of vaccinated who develop immunity
-            </p>
+                        placeholder="0.90"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                        className="text-right"
+                        min={0.3}
+                        max={0.99}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
           </div>
-        </div>
-      </div>
-
-      <Separator />
-
-      {/* Controls */}
-      <div className="space-y-4">
-        <Button
-          onClick={handleCalculate}
-          disabled={isLoading}
-          className="w-full"
-        >
-          {isLoading ? 'Running Simulation...' : 'Run Advanced Simulation'}
-        </Button>
+          </CardContent>
+        </Card>
 
         {error && (
-                      <p className="text-destructive text-sm mt-2">{error}</p>
+          <Alert variant="destructive">
+            <AlertTitle>Simulation Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
-      </div>
-    </div>
+
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full h-14 text-lg font-semibold"
+          size="lg"
+        >
+          {isLoading ? 'Running Advanced Simulation...' : 'Run Advanced SEIRDV Simulation'}
+        </Button>
+      </form>
+    </Form>
   );
 }

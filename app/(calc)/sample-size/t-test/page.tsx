@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,7 +27,12 @@ import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { EnhancedTabs, EnhancedTabsList, EnhancedTabsTrigger, EnhancedTabsContent } from '@/components/ui/enhanced-tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Calculator, BarChart3, TrendingUp, Users, Target, AlertCircle, CheckCircle
+  PowerField,
+  AlphaField,
+  StatisticalFormField
+} from '@/components/ui/enhanced-form-field';
+import {
+  Calculator, BarChart3, TrendingUp, Users, Target, AlertCircle, CheckCircle, Download, FileUp
 } from 'lucide-react';
 
 type Results = IndependentSampleSizeOutput | PairedSampleSizeOutput | OneSampleSampleSizeOutput;
@@ -46,27 +51,36 @@ export default function TTestPage() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       // Common
-      significanceLevel: 5,
-      power: 80,
+      alpha: '5', // 5% alpha level
+      power: '80', // 80% power
       dropoutRate: 10,
 
       // Independent
-      group1Mean: 10,
-      group2Mean: 12,
-      pooledSD: 3,
+      group1Mean: 100, // Realistic baseline for many measurements
+      group2Mean: 105, // Moderate effect size difference
+      pooledSD: 15, // Realistic variability
       allocationRatio: 1,
 
       // Paired
-      meanDifference: 2,
-      sdDifference: 3,
-      correlation: 0.5,
+      meanDifference: 5, // Meaningful paired difference
+      sdDifference: 12, // Standard deviation of differences
+      correlation: 0.6, // Moderate-high correlation typical in paired studies
 
       // One-sample
-      sampleMean: 12,
-      populationMean: 10,
-      populationSD: 3,
+      sampleMean: 105, // Sample mean different from population
+      populationMean: 100, // Known population mean
+      populationSD: 15, // Population standard deviation
     },
   });
+
+  // Auto-calculate with default values on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const defaultData = form.getValues();
+      onSubmit(defaultData);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     try {
@@ -74,19 +88,26 @@ export default function TTestPage() {
       setResults(null);
       let result: Results;
 
+      // Convert string fields to numbers where needed
+      const processedData = {
+        ...data,
+        significanceLevel: data.alpha ? parseFloat(data.alpha) : 5,
+        power: data.power ? parseFloat(data.power) : 80,
+      };
+
       switch (activeTab) {
         case 'independent': {
-          const validatedData = IndependentSampleSizeSchema.parse(data);
+          const validatedData = IndependentSampleSizeSchema.parse(processedData);
           result = calculateIndependentSampleSize(validatedData);
           break;
         }
         case 'paired': {
-          const validatedData = PairedSampleSizeSchema.parse(data);
+          const validatedData = PairedSampleSizeSchema.parse(processedData);
           result = calculatePairedSampleSize(validatedData);
           break;
         }
         case 'one-sample': {
-          const validatedData = OneSampleSampleSizeSchema.parse(data);
+          const validatedData = OneSampleSampleSizeSchema.parse(processedData);
           result = calculateOneSampleSampleSize(validatedData);
           break;
         }
@@ -94,9 +115,18 @@ export default function TTestPage() {
           throw new Error("Invalid tab selection");
       }
       setResults(result);
+      form.clearErrors();
     } catch (err: any) {
       if (err instanceof z.ZodError) {
-        setError("Please fill in all required fields for the selected test type.");
+        err.errors.forEach((error) => {
+          if (error.path.length > 0) {
+            form.setError(error.path[0] as any, {
+              type: 'validation',
+              message: error.message,
+            });
+          }
+        });
+        setError(`Please check the highlighted fields: ${err.errors.map(e => e.message).join(', ')}`);
       } else {
         setError(err.message);
       }
@@ -106,7 +136,92 @@ export default function TTestPage() {
   const handleReset = () => {
     setResults(null);
     setError(null);
+    form.clearErrors();
     form.reset();
+  };
+
+  const generatePdf = async () => {
+    if (!results) return;
+
+    try {
+      const { generateModernPDF } = await import('@/lib/pdf-utils');
+      const formData = form.getValues();
+
+      let config: any = {
+        calculatorType: `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} T-Test`,
+        inputs: [],
+        results: [],
+        interpretation: {
+          recommendations: [
+            'Ensure data meets normality assumptions or consider non-parametric alternatives',
+            'For independent tests, verify homogeneity of variances (Levene test)',
+            'Report the effect size (Cohen\'s d) and its confidence interval alongside p-values',
+            'Consider increasing sample size by 10-20% to account for potential data quality issues'
+          ],
+          assumptions: [
+            'Data follows a normal distribution',
+            'Independent observations',
+            'Equal variances between groups (for independent t-test)',
+            'Continuous outcome variable'
+          ]
+        }
+      };
+
+      if ('totalSize' in results) {
+        config.title = "Independent Samples T-Test Analysis";
+        config.subtitle = "Two-Group Comparison Sample Size Calculation";
+        config.inputs = [
+          { label: "Group 1 Mean", value: formData.group1Mean },
+          { label: "Group 2 Mean", value: formData.group2Mean },
+          { label: "Pooled Standard Deviation", value: formData.pooledSD },
+          { label: "Allocation Ratio", value: formData.allocationRatio },
+          { label: "Significance Level", value: parseFloat(formData.alpha || '5'), unit: "%" },
+          { label: "Statistical Power", value: parseFloat(formData.power || '80'), unit: "%" }
+        ];
+        config.results = [
+          { label: "Total Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
+          { label: "Group 1 Sample Size", value: results.group1Size, category: "secondary", format: "integer" },
+          { label: "Group 2 Sample Size", value: results.group2Size, category: "secondary", format: "integer" },
+          { label: "Cohen's d (Effect Size)", value: results.cohensD, category: "statistical", format: "decimal", precision: 3 }
+        ];
+        config.interpretation.summary = `This independent samples t-test requires ${results.totalSize} participants total (${results.group1Size} in Group 1 and ${results.group2Size} in Group 2) to detect a difference between means of ${formData.group1Mean} and ${formData.group2Mean} with Cohen's d = ${results.cohensD.toFixed(3)} (${results.effectSizeInterpretation.toLowerCase()} effect size).`;
+      } else if ('pairsSize' in results) {
+        config.title = "Paired Samples T-Test Analysis";
+        config.subtitle = "Matched Pairs Comparison Sample Size Calculation";
+        config.inputs = [
+          { label: "Expected Mean Difference", value: formData.meanDifference },
+          { label: "Standard Deviation of Differences", value: formData.sdDifference },
+          { label: "Correlation between Pairs", value: formData.correlation },
+          { label: "Significance Level", value: parseFloat(formData.alpha || '5'), unit: "%" },
+          { label: "Statistical Power", value: parseFloat(formData.power || '80'), unit: "%" }
+        ];
+        config.results = [
+          { label: "Required Number of Pairs", value: results.pairsSize, highlight: true, category: "primary", format: "integer" },
+          { label: "Total Observations", value: results.totalObservations, category: "secondary", format: "integer" },
+          { label: "Cohen's d (Effect Size)", value: results.cohensD, category: "statistical", format: "decimal", precision: 3 }
+        ];
+        config.interpretation.summary = `This paired samples t-test requires ${results.pairsSize} matched pairs (${results.totalObservations} total observations) to detect a mean difference of ${formData.meanDifference} with Cohen's d = ${results.cohensD.toFixed(3)} (${results.effectSizeInterpretation.toLowerCase()} effect size).`;
+      } else if ('sampleSize' in results) {
+        config.title = "One-Sample T-Test Analysis";
+        config.subtitle = "Single Group vs Population Comparison Sample Size Calculation";
+        config.inputs = [
+          { label: "Expected Sample Mean", value: formData.sampleMean },
+          { label: "Population Mean (H₀)", value: formData.populationMean },
+          { label: "Population Standard Deviation", value: formData.populationSD },
+          { label: "Significance Level", value: parseFloat(formData.alpha || '5'), unit: "%" },
+          { label: "Statistical Power", value: parseFloat(formData.power || '80'), unit: "%" }
+        ];
+        config.results = [
+          { label: "Required Sample Size", value: results.sampleSize, highlight: true, category: "primary", format: "integer" },
+          { label: "Cohen's d (Effect Size)", value: results.cohensD, category: "statistical", format: "decimal", precision: 3 }
+        ];
+        config.interpretation.summary = `This one-sample t-test requires ${results.sampleSize} participants to detect a difference between the sample mean of ${formData.sampleMean} and population mean of ${formData.populationMean} with Cohen's d = ${results.cohensD.toFixed(3)} (${results.effectSizeInterpretation.toLowerCase()} effect size).`;
+      }
+
+      await generateModernPDF(config);
+    } catch (err: any) {
+      setError(`Failed to generate PDF: ${err.message}`);
+    }
   };
 
   const renderResults = () => {
@@ -284,6 +399,28 @@ export default function TTestPage() {
             </div>
           }
         />
+
+        {/* PDF Export Card */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+          <CardContent className="py-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-2 text-center sm:text-left">
+                <h3 className="font-semibold text-lg">Export Your Results</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Download comprehensive PDF report with calculations and interpretations
+                </p>
+              </div>
+              <Button
+                onClick={generatePdf}
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
+              >
+                <Download className="h-5 w-5 mr-3" />
+                Download PDF Report
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
@@ -463,31 +600,25 @@ export default function TTestPage() {
               </EnhancedTabsContent>
 
               {/* Common Parameters */}
-              <Card className="border-muted bg-muted/50 dark:bg-muted/20 dark:border-muted/30">
+              <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
                 <CardHeader>
                   <CardTitle className="text-lg">Statistical Parameters</CardTitle>
                   <CardDescription>Configure significance level, power, and other study parameters</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <FormField name="significanceLevel" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Significance Level (%)</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.1" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField name="power" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Statistical Power (%)</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="1" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <AlphaField
+                      control={form.control}
+                      name="alpha"
+                      calculatorType="t-test"
+                      size="md"
+                    />
+                    <PowerField
+                      control={form.control}
+                      name="power"
+                      calculatorType="t-test"
+                      size="md"
+                    />
                   </div>
                 </CardContent>
               </Card>

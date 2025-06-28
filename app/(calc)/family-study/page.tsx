@@ -12,9 +12,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Circle, AlertCircle, Download, Save, Printer, Users } from "lucide-react";
+import { CheckCircle, Circle, AlertCircle, Download, Save, Printer, Users, FileText } from "lucide-react";
 import { consumptionUnits, sesClassifications } from "@/lib/family-study";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
+import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
+import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
+import { EnhancedFormField } from '@/components/ui/enhanced-form-field';
 
 // Import the loadFoodDatabase function directly
 async function loadFoodDatabase() {
@@ -184,7 +187,112 @@ export default function FamilyStudyPage() {
   const generateReport = () => {
     setShowReport(true);
     // Scroll to top to show results
-;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const generatePdf = async () => {
+    if (!showReport) {
+      setShowReport(true);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    try {
+      const { generateModernPDF } = await import('@/lib/pdf-utils');
+
+      const config = {
+        calculatorType: "Family Health Study Assessment",
+        title: "Comprehensive Family Health Assessment Report",
+        subtitle: `Family ID: ${formData.familyId} | Assessment Date: ${formData.studyDate}`,
+        inputs: [
+          { label: "Family Head", value: formData.familyHead },
+          { label: "Address", value: formData.address },
+          { label: "Area Type", value: formData.area },
+          { label: "Family Type", value: formData.familyType },
+          { label: "Religion", value: formData.religion },
+          { label: "Caste Category", value: formData.caste },
+          { label: "Total Income (Monthly)", value: `₹${formData.totalIncome}` },
+          { label: "Per Capita Income", value: `₹${formData.perCapitaIncome}` },
+          { label: "House Type", value: formData.houseType },
+          { label: "House Ownership", value: formData.houseOwnership },
+          { label: "Water Supply", value: formData.waterSupply },
+          { label: "Toilet Facility", value: formData.toiletFacility },
+          { label: "Cooking Fuel", value: formData.cookingFuel }
+        ],
+        results: [
+          {
+            label: "Total Family Members",
+            value: familyMembers.length,
+            highlight: true,
+            category: "primary",
+            format: "integer"
+          },
+          {
+            label: "Male Members",
+            value: familyMembers.filter(m => m.sex === 'male').length,
+            category: "secondary",
+            format: "integer"
+          },
+          {
+            label: "Female Members",
+            value: familyMembers.filter(m => m.sex === 'female').length,
+            category: "secondary",
+            format: "integer"
+          },
+          {
+            label: "Children (<18 years)",
+            value: familyMembers.filter(m => m.age < 18).length,
+            category: "secondary",
+            format: "integer"
+          },
+          {
+            label: "Elderly (≥60 years)",
+            value: familyMembers.filter(m => m.age >= 60).length,
+            category: "secondary",
+            format: "integer"
+          },
+          {
+            label: "Socio-Economic Status",
+            value: formData.sesClass.split(' ')[0] || 'Not Classified',
+            category: "statistical"
+          },
+          {
+            label: "Per Capita Monthly Income",
+            value: parseFloat(formData.perCapitaIncome),
+            category: "primary",
+            format: "currency",
+            unit: "₹"
+          },
+          {
+            label: "Chronic Diseases Count",
+            value: formData.chronicDiseases.length,
+            category: "warning",
+            format: "integer"
+          }
+        ],
+        interpretation: {
+          summary: `This family assessment covers ${familyMembers.length} members with a per capita income of ₹${formData.perCapitaIncome} per month. The family is classified as ${formData.sesClass.split(' ')[0] || 'unclassified'} socio-economic status living in a ${formData.area} area.`,
+          recommendations: [
+            'Regular health check-ups for all family members, especially elderly and children',
+            'Maintain proper hygiene and sanitation practices',
+            'Ensure balanced nutrition based on ICMR-NIN guidelines',
+            'Monitor and manage chronic diseases if present',
+            'Participate in government health and nutrition programs',
+            'Maintain proper immunization schedules for children'
+          ],
+          assumptions: [
+            'Income data provided is accurate and current',
+            'Health information is self-reported and may require clinical verification',
+            'Socio-economic classification based on standard guidelines',
+            'Environmental conditions assessment is observational',
+            'Nutritional assessment requires detailed dietary recall for precision'
+          ]
+        }
+      };
+
+      await generateModernPDF(config);
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+    }
   };
 
   const handleReset = () => {
@@ -256,77 +364,286 @@ export default function FamilyStudyPage() {
   const renderResults = () => {
     if (!showReport) return null;
 
+    const totalMembers = familyMembers.length;
+    const maleCount = familyMembers.filter(m => m.sex === 'male').length;
+    const femaleCount = familyMembers.filter(m => m.sex === 'female').length;
+    const childrenCount = familyMembers.filter(m => m.age < 18).length;
+    const elderlyCount = familyMembers.filter(m => m.age >= 60).length;
+    const perCapitaIncome = parseFloat(formData.perCapitaIncome) || 0;
+    const chronicDiseasesCount = formData.chronicDiseases.length;
+
+    const enhancedResults = [
+      {
+        label: 'Total Family Members',
+        value: totalMembers,
+        format: 'integer' as const,
+        category: 'primary' as const,
+        highlight: true,
+        interpretation: 'Complete family composition including all residents'
+      },
+      {
+        label: 'Per Capita Monthly Income',
+        value: perCapitaIncome,
+        format: 'currency' as const,
+        unit: '₹',
+        category: 'primary' as const,
+        highlight: true,
+        interpretation: `${formData.sesClass || 'Income-based classification'}`,
+        benchmark: {
+          value: 5000,
+          label: "Middle income threshold",
+          comparison: (perCapitaIncome > 5000 ? 'above' : 'below') as 'above' | 'below'
+        }
+      },
+      {
+        label: 'Dependency Ratio',
+        value: totalMembers > 0 ? ((childrenCount + elderlyCount) / (totalMembers - childrenCount - elderlyCount) || 1) * 100 : 0,
+        format: 'percentage' as const,
+        category: 'statistical' as const,
+        interpretation: 'Ratio of dependents (children + elderly) to working-age adults'
+      },
+      {
+        label: 'Male Members',
+        value: maleCount,
+        format: 'integer' as const,
+        category: 'secondary' as const,
+        interpretation: `${totalMembers > 0 ? ((maleCount / totalMembers) * 100).toFixed(1) : 0}% of family`
+      },
+      {
+        label: 'Female Members',
+        value: femaleCount,
+        format: 'integer' as const,
+        category: 'secondary' as const,
+        interpretation: `${totalMembers > 0 ? ((femaleCount / totalMembers) * 100).toFixed(1) : 0}% of family`
+      },
+      {
+        label: 'Children (<18 years)',
+        value: childrenCount,
+        format: 'integer' as const,
+        category: 'success' as const,
+        interpretation: 'Individuals requiring pediatric care and education focus'
+      },
+      {
+        label: 'Elderly (≥60 years)',
+        value: elderlyCount,
+        format: 'integer' as const,
+        category: 'warning' as const,
+        interpretation: 'Individuals requiring geriatric care and support'
+      },
+      {
+        label: 'Chronic Diseases',
+        value: chronicDiseasesCount,
+        format: 'integer' as const,
+        category: chronicDiseasesCount > 0 ? 'critical' as const : 'success' as const,
+        interpretation: chronicDiseasesCount > 0 ? 'Family has chronic disease burden requiring management' : 'No reported chronic diseases'
+      }
+    ];
+
+    // Prepare visualization data
+    const genderDistribution = [
+      { label: 'Male', value: maleCount, color: 'hsl(var(--primary))' },
+      { label: 'Female', value: femaleCount, color: 'hsl(var(--secondary))' }
+    ];
+
+    const ageDistribution = [
+      { label: 'Children (<18)', value: childrenCount, color: 'hsl(var(--success))' },
+      { label: 'Adults (18-59)', value: totalMembers - childrenCount - elderlyCount, color: 'hsl(var(--primary))' },
+      { label: 'Elderly (≥60)', value: elderlyCount, color: 'hsl(var(--warning))' }
+    ];
+
+    const socioeconomicData = [
+      { label: 'Total Income', value: parseFloat(formData.totalIncome) || 0 },
+      { label: 'Per Capita Income', value: perCapitaIncome },
+      { label: 'Family Size', value: totalMembers }
+    ];
+
+    const interpretationData = {
+      effectSize: `Family of ${totalMembers} members with ${formData.sesClass.split(' ')[0] || 'unclassified'} socio-economic status`,
+      statisticalSignificance: `Per capita income of ₹${perCapitaIncome} indicates ${perCapitaIncome > 5000 ? 'above average' : 'below average'} economic status`,
+      clinicalSignificance: `${chronicDiseasesCount > 0 ? `${chronicDiseasesCount} chronic condition(s) require ongoing medical attention` : 'No reported chronic diseases - good health status'}`,
+      recommendations: [
+        'Regular health check-ups for all family members, especially elderly and children',
+        'Maintain proper hygiene and sanitation practices based on available facilities',
+        'Ensure balanced nutrition following ICMR-NIN guidelines',
+        'Monitor and manage chronic diseases with healthcare providers',
+        'Participate in government health and nutrition schemes',
+        'Focus on preventive healthcare and immunization schedules'
+      ],
+      assumptions: [
+        'Income data is current and accurately reported',
+        'Health information is self-reported and may need clinical verification',
+        'Socio-economic classification follows standard methodologies',
+        'Environmental assessment is based on current conditions',
+        'Family composition is stable during assessment period'
+      ]
+    };
+
   return (
+      <div className="space-y-8">
+        <EnhancedResultsDisplay
+          title="Family Health Assessment Report"
+          subtitle={`Comprehensive analysis for Family ID: ${formData.familyId} assessed on ${formData.studyDate}`}
+          results={enhancedResults}
+          interpretation={interpretationData}
+          visualizations={
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AdvancedVisualization
+                title="Gender Distribution"
+                type="pie"
+                data={genderDistribution}
+                insights={[
+                  {
+                    key: "Gender ratio",
+                    value: `${maleCount}:${femaleCount}`,
+                    significance: "medium"
+                  },
+                  {
+                    key: "Dominant gender",
+                    value: maleCount > femaleCount ? "Male" : femaleCount > maleCount ? "Female" : "Equal",
+                    significance: "low"
+                  }
+                ]}
+              />
+
+              <AdvancedVisualization
+                title="Age Group Distribution"
+                type="pie"
+                data={ageDistribution}
+                insights={[
+                  {
+                    key: "Dependency ratio",
+                    value: `${((childrenCount + elderlyCount) / (totalMembers - childrenCount - elderlyCount || 1) * 100).toFixed(1)}%`,
+                    significance: "high",
+                    trend: (childrenCount + elderlyCount) / (totalMembers - childrenCount - elderlyCount || 1) > 0.5 ? "up" : "down"
+                  },
+                  {
+                    key: "Vulnerable members",
+                    value: `${childrenCount + elderlyCount}/${totalMembers}`,
+                    significance: "medium"
+                  }
+                ]}
+              />
+
+              <AdvancedVisualization
+                title="Socio-Economic Indicators"
+                type="comparison"
+                data={socioeconomicData}
+                insights={[
+                  {
+                    key: "Economic status",
+                    value: formData.sesClass.split(' ')[0] || 'Unclassified',
+                    significance: "high"
+                  },
+                  {
+                    key: "Income adequacy",
+                    value: perCapitaIncome > 5000 ? "Above average" : "Below average",
+                    trend: perCapitaIncome > 5000 ? "up" : "down",
+                    significance: "high"
+                  }
+                ]}
+              />
+
+              <AdvancedVisualization
+                title="Health Risk Profile"
+                type="comparison"
+                data={[
+                  { label: 'Chronic Diseases', value: chronicDiseasesCount },
+                  { label: 'Risk Score', value: (chronicDiseasesCount / totalMembers * 100) || 0 },
+                  { label: 'Vulnerable Members', value: childrenCount + elderlyCount }
+                ]}
+                insights={[
+                  {
+                    key: "Health status",
+                    value: chronicDiseasesCount === 0 ? "Good" : chronicDiseasesCount <= 2 ? "Moderate" : "High Risk",
+                    significance: chronicDiseasesCount === 0 ? "low" : "high",
+                    trend: chronicDiseasesCount === 0 ? "down" : "up"
+                  }
+                ]}
+              />
+            </div>
+          }
+        />
+
+        {/* Detailed Family Information */}
                 <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-                          <CheckCircle className="h-5 w-5 text-success" />
-            Family Health Assessment Report
+              <Users className="h-5 w-5" />
+              Detailed Family Information
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Key Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-primary/5 border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">{familyMembers.length}</div>
-                <div className="text-sm text-muted-foreground">Family Members</div>
-                  </CardContent>
-                </Card>
-            <Card className="bg-secondary/5 border-secondary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-secondary">₹{formData.perCapitaIncome}</div>
-                <div className="text-sm text-muted-foreground">Per Capita Income</div>
-                  </CardContent>
-                </Card>
-            <Card className="bg-accent/5 border-accent/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-accent-foreground">{formData.sesClass.split(' ')[0] || 'N/A'}</div>
-                <div className="text-sm text-muted-foreground">SES Class</div>
-                  </CardContent>
-                </Card>
+            {/* Environmental Conditions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Housing</Label>
+                <div className="space-y-1">
+                  <div className="text-sm"><span className="font-medium">Type:</span> {formData.houseType || 'Not specified'}</div>
+                  <div className="text-sm"><span className="font-medium">Ownership:</span> {formData.houseOwnership || 'Not specified'}</div>
           </div>
-
-          {/* Family Composition */}
-                <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Family Composition</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">Males:</span> {familyMembers.filter(m => m.sex === 'male').length}
                 </div>
-                <div>
-                  <span className="font-medium">Females:</span> {familyMembers.filter(m => m.sex === 'female').length}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Utilities</Label>
+                <div className="space-y-1">
+                  <div className="text-sm"><span className="font-medium">Water:</span> {formData.waterSupply || 'Not specified'}</div>
+                  <div className="text-sm"><span className="font-medium">Toilet:</span> {formData.toiletFacility || 'Not specified'}</div>
+                  <div className="text-sm"><span className="font-medium">Cooking:</span> {formData.cookingFuel || 'Not specified'}</div>
                 </div>
-                <div>
-                  <span className="font-medium">Children (&lt;18):</span> {familyMembers.filter(m => m.age < 18).length}
                 </div>
-                <div>
-                  <span className="font-medium">Elderly (≥60):</span> {familyMembers.filter(m => m.age >= 60).length}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Health Risks</Label>
+                <div className="space-y-1">
+                  {formData.chronicDiseases.length > 0 ? (
+                    formData.chronicDiseases.map((disease, index) => (
+                      <Badge key={index} variant="outline" className="text-xs mr-1 mb-1">
+                        {disease.replace('-', ' ')}
+                      </Badge>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground">No chronic diseases reported</div>
+                  )}
+                </div>
                 </div>
               </div>
                   </CardContent>
                 </Card>
 
-          {/* Export Options */}
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export PDF
+        {/* PDF Export Card */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+          <CardContent className="py-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-2 text-center sm:text-left">
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Export Assessment Report
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Download comprehensive family health assessment report with all collected data and analysis
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={generatePdf}
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold"
+                >
+                  <Download className="h-5 w-5 mr-3" />
+                  Download PDF Report
             </Button>
-            <Button variant="outline" size="sm">
-              <Save className="h-4 w-4 mr-2" />
-              Save Data
-            </Button>
-            <Button variant="outline" size="sm">
-              <Printer className="h-4 w-4 mr-2" />
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="px-8 py-3 text-base font-semibold"
+                  onClick={() => window.print()}
+                >
+                  <Printer className="h-5 w-5 mr-3" />
               Print Report
             </Button>
               </div>
+              </div>
         </CardContent>
       </Card>
+      </div>
     );
   };
 
@@ -930,6 +1247,7 @@ export default function FamilyStudyPage() {
       description="Comprehensive family health assessment based on ICMR-NIN Guidelines 2020 and Community Medicine standards"
       icon={Users}
       layout="single-column"
+      onReset={handleReset}
     >
       <div className="space-y-8">
         {renderInputForm()}

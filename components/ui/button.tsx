@@ -20,11 +20,14 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        neuomorphic: "bg-[#2C5282] text-white font-semibold neuomorphic-button transition-all duration-200 ease-in-out",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        xl: "h-12 rounded-lg px-8 has-[>svg]:px-6 text-base",
+        xxl: "h-14 rounded-lg px-10 has-[>svg]:px-8 text-lg",
         icon: "size-9",
       },
     },
@@ -56,4 +59,23 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+// Convenience component for the neuomorphic blue button using basic Button
+const NeuomorphicButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<"button"> & {
+    size?: "default" | "sm" | "lg" | "xl" | "xxl" | "icon"
+    asChild?: boolean
+  }
+>(({ size = "xxl", ...props }, ref) => {
+  return (
+    <Button
+      ref={ref}
+      variant="neuomorphic"
+      size={size}
+      {...props}
+    />
+  )
+})
+NeuomorphicButton.displayName = "NeuomorphicButton"
+
+export { Button, buttonVariants, NeuomorphicButton }

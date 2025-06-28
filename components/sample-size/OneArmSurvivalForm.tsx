@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
+import { NeuomorphicButton } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -178,9 +178,9 @@ export function OneArmSurvivalForm({ onResultsChange }: OneArmSurvivalFormProps)
             />
           </div>
 
-          <Button type="submit" className="w-full">
+          <NeuomorphicButton type="submit" className="w-full" size="xxl">
             Calculate Sample Size
-          </Button>
+          </NeuomorphicButton>
         </form>
       </Form>
 

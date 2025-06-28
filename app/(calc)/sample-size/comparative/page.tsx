@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CaseControlForm } from "@/components/sample-size/CaseControlForm";
 import { CohortForm } from "@/components/sample-size/CohortForm";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
@@ -14,6 +14,7 @@ import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Users,
   BarChart3,
@@ -23,16 +24,102 @@ import {
   Activity,
   Info,
   Microscope,
-  Clock
+  Clock,
+  Download
 } from 'lucide-react';
 
 export default function ComparativeStudyPage() {
   const [activeTab, setActiveTab] = useState("case-control");
   const [results, setResults] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleReset = () => {
     setResults(null);
+    setError(null);
     setActiveTab("case-control");
+  };
+
+  const generatePdf = async () => {
+    if (!results) return;
+
+    try {
+      const { generateModernPDF } = await import('@/lib/pdf-utils');
+      const isCaseControl = results.type === 'case-control';
+      const interpretation = results.interpretation;
+
+      const config = {
+        calculatorType: `${isCaseControl ? 'Case-Control' : 'Cohort'} Study Sample Size`,
+        title: `${isCaseControl ? 'Case-Control' : 'Cohort'} Study Design`,
+        subtitle: `${isCaseControl ? 'Retrospective' : 'Prospective'} Study Sample Size Analysis`,
+        inputs: [
+          { label: "Confidence Level", value: results.parameters.confidenceLevel, unit: "%" },
+          { label: "Statistical Power", value: results.parameters.power, unit: "%" },
+          {
+            label: isCaseControl ? "Controls to Cases Ratio" : "Unexposed to Exposed Ratio",
+            value: results.parameters.ratio
+          },
+          {
+            label: isCaseControl ? "Exposure Rate in Controls" : "Disease Rate in Unexposed",
+            value: (isCaseControl ? results.parameters.p0 : results.parameters.p2) * 100,
+            unit: "%"
+          },
+          {
+            label: isCaseControl ? "Exposure Rate in Cases" : "Disease Rate in Exposed",
+            value: (isCaseControl ? results.parameters.p1 : results.parameters.p1) * 100,
+            unit: "%"
+          }
+        ],
+        results: [
+          {
+            label: "Total Sample Size",
+            value: interpretation.totalSample,
+            highlight: true,
+            category: "primary",
+            format: "integer"
+          },
+          {
+            label: isCaseControl ? "Cases Required" : "Exposed Group Size",
+            value: isCaseControl ? interpretation.nCases : interpretation.nExposed,
+            category: "secondary",
+            format: "integer"
+          },
+          {
+            label: isCaseControl ? "Controls Required" : "Unexposed Group Size",
+            value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed,
+            category: "secondary",
+            format: "integer"
+          },
+          {
+            label: isCaseControl ? "Odds Ratio" : "Relative Risk",
+            value: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
+            category: "statistical",
+            format: "decimal",
+            precision: 2
+          }
+        ],
+        interpretation: {
+          summary: `This ${isCaseControl ? 'case-control' : 'cohort'} study requires ${interpretation.totalSample.toLocaleString()} participants total to detect the expected effect size with adequate statistical power.`,
+          recommendations: [
+            `Recruit ${interpretation.totalSample.toLocaleString()} participants total`,
+            `Maintain ${results.parameters.ratio}:1 ratio between groups`,
+            'Consider potential dropouts and increase sample by 10-20%',
+            'Ensure balanced recruitment across study sites',
+            isCaseControl ? 'Ensure representative case and control selection' : 'Plan for adequate follow-up duration'
+          ],
+          assumptions: [
+            `Two-sided significance test at α = ${((100 - results.parameters.confidenceLevel) / 100).toFixed(3)}`,
+            `Statistical power = ${results.parameters.power}%`,
+            `Group allocation ratio = 1:${results.parameters.ratio}`,
+            'Expected effect size as specified',
+            'Independent observations within and between groups'
+          ]
+        }
+      };
+
+      await generateModernPDF(config);
+    } catch (err: any) {
+      setError(`Failed to generate PDF: ${err.message}`);
+    }
   };
 
   const tabs = [
@@ -301,6 +388,28 @@ export default function ComparativeStudyPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* PDF Export Card */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+          <CardContent className="py-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-2 text-center sm:text-left">
+                <h3 className="font-semibold text-lg">Export Your Results</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Download comprehensive PDF report with calculations and interpretations
+                </p>
+              </div>
+              <Button
+                onClick={generatePdf}
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
+              >
+                <Download className="h-5 w-5 mr-3" />
+                Download PDF Report
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
@@ -311,6 +420,7 @@ export default function ComparativeStudyPage() {
       description="Calculate sample sizes for case-control and cohort studies with comprehensive analysis"
       icon={Users}
       layout="single-column"
+      onReset={handleReset}
     >
       {renderContent()}
       {renderResults()}

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Button, NeuomorphicButton } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -331,7 +331,7 @@ export function IndependentTTestForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Calculate</Button>
+            <NeuomorphicButton type="submit" size="xxl">Calculate</NeuomorphicButton>
           </form>
         </Form>
         {result && (

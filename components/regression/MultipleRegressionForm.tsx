@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { multipleRegression, MultipleRegressionResult } from "@/lib/regression";
-import { Button } from "@/components/ui/button";
+import { Button, NeuomorphicButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -467,9 +467,9 @@ Example:
                 </div>
             </div>
 
-            <Button onClick={handleCalculate} className="w-full" size="lg">
+            <NeuomorphicButton onClick={handleCalculate} className="w-full" size="xxl">
                 Calculate Multiple Regression
-            </Button>
+            </NeuomorphicButton>
 
             {error && (
                 <Card className="border-destructive">

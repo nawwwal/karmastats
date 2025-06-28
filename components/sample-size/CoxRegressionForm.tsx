@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { calculateCox, CoxParams } from '@/lib/survivalAnalysis';
-import { Button } from '@/components/ui/button';
+import { NeuomorphicButton } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -52,7 +52,7 @@ export function CoxRegressionForm({ onResultsChange }: CoxRegressionFormProps) {
             <Controller name="power" control={control} render={({ field }) => ( <div><Label>Power (1-β)</Label><Select onValueChange={v => field.onChange(parseFloat(v))} defaultValue={field.value.toString()}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent><SelectItem value="0.8">80%</SelectItem><SelectItem value="0.9">90%</SelectItem></SelectContent></Select></div> )}/>
             <Controller name="dropoutRate" control={control} render={({ field }) => ( <div><Label>Dropout Rate (%)</Label><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></div> )}/>
         </div>
-        <Button type="submit" className="w-full">Calculate</Button>
+        <NeuomorphicButton type="submit" className="w-full" size="xxl">Calculate</NeuomorphicButton>
     </form>
   );
 }

@@ -23,35 +23,40 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
-import { ResultsDisplay } from '@/components/ui/results-display';
-import { StatisticalSummary } from '@/components/ui/statistical-summary';
-import { FieldPopover } from "@/components/ui/field-popover";
-import { getFieldExplanation } from "@/lib/field-explanations";
-import { Target } from "lucide-react";
+import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
+import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
+import { FieldPopover } from '@/components/ui/field-popover';
+import { getFieldExplanation } from '@/lib/field-explanations';
+import {
+  PowerField,
+  AlphaField,
+  PercentageField,
+  StatisticalFormField
+} from '@/components/ui/enhanced-form-field';
+import { Target, Calculator, AlertCircle, FileUp, Download, Activity } from "lucide-react";
 
 type Results = SingleTestOutput | ComparativeTestOutput | ROCAnalysisOutput;
 
 // Create a simplified combined schema for the form
 const FormSchema = z.object({
     // Single Test
-    expectedSensitivity: z.number().optional(),
-    expectedSpecificity: z.number().optional(),
-    diseasePrevalence: z.number().optional(),
-    marginOfError: z.number().optional(),
-    confidenceLevel: z.number().optional(),
-    dropoutRate: z.number().optional(),
+    expectedSensitivity: z.number().min(1, "Sensitivity must be at least 1%").max(100, "Sensitivity cannot exceed 100%").optional(),
+    expectedSpecificity: z.number().min(1, "Specificity must be at least 1%").max(100, "Specificity cannot exceed 100%").optional(),
+    diseasePrevalence: z.number().min(0.1, "Prevalence must be at least 0.1%").max(99.9, "Prevalence cannot exceed 99.9%").optional(),
+    marginOfError: z.number().min(0.1, "Margin of error must be at least 0.1%").max(50, "Margin of error cannot exceed 50%").optional(),
+    alpha: z.string().min(1, "Alpha level is required").optional(),
+    dropoutRate: z.number().min(0, "Dropout rate cannot be negative").max(50, "Dropout rate cannot exceed 50%").optional(),
     // Comparative
     studyDesign: z.enum(['paired', 'unpaired']).optional(),
     comparisonMetric: z.enum(['sensitivity', 'specificity']).optional(),
-    test1Performance: z.number().optional(),
-    test2Performance: z.number().optional(),
-    testCorrelation: z.number().optional(),
-    significanceLevel: z.number().optional(),
-    power: z.number().optional(),
+    test1Performance: z.number().min(1, "Test 1 performance must be at least 1%").max(100, "Test 1 performance cannot exceed 100%").optional(),
+    test2Performance: z.number().min(1, "Test 2 performance must be at least 1%").max(100, "Test 2 performance cannot exceed 100%").optional(),
+    testCorrelation: z.number().min(0, "Correlation cannot be negative").max(1, "Correlation cannot exceed 1").optional(),
+    power: z.string().min(1, "Power is required").optional(),
     // ROC
-    expectedAUC: z.number().optional(),
-    nullAUC: z.number().optional(),
-    negativePositiveRatio: z.number().optional(),
+    expectedAUC: z.number().min(0.5, "AUC must be at least 0.5").max(1, "AUC cannot exceed 1").optional(),
+    nullAUC: z.number().min(0.5, "Null AUC must be at least 0.5").max(1, "Null AUC cannot exceed 1").optional(),
+    negativePositiveRatio: z.number().min(0.1, "Ratio must be at least 0.1").max(10, "Ratio cannot exceed 10").optional(),
 });
 
 export default function DiagnosticTestPage() {
@@ -63,26 +68,34 @@ export default function DiagnosticTestPage() {
         resolver: zodResolver(FormSchema),
         defaultValues: {
             // Single Test
-            expectedSensitivity: 85,
-            expectedSpecificity: 90,
-            diseasePrevalence: 15,
-            marginOfError: 5,
-            confidenceLevel: 95,
-            dropoutRate: 10,
+            expectedSensitivity: 85, // 85% sensitivity (realistic for diagnostic tests)
+            expectedSpecificity: 90, // 90% specificity (good specificity)
+            diseasePrevalence: 20, // 20% prevalence (moderate prevalence)
+            marginOfError: 5, // 5% margin of error (typical precision)
+            alpha: '5', // 5% alpha level
+            dropoutRate: 10, // 10% dropout rate
             // Comparative
             studyDesign: 'paired',
             comparisonMetric: 'sensitivity',
-            test1Performance: 85,
-            test2Performance: 90,
-            testCorrelation: 0.5,
-            significanceLevel: 5,
-            power: 80,
+            test1Performance: 80, // 80% performance for test 1
+            test2Performance: 90, // 90% performance for test 2 (detectable difference)
+            testCorrelation: 0.5, // Moderate correlation
+            power: '80', // 80% power
             // ROC
-            expectedAUC: 0.85,
-            nullAUC: 0.5,
-            negativePositiveRatio: 1,
+            expectedAUC: 0.80, // 80% AUC (good discriminative ability)
+            nullAUC: 0.5, // 50% null hypothesis
+            negativePositiveRatio: 1, // 1:1 ratio
         },
     });
+
+    // Auto-calculate with default values on mount
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            const defaultData = form.getValues();
+            onSubmit(defaultData);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     const watchStudyDesign = form.watch('studyDesign');
 
@@ -92,24 +105,63 @@ export default function DiagnosticTestPage() {
             setResults(null);
             let result: Results;
 
+            // Convert string fields to numbers where needed
+            const processedData = {
+                ...data,
+                alpha: data.alpha ? parseFloat(data.alpha) / 100 : undefined,
+                power: data.power ? parseFloat(data.power) / 100 : undefined,
+            };
+
             switch (activeTab) {
                 case 'single':
-                    result = calculateSingleTestSampleSize(SingleTestSchema.parse(data));
+                    const singleData = {
+                        expectedSensitivity: processedData.expectedSensitivity,
+                        expectedSpecificity: processedData.expectedSpecificity,
+                        diseasePrevalence: processedData.diseasePrevalence,
+                        marginOfError: processedData.marginOfError,
+                        confidenceLevel: processedData.alpha ? (1 - processedData.alpha) * 100 : 95,
+                        dropoutRate: processedData.dropoutRate,
+                    };
+                    result = calculateSingleTestSampleSize(SingleTestSchema.parse(singleData));
                     break;
                 case 'comparative':
-                    result = calculateComparativeTestSampleSize(ComparativeTestSchema.parse(data));
+                    const comparativeData = {
+                        studyDesign: processedData.studyDesign,
+                        comparisonMetric: processedData.comparisonMetric,
+                        test1Performance: processedData.test1Performance,
+                        test2Performance: processedData.test2Performance,
+                        testCorrelation: processedData.testCorrelation,
+                        significanceLevel: processedData.alpha ? processedData.alpha * 100 : 5,
+                        power: processedData.power || 0.8,
+                    };
+                    result = calculateComparativeTestSampleSize(ComparativeTestSchema.parse(comparativeData));
                     break;
                 case 'roc':
-                    result = calculateROCAnalysisSampleSize(ROCAnalysisSchema.parse(data));
+                    const rocData = {
+                        expectedAUC: processedData.expectedAUC,
+                        nullAUC: processedData.nullAUC,
+                        diseasePrevalence: processedData.diseasePrevalence,
+                        negativePositiveRatio: processedData.negativePositiveRatio,
+                        significanceLevel: processedData.alpha ? processedData.alpha * 100 : 5,
+                        power: processedData.power || 0.8,
+                    };
+                    result = calculateROCAnalysisSampleSize(ROCAnalysisSchema.parse(rocData));
                     break;
             }
             setResults(result);
-            // Scroll to top to show results
+            form.clearErrors();
 
         } catch (err: any) {
             if (err instanceof z.ZodError) {
-                const formattedErrors = err.errors.map(e => `${e.path.join('.')} - ${e.message}`).join(', ');
-                setError(`Validation failed: ${formattedErrors}`);
+                err.errors.forEach((error) => {
+                    if (error.path.length > 0) {
+                        form.setError(error.path[0] as any, {
+                            type: 'validation',
+                            message: error.message,
+                        });
+                    }
+                });
+                setError(`Please check the highlighted fields: ${err.errors.map(e => e.message).join(', ')}`);
             } else {
                 setError(err.message);
             }
@@ -119,6 +171,7 @@ export default function DiagnosticTestPage() {
     const handleReset = () => {
         setResults(null);
         setError(null);
+        form.clearErrors();
         form.reset();
     };
 
@@ -249,77 +302,193 @@ export default function DiagnosticTestPage() {
     const renderResults = () => {
         if (!results) return null;
 
-        let resultItems: any[] = [];
+        let enhancedResults: any[] = [];
         let title = '';
-        let interpretation: any = {};
+        let visualizationData: any[] = [];
 
         if ('nSensitivity' in results) {
             title = 'Single Test Evaluation Results';
-            resultItems = [
-                { label: 'Sample Size (Sensitivity)', value: results.nSensitivity, category: 'primary', highlight: true, format: 'integer' },
-                { label: 'Sample Size (Specificity)', value: results.nSpecificity, category: 'primary', highlight: true, format: 'integer' },
-                { label: 'Total Required Sample Size', value: results.totalSize, category: 'primary', highlight: true, format: 'integer' },
-                { label: 'Disease Positive Cases', value: results.diseasePositive, category: 'secondary', format: 'integer' },
-                { label: 'Disease Negative Cases', value: results.diseaseNegative, category: 'secondary', format: 'integer' },
+            enhancedResults = [
+                {
+                    label: 'Total Required Sample Size',
+                    value: results.totalSize,
+                    format: 'integer' as const,
+                    category: 'primary' as const,
+                    highlight: true,
+                    interpretation: 'Total participants needed for adequate sensitivity and specificity evaluation'
+                },
+                {
+                    label: 'Disease Positive Cases',
+                    value: results.diseasePositive,
+                    format: 'integer' as const,
+                    category: 'secondary' as const,
+                    interpretation: 'Number of participants with the disease'
+                },
+                {
+                    label: 'Disease Negative Cases',
+                    value: results.diseaseNegative,
+                    format: 'integer' as const,
+                    category: 'secondary' as const,
+                    interpretation: 'Number of participants without the disease'
+                },
+                {
+                    label: 'Sample Size for Sensitivity',
+                    value: results.nSensitivity,
+                    format: 'integer' as const,
+                    category: 'statistical' as const,
+                    interpretation: 'Required sample size to estimate sensitivity'
+                },
+                {
+                    label: 'Sample Size for Specificity',
+                    value: results.nSpecificity,
+                    format: 'integer' as const,
+                    category: 'statistical' as const,
+                    interpretation: 'Required sample size to estimate specificity'
+                }
+            ];
+
+            visualizationData = [
+                { label: 'Disease Positive', value: results.diseasePositive, color: 'hsl(var(--destructive))' },
+                { label: 'Disease Negative', value: results.diseaseNegative, color: 'hsl(var(--success))' }
             ];
         } else if ('sampleSize' in results) {
             title = 'Comparative Test Study Results';
-            resultItems = [
-                { label: 'Required Sample Size (per group if unpaired)', value: results.sampleSize, category: 'primary', highlight: true, format: 'integer' },
-                { label: 'Total Subjects to Screen', value: results.totalSize, category: 'primary', highlight: true, format: 'integer' },
+            enhancedResults = [
+                {
+                    label: 'Required Sample Size per Group',
+                    value: results.sampleSize,
+                    format: 'integer' as const,
+                    category: 'primary' as const,
+                    highlight: true,
+                    interpretation: 'Participants needed per group (if unpaired design)'
+                },
+                {
+                    label: 'Total Subjects to Screen',
+                    value: results.totalSize,
+                    format: 'integer' as const,
+                    category: 'secondary' as const,
+                    interpretation: 'Total participants needed for the study'
+                }
+            ];
+
+            visualizationData = [
+                { label: 'Per Group Sample', value: results.sampleSize, color: 'hsl(var(--primary))' },
+                { label: 'Total Sample', value: results.totalSize, color: 'hsl(var(--secondary))' }
             ];
         } else if ('positiveSize' in results) {
             title = 'ROC Analysis Results';
-            resultItems = [
-                { label: 'Disease-Positive Cases', value: results.positiveSize, category: 'primary', highlight: true, format: 'integer' },
-                { label: 'Disease-Negative Cases', value: results.negativeSize, category: 'primary', highlight: true, format: 'integer' },
-                { label: 'Total Required Sample Size', value: results.totalSize, category: 'primary', highlight: true, format: 'integer' },
+            enhancedResults = [
+                {
+                    label: 'Total Required Sample Size',
+                    value: results.totalSize,
+                    format: 'integer' as const,
+                    category: 'primary' as const,
+                    highlight: true,
+                    interpretation: 'Total participants needed for ROC curve analysis'
+                },
+                {
+                    label: 'Disease-Positive Cases',
+                    value: results.positiveSize,
+                    format: 'integer' as const,
+                    category: 'secondary' as const,
+                    interpretation: 'Number of participants with the disease'
+                },
+                {
+                    label: 'Disease-Negative Cases',
+                    value: results.negativeSize,
+                    format: 'integer' as const,
+                    category: 'secondary' as const,
+                    interpretation: 'Number of participants without the disease'
+                }
+            ];
+
+            visualizationData = [
+                { label: 'Disease Positive', value: results.positiveSize, color: 'hsl(var(--destructive))' },
+                { label: 'Disease Negative', value: results.negativeSize, color: 'hsl(var(--success))' }
             ];
         }
 
-        interpretation.recommendations = [
+        const interpretationData = {
+            effectSize: `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} test evaluation design`,
+            statisticalSignificance: 'Adequate sample size for diagnostic test validation',
+            clinicalSignificance: 'Sample size provides reliable estimates of test performance',
+            recommendations: [
             'Ensure proper randomization and blinding in diagnostic test evaluation',
             'Consider spectrum bias when selecting patient populations',
             'Account for verification bias in test result interpretation',
-            'Plan for adequate reference standard procedures'
-        ];
-
-        interpretation.assumptions = [
+                'Plan for adequate reference standard procedures',
+                'Validate test performance in relevant clinical populations'
+            ],
+            assumptions: [
             'Reference standard has perfect sensitivity and specificity',
             'Test results are independent conditional on disease status',
             'Study population is representative of intended use population',
-            'No spectrum or verification bias present'
-        ];
-
-        // Provide modern summary format
-        let totalSize: number;
-        if ('totalSize' in results) {
-            totalSize = results.totalSize;
-        } else if ('sampleSize' in (results as any)) {
-            totalSize = (results as any).sampleSize;
-        } else {
-            totalSize = (results as any).positiveSize + (results as any).negativeSize;
-        }
-
-        const modernResults = {
-            totalSize: totalSize,
-            power: 0.8, // Default assumption
-            alpha: 0.05, // Default assumption
+                'No spectrum or verification bias present',
+                'Disease prevalence assumptions are accurate'
+            ]
         };
 
         return (
-            <div className="space-y-6">
-                <StatisticalSummary
-                    results={modernResults}
-                    type="sample-size"
+            <div className="space-y-8">
+                <EnhancedResultsDisplay
                     title={title}
+                    subtitle="Diagnostic test validation study sample size analysis"
+                    results={enhancedResults}
+                    interpretation={interpretationData}
+                    visualizations={
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <AdvancedVisualization
+                                title="Sample Composition"
+                                type="pie"
+                                data={visualizationData}
+                                insights={[
+                                    {
+                                        key: "Total sample",
+                                        value: ('totalSize' in results ? results.totalSize : results.sampleSize).toString(),
+                                        significance: "high"
+                                    },
+                                    {
+                                        key: "Test type",
+                                        value: activeTab.replace('-', ' '),
+                                        significance: "medium"
+                                    }
+                                ]}
+                            />
+
+                            <AdvancedVisualization
+                                title="Test Performance Metrics"
+                                type="comparison"
+                                data={[
+                                    { label: "Expected Sensitivity", value: form.getValues('expectedSensitivity') || 0 },
+                                    { label: "Expected Specificity", value: form.getValues('expectedSpecificity') || 0 },
+                                    { label: "Disease Prevalence", value: form.getValues('diseasePrevalence') || 0 }
+                                ].filter(item => item.value > 0)}
+                            />
+                        </div>
+                    }
                 />
-                <ResultsDisplay
-                    title={title}
-                    results={resultItems}
-                    interpretation={interpretation}
-                    showInterpretation={true}
-                />
+
+                {/* PDF Export Card */}
+                <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+                    <CardContent className="py-6">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="space-y-2 text-center sm:text-left">
+                                <h3 className="font-semibold text-lg">Export Your Results</h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Download comprehensive PDF report with diagnostic test calculations
+                                </p>
+                            </div>
+                            <Button
+                                onClick={generatePdf}
+                                size="lg"
+                                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
+                            >
+                                <Download className="h-5 w-5 mr-3" />
+                                Download PDF Report
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         );
     };

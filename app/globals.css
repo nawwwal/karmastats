@@ -498,6 +498,72 @@
     animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
   }
 
+  /* Neuomorphic Button Enhancements */
+  .neuomorphic-button {
+    background: #2C5282;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+    /* Default state - raised appearance */
+    box-shadow:
+      8px 8px 16px rgba(26, 58, 92, 0.4),
+      -8px -8px 16px rgba(62, 106, 168, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .neuomorphic-button:hover {
+    /* Slightly pressed on hover */
+    box-shadow:
+      6px 6px 12px rgba(26, 58, 92, 0.35),
+      -6px -6px 12px rgba(62, 106, 168, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+    background: #2e5a8a;
+  }
+
+  .neuomorphic-button:active {
+    /* Deeply pressed - engraved effect */
+    box-shadow:
+      inset 4px 4px 8px rgba(26, 58, 92, 0.4),
+      inset -4px -4px 8px rgba(62, 106, 168, 0.1),
+      inset 0 0 0 1px rgba(26, 58, 92, 0.1);
+    transform: translateY(1px) scale(0.98);
+    background: #254976;
+  }
+
+  .neuomorphic-button:focus-visible {
+    outline: none;
+    box-shadow:
+      8px 8px 16px rgba(26, 58, 92, 0.4),
+      -8px -8px 16px rgba(62, 106, 168, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 3px rgba(44, 82, 130, 0.3);
+  }
+
+  .neuomorphic-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow:
+      4px 4px 8px rgba(26, 58, 92, 0.2),
+      -4px -4px 8px rgba(62, 106, 168, 0.1);
+    transform: none;
+  }
+
+  .neuomorphic-button:disabled:hover,
+  .neuomorphic-button:disabled:active {
+    transform: none;
+    background: #2C5282;
+    box-shadow:
+      4px 4px 8px rgba(26, 58, 92, 0.2),
+      -4px -4px 8px rgba(62, 106, 168, 0.1);
+  }
+
   /* Medical-specific utility classes */
   .medical-success {
     @apply bg-success/10 text-success border border-success/20;

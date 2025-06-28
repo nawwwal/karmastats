@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { LinearRegressionForm } from "@/components/regression/LinearRegressionForm";
 import { MultipleRegressionForm } from "@/components/regression/MultipleRegressionForm";
 import { PolynomialRegressionForm } from "@/components/regression/PolynomialRegressionForm";
@@ -11,12 +11,92 @@ import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { EnhancedTabs, EnhancedTabsList, EnhancedTabsTrigger, EnhancedTabsContent } from '@/components/ui/enhanced-tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TrendingUp, BarChart3, Activity, Target } from "lucide-react";
+import { TrendingUp, BarChart3, Activity, Target, Download } from "lucide-react";
 
 export default function RegressionPage() {
   const [activeTab, setActiveTab] = useState("linear");
   const [results, setResults] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleReset = () => {
+    setResults(null);
+    setError(null);
+    setActiveTab("linear");
+  };
+
+  const generatePdf = async () => {
+    if (!results) return;
+
+    try {
+      const { generateModernPDF } = await import('@/lib/pdf-utils');
+
+      const getModelName = () => {
+        switch (results.type) {
+          case 'linear': return 'Simple Linear Regression';
+          case 'multiple': return 'Multiple Regression';
+          case 'polynomial': return 'Polynomial Regression';
+          case 'logistic': return 'Logistic Regression';
+          default: return 'Regression Analysis';
+        }
+      };
+
+      const config = {
+        calculatorType: "Regression Analysis",
+        title: `${getModelName()} Results`,
+        subtitle: "Statistical relationship analysis between variables",
+        inputs: [
+          { label: "Analysis Type", value: getModelName() },
+          { label: "Number of Variables", value: results.coefficients?.length || 1 }
+        ],
+        results: [
+          {
+            label: "R-squared",
+            value: results.rSquared || 0,
+            highlight: true,
+            category: "primary",
+            format: "decimal",
+            precision: 4,
+            interpretation: "Proportion of variance explained by the model"
+          },
+          ...(results.slope !== undefined ? [{
+            label: "Slope",
+            value: results.slope,
+            category: "secondary",
+            format: "decimal",
+            precision: 4
+          }] : []),
+          ...(results.intercept !== undefined ? [{
+            label: "Intercept",
+            value: results.intercept,
+            category: "secondary",
+            format: "decimal",
+            precision: 4
+          }] : [])
+        ],
+        interpretation: {
+          summary: `The ${getModelName()} model explains ${((results.rSquared || 0) * 100).toFixed(1)}% of the variance in the dependent variable (R² = ${(results.rSquared || 0).toFixed(4)}).`,
+          recommendations: [
+            `Model fit: ${(results.rSquared || 0) >= 0.7 ? 'Strong' : (results.rSquared || 0) >= 0.5 ? 'Moderate' : 'Weak'} (R² = ${(results.rSquared || 0).toFixed(3)})`,
+            'Check residual plots to validate model assumptions',
+            'Consider adding or removing variables if fit is poor',
+            'Validate results with independent test data if available'
+          ],
+          assumptions: [
+            'Linear relationship between variables',
+            'Independence of observations',
+            'Homoscedasticity (constant variance)',
+            'Normal distribution of residuals'
+          ]
+        }
+      };
+
+      await generateModernPDF(config);
+    } catch (err: any) {
+      setError(`Failed to generate PDF: ${err.message}`);
+    }
+  };
 
   const tabs = [
     {
@@ -345,6 +425,28 @@ export default function RegressionPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* PDF Export Card */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+          <CardContent className="py-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-2 text-center sm:text-left">
+                <h3 className="font-semibold text-lg">Export Your Results</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Download comprehensive PDF report with regression analysis results
+                </p>
+              </div>
+              <Button
+                onClick={generatePdf}
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
+              >
+                <Download className="h-5 w-5 mr-3" />
+                Download PDF Report
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
@@ -355,6 +457,7 @@ export default function RegressionPage() {
       description="Explore relationships between variables using various regression techniques"
       icon={TrendingUp}
       layout="single-column"
+      onReset={handleReset}
     >
       {renderContent()}
       {renderResults()}
