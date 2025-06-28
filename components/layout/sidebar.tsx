@@ -107,8 +107,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         className={cn(
           "flex items-center gap-3 px-3 py-3 rounded-lg w-full transition-all duration-200 group",
           isActive
-            ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-            : "hover:bg-accent hover:text-accent-foreground",
+            ? "bg-primary/10 text-primary border border-primary/20 shadow-sm"
+            : "hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10",
           isCollapsed && "justify-center px-2",
         )}
       >
@@ -120,7 +120,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
               <div
                 className={cn(
                   "text-xs font-medium tracking-wide truncate",
-                  isActive ? "text-sidebar-primary-foreground" : "text-muted-foreground",
+                  isActive ? "text-primary" : "text-muted-foreground",
                 )}
               >
                 {description}

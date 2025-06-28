@@ -75,8 +75,10 @@ export function MainNav({ toggleSidebar }: MainNavProps) {
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                route.active ? "text-primary" : "text-muted-foreground"
+                "text-sm font-medium transition-all duration-200 hover:scale-105 px-3 py-2 rounded-md",
+                route.active
+                  ? "text-primary bg-primary/10 border border-primary/20"
+                  : "text-muted-foreground hover:text-primary hover:bg-primary/5"
               )}
             >
               {route.label}

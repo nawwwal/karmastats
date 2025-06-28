@@ -62,8 +62,8 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
         nCases: sampleSize.n_cases,
         nControls: sampleSize.n_controls,
         totalSample: sampleSize.n_cases + sampleSize.n_controls,
-        oddsRatio: ((values.p1 / (1 - values.p1)) / (values.p0 / (1 - values.p0))).toFixed(2),
-        effectSize: Math.abs(values.p1 - values.p0).toFixed(3)
+        oddsRatio: (values.p1 / (1 - values.p1)) / (values.p0 / (1 - values.p0)),
+        effectSize: Math.abs(values.p1 - values.p0)
       }
     };
 

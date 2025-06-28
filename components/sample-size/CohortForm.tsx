@@ -62,9 +62,9 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
         nExposed: sampleSize.n_exposed,
         nUnexposed: sampleSize.n_unexposed,
         totalSample: sampleSize.n_exposed + sampleSize.n_unexposed,
-        relativeRisk: (values.p1 / values.p2).toFixed(2),
-        riskDifference: Math.abs(values.p1 - values.p2).toFixed(3),
-        attributableRisk: ((values.p1 - values.p2) / values.p1 * 100).toFixed(1)
+        relativeRisk: values.p1 / values.p2,
+        riskDifference: Math.abs(values.p1 - values.p2),
+        attributableRisk: (values.p1 - values.p2) / values.p1 * 100
       }
     };
 

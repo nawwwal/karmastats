@@ -107,7 +107,9 @@ export default function ComparativeStudyPage() {
       },
       {
         label: isCaseControl ? 'Odds Ratio' : 'Relative Risk',
-        value: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
+        value: typeof (isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk) === 'number'
+          ? (isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk)
+          : 0,
         category: 'success' as const,
         format: 'decimal' as const
       }
@@ -121,11 +123,11 @@ export default function ComparativeStudyPage() {
       { parameter: 'Group Ratio', value: `1:${results.parameters.ratio}` },
       {
         parameter: isCaseControl ? 'Exposure Rate (Controls)' : 'Disease Rate (Unexposed)',
-        value: `${((isCaseControl ? results.parameters.p0 : results.parameters.p2) * 100).toFixed(1)}%`
+        value: `${safeToFixed((isCaseControl ? results.parameters.p0 : results.parameters.p2) * 100, 1)}%`
       },
       {
         parameter: isCaseControl ? 'Exposure Rate (Cases)' : 'Disease Rate (Exposed)',
-        value: `${((isCaseControl ? results.parameters.p1 : results.parameters.p1) * 100).toFixed(1)}%`
+        value: `${safeToFixed((isCaseControl ? results.parameters.p1 : results.parameters.p1) * 100, 1)}%`
       }
     ];
 
@@ -134,33 +136,44 @@ export default function ComparativeStudyPage() {
       {
         name: isCaseControl ? 'Cases' : 'Exposed',
         value: isCaseControl ? interpretation.nCases : interpretation.nExposed,
-        percentage: ((isCaseControl ? interpretation.nCases : interpretation.nExposed) / interpretation.totalSample * 100).toFixed(1)
+        percentage: safeToFixed((isCaseControl ? interpretation.nCases : interpretation.nExposed) / interpretation.totalSample * 100, 1)
       },
       {
         name: isCaseControl ? 'Controls' : 'Unexposed',
         value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed,
-        percentage: ((isCaseControl ? interpretation.nControls : interpretation.nUnexposed) / interpretation.totalSample * 100).toFixed(1)
+        percentage: safeToFixed((isCaseControl ? interpretation.nControls : interpretation.nUnexposed) / interpretation.totalSample * 100, 1)
       }
     ];
 
     // Effect size comparison data
+    const effectSizeValue = isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk;
+    const safeEffectSize = typeof effectSizeValue === 'number' ? effectSizeValue : 1;
+
     const effectSizeData = [
       {
         measure: isCaseControl ? 'Odds Ratio' : 'Relative Risk',
-        value: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk,
+        value: safeEffectSize,
         interpretation: isCaseControl ?
-          (interpretation.oddsRatio > 2 ? 'Strong Association' :
-           interpretation.oddsRatio > 1.5 ? 'Moderate Association' :
-           interpretation.oddsRatio > 1.2 ? 'Weak Association' : 'No/Weak Association') :
-          (interpretation.relativeRisk > 2 ? 'High Risk' :
-           interpretation.relativeRisk > 1.5 ? 'Moderate Risk' :
-           interpretation.relativeRisk > 1.2 ? 'Low Risk' : 'No/Low Risk')
+          (safeEffectSize > 2 ? 'Strong Association' :
+           safeEffectSize > 1.5 ? 'Moderate Association' :
+           safeEffectSize > 1.2 ? 'Weak Association' : 'No/Weak Association') :
+          (safeEffectSize > 2 ? 'High Risk' :
+           safeEffectSize > 1.5 ? 'Moderate Risk' :
+           safeEffectSize > 1.2 ? 'Low Risk' : 'No/Low Risk')
       }
     ];
 
+    // Helper function to safely format numbers
+    const safeToFixed = (value: any, decimals: number): string => {
+      if (typeof value === 'number' && !isNaN(value)) {
+        return value.toFixed(decimals);
+      }
+      return 'N/A';
+    };
+
     const interpretationData = {
-      effectSize: `${isCaseControl ? 'Odds ratio' : 'Relative risk'} of ${(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk).toFixed(2)}`,
-      statisticalSignificance: `Power ${results.parameters.power}% at α = ${(1 - results.parameters.confidenceLevel/100).toFixed(3)}`,
+      effectSize: `${isCaseControl ? 'Odds ratio' : 'Relative risk'} of ${safeToFixed(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk, 2)}`,
+      statisticalSignificance: `Power ${results.parameters.power}% at α = ${safeToFixed(1 - results.parameters.confidenceLevel/100, 3)}`,
       recommendations: [
         `Recruit ${interpretation.totalSample.toLocaleString()} participants total`,
         `Maintain ${results.parameters.ratio}:1 ratio between groups`,
@@ -250,7 +263,7 @@ export default function ComparativeStudyPage() {
               <div className="p-4 rounded-lg bg-background/50">
                 <h4 className="font-semibold text-primary mb-2">Effect Size</h4>
                 <div className="text-2xl font-bold text-success">
-                  {(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk).toFixed(2)}
+                  {safeToFixed(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk, 2)}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {isCaseControl ? 'Odds Ratio' : 'Relative Risk'}
