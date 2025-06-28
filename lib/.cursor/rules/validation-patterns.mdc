@@ -1,0 +1,133 @@
+---
+description: Zod validation schema patterns for KARMASTAT statistical calculation libraries, ensuring type safety and proper statistical parameter validation. This rule establishes statistical parameter validation schemas for significance levels and statistical power, cross-field validation ensuring logical relationships between alpha and power parameters, sample size validation with appropriate bounds checking and combined size limits, calculation input safety preventing mathematical errors in regression analysis, error handling patterns with standardized CalculationResult types, type safety integration for frontend components using inferred types, schema composition for reusable validation pieces, and comprehensive validation for all statistical inputs including effect sizes and test parameters.
+globs:
+alwaysApply: false
+---
+# KARMASTAT — Validation Schema Patterns
+
+## Statistical Parameter Validation
+```typescript
+import { z } from 'zod';
+
+// Common statistical parameters
+const StatisticalParametersSchema = z.object({
+  significanceLevel: z.number()
+    .min(0.01, "Significance level must be at least 0.01")
+    .max(0.10, "Significance level must be at most 0.10")
+    .default(0.05),
+
+  statisticalPower: z.number()
+    .min(0.80, "Statistical power should be at least 0.80")
+    .max(0.99, "Statistical power cannot exceed 0.99")
+    .default(0.80),
+
+  effectSize: z.number()
+    .positive("Effect size must be positive")
+    .finite("Effect size must be finite")
+});
+```
+
+## Cross-Field Validation
+```typescript
+// Ensure logical relationships between parameters
+const StudyDesignSchema = z.object({
+  alpha: z.number().min(0.01).max(0.10),
+  power: z.number().min(0.80).max(0.99),
+  twoSided: z.boolean().default(true)
+}).refine((data) => {
+  return data.alpha < (1 - data.power);
+}, {
+  message: "Alpha level conflicts with desired power",
+  path: ["alpha"]
+});
+```
+
+## Sample Size Validation
+```typescript
+const SampleSizeSchema = z.object({
+  n1: z.number().int().min(1, "Sample size must be positive"),
+  n2: z.number().int().min(1, "Sample size must be positive").optional(),
+  ratio: z.number().positive().default(1)
+}).refine((data) => {
+  if (data.n2 && data.n1 + data.n2 > 10000) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Combined sample size too large (>10,000)",
+  path: ["n1"]
+});
+```
+
+## Calculation Input Safety
+```typescript
+// Prevent mathematical errors
+const RegressionInputSchema = z.object({
+  x: z.array(z.number().finite()),
+  y: z.array(z.number().finite())
+}).refine((data) => {
+  return data.x.length === data.y.length && data.x.length >= 2;
+}, {
+  message: "X and Y arrays must have equal length and at least 2 points"
+}).refine((data) => {
+  const uniqueX = new Set(data.x);
+  return uniqueX.size >= 2;
+}, {
+  message: "X values must have at least 2 unique values"
+});
+```
+
+## Error Handling Patterns
+```typescript
+// Standardized error responses
+export type CalculationResult<T> = {
+  success: true;
+  data: T;
+} | {
+  success: false;
+  error: string;
+  details?: string;
+};
+
+// Usage in calculation functions
+export function calculateSampleSize(input: SampleSizeInput): CalculationResult<SampleSizeOutput> {
+  try {
+    const validated = SampleSizeSchema.parse(input);
+    const result = performCalculation(validated);
+    return { success: true, data: result };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Calculation failed',
+      details: error instanceof ZodError ? error.issues[0]?.message : undefined
+    };
+  }
+}
+```
+
+## Type Safety Integration
+```typescript
+// Export inferred types for frontend
+export type SampleSizeInput = z.infer<typeof SampleSizeSchema>;
+export type StatisticalParameters = z.infer<typeof StatisticalParametersSchema>;
+
+// Use in React components
+const form = useForm<SampleSizeInput>({
+  resolver: zodResolver(SampleSizeSchema)
+});
+```
+
+## Schema Composition
+```typescript
+// Reusable schema pieces
+const BaseStatisticalSchema = StatisticalParametersSchema.pick({
+  significanceLevel: true,
+  statisticalPower: true
+});
+
+const TTestSchema = BaseStatisticalSchema.extend({
+  meanDifference: z.number(),
+  standardDeviation: z.number().positive(),
+  testType: z.enum(['one-sample', 'independent', 'paired'])
+});
+```

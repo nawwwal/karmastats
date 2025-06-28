@@ -1,0 +1,75 @@
+---
+description: Mobile-specific component patterns for KARMASTAT, covering touch optimization, haptics integration, gestures, and mobile-first design for statistical calculators. This rule addresses touch optimization standards with minimum target sizes and safe area support for iOS devices, mobile device detection using custom hooks for conditional rendering, haptic feedback integration for button interactions and calculation success/error states, touch gesture patterns with swipe gestures for navigation and threshold configuration, mobile layout components including BottomNav and QuickCalcFAB, responsive breakpoints with mobile-first approach, native mobile navigation patterns, microinteractions for enhanced user experience, and PWA features for app-like functionality.
+globs:
+alwaysApply: false
+---
+# KARMASTAT — Mobile Component Patterns
+
+## Touch Optimization Standards
+- **Minimum Touch Targets**: 44px × 44px (WCAG 2.1 AA)
+- **Comfortable Touch Targets**: 48px × 48px
+- **Spacing**: 8px minimum between interactive elements
+- **Safe Areas**: `env(safe-area-inset-*)` for iOS notch support
+
+## Mobile Device Detection
+```typescript
+import { useDevice } from '@/hooks/use-mobile';
+
+const { isMobile, isTablet, platform, orientation, touchDevice } = useDevice();
+
+// Conditional rendering
+{isMobile && <BottomNav />}
+{!isMobile && <DesktopSidebar />}
+```
+
+## Haptic Feedback Integration
+```typescript
+import { haptics } from '@/lib/haptics';
+
+// Button interactions
+<Button
+  onClick={() => {
+    haptics.light(); // Immediate feedback
+    onSubmit();
+  }}
+>
+  Calculate
+</Button>
+
+// Success/Error feedback
+haptics.success(); // After successful calculation
+haptics.error();   // On validation errors
+```
+
+## Touch Gesture Patterns
+```typescript
+import { useSwipeGestures } from '@/hooks/use-swipe-gestures';
+
+const { onTouchStart, onTouchMove, onTouchEnd } = useSwipeGestures({
+  onSwipeLeft: () => navigateNext(),
+  onSwipeRight: () => navigatePrevious(),
+  threshold: 50,
+  hapticFeedback: true
+});
+```
+
+## Mobile Layout Components
+- **BottomNav**: Primary navigation for mobile
+- **QuickCalcFAB**: Floating action button for quick access
+- **MobileResultsDisplay**: Vertical stack, swipe-to-expand
+- **MobileMetricCard**: Touch-friendly metric display
+
+## Responsive Breakpoints
+```typescript
+// Mobile-first approach
+const breakpoints = {
+  mobile: '320px',    // Small phones
+  mobileLg: '480px',  // Large phones
+  tablet: '768px',    // Tablets
+  desktop: '1024px'   // Desktop
+}
+```
+
+@components/mobile
+@hooks/use-mobile.ts
+@lib/haptics.ts
