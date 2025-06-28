@@ -20,7 +20,7 @@ const EnhancedTabsList = React.forwardRef<
         'h-10 rounded-md bg-muted p-1': variant === 'default',
         'space-x-1': variant === 'pills',
         'border-b': variant === 'underline',
-        'bg-gradient-to-r from-slate-100 to-slate-200 p-1 rounded-xl shadow-inner': variant === 'modern'
+        'bg-gradient-to-r from-muted to-muted/80 p-1 rounded-xl shadow-inner dark:from-muted/50 dark:to-muted/30': variant === 'modern'
       },
       className
     )}
@@ -43,7 +43,7 @@ const EnhancedTabsTrigger = React.forwardRef<
         'rounded-sm data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm': variant === 'default',
         'rounded-full px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10': variant === 'pills',
         'border-b-2 border-transparent px-4 py-2 data-[state=active]:border-primary hover:text-foreground': variant === 'underline',
-        'rounded-lg px-6 py-3 font-semibold transition-all duration-200 hover:bg-white/60 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md data-[state=active]:scale-105 data-[state=active]:border-primary/20 data-[state=active]:border': variant === 'modern'
+        'rounded-lg px-6 py-3 font-semibold transition-all duration-200 hover:bg-background/60 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md data-[state=active]:scale-105 data-[state=active]:border-primary/20 data-[state=active]:border dark:hover:bg-card/60 dark:data-[state=active]:bg-card': variant === 'modern'
       },
       className
     )}
