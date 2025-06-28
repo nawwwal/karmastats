@@ -70,14 +70,14 @@
     "zod": "latest"
   },
   "devDependencies": {
-    "@types/node": "^22",
-    "@types/react": "^19",
+    "@types/node": "^22.15.34",
+    "@types/react": "^19.1.8",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
     "eslint": "9.29.0",
     "eslint-config-next": "15.3.3",
     "postcss": "^8.5",
     "tw-animate-css": "^1.3.4",
-    "typescript": "^5"
+    "typescript": "^5.8.3"
   }
 }
