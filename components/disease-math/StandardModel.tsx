@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { EnhancedFormField } from '@/components/ui/enhanced-form-field';
+import { EnhancedInput } from '@/components/ui/enhanced-input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -48,9 +48,9 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
       form.handleSubmit(onSubmit)();
     }, 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [form, onSubmit]);
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = useCallback(async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     setError(null);
 
@@ -105,7 +105,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [onResultsChange]);
 
   return (
     <Form {...form}>
@@ -129,7 +129,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
                       <FormLabel>Population Size</FormLabel>
                     </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
+                      <EnhancedInput
                         type="number"
                         placeholder="1,000,000"
                         {...field}
@@ -157,7 +157,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
                       <FormLabel>Initial Infected Cases</FormLabel>
                     </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
+                      <EnhancedInput
                         type="number"
                         placeholder="100"
                         {...field}
@@ -195,7 +195,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
                       <FormLabel>Transmission Rate (β)</FormLabel>
                     </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
+                      <EnhancedInput
                         type="number"
                         step="0.01"
                         placeholder="0.30"
@@ -224,7 +224,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
                       <FormLabel>Incubation Rate (σ)</FormLabel>
                     </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
+                      <EnhancedInput
                         type="number"
                         step="0.01"
                         placeholder="0.10"
@@ -255,7 +255,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
                       <FormLabel>Recovery Rate (γ)</FormLabel>
                     </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
+                      <EnhancedInput
                         type="number"
                         step="0.01"
                         placeholder="0.05"
@@ -284,7 +284,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
                       <FormLabel>Simulation Days</FormLabel>
                     </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
+                      <EnhancedInput
                         type="number"
                         placeholder="365"
                         {...field}

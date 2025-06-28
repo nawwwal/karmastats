@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { EnhancedFormField } from '@/components/ui/enhanced-form-field';
+import { EnhancedInput } from '@/components/ui/enhanced-input';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -68,9 +68,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
       form.handleSubmit(onSubmit)();
     }, 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [form, onSubmit]);
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = useCallback(async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     setError(null);
 
@@ -126,7 +126,7 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [onResultsChange]);
 
   return (
     <Form {...form}>
@@ -151,8 +151,8 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Population Size</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-                type="number"
+                      <EnhancedInput
+                        type="number"
                         placeholder="1,000,000"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -179,8 +179,8 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Initial Cases</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-                type="number"
+                      <EnhancedInput
+                        type="number"
                         placeholder="10"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -209,9 +209,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Base Transmission Rate (R₀)</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-                type="number"
-                step="0.01"
+                      <EnhancedInput
+                        type="number"
+                        step="0.01"
                         placeholder="0.30"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -238,9 +238,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Incubation Period (days)</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-                type="number"
-              placeholder="5"
+                      <EnhancedInput
+                        type="number"
+                        placeholder="5"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         value={field.value}
@@ -268,9 +268,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Recovery Rate (γ)</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-                type="number"
-                step="0.01"
+                      <EnhancedInput
+                        type="number"
+                        step="0.01"
                         placeholder="0.10"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -297,9 +297,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Mortality Rate (μ)</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-                type="number"
-              step="0.001"
+                      <EnhancedInput
+                        type="number"
+                        step="0.001"
                         placeholder="0.020"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -328,9 +328,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Simulation Days</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-              type="number"
-              placeholder="180"
+                      <EnhancedInput
+                        type="number"
+                        placeholder="180"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         value={field.value}
@@ -356,9 +356,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Seasonal Variation</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-              type="number"
-              step="0.01"
+                      <EnhancedInput
+                        type="number"
+                        step="0.01"
                         placeholder="0.10"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -396,9 +396,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Social Distancing Effectiveness</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-              type="number"
-              step="0.01"
+                      <EnhancedInput
+                        type="number"
+                        step="0.01"
                         placeholder="0.20"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -425,9 +425,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Mask Effectiveness</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-              type="number"
-              step="0.01"
+                      <EnhancedInput
+                        type="number"
+                        step="0.01"
                         placeholder="0.10"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -456,10 +456,10 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Daily Vaccination Rate</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-              type="number"
-              step="0.001"
-              placeholder="0.005"
+                      <EnhancedInput
+                        type="number"
+                        step="0.001"
+                        placeholder="0.005"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         value={field.value}
@@ -485,9 +485,9 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
                       <FormLabel>Vaccine Effectiveness</FormLabel>
             </FieldPopover>
                     <FormControl>
-                      <EnhancedFormField
-              type="number"
-              step="0.01"
+                      <EnhancedInput
+                        type="number"
+                        step="0.01"
                         placeholder="0.90"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}

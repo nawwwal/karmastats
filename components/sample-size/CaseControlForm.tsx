@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -62,9 +62,9 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
       onSubmit(defaultData);
     }, 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [form, onSubmit]);
 
-  function onSubmit(values: FormData) {
+  const onSubmit = useCallback((values: FormData) => {
     try {
       setError(null);
       const alpha = parseFloat(values.alpha) / 100;
@@ -114,7 +114,7 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
         setError(err.message);
       }
     }
-  }
+  }, [form, onResultsChange]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
