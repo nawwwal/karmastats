@@ -79,7 +79,7 @@ alwaysApply: false
 ## 🔧 **Component Architecture**
 
 ### **New Mobile Components**
-```typescript
+\`\`\`typescript
 // Navigation
 - BottomNav: Mobile navigation bar with 5 sections
 - QuickCalcFAB: Expandable floating action button
@@ -96,10 +96,10 @@ alwaysApply: false
 // Layout
 - Enhanced ToolPageWrapper: Mobile-first layout wrapper
 - Enhanced LayoutWrapper: Adaptive desktop/mobile layout
-```
+\`\`\`
 
 ### **Enhanced Hooks**
-```typescript
+\`\`\`typescript
 // Device Detection
 - useDevice(): Comprehensive device info (platform, orientation, touch)
 - useTouchDevice(): Simple touch device detection
@@ -110,14 +110,14 @@ alwaysApply: false
 - useSwipeGestures(): Advanced swipe detection
 - useSimpleSwipe(): Basic directional swipes
 - usePullToRefresh(): Pull-to-refresh functionality
-```
+\`\`\`
 
 ---
 
 ## 🎨 **Design System Extensions**
 
 ### **Mobile Theme Additions**
-```typescript
+\`\`\`typescript
 mobile: {
   touchTargets: { minimum: '44px', comfortable: '48px', large: '56px' },
   safeAreas: { /* iOS safe area insets */ },
@@ -126,7 +126,7 @@ mobile: {
   gestures: { swipeThreshold: 50, longPressDelay: 500 },
   animations: { /* Mobile-optimized timing */ }
 }
-```
+\`\`\`
 
 ### **New CSS Utilities**
 - `.touch-manipulation`: Optimized touch handling

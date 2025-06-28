@@ -218,7 +218,7 @@ alwaysApply: false
 
 ### **A. Mobile-First Development Standards**
 - [ ] **Breakpoint Strategy**
-  ```typescript
+  \`\`\`typescript
   // Mobile-first breakpoints
   const breakpoints = {
     mobile: '320px',    // Small phones
@@ -226,7 +226,7 @@ alwaysApply: false
     tablet: '768px',    // Tablets
     desktop: '1024px'   // Desktop
   }
-  ```
+  \`\`\`
 
 - [ ] **Touch Target Standards**
   - Minimum 44px × 44px touch targets
@@ -235,20 +235,20 @@ alwaysApply: false
 
 ### **B. Component Architecture**
 - [ ] **Mobile Component Variants**
-  ```typescript
+  \`\`\`typescript
   // Component variants for mobile
   interface ComponentProps {
     variant?: 'mobile' | 'desktop' | 'adaptive';
     size?: 'sm' | 'md' | 'lg';
     touchOptimized?: boolean;
   }
-  ```
+  \`\`\`
 
 - [ ] **Responsive Hooks**
-  ```typescript
+  \`\`\`typescript
   // Enhanced mobile detection
   const { isMobile, isTablet, orientation, touchDevice } = useDevice();
-  ```
+  \`\`\`
 
 ### **C. Performance Benchmarks**
 - [ ] **Mobile Performance Targets**
@@ -294,7 +294,7 @@ alwaysApply: false
 ## 🎨 Mobile Design System Extensions
 
 ### **A. Mobile-Specific Theme Extensions**
-```typescript
+\`\`\`typescript
 // Add to lib/theme.ts
 export const mobileTheme = {
   touchTargets: {
@@ -314,7 +314,7 @@ export const mobileTheme = {
     heavy: 'heavy'
   }
 }
-```
+\`\`\`
 
 ### **B. Mobile Animation Patterns**
 - Spring animations for natural feel
