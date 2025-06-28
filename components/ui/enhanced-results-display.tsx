@@ -106,20 +106,38 @@ export function EnhancedResultsDisplay({
   };
 
   const getCategoryColors = (category?: string, highlight?: boolean) => {
-    const base = highlight ? 'ring-2 ring-offset-2' : '';
+    // Double outline effect with subtle dark mode styling - no ring offset in dark mode
     switch (category) {
       case 'primary':
-        return cn(base, highlight && 'ring-primary/30', "bg-primary/10 border-primary/20 text-primary dark:bg-primary/20 dark:border-primary/30");
+        return cn(
+          "bg-primary/10 border-primary/20 text-primary dark:bg-primary/20 dark:border-primary/30",
+          "ring-1 ring-primary/10 dark:ring-primary/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-primary/5 dark:shadow-primary/20"
+        );
       case 'success':
-        return cn(base, highlight && 'ring-success/30', "bg-success/10 border-success/20 text-success dark:bg-success/20 dark:border-success/30");
+        return cn(
+          "bg-success/10 border-success/20 text-success dark:bg-success/20 dark:border-success/30",
+          "ring-1 ring-success/10 dark:ring-success/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-success/5 dark:shadow-success/20"
+        );
       case 'warning':
-        return cn(base, highlight && 'ring-warning/30', "bg-warning/10 border-warning/20 text-warning dark:bg-warning/20 dark:border-warning/30");
+        return cn(
+          "bg-warning/10 border-warning/20 text-warning dark:bg-warning/20 dark:border-warning/30",
+          "ring-1 ring-warning/10 dark:ring-warning/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-warning/5 dark:shadow-warning/20"
+        );
       case 'critical':
-        return cn(base, highlight && 'ring-destructive/30', "bg-destructive/10 border-destructive/20 text-destructive dark:bg-destructive/20 dark:border-destructive/30");
+        return cn(
+          "bg-destructive/10 border-destructive/20 text-destructive dark:bg-destructive/20 dark:border-destructive/30",
+          "ring-1 ring-destructive/10 dark:ring-destructive/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-destructive/5 dark:shadow-destructive/20"
+        );
       case 'statistical':
-        return cn(base, highlight && 'ring-secondary/30', "bg-secondary/10 border-secondary/20 text-secondary dark:bg-secondary/20 dark:border-secondary/30");
+        return cn(
+          "bg-secondary/10 border-secondary/20 text-secondary dark:bg-secondary/20 dark:border-secondary/30",
+          "ring-1 ring-secondary/10 dark:ring-secondary/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-secondary/5 dark:shadow-secondary/20"
+        );
       default:
-        return cn(base, highlight && 'ring-muted/30', "bg-muted/50 border-muted text-muted-foreground dark:bg-muted/20 dark:border-muted/30");
+        return cn(
+          "bg-muted/50 border-muted text-muted-foreground dark:bg-muted/20 dark:border-muted/30",
+          "ring-1 ring-muted/10 dark:ring-muted/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-muted/5 dark:shadow-muted/20"
+        );
     }
   };
 
@@ -296,36 +314,50 @@ export function EnhancedResultsDisplay({
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="font-bold">Parameter</TableHead>
-                <TableHead className="text-right font-bold">Value</TableHead>
-                <TableHead className="text-right font-bold">Details</TableHead>
+              <TableRow className="border-b-2 border-border">
+                <TableHead className="font-bold text-base py-4">Parameter</TableHead>
+                <TableHead className="text-right font-bold text-base py-4">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {results.map((result, index) => (
-                <TableRow key={index} className={result.highlight ? 'bg-primary/10 dark:bg-primary/20' : ''}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center space-x-2">
+                <TableRow
+                  key={index}
+                  className={cn(
+                    "border-b hover:bg-muted/50 transition-colors py-2",
+                    result.highlight ? 'bg-primary/10 dark:bg-primary/20 border-primary/20' : ''
+                  )}
+                >
+                  <TableCell className="font-semibold py-6">
+                    <div className="flex items-center space-x-3">
                       {getCategoryIcon(result.category)}
-                      <span>{result.label}</span>
+                      <span className="text-base">{result.label}</span>
                       {result.highlight && (
-                        <Badge variant="secondary" className="text-xs">Key</Badge>
+                        <Badge variant="secondary" className="text-xs font-bold bg-primary/20 text-primary">Key</Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold">
-                    {formatValue(result.value, result.format, result.unit)}
-                  </TableCell>
-                  <TableCell className="text-right text-sm text-muted-foreground">
-                    {result.confidence && (
-                      <span>CI: {result.confidence.lower.toFixed(2)}-{result.confidence.upper.toFixed(2)}</span>
-                    )}
-                    {result.benchmark && (
-                      <span className="ml-2">
-                        Target: {result.benchmark.value} ({result.benchmark.comparison})
-                      </span>
-                    )}
+                  <TableCell className="text-right py-6">
+                    <div className="space-y-2">
+                      <div className="text-2xl font-black font-mono text-foreground">
+                        {formatValue(result.value, result.format, result.unit)}
+                      </div>
+                      {result.interpretation && (
+                        <div className="text-xs text-muted-foreground font-medium">
+                          {result.interpretation}
+                        </div>
+                      )}
+                      {result.confidence && (
+                        <div className="text-xs font-medium text-muted-foreground">
+                          <span className="uppercase tracking-wide">CI:</span> {result.confidence.lower.toFixed(2)}-{result.confidence.upper.toFixed(2)}
+                        </div>
+                      )}
+                      {result.benchmark && (
+                        <div className="text-xs font-medium text-muted-foreground">
+                          <span className="uppercase tracking-wide">Target:</span> {result.benchmark.value} ({result.benchmark.comparison})
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -338,56 +370,62 @@ export function EnhancedResultsDisplay({
       {showInterpretation && interpretation && (
         <div className="space-y-6">
           {interpretation.effectSize && (
-            <Alert className="border-primary/20 bg-primary/10">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <AlertDescription className="text-primary">
-                <div className="space-y-2">
-                  <p className="font-semibold">Effect Size Analysis</p>
-                  <p>{interpretation.effectSize}</p>
+            <Card className="border-primary/20 bg-primary/10 dark:bg-primary/20">
+              <CardContent className="py-6">
+                <div className="flex items-start space-x-3">
+                  <TrendingUp className="h-6 w-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="space-y-3 text-left">
+                    <h3 className="font-bold text-lg text-primary text-left">Effect Size Analysis</h3>
+                    <p className="text-base leading-relaxed text-primary text-left">{interpretation.effectSize}</p>
+                  </div>
                 </div>
-              </AlertDescription>
-            </Alert>
+              </CardContent>
+            </Card>
           )}
 
           {interpretation.statisticalSignificance && (
-            <Alert className="border-success/20 bg-success/10">
-              <CheckCircle className="h-5 w-5 text-success" />
-              <AlertDescription className="text-success">
-                <div className="space-y-2">
-                  <p className="font-semibold">Statistical Significance</p>
-                  <p>{interpretation.statisticalSignificance}</p>
+            <Card className="border-success/20 bg-success/10 dark:bg-success/20">
+              <CardContent className="py-6">
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="h-6 w-6 text-success mt-0.5 flex-shrink-0" />
+                  <div className="space-y-3 text-left">
+                    <h3 className="font-bold text-lg text-success text-left">Statistical Significance</h3>
+                    <p className="text-base leading-relaxed text-success text-left">{interpretation.statisticalSignificance}</p>
+                  </div>
                 </div>
-              </AlertDescription>
-            </Alert>
+              </CardContent>
+            </Card>
           )}
 
           {interpretation.clinicalSignificance && (
-            <Alert className="border-secondary/20 bg-secondary/10">
-              <Activity className="h-5 w-5 text-secondary" />
-              <AlertDescription className="text-secondary">
-                <div className="space-y-2">
-                  <p className="font-semibold">Clinical Significance</p>
-                  <p>{interpretation.clinicalSignificance}</p>
+            <Card className="border-secondary/20 bg-secondary/10 dark:bg-secondary/20">
+              <CardContent className="py-6">
+                <div className="flex items-start space-x-3">
+                  <Activity className="h-6 w-6 text-secondary mt-0.5 flex-shrink-0" />
+                  <div className="space-y-3 text-left">
+                    <h3 className="font-bold text-lg text-secondary text-left">Clinical Significance</h3>
+                    <p className="text-base leading-relaxed text-secondary text-left">{interpretation.clinicalSignificance}</p>
+                  </div>
                 </div>
-              </AlertDescription>
-            </Alert>
+              </CardContent>
+            </Card>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {interpretation.recommendations && interpretation.recommendations.length > 0 && (
-              <Card>
+              <Card className="text-left">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
+                  <CardTitle className="flex items-center space-x-2 text-lg">
                     <Info className="h-6 w-6 text-info" />
                     <span>Recommendations</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {interpretation.recommendations.map((rec, index) => (
-                      <li key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-info mt-2 flex-shrink-0" />
-                        <span className="text-sm font-medium">{rec}</span>
+                      <li key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 rounded-full bg-info mt-2.5 flex-shrink-0" />
+                        <span className="text-base font-medium leading-relaxed text-left">{rec}</span>
                       </li>
                     ))}
                   </ul>
@@ -396,19 +434,19 @@ export function EnhancedResultsDisplay({
             )}
 
             {interpretation.assumptions && interpretation.assumptions.length > 0 && (
-              <Card>
+              <Card className="text-left">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
+                  <CardTitle className="flex items-center space-x-2 text-lg">
                     <AlertCircle className="h-6 w-6 text-warning" />
                     <span>Assumptions</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {interpretation.assumptions.map((assumption, index) => (
-                      <li key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-warning mt-2 flex-shrink-0" />
-                        <span className="text-sm font-medium">{assumption}</span>
+                      <li key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 rounded-full bg-warning mt-2.5 flex-shrink-0" />
+                        <span className="text-base font-medium leading-relaxed text-left">{assumption}</span>
                       </li>
                     ))}
                   </ul>

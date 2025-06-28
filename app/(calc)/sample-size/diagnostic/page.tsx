@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EnhancedTabs, EnhancedTabsContent, EnhancedTabsList, EnhancedTabsTrigger } from '@/components/ui/enhanced-tabs';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -360,14 +360,14 @@ export default function DiagnosticTestPage() {
                     </CardContent>
                 </Card>
 
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
-                <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="single">Single Test</TabsTrigger>
-                    <TabsTrigger value="comparative">Comparative</TabsTrigger>
-                    <TabsTrigger value="roc">ROC Analysis</TabsTrigger>
-                </TabsList>
+                <EnhancedTabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
+                <EnhancedTabsList className="grid w-full grid-cols-3" variant="modern">
+                    <EnhancedTabsTrigger value="single" variant="modern">Single Test</EnhancedTabsTrigger>
+                    <EnhancedTabsTrigger value="comparative" variant="modern">Comparative</EnhancedTabsTrigger>
+                    <EnhancedTabsTrigger value="roc" variant="modern">ROC Analysis</EnhancedTabsTrigger>
+                </EnhancedTabsList>
 
-                <TabsContent value="single">
+                <EnhancedTabsContent value="single">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Single Test Evaluation</CardTitle>
@@ -438,9 +438,9 @@ export default function DiagnosticTestPage() {
                                 </div>
                         </CardContent>
                     </Card>
-                </TabsContent>
+                </EnhancedTabsContent>
 
-                <TabsContent value="comparative">
+                <EnhancedTabsContent value="comparative">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Comparative Test Study</CardTitle>
@@ -516,9 +516,9 @@ export default function DiagnosticTestPage() {
                                 )}
                         </CardContent>
                     </Card>
-                </TabsContent>
+                </EnhancedTabsContent>
 
-                <TabsContent value="roc">
+                <EnhancedTabsContent value="roc">
                         <Card>
                             <CardHeader>
                                 <CardTitle>ROC Analysis</CardTitle>
@@ -559,8 +559,8 @@ export default function DiagnosticTestPage() {
                                 </div>
                         </CardContent>
                     </Card>
-                </TabsContent>
-            </Tabs>
+                </EnhancedTabsContent>
+            </EnhancedTabs>
 
                 {/* Common Parameters */}
                 <Card>

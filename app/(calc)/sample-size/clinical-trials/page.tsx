@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
@@ -31,6 +31,14 @@ import {
   Activity, Target, BarChart3, TrendingUp, Users, Shield,
   FileUp, Download, Calculator, AlertCircle, CheckCircle
 } from 'lucide-react';
+import {
+  StatisticalFormField,
+  PowerField,
+  AlphaField,
+  PercentageField,
+  EffectSizeField,
+  AllocationRatioField
+} from '@/components/ui/enhanced-form-field';
 
 type Results = SuperiorityBinaryOutput | SuperiorityContinuousOutput | NonInferiorityOutput | EquivalenceOutput;
 
@@ -66,22 +74,34 @@ export default function ClinicalTrialsPage() {
             alpha: '5',
             power: '80',
             allocationRatio: 1,
-            dropoutRate: 10,
-            // Superiority Binary
-            controlRate: 20,
-            treatmentRate: 30,
-            // Superiority Continuous
-            meanDifference: 5,
-            stdDev: 10,
-            // Non-inferiority
-            margin: 5,
-            // Equivalence
-            referenceRate: 20,
-            testRate: 20,
+            dropoutRate: 15,
+            // Superiority Binary - Realistic clinical trial scenario (success rates)
+            controlRate: 60, // 60% success rate in control group (standard therapy)
+            treatmentRate: 75, // 75% success rate in treatment group (improved therapy)
+            // Superiority Continuous - Realistic continuous outcome scenario
+            meanDifference: 2.5, // Clinically meaningful difference (e.g., pain scale)
+            stdDev: 6.0, // Typical variability
+            // Non-inferiority - Conservative margin
+            margin: 5, // 5% non-inferiority margin
+            // Equivalence - Same rates scenario
+            referenceRate: 20, // 20% reference rate
+            testRate: 18, // 18% test rate (close for equivalence)
         },
     });
 
     const superiorityOutcome = form.watch('superiorityOutcome');
+
+    // Auto-calculate with default values on component mount
+    React.useEffect(() => {
+        if (!results && !error) {
+            // Small delay to ensure form is properly initialized
+            const timer = setTimeout(() => {
+                const defaultData = form.getValues();
+                onSubmit(defaultData);
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, []);
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
         try {
@@ -89,10 +109,13 @@ export default function ClinicalTrialsPage() {
             setResults(null);
             let result: Results;
 
+
+
             switch (activeTab) {
                 case 'superiority':
                     if (superiorityOutcome === 'binary') {
-                        result = calculateSuperiorityBinary(SuperiorityBinarySchema.parse(data));
+                        const validatedData = SuperiorityBinarySchema.parse(data);
+                        result = calculateSuperiorityBinary(validatedData);
                     } else {
                         result = calculateSuperiorityContinuous(SuperiorityContinuousSchema.parse(data));
                     }
@@ -105,9 +128,20 @@ export default function ClinicalTrialsPage() {
                     break;
             }
             setResults(result);
+            // Clear any existing form errors on successful calculation
+            form.clearErrors();
         } catch (err: any) {
             if (err instanceof z.ZodError) {
-                setError(`Validation failed: ${err.errors.map(e => e.message).join(', ')}`);
+                // Set form errors for individual fields
+                err.errors.forEach((error) => {
+                    if (error.path.length > 0) {
+                        form.setError(error.path[0] as any, {
+                            type: 'validation',
+                            message: error.message,
+                        });
+                    }
+                });
+                setError(`Please check the highlighted fields: ${err.errors.map(e => e.message).join(', ')}`);
             } else {
                 setError(err.message);
             }
@@ -117,6 +151,7 @@ export default function ClinicalTrialsPage() {
     const handleReset = () => {
         setResults(null);
         setError(null);
+        form.clearErrors();
         form.reset();
     };
 
@@ -132,14 +167,21 @@ export default function ClinicalTrialsPage() {
                 const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
 
                 const patterns = {
-                    controlRate: [/control group rate of ([\d\.]+)/i],
-                    treatmentRate: [/treatment group rate of ([\d\.]+)/i],
+                    alpha: [/alpha of ([\d\.]+)/i, /significance level of ([\d\.]+)/i],
+                    power: [/power of ([\d\.]+)/i, /statistical power of ([\d\.]+)/i],
+                    controlRate: [/control group rate of ([\d\.]+)/i, /event rate in control group of ([\d\.]+)/i],
+                    treatmentRate: [/treatment group rate of ([\d\.]+)/i, /event rate in treatment group of ([\d\.]+)/i],
                     meanDifference: [/mean difference of ([\d\.]+)/i],
                     stdDev: [/standard deviation of ([\d\.]+)/i],
-                    margin: [/margin of ([\d\.]+)/i]
+                    margin: [/margin of ([\d\.]+)/i, /(non-inferiority|equivalence) margin of ([\d\.]+)/i],
+                    allocationRatio: [/allocation ratio of ([\d\.:]+)/i]
                 };
 
                 const values = extractParameters(textContent, patterns);
+
+                if (values.alpha) form.setValue('alpha', values.alpha.toString());
+                if (values.power) form.setValue('power', values.power.toString());
+                if (values.allocationRatio) form.setValue('allocationRatio', values.allocationRatio);
 
                 if (activeTab === 'superiority') {
                     if (superiorityOutcome === 'binary') {
@@ -151,6 +193,10 @@ export default function ClinicalTrialsPage() {
                     }
                 } else if (activeTab === 'non-inferiority' || activeTab === 'equivalence') {
                     if (values.margin) form.setValue('margin', values.margin);
+                    if (activeTab === 'equivalence' && values.controlRate) {
+                        form.setValue('referenceRate', values.controlRate);
+                        form.setValue('testRate', values.controlRate); // Assume same for equivalence unless specified
+                    }
                 }
 
             } catch (err: any) {
@@ -229,9 +275,9 @@ export default function ClinicalTrialsPage() {
         let visualizationData: any[] = [];
         let interpretationData: any = {};
 
-        // Calculate risk difference for binary outcomes
+        // Calculate benefit difference for binary outcomes (treatment - control)
         const formValues = form.getValues();
-        const riskDifference = (Number(formValues.treatmentRate) || 0) - (Number(formValues.controlRate) || 0);
+        const benefitDifference = (Number(formValues.treatmentRate) || 0) - (Number(formValues.controlRate) || 0);
 
         if ('nnt' in results) { // Superiority Binary
 
@@ -265,8 +311,8 @@ export default function ClinicalTrialsPage() {
                     category: "secondary" as const
                 },
                 {
-                    label: "Effect Size (Risk Difference)",
-                    value: riskDifference,
+                    label: "Effect Size (Benefit Difference)",
+                    value: benefitDifference,
                     format: "decimal" as const,
                     category: "statistical" as const,
                     unit: "%"
@@ -279,7 +325,7 @@ export default function ClinicalTrialsPage() {
             ];
 
             interpretationData = {
-                effectSize: `Risk difference of ${riskDifference.toFixed(1)}% between treatment and control groups`,
+                effectSize: `Benefit difference of ${benefitDifference.toFixed(1)}% between treatment and control groups`,
                 statisticalSignificance: `NNT = ${results.nnt.toFixed(1)} indicates moderate treatment effect`,
                 clinicalSignificance: `Trial requires ${results.totalSize} participants to detect meaningful clinical difference`,
                 recommendations: [
@@ -364,9 +410,9 @@ export default function ClinicalTrialsPage() {
                                     title="Treatment Effectiveness"
                                     type="comparison"
                                     data={[
-                                        { label: "Control Event Rate", value: form.getValues('controlRate') || 0 },
-                                        { label: "Treatment Event Rate", value: form.getValues('treatmentRate') || 0 },
-                                        { label: "Absolute Risk Reduction", value: riskDifference },
+                                        { label: "Control Success Rate", value: form.getValues('controlRate') || 0 },
+                                        { label: "Treatment Success Rate", value: form.getValues('treatmentRate') || 0 },
+                                        { label: "Absolute Benefit Increase", value: benefitDifference },
                                         { label: "Number Needed to Treat", value: results.nnt }
                                     ]}
                                 />
@@ -374,13 +420,36 @@ export default function ClinicalTrialsPage() {
                         </div>
                     }
                 />
+
+                {/* Download Results Button */}
+                <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+                    <CardContent className="pt-6">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="space-y-1 text-center sm:text-left">
+                                <h3 className="font-semibold text-lg">Export Your Results</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Download a comprehensive PDF report with all calculations and interpretations
+                                </p>
+                            </div>
+                            <Button
+                                type="button"
+                                onClick={generatePdf}
+                                size="lg"
+                                className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-3 text-base font-semibold"
+                            >
+                                <Download className="h-5 w-5 mr-3" />
+                                Download PDF Report
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         );
     };
 
     const renderInputForm = () => (
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader>
+            <CardHeader className="pb-6">
                 <CardTitle className="text-2xl flex items-center space-x-3">
                     <div className="p-2 rounded-lg bg-primary/10">
                         <Activity className="h-6 w-6 text-primary" />
@@ -388,19 +457,54 @@ export default function ClinicalTrialsPage() {
                     <span>Clinical Trial Design Calculator</span>
                 </CardTitle>
                 <CardDescription className="text-lg">
-                    Calculate sample sizes for superiority, non-inferiority, and equivalence trials
+                    Calculate sample sizes for superiority, non-inferiority, and equivalence trials with realistic clinical scenarios
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-8">
                 {error && (
-                            <Alert className="mb-6 border-destructive/20 bg-destructive/10">
-          <AlertCircle className="h-4 w-4 text-destructive" />
-          <AlertTitle className="text-destructive">Calculation Error</AlertTitle>
-          <AlertDescription className="text-destructive">{error}</AlertDescription>
+                    <Alert className="border-destructive/20 bg-destructive/10 text-left">
+                        <AlertCircle className="h-4 w-4 text-destructive" />
+                        <AlertTitle className="text-destructive font-bold">Calculation Error</AlertTitle>
+                        <AlertDescription className="text-destructive text-left">
+                            {error}
+                        </AlertDescription>
                     </Alert>
                 )}
 
-                <EnhancedTabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'superiority' | 'non-inferiority' | 'equivalence')} className="space-y-6">
+                <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <FileUp className="h-5 w-5 text-primary" />
+                            <span>Import from PDF (Optional)</span>
+                        </CardTitle>
+                        <CardDescription>Upload a research protocol to auto-extract trial parameters</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div
+                            className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:bg-muted/50 transition-colors cursor-pointer"
+                            onClick={() => document.getElementById('pdf-upload-clinical')?.click()}
+                        >
+                            <div className="space-y-2">
+                                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                                    <span className="text-2xl">📁</span>
+                                </div>
+                                <div>
+                                    <p className="font-medium">Click to upload or drag and drop</p>
+                                    <p className="text-sm text-muted-foreground">PDF files only, max 10MB</p>
+                                </div>
+                            </div>
+                            <Input
+                                id="pdf-upload-clinical"
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleFileUpload}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <EnhancedTabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'superiority' | 'non-inferiority' | 'equivalence')} className="space-y-8">
                     <EnhancedTabsList className="grid w-full grid-cols-3" variant="modern">
                         <EnhancedTabsTrigger value="superiority" variant="modern">
                             <div className="flex items-center space-x-2">
@@ -422,186 +526,115 @@ export default function ClinicalTrialsPage() {
                         </EnhancedTabsTrigger>
                     </EnhancedTabsList>
 
-                    <div className="flex flex-col lg:flex-row gap-4 mb-6">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => document.getElementById('pdf-upload')?.click()}
-                            className="flex items-center space-x-2"
-                        >
-                            <FileUp className="h-4 w-4" />
-                            <span>Upload PDF</span>
-                        </Button>
-                        <input
-                            id="pdf-upload"
-                            type="file"
-                            accept=".pdf"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                        />
-                        {results && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={generatePdf}
-                                className="flex items-center space-x-2"
-                            >
-                                <Download className="h-4 w-4" />
-                                <span>Download Results</span>
-                            </Button>
-                        )}
-                    </div>
+
 
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            {/* Common Parameters */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <FormField
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                            {/* Common Parameters - Enhanced with better UX */}
+                            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
+                                <CardHeader>
+                                    <CardTitle className="text-xl">Study Design Parameters</CardTitle>
+                                    <CardDescription>
+                                        Standard statistical parameters for clinical trial design
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <AlphaField
                                     control={form.control}
                                     name="alpha"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Significance Level (α) (%)</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="5" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
+                                            calculatorType="clinical-trial"
+                                            size="md"
+                                        />
+                                        <PowerField
                                     control={form.control}
                                     name="power"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Statistical Power (%)</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="80" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
+                                            calculatorType="clinical-trial"
+                                            size="md"
                                 />
                             </div>
+                                    <AllocationRatioField
+                                        control={form.control}
+                                        name="allocationRatio"
+                                        calculatorType="clinical-trial"
+                                        size="md"
+                                    />
+                                </CardContent>
+                            </Card>
 
-                            {/* Tab-specific content */}
+                            {/* Tab-specific content with enhanced form fields */}
                             <EnhancedTabsContent value="superiority">
                                 <Card className="border-primary/20 bg-primary/10 dark:bg-primary/20 dark:border-primary/30">
                                     <CardHeader>
-                                        <CardTitle className="text-lg">Superiority Trial Parameters</CardTitle>
+                                        <CardTitle className="text-xl">Superiority Trial Design</CardTitle>
                                         <CardDescription>
-                                            Design a trial to demonstrate that the new treatment is better than control
+                                            Demonstrate that the new treatment is significantly better than control. Example scenario: Testing a new treatment to achieve higher cure rates than standard therapy.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
-                                        <FormField
+                                        <StatisticalFormField
                                             control={form.control}
                                             name="superiorityOutcome"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Outcome Type</FormLabel>
-                                                    <FormControl>
-                                                        <RadioGroup
-                                                            onValueChange={field.onChange}
-                                                            value={field.value}
-                                                            className="flex flex-col space-y-2"
-                                                        >
-                                                            <div className="flex items-center space-x-2">
-                                                                <RadioGroupItem value="binary" id="binary" />
-                                                                <Label htmlFor="binary">Binary (event rates)</Label>
-                                                            </div>
-                                                            <div className="flex items-center space-x-2">
-                                                                <RadioGroupItem value="continuous" id="continuous" />
-                                                                <Label htmlFor="continuous">Continuous (means)</Label>
-                                                            </div>
-                                                        </RadioGroup>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
+                                            label="Primary Outcome Type"
+                                            description="Choose the type of primary outcome measure for your trial"
+                                            fieldType="select"
+                                            calculatorType="clinical-trial"
+                                            selectOptions={[
+                                                {
+                                                  value: "binary",
+                                                  label: "Binary (Success Rates)",
+                                                  description: "e.g., Cure Rate, Treatment Response, Recovery"
+                                                },
+                                                {
+                                                  value: "continuous",
+                                                  label: "Continuous (Measurements)",
+                                                  description: "e.g., Blood Pressure, Pain Score, Lab Values"
+                                                }
+                                            ]}
+                                            size="md"
                                         />
 
                                         {superiorityOutcome === 'binary' && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                <FormField
+                                            <div className="space-y-6">
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                    <PercentageField
                                                     control={form.control}
                                                     name="controlRate"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Control Group Event Rate (%)</FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="20"
-                                                                    {...field}
-                                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
+                                                        label="Control Group Success Rate (%)"
+                                                        description="Expected percentage of participants in control group achieving the primary outcome (e.g., 60% cure rate with standard therapy)"
+                                                        calculatorType="clinical-trial"
+                                                        size="md"
+                                                    />
+                                                    <PercentageField
                                                     control={form.control}
                                                     name="treatmentRate"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Treatment Group Event Rate (%)</FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="30"
-                                                                    {...field}
-                                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                        label="Treatment Group Success Rate (%)"
+                                                        description="Expected percentage of participants in treatment group achieving the primary outcome (e.g., 75% cure rate with new therapy - 25% relative improvement)"
+                                                        calculatorType="clinical-trial"
+                                                        size="md"
+                                                    />
+                                                </div>
                                             </div>
                                         )}
 
                                         {superiorityOutcome === 'continuous' && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                <FormField
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                <EffectSizeField
                                                     control={form.control}
                                                     name="meanDifference"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Expected Mean Difference</FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="5"
-                                                                    {...field}
-                                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
+                                                    label="Expected Mean Difference"
+                                                    description="Clinically meaningful difference between treatment and control groups (e.g., 2.5 point reduction in pain scale)"
+                                                    calculatorType="clinical-trial"
+                                                    size="md"
                                                 />
-
-                                                <FormField
+                                                <StatisticalFormField
                                                     control={form.control}
                                                     name="stdDev"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Standard Deviation</FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="10"
-                                                                    {...field}
-                                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
+                                                    label="Standard Deviation"
+                                                    description="Expected variability in the outcome measure (e.g., 6.0 for pain scale with typical variability)"
+                                                    fieldType="continuous"
+                                                    calculatorType="clinical-trial"
+                                                    size="md"
                                                 />
                                             </div>
                                         )}
@@ -612,29 +645,20 @@ export default function ClinicalTrialsPage() {
                             <EnhancedTabsContent value="non-inferiority">
                                 <Card className="border-success/20 bg-success/10 dark:bg-success/20 dark:border-success/30">
                                     <CardHeader>
-                                        <CardTitle className="text-lg">Non-Inferiority Trial Parameters</CardTitle>
+                                        <CardTitle className="text-xl">Non-Inferiority Trial Design</CardTitle>
                                         <CardDescription>
-                                            Design a trial to show the new treatment is not worse than control by more than a margin
+                                            Show that the new treatment is not worse than control by more than a predefined margin. Example: Testing a generic drug to ensure it's not significantly worse than the brand name.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
-                                        <FormField
+                                        <StatisticalFormField
                                             control={form.control}
                                             name="margin"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Non-Inferiority Margin (%)</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="5"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
+                                            label="Non-Inferiority Margin (%)"
+                                            description="Maximum acceptable difference - if new treatment is within this margin, it's considered non-inferior (e.g., 5% margin means new treatment can be up to 5% worse)"
+                                            fieldType="percentage"
+                                            calculatorType="clinical-trial"
+                                            size="md"
                                         />
                                     </CardContent>
                                 </Card>
@@ -643,81 +667,70 @@ export default function ClinicalTrialsPage() {
                             <EnhancedTabsContent value="equivalence">
                                 <Card className="border-secondary/20 bg-secondary/10 dark:bg-secondary/20 dark:border-secondary/30">
                                     <CardHeader>
-                                        <CardTitle className="text-lg">Equivalence Trial Parameters</CardTitle>
+                                        <CardTitle className="text-xl">Equivalence Trial Design</CardTitle>
                                         <CardDescription>
-                                            Design a trial to show the treatments are equivalent within specified limits
+                                            Demonstrate that two treatments are equivalent within specified limits. Example: Comparing two antibiotics to show they have similar efficacy.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            <FormField
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            <PercentageField
                                                 control={form.control}
                                                 name="referenceRate"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Reference Treatment Rate (%)</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                placeholder="20"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
+                                                label="Reference Treatment Rate (%)"
+                                                description="Expected event rate for the reference/standard treatment (e.g., 20% cure rate for standard antibiotic)"
+                                                calculatorType="clinical-trial"
+                                                size="md"
                                             />
-
-                                            <FormField
+                                            <PercentageField
                                                 control={form.control}
                                                 name="testRate"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Test Treatment Rate (%)</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                placeholder="20"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
+                                                label="Test Treatment Rate (%)"
+                                                description="Expected event rate for the test treatment (e.g., 18% cure rate for new antibiotic - should be close to reference)"
+                                                calculatorType="clinical-trial"
+                                                size="md"
                                             />
                                         </div>
-
-                                        <FormField
+                                        <StatisticalFormField
                                             control={form.control}
                                             name="margin"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Equivalence Margin (%)</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="5"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
+                                            label="Equivalence Margin (%)"
+                                            description="Maximum acceptable difference for treatments to be considered equivalent (e.g., 5% margin means treatments are equivalent if within ±5%)"
+                                            fieldType="percentage"
+                                            calculatorType="clinical-trial"
+                                            size="md"
                                         />
                                     </CardContent>
                                 </Card>
                             </EnhancedTabsContent>
 
+                            {/* Dropout Rate - Enhanced */}
+                            <Card className="border-warning/20 bg-warning/5">
+                                <CardHeader>
+                                    <CardTitle className="text-lg">Study Implementation</CardTitle>
+                                    <CardDescription>
+                                        Account for practical aspects of conducting the clinical trial
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <PercentageField
+                                        control={form.control}
+                                        name="dropoutRate"
+                                        label="Expected Dropout Rate (%)"
+                                        description="Percentage of participants expected to drop out or be lost to follow-up during the study (15% is typical for most clinical trials)"
+                                        calculatorType="clinical-trial"
+                                        size="md"
+                                    />
+                                </CardContent>
+                            </Card>
+
                             <div className="flex justify-center pt-6">
                                 <Button
                                     type="submit"
                                     size="lg"
-                                    className="px-8 py-3 text-lg font-semibold"
+                                    className="px-12 py-4 text-lg font-semibold h-14"
                                 >
-                                    <Calculator className="h-5 w-5 mr-2" />
+                                    <Calculator className="h-5 w-5 mr-3" />
                                     Calculate Sample Size
                                 </Button>
                             </div>

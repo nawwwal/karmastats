@@ -223,7 +223,7 @@ export default function ComparativeStudyPage() {
         </div>
 
         {/* Detailed Parameters Card */}
-        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 ring-1 ring-primary/10 dark:ring-primary/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-primary/5 dark:shadow-primary/20">
           <CardHeader>
             <div className="flex items-center gap-3">
               <Calculator className="h-6 w-6 text-primary" />
@@ -248,7 +248,7 @@ export default function ComparativeStudyPage() {
         </Card>
 
         {/* Clinical Significance Card */}
-        <Card className="border-success/20 bg-gradient-to-br from-success/5 to-primary/5">
+        <Card className="border-success/20 bg-gradient-to-br from-success/5 to-primary/5 ring-1 ring-success/10 dark:ring-success/5 ring-offset-2 dark:ring-offset-0 ring-offset-background shadow-lg shadow-success/5 dark:shadow-success/20">
           <CardHeader>
             <div className="flex items-center gap-3">
               <Microscope className="h-6 w-6 text-success" />
