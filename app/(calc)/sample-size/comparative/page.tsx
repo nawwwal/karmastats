@@ -87,6 +87,14 @@ export default function ComparativeStudyPage() {
     const isCaseControl = results.type === 'case-control';
     const interpretation = results.interpretation;
 
+    // Helper function to safely format numbers
+    const safeToFixed = (value: any, decimals: number): string => {
+      if (typeof value === 'number' && !isNaN(value)) {
+        return value.toFixed(decimals);
+      }
+      return 'N/A';
+    };
+
     // Key metrics for enhanced results display
     const keyMetrics = [
       {
@@ -162,14 +170,6 @@ export default function ComparativeStudyPage() {
            safeEffectSize > 1.2 ? 'Low Risk' : 'No/Low Risk')
       }
     ];
-
-    // Helper function to safely format numbers
-    const safeToFixed = (value: any, decimals: number): string => {
-      if (typeof value === 'number' && !isNaN(value)) {
-        return value.toFixed(decimals);
-      }
-      return 'N/A';
-    };
 
     const interpretationData = {
       effectSize: `${isCaseControl ? 'Odds ratio' : 'Relative risk'} of ${safeToFixed(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk, 2)}`,

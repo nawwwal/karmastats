@@ -30,9 +30,13 @@
 
     /* Semantic colors */
     --success: 122 39% 49%; /* Green */
+    --success-foreground: 210 20% 98%; /* Light text on green */
     --warning: 38 92% 50%; /* Orange warning */
+    --warning-foreground: 210 20% 98%; /* Light text on orange */
     --error: 0 84% 60%; /* Red error */
+    --error-foreground: 210 20% 98%; /* Light text on red */
     --info: 207 75% 33%; /* Primary blue for info */
+    --info-foreground: 210 20% 98%; /* Light text on blue */
 
     /* Destructive (error variant) */
     --destructive: 0 84% 60%;
@@ -91,9 +95,13 @@
 
     /* Semantic colors - Dark theme variants */
     --success: 122 39% 69%; /* Lighter green */
+    --success-foreground: 210 20% 8%; /* Dark text on green */
     --warning: 38 92% 70%; /* Lighter orange */
+    --warning-foreground: 210 20% 8%; /* Dark text on orange */
     --error: 0 84% 70%; /* Lighter red */
+    --error-foreground: 210 20% 8%; /* Dark text on red */
     --info: 195 76% 65%; /* Lighter blue */
+    --info-foreground: 210 20% 8%; /* Dark text on blue */
 
     /* Destructive */
     --destructive: 0 63% 51%;

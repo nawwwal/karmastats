@@ -138,15 +138,15 @@ export function ResultsDisplay({
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-6 w-6 text-indigo-600" />
-            <span className="text-xl font-bold text-gray-900">{title}</span>
+            <span className="text-xl font-bold text-foreground">{title}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-base font-bold text-gray-700">Parameter</TableHead>
-                <TableHead className="text-right text-base font-bold text-gray-700">Value</TableHead>
+                            <TableHead className="text-base font-bold text-foreground">Parameter</TableHead>
+            <TableHead className="text-right text-base font-bold text-foreground">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

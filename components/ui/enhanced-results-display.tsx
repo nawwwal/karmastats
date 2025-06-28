@@ -96,12 +96,12 @@ export function EnhancedResultsDisplay({
 
   const getCategoryIcon = (category?: string) => {
     switch (category) {
-      case 'primary': return <Target className="h-5 w-5 text-blue-600" />;
-      case 'success': return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case 'warning': return <AlertCircle className="h-5 w-5 text-amber-600" />;
-      case 'critical': return <AlertCircle className="h-5 w-5 text-red-600" />;
-      case 'statistical': return <BarChart3 className="h-5 w-5 text-purple-600" />;
-      default: return <Activity className="h-5 w-5 text-gray-600" />;
+      case 'primary': return <Target className="h-5 w-5 text-primary" />;
+      case 'success': return <CheckCircle className="h-5 w-5 text-success" />;
+      case 'warning': return <AlertCircle className="h-5 w-5 text-warning" />;
+      case 'critical': return <AlertCircle className="h-5 w-5 text-destructive" />;
+      case 'statistical': return <BarChart3 className="h-5 w-5 text-secondary" />;
+      default: return <Activity className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
@@ -109,24 +109,24 @@ export function EnhancedResultsDisplay({
     const base = highlight ? 'ring-2 ring-offset-2' : '';
     switch (category) {
       case 'primary':
-        return cn(base, highlight && 'ring-blue-300', "bg-blue-50 border-blue-200 text-blue-900");
+        return cn(base, highlight && 'ring-primary/30', "bg-primary/10 border-primary/20 text-primary dark:bg-primary/20 dark:border-primary/30");
       case 'success':
-        return cn(base, highlight && 'ring-green-300', "bg-green-50 border-green-200 text-green-900");
+        return cn(base, highlight && 'ring-success/30', "bg-success/10 border-success/20 text-success dark:bg-success/20 dark:border-success/30");
       case 'warning':
-        return cn(base, highlight && 'ring-amber-300', "bg-amber-50 border-amber-200 text-amber-900");
+        return cn(base, highlight && 'ring-warning/30', "bg-warning/10 border-warning/20 text-warning dark:bg-warning/20 dark:border-warning/30");
       case 'critical':
-        return cn(base, highlight && 'ring-red-300', "bg-red-50 border-red-200 text-red-900");
+        return cn(base, highlight && 'ring-destructive/30', "bg-destructive/10 border-destructive/20 text-destructive dark:bg-destructive/20 dark:border-destructive/30");
       case 'statistical':
-        return cn(base, highlight && 'ring-purple-300', "bg-purple-50 border-purple-200 text-purple-900");
+        return cn(base, highlight && 'ring-secondary/30', "bg-secondary/10 border-secondary/20 text-secondary dark:bg-secondary/20 dark:border-secondary/30");
       default:
-        return cn(base, highlight && 'ring-gray-300', "bg-gray-50 border-gray-200 text-gray-900");
+        return cn(base, highlight && 'ring-muted/30', "bg-muted/50 border-muted text-muted-foreground dark:bg-muted/20 dark:border-muted/30");
     }
   };
 
   const getChangeIcon = (type?: string) => {
     switch (type) {
-      case 'increase': return <ArrowUpRight className="h-4 w-4 text-green-600" />;
-      case 'decrease': return <ArrowDownRight className="h-4 w-4 text-red-600" />;
+      case 'increase': return <ArrowUpRight className="h-4 w-4 text-success" />;
+      case 'decrease': return <ArrowDownRight className="h-4 w-4 text-destructive" />;
       default: return null;
     }
   };
@@ -144,17 +144,17 @@ export function EnhancedResultsDisplay({
         <div className="flex items-center justify-center space-x-3">
           <Calculator className="h-8 w-8 text-primary" />
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
-            {subtitle && <p className="text-lg text-gray-600 mt-1">{subtitle}</p>}
+            <h2 className="text-3xl font-bold text-foreground">{title}</h2>
+            {subtitle && <p className="text-lg text-muted-foreground mt-1">{subtitle}</p>}
           </div>
         </div>
       </div>
 
       {/* Critical Results Alert */}
       {criticalResults.length > 0 && (
-        <Alert className="border-red-200 bg-red-50">
-          <AlertCircle className="h-5 w-5 text-red-600" />
-          <AlertDescription className="text-red-800 font-medium">
+        <Alert className="border-destructive/20 bg-destructive/10">
+          <AlertCircle className="h-5 w-5 text-destructive" />
+          <AlertDescription className="text-destructive font-medium">
             <div className="space-y-2">
               <p className="font-semibold">Critical findings require attention:</p>
               {criticalResults.map((result, index) => (
