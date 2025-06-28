@@ -732,7 +732,7 @@ export default function ClinicalTrialsPage() {
         <ToolPageWrapper
             title="Clinical Trial Sample Size Calculator"
             description="Design superior, non-inferiority, and equivalence trials with comprehensive sample size calculations and advanced visualizations"
-            backHref="/sample-size"
+            backHref="/"
             backLabel="Sample Size Calculator"
             onReset={handleReset}
             icon={Activity}

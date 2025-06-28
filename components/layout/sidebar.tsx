@@ -65,44 +65,37 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   if (hasChildren) {
     return (
       <li className="mb-1">
-        <button
-          onClick={toggleOpen}
+        <div
           className={cn(
-            "flex items-center gap-3 px-3 py-3 rounded-lg w-full text-left transition-all duration-200 group",
-            isActive
-              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-              : "hover:bg-accent hover:text-accent-foreground",
+            "flex items-center gap-3 px-3 py-3 rounded-lg w-full text-left transition-all duration-200",
+            "text-muted-foreground/80 font-medium tracking-wide border-b border-border/30",
             isCollapsed && "justify-center px-2",
           )}
         >
-          <span className="flex-shrink-0 w-5 h-5 transition-colors group-hover:scale-110 duration-200">{icon}</span>
+          <span className="flex-shrink-0 w-5 h-5 transition-colors duration-200">{icon}</span>
           {!isCollapsed && (
             <>
               <div className="flex-grow min-w-0">
-                <div className="font-medium truncate">{title || "Unknown"}</div>
+                <div className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+                  {title || "Unknown"}
+                </div>
                 {description && (
-                  <div
-                    className={cn(
-                      "text-xs font-medium tracking-wide truncate",
-                      isActive ? "text-sidebar-primary-foreground" : "text-muted-foreground",
-                    )}
-                  >
+                  <div className="text-xs font-normal tracking-normal text-muted-foreground/70 mt-0.5">
                     {description}
                   </div>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 {badge && (
-                  <Badge variant="secondary" className="text-xs font-medium tracking-wide">
+                  <Badge variant="secondary" className="text-xs font-medium tracking-wide bg-muted/50">
                     {badge}
                   </Badge>
                 )}
-                <span className="flex-shrink-0">{isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}</span>
               </div>
             </>
           )}
-        </button>
-        {!isCollapsed && isOpen && <ul className="pl-6 mt-2 space-y-1 border-l border-border ml-5">{children}</ul>}
+        </div>
+        {!isCollapsed && <ul className="pl-6 mt-2 space-y-1 border-l border-border ml-5">{children}</ul>}
       </li>
     )
   }
@@ -193,20 +186,7 @@ interface SidebarProps {
 
 export function Sidebar({ isCollapsed, onToggle, isHovered = false }: SidebarProps) {
   const pathname = usePathname()
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
-    calculators: true,
-    studies: false,
-    analysis: false,
-    resources: false,
-  })
   const { isMobile } = useDevice()
-
-  const toggleCategory = (category: string) => {
-    setOpenCategories((prev) => ({
-      ...prev,
-      [category]: !prev[category],
-    }))
-  }
 
   const isActive = (path: string) => pathname === path
   const isCategoryActive = (paths: string[]) => paths.some((path) => pathname?.startsWith(path))
@@ -388,8 +368,8 @@ export function Sidebar({ isCollapsed, onToggle, isHovered = false }: SidebarPro
                         title={item.title}
                         description={item.description}
                         isActive={item.isActive}
-                        isOpen={openCategories[item.key || ""]}
-                        toggleOpen={() => toggleCategory(item.key || "")}
+                        isOpen={false}
+                        toggleOpen={() => {}}
                         badge={item.badge}
                         isCollapsed={isCollapsed}
                       >

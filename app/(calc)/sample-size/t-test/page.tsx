@@ -513,7 +513,7 @@ export default function TTestPage() {
     <ToolPageWrapper
       title="T-Test Sample Size Calculator"
       description="Calculate sample sizes for independent, paired, and one-sample t-tests with comprehensive power analysis and advanced visualizations"
-      backHref="/sample-size"
+      backHref="/"
       backLabel="Sample Size Calculator"
       onReset={handleReset}
       icon={Calculator}

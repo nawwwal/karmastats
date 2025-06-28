@@ -21,83 +21,155 @@ import {
   Zap,
   Shield,
   Sparkles,
-  Star
+  Star,
+  Brain,
+  TrendingUp,
+  BarChart3,
+  TestTube,
+  Stethoscope,
+  Database,
+  LineChart,
+  PieChart,
+  Waves,
+  FlaskConical
 } from 'lucide-react';
 
-const tools = {
-  calculators: [
-    {
-      title: "Sample Size Calculator",
-      description: "Comprehensive suite of 7 specialized sample size calculation tools covering all major study designs with statistical power analysis",
-      href: "/sample-size",
-      icon: <Calculator className="h-8 w-8" />,
-      features: [
-        "Intelligent Study Detector (AI-powered)",
-        "Survival Analysis (Log-rank, Cox, One-arm)",
-        "Comparative Studies (Case-control & Cohort)",
-        "T-Test Calculator (Independent & Paired)",
-        "Diagnostic Studies (Sensitivity & Specificity)",
-        "Clinical Trials (RCT, Non-inferiority, Equivalence)",
-        "Cross-sectional Studies (Prevalence & Survey)"
-      ],
-      status: "Complete",
-      toolCount: "7 Tools"
-    },
-    {
-      title: "Regression Analysis",
-      description: "Advanced statistical modeling suite with interactive visualizations, sample datasets, and comprehensive file upload capabilities",
-      href: "/regression",
-      icon: <Activity className="h-8 w-8" />,
-      features: [
-        "Linear Regression (Simple & Multiple variables)",
-        "Polynomial Regression (2nd-6th degree fitting)",
-        "Multiple Regression (Multi-variable analysis)",
-        "Logistic Regression (Binary classification)",
-        "Interactive Charts & Visualizations",
-        "CSV/TXT File Upload Support",
-        "Sample Datasets Included"
-      ],
-      status: "Complete",
-      toolCount: "4 Models"
-    },
-    {
-      title: "Disease Modeling",
-      description: "Advanced epidemiological modeling with SEIRDV compartments, intervention analysis, and real-time parameter adjustment",
-      href: "/disease-math",
-      icon: <Microscope className="h-8 w-8" />,
-      features: [
-        "Standard SEIR Model (Basic epidemic modeling)",
-        "Advanced SEIRDV Model (Deaths & Vaccination)",
-        "Intervention Analysis (Policy impact assessment)",
-        "Real-time Parameter Adjustment",
-        "Interactive Epidemic Curves",
-        "R₀ & Herd Immunity Calculations",
-        "Population Impact Metrics"
-      ],
-      status: "Complete",
-      toolCount: "2 Models"
-    }
-  ],
-  studies: [
-    {
-      title: "Family Health Study",
-      description: "Comprehensive family health assessment platform based on ICMR-NIN 2020 guidelines with nutritional analysis and health tracking",
-      href: "/family-study",
-      icon: <Users className="h-8 w-8" />,
-      features: [
-        "ICMR-NIN 2020 Compliance",
-        "Family Member Demographics",
-        "Nutritional Adequacy Analysis",
-        "Health Records Management",
-        "Immunization Tracking",
-        "Socioeconomic Status Assessment",
-        "Consumption Unit Calculations"
-      ],
-      status: "Complete",
-      toolCount: "7 Modules"
-    }
-  ]
-};
+// Individual tool cards data
+const allTools = [
+  // Sample Size Calculators
+  {
+    title: "AI Study Detector",
+    description: "Intelligent study design detection",
+    href: "/sample-size/intelligent-detector",
+    icon: <Brain className="h-6 w-6" />,
+    category: "Sample Size",
+    color: "from-purple-500 to-blue-500",
+    badge: "AI-Powered"
+  },
+  {
+    title: "Survival Analysis",
+    description: "Time-to-event studies",
+    href: "/sample-size/survival",
+    icon: <TrendingUp className="h-6 w-6" />,
+    category: "Sample Size",
+    color: "from-green-500 to-teal-500",
+    badge: "Log-rank"
+  },
+  {
+    title: "Comparative Studies",
+    description: "Case-control & cohort",
+    href: "/sample-size/comparative",
+    icon: <BarChart3 className="h-6 w-6" />,
+    category: "Sample Size",
+    color: "from-blue-500 to-indigo-500",
+    badge: "Two-group"
+  },
+  {
+    title: "T-Test Calculator",
+    description: "Independent & paired tests",
+    href: "/sample-size/t-test",
+    icon: <TestTube className="h-6 w-6" />,
+    category: "Sample Size",
+    color: "from-orange-500 to-red-500",
+    badge: "Statistical"
+  },
+  {
+    title: "Diagnostic Studies",
+    description: "Sensitivity & specificity",
+    href: "/sample-size/diagnostic",
+    icon: <Stethoscope className="h-6 w-6" />,
+    category: "Sample Size",
+    color: "from-pink-500 to-rose-500",
+    badge: "Medical"
+  },
+  {
+    title: "Clinical Trials",
+    description: "RCT sample calculations",
+    href: "/sample-size/clinical-trials",
+    icon: <Target className="h-6 w-6" />,
+    category: "Sample Size",
+    color: "from-emerald-500 to-green-500",
+    badge: "RCT"
+  },
+  {
+    title: "Cross-sectional",
+    description: "Prevalence & survey studies",
+    href: "/sample-size/cross-sectional",
+    icon: <Database className="h-6 w-6" />,
+    category: "Sample Size",
+    color: "from-cyan-500 to-blue-500",
+    badge: "Survey"
+  },
+
+  // Regression Analysis
+  {
+    title: "Linear Regression",
+    description: "Simple & multiple variables",
+    href: "/regression",
+    icon: <LineChart className="h-6 w-6" />,
+    category: "Regression",
+    color: "from-violet-500 to-purple-500",
+    badge: "Linear"
+  },
+  {
+    title: "Polynomial Regression",
+    description: "2nd-6th degree fitting",
+    href: "/regression",
+    icon: <Waves className="h-6 w-6" />,
+    category: "Regression",
+    color: "from-indigo-500 to-blue-500",
+    badge: "Polynomial"
+  },
+  {
+    title: "Multiple Regression",
+    description: "Multi-variable analysis",
+    href: "/regression",
+    icon: <PieChart className="h-6 w-6" />,
+    category: "Regression",
+    color: "from-teal-500 to-cyan-500",
+    badge: "Multi-var"
+  },
+  {
+    title: "Logistic Regression",
+    description: "Binary classification",
+    href: "/regression",
+    icon: <Activity className="h-6 w-6" />,
+    category: "Regression",
+    color: "from-amber-500 to-orange-500",
+    badge: "Binary"
+  },
+
+  // Disease Modeling
+  {
+    title: "SEIR Disease Model",
+    description: "Basic epidemic modeling",
+    href: "/disease-math",
+    icon: <Microscope className="h-6 w-6" />,
+    category: "Disease Math",
+    color: "from-red-500 to-pink-500",
+    badge: "Standard"
+  },
+  {
+    title: "SEIRDV Model",
+    description: "Advanced with vaccination",
+    href: "/disease-math",
+    icon: <FlaskConical className="h-6 w-6" />,
+    category: "Disease Math",
+    color: "from-rose-500 to-red-500",
+    badge: "Advanced"
+  },
+
+  // Family Health Study
+  {
+    title: "Family Health Study",
+    description: "ICMR-NIN 2020 compliance",
+    href: "/family-study",
+    icon: <Users className="h-6 w-6" />,
+    category: "Health Studies",
+    color: "from-green-500 to-emerald-500",
+    badge: "Complete"
+  }
+];
 
 const impactStats = [
   {
@@ -120,61 +192,47 @@ const impactStats = [
   }
 ];
 
-const CalcCard = ({ title, description, href, icon, features, status, toolCount }: {
+const ToolCard = ({ title, description, href, icon, category, color, badge }: {
   title: string;
   description: string;
   href: string;
   icon: React.ReactNode;
-  features: string[];
-  status: string;
-  toolCount?: string;
+  category: string;
+  color: string;
+  badge: string;
 }) => (
   <Link href={href} className="block group">
     <EnhancedCard
-      className="h-full border-2 hover:border-primary/30"
+      className="h-full border-2 hover:border-primary/30 hover:shadow-xl transition-all duration-300"
       glass={true}
       glow={true}
       hover={true}
-      gradient={true}
     >
-      <EnhancedCardHeader className="space-y-4">
+      <EnhancedCardHeader className="space-y-3 pb-3">
         <div className="flex items-start justify-between">
-          <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300">
+          <div className={`p-3 rounded-xl bg-gradient-to-r ${color} text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
             {icon}
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <Badge variant={status === "Complete" ? "default" : "secondary"} className="text-xs bg-gradient-to-r from-primary to-secondary text-white">
-              <Star className="w-3 h-3 mr-1" />
-              {status}
-            </Badge>
-            {toolCount && (
-              <Badge variant="outline" className="text-xs glass-card border-primary/30">
-                {toolCount}
-              </Badge>
-            )}
-          </div>
+          <Badge variant="secondary" className="text-xs bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
+            {badge}
+          </Badge>
         </div>
         <div>
-          <EnhancedCardTitle className="text-xl font-semibold tracking-tight group-hover:text-shimmer transition-colors">
+          <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">
+            {category}
+          </div>
+          <EnhancedCardTitle className="text-lg font-semibold tracking-tight group-hover:text-shimmer transition-colors">
             {title}
           </EnhancedCardTitle>
-          <EnhancedCardDescription className="text-base text-muted-foreground mt-2">
+          <EnhancedCardDescription className="text-sm text-muted-foreground mt-1">
             {description}
           </EnhancedCardDescription>
         </div>
       </EnhancedCardHeader>
-      <EnhancedCardContent className="space-y-4">
-        <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-hide">
-          {features.map((feature, index) => (
-            <div key={index} className="flex items-start text-sm text-muted-foreground">
-              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-primary to-secondary mr-2 mt-2 flex-shrink-0" />
-              <span className="leading-relaxed">{feature}</span>
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center text-primary font-medium group-hover:text-primary/80">
-          <span className="text-sm">Access Tool</span>
-          <ChevronRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+      <EnhancedCardContent className="pt-0">
+        <div className="flex items-center text-primary font-medium group-hover:text-primary/80 text-sm">
+          <span>Launch Tool</span>
+          <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
         </div>
       </EnhancedCardContent>
     </EnhancedCard>
@@ -228,7 +286,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6">
                 <Sparkles className="w-4 h-4 text-yellow-300" />
-                <span>Enhanced Visual Experience</span>
+                <span>14 Advanced Statistical Tools</span>
                 <Sparkles className="w-4 h-4 text-yellow-300" />
               </div>
 
@@ -245,23 +303,23 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <EnhancedButton
-                variant="glass"
+                variant="default"
                 size="lg"
                 animation="hover"
                 icon={<Calculator className="h-4 w-4" />}
-                className="min-w-[200px] text-white border-white/30 hover:text-white"
+                className="min-w-[200px] bg-white text-gray-700 hover:bg-gray-50 shadow-2xl hover:shadow-3xl transform hover:scale-105 border-0"
               >
-                <Link href="/sample-size">
+                <Link href="/sample-size/intelligent-detector">
                   Explore Tools
                 </Link>
               </EnhancedButton>
 
               <EnhancedButton
-                variant="outline"
+                variant="ghost"
                 size="lg"
                 animation="bounce"
                 icon={<Heart className="h-4 w-4" />}
-                className="min-w-[200px] border-white/30 text-white hover:bg-white/10 hover:text-white"
+                className="min-w-[200px] border border-white/30 text-white hover:bg-white/10 hover:text-white hover:border-white/50"
               >
                 <Link href="#mission">
                   Our Mission
@@ -277,67 +335,41 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold tracking-tight text-gradient mb-4">
-              Powerful Statistical Tools
+              Complete Statistical Toolkit
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Complete suite of research-grade calculators and analysis tools designed for accuracy, efficiency, and ease of use
+              14 specialized tools covering every aspect of statistical analysis, from sample size calculations to epidemiological modeling
             </p>
           </div>
 
-          {/* Calculators Grid */}
+          {/* All Tools Grid */}
           <div className="mb-16">
-            <h3 className="text-2xl font-semibold mb-8 text-center text-gradient">
-              Statistical Calculators
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <CalcCard
-                icon={<Calculator className="h-8 w-8" />}
-                title="Sample Size Calculator"
-                description="Calculate required sample sizes for various study designs"
-                href="/sample-size"
-                features={[
-                  "Intelligent Study Detector (AI-powered)",
-                  "Survival Analysis (Log-rank, Cox, One-arm)",
-                  "Comparative Studies (Case-control & Cohort)",
-                  "T-Test Calculator (Independent & Paired)",
-                  "Diagnostic Studies (Sensitivity & Specificity)",
-                  "Clinical Trials (RCT, Non-inferiority, Equivalence)",
-                  "Cross-sectional Studies (Prevalence & Survey)"
-                ]}
-                status="Complete"
-                toolCount="7 Tools"
-              />
-              <CalcCard
-                icon={<Heart className="h-8 w-8" />}
-                title="Infectious Disease Modeling"
-                description="Model disease spread and predict outcomes"
-                href="/disease-math"
-                features={[
-                  "Standard SEIR Model (Basic epidemic modeling)",
-                  "Advanced SEIRDV Model (Deaths & Vaccination)",
-                  "Intervention Analysis (Policy impact assessment)",
-                  "Real-time Parameter Adjustment",
-                  "Interactive Epidemic Curves",
-                  "R₀ & Herd Immunity Calculations",
-                  "Population Impact Metrics"
-                ]}
-                status="Complete"
-                toolCount="2 Models"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allTools.map((tool, index) => (
+                <div key={tool.title}>
+                  <ToolCard {...tool} />
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Studies Grid */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-semibold mb-8 text-center text-gradient">
-              Health Studies Platform
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {tools.studies.map((tool, index) => (
-                <div key={tool.title}>
-                  <CalcCard {...tool} />
-                </div>
-              ))}
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            <div className="text-center space-y-2">
+              <div className="text-3xl font-bold text-gradient">14</div>
+              <div className="text-sm text-muted-foreground">Statistical Tools</div>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="text-3xl font-bold text-gradient">7</div>
+              <div className="text-sm text-muted-foreground">Sample Size Calculators</div>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="text-3xl font-bold text-gradient">4</div>
+              <div className="text-sm text-muted-foreground">Regression Models</div>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="text-3xl font-bold text-gradient">2</div>
+              <div className="text-sm text-muted-foreground">Disease Models</div>
             </div>
           </div>
         </div>
@@ -398,7 +430,7 @@ export default function HomePage() {
                 icon={<Calculator className="h-4 w-4" />}
                 className="min-w-[200px] text-white"
               >
-                <Link href="/sample-size">
+                <Link href="/sample-size/intelligent-detector">
                   Start Analyzing
                 </Link>
               </EnhancedButton>
@@ -438,7 +470,7 @@ export default function HomePage() {
                 icon={<Target className="h-4 w-4" />}
                 className="min-w-[240px] text-white"
               >
-                <Link href="/sample-size">
+                <Link href="/sample-size/intelligent-detector">
                   Start Calculating
                 </Link>
               </EnhancedButton>

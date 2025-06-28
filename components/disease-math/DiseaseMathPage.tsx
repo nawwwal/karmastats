@@ -283,7 +283,7 @@ export function DiseaseMathPage() {
     <ToolPageWrapper
       title="Infectious Disease Modeling"
       description="Model and simulate infectious disease spread using advanced mathematical models with comprehensive visualization and analysis"
-      backHref="/sample-size"
+      backHref="/"
       backLabel="Sample Size Calculator"
       onReset={handleReset}
       icon={Activity}
