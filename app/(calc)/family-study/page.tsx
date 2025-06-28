@@ -248,7 +248,7 @@ export default function FamilyStudyPage() {
 
   const SectionIcon = ({ sectionId }: { sectionId: string }) => {
     if (completedSections.has(sectionId)) {
-      return <CheckCircle className="h-5 w-5 text-emerald-600" />;
+      return <CheckCircle className="h-5 w-5 text-success" />;
     }
     return <Circle className="h-5 w-5 text-muted-foreground" />;
   };
@@ -260,7 +260,7 @@ export default function FamilyStudyPage() {
                 <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-emerald-600" />
+                          <CheckCircle className="h-5 w-5 text-success" />
             Family Health Assessment Report
           </CardTitle>
         </CardHeader>

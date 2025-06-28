@@ -112,7 +112,7 @@ export function AdvancedVisualization({
               cy="100"
               r="80"
               fill="none"
-              stroke="#f1f5f9"
+              stroke="hsl(var(--muted))"
               strokeWidth="40"
             />
             {data.map((item, index) => {

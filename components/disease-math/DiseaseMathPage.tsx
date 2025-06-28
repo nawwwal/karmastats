@@ -57,7 +57,7 @@ export function DiseaseMathPage() {
             </EnhancedTabsList>
 
             <EnhancedTabsContent value="standard">
-              <Card className="border-blue-200 bg-blue-50/50">
+              <Card className="border-primary/20 bg-primary/10 dark:bg-primary/20 dark:border-primary/30">
                 <CardHeader>
                   <CardTitle className="text-lg">Standard SEIR Model</CardTitle>
                   <CardDescription>
@@ -73,7 +73,7 @@ export function DiseaseMathPage() {
             </EnhancedTabsContent>
 
             <EnhancedTabsContent value="advanced">
-              <Card className="border-purple-200 bg-purple-50/50">
+              <Card className="border-secondary/20 bg-secondary/10 dark:bg-secondary/20 dark:border-secondary/30">
                 <CardHeader>
                   <CardTitle className="text-lg">Advanced SEIRDV Model</CardTitle>
                   <CardDescription>
@@ -172,16 +172,16 @@ export function DiseaseMathPage() {
 
     // Prepare visualization data
     const compartmentData = [
-      { label: "Susceptible", value: results.susceptible?.[results.susceptible.length - 1] || 0, color: "#3b82f6" },
-      { label: "Exposed", value: results.exposed?.[results.exposed.length - 1] || 0, color: "#f59e0b" },
-      { label: "Infected", value: results.infected?.[results.infected.length - 1] || 0, color: "#ef4444" },
-      { label: "Recovered", value: results.recovered?.[results.recovered.length - 1] || 0, color: "#10b981" }
+              { label: "Susceptible", value: results.susceptible?.[results.susceptible.length - 1] || 0, color: "hsl(var(--primary))" },
+        { label: "Exposed", value: results.exposed?.[results.exposed.length - 1] || 0, color: "hsl(var(--warning))" },
+        { label: "Infected", value: results.infected?.[results.infected.length - 1] || 0, color: "hsl(var(--destructive))" },
+        { label: "Recovered", value: results.recovered?.[results.recovered.length - 1] || 0, color: "hsl(var(--success))" }
     ];
 
     if (results.modelType === 'advanced') {
       compartmentData.push(
-        { label: "Deaths", value: results.dead?.[results.dead.length - 1] || 0, color: "#6b7280" },
-        { label: "Vaccinated", value: results.vaccinated?.[results.vaccinated.length - 1] || 0, color: "#8b5cf6" }
+        { label: "Deaths", value: results.dead?.[results.dead.length - 1] || 0, color: "hsl(var(--muted-foreground))" },
+        { label: "Vaccinated", value: results.vaccinated?.[results.vaccinated.length - 1] || 0, color: "hsl(var(--secondary))" }
       );
     }
 
@@ -265,7 +265,7 @@ export function DiseaseMathPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-6 w-6 text-indigo-600" />
+              <BarChart3 className="h-6 w-6 text-primary" />
               <span>Epidemic Curve - Complete Timeline</span>
             </CardTitle>
           </CardHeader>

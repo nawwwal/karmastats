@@ -190,7 +190,7 @@ export function LinearRegressionTab() {
             <Button onClick={handleCalculate} className="w-full">
               Calculate Linear Regression
             </Button>
-            {error && <div className="text-red-600 font-medium mt-2">{error}</div>}
+            {error && <div className="text-destructive font-medium mt-2">{error}</div>}
           </div>
           {result && (
             <div className="space-y-4">

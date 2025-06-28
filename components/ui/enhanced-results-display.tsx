@@ -190,7 +190,7 @@ export function EnhancedResultsDisplay({
                         <p className="font-medium">
                           {result.confidence.level}% Confidence Interval
                         </p>
-                        <p className="text-gray-600">
+                        <p className="text-muted-foreground">
                           {result.confidence.lower.toFixed(2)} - {result.confidence.upper.toFixed(2)}
                         </p>
                       </div>
@@ -209,9 +209,9 @@ export function EnhancedResultsDisplay({
 
                     {/* Interpretation */}
                     {result.interpretation && (
-                      <p className="text-sm text-gray-700 font-medium">
-                        {result.interpretation}
-                      </p>
+                                          <p className="text-sm text-muted-foreground font-medium">
+                      {result.interpretation}
+                    </p>
                     )}
                   </div>
                 </div>
@@ -243,7 +243,7 @@ export function EnhancedResultsDisplay({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <PieChart className="h-6 w-6 text-indigo-600" />
+              <PieChart className="h-6 w-6 text-primary" />
               <span>Data Visualization</span>
             </CardTitle>
           </CardHeader>
@@ -258,7 +258,7 @@ export function EnhancedResultsDisplay({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-6 w-6 text-purple-600" />
+              <BarChart3 className="h-6 w-6 text-secondary" />
               <span>Additional Metrics</span>
             </CardTitle>
           </CardHeader>
@@ -276,7 +276,7 @@ export function EnhancedResultsDisplay({
                     {getCategoryIcon(result.category)}
                   </div>
                   {result.interpretation && (
-                    <p className="text-xs mt-2 text-gray-600">{result.interpretation}</p>
+                    <p className="text-xs mt-2 text-muted-foreground">{result.interpretation}</p>
                   )}
                 </div>
               ))}
@@ -289,7 +289,7 @@ export function EnhancedResultsDisplay({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Target className="h-6 w-6 text-blue-600" />
+            <Target className="h-6 w-6 text-primary" />
             <span>Detailed Results Summary</span>
           </CardTitle>
         </CardHeader>
@@ -304,7 +304,7 @@ export function EnhancedResultsDisplay({
             </TableHeader>
             <TableBody>
               {results.map((result, index) => (
-                <TableRow key={index} className={result.highlight ? 'bg-blue-50' : ''}>
+                <TableRow key={index} className={result.highlight ? 'bg-primary/10 dark:bg-primary/20' : ''}>
                   <TableCell className="font-medium">
                     <div className="flex items-center space-x-2">
                       {getCategoryIcon(result.category)}
@@ -317,7 +317,7 @@ export function EnhancedResultsDisplay({
                   <TableCell className="text-right font-mono font-bold">
                     {formatValue(result.value, result.format, result.unit)}
                   </TableCell>
-                  <TableCell className="text-right text-sm text-gray-600">
+                  <TableCell className="text-right text-sm text-muted-foreground">
                     {result.confidence && (
                       <span>CI: {result.confidence.lower.toFixed(2)}-{result.confidence.upper.toFixed(2)}</span>
                     )}
@@ -338,9 +338,9 @@ export function EnhancedResultsDisplay({
       {showInterpretation && interpretation && (
         <div className="space-y-6">
           {interpretation.effectSize && (
-            <Alert className="border-blue-200 bg-blue-50">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
-              <AlertDescription className="text-blue-800">
+            <Alert className="border-primary/20 bg-primary/10">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <AlertDescription className="text-primary">
                 <div className="space-y-2">
                   <p className="font-semibold">Effect Size Analysis</p>
                   <p>{interpretation.effectSize}</p>
@@ -350,9 +350,9 @@ export function EnhancedResultsDisplay({
           )}
 
           {interpretation.statisticalSignificance && (
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <AlertDescription className="text-green-800">
+            <Alert className="border-success/20 bg-success/10">
+              <CheckCircle className="h-5 w-5 text-success" />
+              <AlertDescription className="text-success">
                 <div className="space-y-2">
                   <p className="font-semibold">Statistical Significance</p>
                   <p>{interpretation.statisticalSignificance}</p>
@@ -362,9 +362,9 @@ export function EnhancedResultsDisplay({
           )}
 
           {interpretation.clinicalSignificance && (
-            <Alert className="border-purple-200 bg-purple-50">
-              <Activity className="h-5 w-5 text-purple-600" />
-              <AlertDescription className="text-purple-800">
+            <Alert className="border-secondary/20 bg-secondary/10">
+              <Activity className="h-5 w-5 text-secondary" />
+              <AlertDescription className="text-secondary">
                 <div className="space-y-2">
                   <p className="font-semibold">Clinical Significance</p>
                   <p>{interpretation.clinicalSignificance}</p>
@@ -378,7 +378,7 @@ export function EnhancedResultsDisplay({
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <Info className="h-6 w-6 text-cyan-600" />
+                    <Info className="h-6 w-6 text-info" />
                     <span>Recommendations</span>
                   </CardTitle>
                 </CardHeader>
@@ -386,7 +386,7 @@ export function EnhancedResultsDisplay({
                   <ul className="space-y-3">
                     {interpretation.recommendations.map((rec, index) => (
                       <li key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-cyan-500 mt-2 flex-shrink-0" />
+                        <div className="w-2 h-2 rounded-full bg-info mt-2 flex-shrink-0" />
                         <span className="text-sm font-medium">{rec}</span>
                       </li>
                     ))}
@@ -399,7 +399,7 @@ export function EnhancedResultsDisplay({
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <AlertCircle className="h-6 w-6 text-amber-600" />
+                    <AlertCircle className="h-6 w-6 text-warning" />
                     <span>Assumptions</span>
                   </CardTitle>
                 </CardHeader>
@@ -407,7 +407,7 @@ export function EnhancedResultsDisplay({
                   <ul className="space-y-3">
                     {interpretation.assumptions.map((assumption, index) => (
                       <li key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                        <div className="w-2 h-2 rounded-full bg-warning mt-2 flex-shrink-0" />
                         <span className="text-sm font-medium">{assumption}</span>
                       </li>
                     ))}

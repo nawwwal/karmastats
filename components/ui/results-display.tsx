@@ -79,9 +79,9 @@ const ResultValueDisplay: React.FC<{
   };
 
   const trendIcon = {
-    up: <TrendingUp className="h-4 w-4 text-green-500" />,
-    down: <TrendingDown className="h-4 w-4 text-red-500" />,
-    neutral: <Minus className="h-4 w-4 text-gray-500" />
+    up: <TrendingUp className="h-4 w-4 text-success" />,
+    down: <TrendingDown className="h-4 w-4 text-destructive" />,
+    neutral: <Minus className="h-4 w-4 text-muted-foreground" />
   };
 
   return (
@@ -119,11 +119,11 @@ export function ResultsDisplay({
       {primaryResults.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {primaryResults.map((result, index) => (
-            <Card key={index} className="bg-indigo-50 border-indigo-300">
+            <Card key={index} className="bg-primary/10 border-primary/20 dark:bg-primary/20 dark:border-primary/30">
               <CardContent className="p-4 text-center">
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">{result.label}</h3>
-                  <div className="text-4xl font-black text-indigo-700 tracking-tight">
+                  <h3 className="text-base font-bold text-primary uppercase tracking-wide">{result.label}</h3>
+                  <div className="text-4xl font-black text-primary tracking-tight">
                     <ResultValueDisplay item={result} />
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export function ResultsDisplay({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Target className="h-6 w-6 text-indigo-600" />
+            <Target className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold text-foreground">{title}</span>
           </CardTitle>
         </CardHeader>
@@ -151,8 +151,8 @@ export function ResultsDisplay({
             </TableHeader>
             <TableBody>
               {results.map((result, index) => (
-                <TableRow key={index} className={result.highlight ? 'bg-indigo-50' : ''}>
-                  <TableCell className="font-semibold text-gray-800">
+                <TableRow key={index} className={result.highlight ? 'bg-primary/10 dark:bg-primary/20' : ''}>
+                  <TableCell className="font-semibold text-foreground">
                     <div className="flex items-center space-x-2">
                       <span className="text-base">{result.label}</span>
                       {result.highlight && (
@@ -160,7 +160,7 @@ export function ResultsDisplay({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-mono text-lg font-bold text-gray-900">
+                  <TableCell className="text-right font-mono text-lg font-bold text-foreground">
                     <ResultValueDisplay item={result} />
                   </TableCell>
                 </TableRow>
@@ -186,12 +186,12 @@ export function ResultsDisplay({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Info className="h-6 w-6 text-cyan-600" />
-                  <span className="text-lg font-bold text-gray-900">Methodological Recommendations</span>
+                  <Info className="h-6 w-6 text-info" />
+                  <span className="text-lg font-bold text-foreground">Methodological Recommendations</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="list-disc pl-5 space-y-2 text-base font-medium text-gray-700">
+                <ul className="list-disc pl-5 space-y-2 text-base font-medium text-muted-foreground">
                   {interpretation.recommendations.map((rec, index) => (
                     <li key={index}>{rec}</li>
                   ))}
@@ -204,12 +204,12 @@ export function ResultsDisplay({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <AlertCircle className="h-6 w-6 text-amber-600" />
-                  <span className="text-lg font-bold text-gray-900">Statistical Assumptions</span>
+                  <AlertCircle className="h-6 w-6 text-warning" />
+                  <span className="text-lg font-bold text-foreground">Statistical Assumptions</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="list-disc pl-5 space-y-2 text-base font-medium text-gray-600">
+                <ul className="list-disc pl-5 space-y-2 text-base font-medium text-muted-foreground">
                   {interpretation.assumptions.map((assumption, index) => (
                     <li key={index}>{assumption}</li>
                   ))}
@@ -225,7 +225,7 @@ export function ResultsDisplay({
         <>
           <Separator />
           <div className="flex items-center justify-between">
-            <span className="text-base font-bold text-gray-700">Export Results</span>
+            <span className="text-base font-bold text-foreground">Export Results</span>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" onClick={onExport}>
                 <Copy className="mr-2 h-4 w-4" />

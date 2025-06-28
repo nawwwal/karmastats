@@ -284,11 +284,11 @@ export default function HomePage() {
         <div className="relative container mx-auto px-4 text-center w-full text-white">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6">
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-                <span>14 Advanced Statistical Tools</span>
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-              </div>
+                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6">
+              <Sparkles className="w-4 h-4 text-warning" />
+              <span>14 Advanced Statistical Tools</span>
+              <Sparkles className="w-4 h-4 text-warning" />
+            </div>
 
               <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-shimmer">
                 KARMASTAT
@@ -307,7 +307,7 @@ export default function HomePage() {
                 size="lg"
                 animation="hover"
                 icon={<Calculator className="h-4 w-4" />}
-                className="min-w-[200px] bg-white text-gray-700 hover:bg-gray-50 shadow-2xl hover:shadow-3xl transform hover:scale-105 border-0"
+                className="min-w-[200px] bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground shadow-2xl hover:shadow-3xl transform hover:scale-105 border-0"
               >
                 <Link href="/sample-size/intelligent-detector">
                   Explore Tools

@@ -415,7 +415,7 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
         </Button>
 
         {error && (
-          <p className="text-red-500 text-sm mt-2">{error}</p>
+                      <p className="text-destructive text-sm mt-2">{error}</p>
         )}
       </div>
     </div>

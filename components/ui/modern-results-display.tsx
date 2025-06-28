@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
 import { Badge } from './badge';
-import { TrendingUp, TrendingDown, Minus, Target, AlertCircle, CheckCircle, Info, Lightbulb } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Target, AlertCircle, CheckCircle, Info, Lightbulb, AlertTriangle, BarChart3 } from 'lucide-react';
 import { Progress } from './progress';
 import { cn } from '@/lib/utils';
 
@@ -86,83 +86,91 @@ export function ModernResultsDisplay({
     }
   };
 
-  const getCategoryColors = (category?: string) => {
+  const getCategoryColors = (category: string) => {
     switch (category) {
       case 'primary':
         return {
-          text: "text-indigo-700",
-          border: "border-indigo-300",
-          bg: "bg-indigo-50"
-        };
-      case 'success':
-        return {
-          text: "text-emerald-700",
-          border: "border-emerald-300",
-          bg: "bg-emerald-50"
-        };
-      case 'warning':
-        return {
-          text: "text-amber-700",
-          border: "border-amber-300",
-          bg: "bg-amber-50"
-        };
-      case 'destructive':
-        return {
-          text: "text-rose-700",
-          border: "border-rose-300",
-          bg: "bg-rose-50"
-        };
-      case 'info':
-        return {
-          text: "text-cyan-700",
-          border: "border-cyan-300",
-          bg: "bg-cyan-50"
+          icon: "text-primary",
+          text: "text-primary",
+          bg: "bg-primary/10 dark:bg-primary/20",
+          border: "border-primary/20 dark:border-primary/30",
         };
       case 'secondary':
         return {
-          text: "text-purple-700",
-          border: "border-purple-300",
-          bg: "bg-purple-50"
+          icon: "text-secondary",
+          text: "text-secondary",
+          bg: "bg-secondary/10 dark:bg-secondary/20",
+          border: "border-secondary/20 dark:border-secondary/30",
         };
       default:
         return {
-          text: "text-slate-700",
-          border: "border-slate-300",
-          bg: "bg-slate-50"
+          icon: "text-muted-foreground",
+          text: "text-muted-foreground",
+          bg: "bg-muted/50 dark:bg-muted/20",
+          border: "border-muted dark:border-muted/30",
         };
     }
   };
 
-  const getTrendIcon = (trend?: string) => {
+  const getIcon = (iconType?: string) => {
+    switch (iconType) {
+      case 'increase': return <TrendingUp className="h-6 w-6 text-success" />;
+      case 'decrease': return <TrendingDown className="h-6 w-6 text-destructive" />;
+      case 'warning': return <AlertTriangle className="h-6 w-6 text-warning" />;
+      case 'info': return <Info className="h-6 w-6 text-info" />;
+      case 'success': return <CheckCircle className="h-6 w-6 text-success" />;
+      case 'primary': return <Target className="h-6 w-6 text-primary" />;
+      default: return <Minus className="h-6 w-6 text-muted-foreground" />;
+    }
+  };
+
+  const getChangeStyle = (changeType?: 'increase' | 'decrease' | 'neutral') => {
+    switch (changeType) {
+      case 'increase': return 'text-success bg-success/10 border-success/20 dark:bg-success/20 dark:border-success/30';
+      case 'decrease': return 'text-destructive bg-destructive/10 border-destructive/20 dark:bg-destructive/20 dark:border-destructive/30';
+      default: return 'text-muted-foreground bg-muted/50 border-muted dark:bg-muted/20 dark:border-muted/30';
+    }
+  };
+
+  const getCategoryIcon = (category?: string) => {
+    switch (category) {
+      case 'primary': return <Target className="h-4 w-4 text-primary" />;
+      case 'secondary': return <BarChart3 className="h-4 w-4 text-secondary" />;
+      case 'warning': return <AlertTriangle className="h-4 w-4 text-warning" />;
+      case 'success': return <CheckCircle className="h-4 w-4 text-success" />;
+      default: return <Target className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  const getCardStyle = (category?: string, highlight?: boolean) => {
+    if (highlight) {
+      return 'border-primary/20 bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary/30';
+    }
+
+    switch (category) {
+      case 'primary':
+        return 'border-primary/20 bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary/30';
+      case 'secondary':
+        return 'border-secondary/20 bg-secondary/10 text-secondary dark:bg-secondary/20 dark:border-secondary/30';
+      case 'success':
+        return 'border-success/20 bg-success/10 text-success dark:bg-success/20 dark:border-success/30';
+      case 'warning':
+        return 'border-warning/20 bg-warning/10 text-warning dark:bg-warning/20 dark:border-warning/30';
+      case 'error':
+        return 'border-destructive/20 bg-destructive/10 text-destructive dark:bg-destructive/20 dark:border-destructive/30';
+      default:
+        return 'border-border bg-card text-card-foreground';
+    }
+  };
+
+  const TrendIndicator = ({ trend }: { trend?: 'up' | 'down' | 'neutral' }) => {
     switch (trend) {
-      case 'up': return <TrendingUp className="h-6 w-6 text-emerald-600" />;
-      case 'down': return <TrendingDown className="h-6 w-6 text-rose-600" />;
-      default: return <Minus className="h-6 w-6 text-slate-500" />;
-    }
-  };
-
-  const getChangeIcon = (type?: string) => {
-    switch (type) {
-      case 'increase': return <TrendingUp className="h-3 w-3" />;
-      case 'decrease': return <TrendingDown className="h-3 w-3" />;
-      default: return <Minus className="h-3 w-3" />;
-    }
-  };
-
-  const getChangeColor = (type?: string) => {
-    switch (type) {
-      case 'increase': return 'text-green-700 bg-green-100 border-green-200';
-      case 'decrease': return 'text-red-700 bg-red-100 border-red-200';
-      default: return 'text-gray-700 bg-gray-100 border-gray-200';
-    }
-  };
-
-  const getSignificanceIcon = (level?: string) => {
-    switch (level) {
-      case 'critical': return <AlertCircle className="h-4 w-4 text-rose-600" />;
-      case 'high': return <CheckCircle className="h-4 w-4 text-emerald-600" />;
-      case 'medium': return <Info className="h-4 w-4 text-amber-600" />;
-      default: return <Target className="h-4 w-4 text-slate-500" />;
+      case 'up':
+        return <TrendingUp className="h-4 w-4 text-success" />;
+      case 'down':
+        return <TrendingDown className="h-4 w-4 text-destructive" />;
+      default:
+        return null;
     }
   };
 
@@ -170,36 +178,36 @@ export function ModernResultsDisplay({
     const getCategoryStyles = (category?: string) => {
       switch (category) {
         case 'primary':
-          return 'border-blue-200 bg-blue-50/50 text-blue-900';
+          return 'border-primary/20 bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary/30';
         case 'secondary':
-          return 'border-gray-200 bg-gray-50/50 text-gray-900';
+          return 'border-muted bg-muted/50 text-muted-foreground dark:bg-muted/20 dark:border-muted/30';
         case 'success':
-          return 'border-green-200 bg-green-50/50 text-green-900';
+          return 'border-success/20 bg-success/10 text-success dark:bg-success/20 dark:border-success/30';
         case 'warning':
-          return 'border-yellow-200 bg-yellow-50/50 text-yellow-900';
+          return 'border-warning/20 bg-warning/10 text-warning dark:bg-warning/20 dark:border-warning/30';
         case 'error':
-          return 'border-red-200 bg-red-50/50 text-red-900';
+          return 'border-destructive/20 bg-destructive/10 text-destructive dark:bg-destructive/20 dark:border-destructive/30';
         default:
-          return 'border-gray-200 bg-white text-gray-900';
+          return 'border-border bg-card text-card-foreground';
       }
     };
 
     const getTrendIcon = (trend?: string) => {
       switch (trend) {
         case 'up':
-          return <TrendingUp className="h-4 w-4 text-green-500" />;
+          return <TrendingUp className="h-4 w-4 text-success" />;
         case 'down':
-          return <TrendingDown className="h-4 w-4 text-red-500" />;
+          return <TrendingDown className="h-4 w-4 text-destructive" />;
         default:
           return null;
       }
     };
 
     return (
-      <Card className={`${getCategoryStyles(item.category)} ${item.highlight ? 'ring-2 ring-blue-500' : ''}`}>
+      <Card className={`${getCardStyle(item.category, item.highlight)}`}>
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">{item.label}</h3>
+                          <h3 className="text-sm font-medium text-muted-foreground">{item.label}</h3>
             {getTrendIcon(item.trend)}
           </div>
           <div className="space-y-2">
@@ -207,7 +215,7 @@ export function ModernResultsDisplay({
               {formatNumber(item.value, item.format)}
             </div>
             {item.description && (
-              <p className="text-xs text-gray-500">{item.description}</p>
+              <p className="text-xs text-muted-foreground">{item.description}</p>
             )}
             {item.progress !== undefined && (
               <Progress value={item.progress} className="h-2" />
@@ -222,8 +230,8 @@ export function ModernResultsDisplay({
     <div className={cn("space-y-6", className)}>
       {title && (
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
-          <p className="text-lg text-gray-600">
+                  <h2 className="text-3xl font-bold text-foreground">{title}</h2>
+        <p className="text-lg text-muted-foreground">
             Statistical analysis results
           </p>
         </div>
@@ -231,7 +239,7 @@ export function ModernResultsDisplay({
 
       <div className={cn("grid gap-4", getGridCols())}>
         {metrics.map((metric, index) => {
-          const colors = getCategoryColors(metric.category);
+          const colors = getCategoryColors(metric.category as string);
 
           return (
             <ResultCard key={index} item={{

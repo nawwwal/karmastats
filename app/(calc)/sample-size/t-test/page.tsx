@@ -150,8 +150,8 @@ export default function TTestPage() {
       ];
 
       visualizationData = [
-        { label: "Group 1", value: results.group1Size, color: "#3b82f6" },
-        { label: "Group 2", value: results.group2Size, color: "#10b981" }
+                    { label: "Group 1", value: results.group1Size, color: "hsl(var(--primary))" },
+            { label: "Group 2", value: results.group2Size, color: "hsl(var(--success))" }
       ];
 
       interpretationData.effectSize = results.effectSizeInterpretation;
@@ -182,8 +182,8 @@ export default function TTestPage() {
       ];
 
       visualizationData = [
-        { label: "Pairs Required", value: results.pairsSize, color: "#3b82f6" },
-        { label: "Total Observations", value: results.totalObservations, color: "#10b981" }
+                    { label: "Pairs Required", value: results.pairsSize, color: "hsl(var(--primary))" },
+            { label: "Total Observations", value: results.totalObservations, color: "hsl(var(--success))" }
       ];
 
       interpretationData.effectSize = results.effectSizeInterpretation;
@@ -208,7 +208,7 @@ export default function TTestPage() {
       ];
 
       visualizationData = [
-        { label: "Sample Size", value: results.sampleSize, color: "#3b82f6" }
+                    { label: "Sample Size", value: results.sampleSize, color: "hsl(var(--primary))" }
       ];
 
       interpretationData.effectSize = results.effectSizeInterpretation;
@@ -303,9 +303,9 @@ export default function TTestPage() {
       </CardHeader>
       <CardContent>
         {error && (
-          <Alert className="mb-6 border-red-200 bg-red-50">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-700">{error}</AlertDescription>
+                  <Alert className="mb-6 border-destructive/20 bg-destructive/10">
+          <AlertCircle className="h-4 w-4 text-destructive" />
+          <AlertDescription className="text-destructive">{error}</AlertDescription>
           </Alert>
         )}
 
@@ -334,7 +334,7 @@ export default function TTestPage() {
               </EnhancedTabsList>
 
               <EnhancedTabsContent value="independent">
-                <Card className="border-blue-200 bg-blue-50/50">
+                <Card className="border-primary/20 bg-primary/10 dark:bg-primary/20 dark:border-primary/30">
                   <CardHeader>
                     <CardTitle className="text-lg">Independent Samples T-Test</CardTitle>
                     <CardDescription>Compare means of two independent groups</CardDescription>
@@ -383,7 +383,7 @@ export default function TTestPage() {
               </EnhancedTabsContent>
 
               <EnhancedTabsContent value="paired">
-                <Card className="border-green-200 bg-green-50/50">
+                <Card className="border-success/20 bg-success/10 dark:bg-success/20 dark:border-success/30">
                   <CardHeader>
                     <CardTitle className="text-lg">Paired Samples T-Test</CardTitle>
                     <CardDescription>Compare paired observations (before/after, matched pairs)</CardDescription>
@@ -423,7 +423,7 @@ export default function TTestPage() {
               </EnhancedTabsContent>
 
               <EnhancedTabsContent value="one-sample">
-                <Card className="border-purple-200 bg-purple-50/50">
+                <Card className="border-secondary/20 bg-secondary/10 dark:bg-secondary/20 dark:border-secondary/30">
                   <CardHeader>
                     <CardTitle className="text-lg">One-Sample T-Test</CardTitle>
                     <CardDescription>Compare sample mean to a known population value</CardDescription>
@@ -463,7 +463,7 @@ export default function TTestPage() {
               </EnhancedTabsContent>
 
               {/* Common Parameters */}
-              <Card className="border-gray-200 bg-gray-50/50">
+              <Card className="border-muted bg-muted/50 dark:bg-muted/20 dark:border-muted/30">
                 <CardHeader>
                   <CardTitle className="text-lg">Statistical Parameters</CardTitle>
                   <CardDescription>Configure significance level, power, and other study parameters</CardDescription>

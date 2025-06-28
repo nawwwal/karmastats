@@ -274,8 +274,8 @@ export default function ClinicalTrialsPage() {
             ];
 
             visualizationData = [
-                { label: "Treatment Group", value: results.treatmentSize, color: "#10b981" },
-                { label: "Control Group", value: results.controlSize, color: "#3b82f6" }
+                            { label: "Treatment Group", value: results.treatmentSize, color: "hsl(var(--success))" },
+            { label: "Control Group", value: results.controlSize, color: "hsl(var(--primary))" }
             ];
 
             interpretationData = {
@@ -328,7 +328,7 @@ export default function ClinicalTrialsPage() {
             }
 
             visualizationData = [
-                { label: "Required Sample", value: results.totalSize, color: "#3b82f6" }
+                { label: "Required Sample", value: results.totalSize, color: "hsl(var(--primary))" }
             ];
         }
 
@@ -393,10 +393,10 @@ export default function ClinicalTrialsPage() {
             </CardHeader>
             <CardContent>
                 {error && (
-                    <Alert className="mb-6 border-red-200 bg-red-50">
-                        <AlertCircle className="h-4 w-4 text-red-600" />
-                        <AlertTitle className="text-red-800">Calculation Error</AlertTitle>
-                        <AlertDescription className="text-red-700">{error}</AlertDescription>
+                            <Alert className="mb-6 border-destructive/20 bg-destructive/10">
+          <AlertCircle className="h-4 w-4 text-destructive" />
+          <AlertTitle className="text-destructive">Calculation Error</AlertTitle>
+          <AlertDescription className="text-destructive">{error}</AlertDescription>
                     </Alert>
                 )}
 
@@ -487,7 +487,7 @@ export default function ClinicalTrialsPage() {
 
                             {/* Tab-specific content */}
                             <EnhancedTabsContent value="superiority">
-                                <Card className="border-blue-200 bg-blue-50/50">
+                                <Card className="border-primary/20 bg-primary/10 dark:bg-primary/20 dark:border-primary/30">
                                     <CardHeader>
                                         <CardTitle className="text-lg">Superiority Trial Parameters</CardTitle>
                                         <CardDescription>
@@ -610,7 +610,7 @@ export default function ClinicalTrialsPage() {
                             </EnhancedTabsContent>
 
                             <EnhancedTabsContent value="non-inferiority">
-                                <Card className="border-green-200 bg-green-50/50">
+                                <Card className="border-success/20 bg-success/10 dark:bg-success/20 dark:border-success/30">
                                     <CardHeader>
                                         <CardTitle className="text-lg">Non-Inferiority Trial Parameters</CardTitle>
                                         <CardDescription>
@@ -641,7 +641,7 @@ export default function ClinicalTrialsPage() {
                             </EnhancedTabsContent>
 
                             <EnhancedTabsContent value="equivalence">
-                                <Card className="border-purple-200 bg-purple-50/50">
+                                <Card className="border-secondary/20 bg-secondary/10 dark:bg-secondary/20 dark:border-secondary/30">
                                     <CardHeader>
                                         <CardTitle className="text-lg">Equivalence Trial Parameters</CardTitle>
                                         <CardDescription>

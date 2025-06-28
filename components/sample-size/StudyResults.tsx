@@ -36,9 +36,9 @@ export function StudyResults({ recommendations, onReset }: StudyResultsProps) {
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <CardTitle className="flex items-center gap-2">
-                                        {status === 'recommended' && <CheckCircle className="h-5 w-5 text-green-500" />}
-                                        {status === 'alternative' && <Clock className="h-5 w-5 text-yellow-500" />}
-                                        {status === 'not-recommended' && <AlertCircle className="h-5 w-5 text-red-500" />}
+                                                {status === 'recommended' && <CheckCircle className="h-5 w-5 text-success" />}
+        {status === 'alternative' && <Clock className="h-5 w-5 text-warning" />}
+        {status === 'not-recommended' && <AlertCircle className="h-5 w-5 text-destructive" />}
                                         {study.title}
                                     </CardTitle>
                                     <Badge variant={
