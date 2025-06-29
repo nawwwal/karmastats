@@ -10,7 +10,6 @@ import {
   Home,
   Calculator,
   Users,
-  Settings,
   MoreHorizontal,
   Brain,
   Activity,
@@ -63,12 +62,6 @@ export function BottomNav({ className }: BottomNavProps) {
       label: 'Studies',
       icon: Users,
       href: '/family-study',
-    },
-    {
-      id: 'more',
-      label: 'More',
-      icon: MoreHorizontal,
-      href: '/settings',
     },
   ];
 

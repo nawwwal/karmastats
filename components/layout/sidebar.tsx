@@ -17,7 +17,6 @@ import {
   ChevronRight,
   Search,
   Heart,
-  Settings,
   Sun,
   Moon,
   TestTube,
@@ -312,6 +311,19 @@ export function Sidebar({ isCollapsed, onToggle, isHovered = false }: SidebarPro
       description: "Preferences & configuration",
     },
   ]
+
+  const bottomStructure = [
+    {
+      type: "item",
+      href: "/contact",
+      icon: <Users />,
+      title: "Contact & Support",
+    },
+  ]
+
+  if (isMobile) {
+    return null
+  }
 
   return (
     <aside
