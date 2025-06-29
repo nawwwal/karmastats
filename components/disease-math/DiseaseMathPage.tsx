@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StandardModel } from './StandardModel';
 import { AdvancedModel } from './AdvancedModel';
@@ -21,9 +21,9 @@ export function DiseaseMathPage() {
     setResults(null);
   };
 
-  const handleResultsChange = (newResults: any) => {
+  const handleResultsChange = useCallback((newResults: any) => {
     setResults({ ...newResults, modelType: activeTab });
-  };
+  }, [activeTab]);
 
   const renderInputForm = () => (
     <ErrorBoundary>
