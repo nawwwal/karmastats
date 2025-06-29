@@ -88,15 +88,6 @@ export default function DiagnosticTestPage() {
         },
     });
 
-    // Auto-calculate with default values on mount
-    React.useEffect(() => {
-        const timer = setTimeout(() => {
-            const defaultData = form.getValues();
-            onSubmit(defaultData);
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [form, onSubmit]);
-
     const watchStudyDesign = form.watch('studyDesign');
 
     const onSubmit = useCallback((data: z.infer<typeof FormSchema>) => {
@@ -167,6 +158,15 @@ export default function DiagnosticTestPage() {
             }
         }
     }, [activeTab, form]);
+
+    // Auto-calculate with default values on mount
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            const defaultData = form.getValues();
+            onSubmit(defaultData);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [form, onSubmit]);
 
     const handleReset = () => {
         setResults(null);

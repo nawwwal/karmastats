@@ -55,15 +55,6 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
     },
   });
 
-  // Auto-calculate with default values on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const defaultData = form.getValues();
-      onSubmit(defaultData);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [form, onSubmit]);
-
   const onSubmit = useCallback((values: FormData) => {
     try {
       setError(null);
@@ -116,6 +107,15 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
       }
     }
   }, [form, onResultsChange]);
+
+  // Auto-calculate with default values on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const defaultData = form.getValues();
+      onSubmit(defaultData);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [form, onSubmit]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

@@ -47,15 +47,6 @@ export default function CrossSectionalPage() {
         },
     });
 
-    // Auto-calculate with default values on mount
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            const defaultData = form.getValues();
-            onSubmit(defaultData);
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [form, onSubmit]);
-
     const onSubmit = useCallback((data: CrossSectionalInput) => {
         try {
             setError(null);
@@ -78,6 +69,15 @@ export default function CrossSectionalPage() {
             }
         }
     }, [form]);
+
+    // Auto-calculate with default values on mount
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const defaultData = form.getValues();
+            onSubmit(defaultData);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [form, onSubmit]);
 
     const handleReset = () => {
         setResults(null);

@@ -73,15 +73,6 @@ export default function TTestPage() {
     },
   });
 
-  // Auto-calculate with default values on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const defaultData = form.getValues();
-      onSubmit(defaultData);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [form, onSubmit]);
-
   const onSubmit = useCallback((data: z.infer<typeof FormSchema>) => {
     try {
       setError(null);
@@ -132,6 +123,15 @@ export default function TTestPage() {
       }
     }
   }, [activeTab, form]);
+
+  // Auto-calculate with default values on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const defaultData = form.getValues();
+      onSubmit(defaultData);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [form, onSubmit]);
 
   const handleReset = () => {
     setResults(null);

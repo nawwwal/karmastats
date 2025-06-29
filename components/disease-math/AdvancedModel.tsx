@@ -62,14 +62,6 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
     }
   });
 
-  // Auto-calculate on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      form.handleSubmit(onSubmit)();
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [form, onSubmit]);
-
   const onSubmit = useCallback(async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     setError(null);
@@ -127,6 +119,14 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
       setIsLoading(false);
     }
   }, [onResultsChange]);
+
+  // Auto-calculate on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      form.handleSubmit(onSubmit)();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [form, onSubmit]);
 
   return (
     <Form {...form}>
