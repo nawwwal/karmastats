@@ -96,11 +96,21 @@ export default function DiagnosticTestPage() {
             setResults(null);
             let result: Results;
 
-            // Convert string fields to numbers where needed
+            // Convert all relevant fields to numbers before validation
             const processedData = {
                 ...data,
-                alpha: data.alpha ? parseFloat(data.alpha) / 100 : undefined,
-                power: data.power ? parseFloat(data.power) / 100 : undefined,
+                alpha: data.alpha ? parseFloat(data.alpha) : undefined,
+                power: data.power ? parseFloat(data.power) : undefined,
+                expectedSensitivity: data.expectedSensitivity ? Number(data.expectedSensitivity) : undefined,
+                expectedSpecificity: data.expectedSpecificity ? Number(data.expectedSpecificity) : undefined,
+                diseasePrevalence: data.diseasePrevalence ? Number(data.diseasePrevalence) : undefined,
+                marginOfError: data.marginOfError ? Number(data.marginOfError) : undefined,
+                test1Performance: data.test1Performance ? Number(data.test1Performance) : undefined,
+                test2Performance: data.test2Performance ? Number(data.test2Performance) : undefined,
+                testCorrelation: data.testCorrelation ? Number(data.testCorrelation) : undefined,
+                expectedAUC: data.expectedAUC ? Number(data.expectedAUC) : undefined,
+                nullAUC: data.nullAUC ? Number(data.nullAUC) : undefined,
+                negativePositiveRatio: data.negativePositiveRatio ? Number(data.negativePositiveRatio) : undefined,
             };
 
             switch (activeTab) {
@@ -110,7 +120,7 @@ export default function DiagnosticTestPage() {
                         expectedSpecificity: processedData.expectedSpecificity,
                         diseasePrevalence: processedData.diseasePrevalence,
                         marginOfError: processedData.marginOfError,
-                        confidenceLevel: processedData.alpha ? (1 - processedData.alpha) * 100 : 95,
+                        confidenceLevel: processedData.alpha ? (1 - (processedData.alpha / 100)) * 100 : 95,
                         dropoutRate: processedData.dropoutRate,
                     };
                     result = calculateSingleTestSampleSize(SingleTestSchema.parse(singleData));
@@ -122,8 +132,8 @@ export default function DiagnosticTestPage() {
                         test1Performance: processedData.test1Performance,
                         test2Performance: processedData.test2Performance,
                         testCorrelation: processedData.testCorrelation,
-                        significanceLevel: processedData.alpha ? processedData.alpha * 100 : 5,
-                        power: processedData.power || 0.8,
+                        significanceLevel: processedData.alpha,
+                        power: processedData.power ? processedData.power / 100 : 0.8,
                     };
                     result = calculateComparativeTestSampleSize(ComparativeTestSchema.parse(comparativeData));
                     break;
@@ -133,8 +143,8 @@ export default function DiagnosticTestPage() {
                         nullAUC: processedData.nullAUC,
                         diseasePrevalence: processedData.diseasePrevalence,
                         negativePositiveRatio: processedData.negativePositiveRatio,
-                        significanceLevel: processedData.alpha ? processedData.alpha * 100 : 5,
-                        power: processedData.power || 0.8,
+                        significanceLevel: processedData.alpha,
+                        power: processedData.power ? processedData.power / 100 : 0.8,
                     };
                     result = calculateROCAnalysisSampleSize(ROCAnalysisSchema.parse(rocData));
                     break;

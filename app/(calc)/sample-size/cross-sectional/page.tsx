@@ -50,7 +50,20 @@ export default function CrossSectionalPage() {
     const onSubmit = useCallback((data: CrossSectionalInput) => {
         try {
             setError(null);
-            const result = calculateCrossSectionalSampleSize(data);
+
+            // Convert all relevant fields to numbers before validation
+            const processedData = {
+                ...data,
+                prevalence: data.prevalence ? Number(data.prevalence) : 0,
+                marginOfError: data.marginOfError ? Number(data.marginOfError) : 0,
+                confidenceLevel: data.confidenceLevel ? Number(data.confidenceLevel) : 95,
+                populationSize: data.populationSize ? Number(data.populationSize) : undefined,
+                designEffect: data.designEffect ? Number(data.designEffect) : 1,
+                nonResponseRate: data.nonResponseRate ? Number(data.nonResponseRate) : 0,
+                clusteringEffect: data.clusteringEffect ? Number(data.clusteringEffect) : 0,
+            };
+
+            const result = calculateCrossSectionalSampleSize(processedData);
             setResults(result);
             form.clearErrors();
         } catch (err: any) {

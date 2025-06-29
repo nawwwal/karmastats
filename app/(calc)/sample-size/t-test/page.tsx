@@ -79,12 +79,26 @@ export default function TTestPage() {
       setResults(null);
       let result: Results;
 
-      // Convert string fields to numbers where needed
+      // Convert all relevant fields to numbers before validation
       const processedData = {
         ...data,
-        significanceLevel: data.alpha ? parseFloat(data.alpha) : 5,
-        power: data.power ? parseFloat(data.power) : 80,
+        alpha: parseFloat(data.alpha || '0'),
+        power: parseFloat(data.power || '0'),
+        group1Mean: data.group1Mean ? Number(data.group1Mean) : undefined,
+        group2Mean: data.group2Mean ? Number(data.group2Mean) : undefined,
+        pooledSD: data.pooledSD ? Number(data.pooledSD) : undefined,
+        allocationRatio: data.allocationRatio ? Number(data.allocationRatio) : undefined,
+        meanDifference: data.meanDifference ? Number(data.meanDifference) : undefined,
+        sdDifference: data.sdDifference ? Number(data.sdDifference) : undefined,
+        correlation: data.correlation ? Number(data.correlation) : undefined,
+        sampleMean: data.sampleMean ? Number(data.sampleMean) : undefined,
+        populationMean: data.populationMean ? Number(data.populationMean) : undefined,
+        populationSD: data.populationSD ? Number(data.populationSD) : undefined,
       };
+
+      // Map alpha/power to significanceLevel/power for schemas
+      processedData.significanceLevel = processedData.alpha;
+      processedData.power = processedData.power;
 
       switch (activeTab) {
         case 'independent': {
