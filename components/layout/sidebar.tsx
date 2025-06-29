@@ -303,13 +303,6 @@ export function Sidebar({ isCollapsed, onToggle, isHovered = false }: SidebarPro
     {
       type: "separator",
     },
-    {
-      type: "item",
-      href: "/settings",
-      icon: <Settings />,
-      title: "Settings",
-      description: "Preferences & configuration",
-    },
   ]
 
   const bottomStructure = [
