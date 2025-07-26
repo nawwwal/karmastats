@@ -298,18 +298,27 @@ export default function HomePage() {
 
         {/* Floating Particles */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-${i % 3 + 1}`}
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 10}s`,
-                animationDuration: `${15 + Math.random() * 10}s`
-              }}
-            />
-          ))}
+          {/* Predefined particle positions to avoid hydration issues */}
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '15%', top: '20%', animationDelay: '0s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '85%', top: '10%', animationDelay: '2s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '60%', top: '30%', animationDelay: '4s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '25%', top: '70%', animationDelay: '1s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '75%', top: '80%', animationDelay: '3s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '40%', top: '15%', animationDelay: '5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '90%', top: '45%', animationDelay: '6s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '10%', top: '60%', animationDelay: '7s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '55%', top: '85%', animationDelay: '8s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '70%', top: '25%', animationDelay: '9s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '30%', top: '50%', animationDelay: '1.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '80%', top: '65%', animationDelay: '2.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '20%', top: '40%', animationDelay: '3.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '65%', top: '75%', animationDelay: '4.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '45%', top: '35%', animationDelay: '5.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '95%', top: '55%', animationDelay: '6.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '5%', top: '90%', animationDelay: '7.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '50%', top: '5%', animationDelay: '8.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '35%', top: '95%', animationDelay: '9.5s' }} />
+          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '85%', top: '30%', animationDelay: '10s' }} />
         </div>
 
         {/* Geometric Shapes */}

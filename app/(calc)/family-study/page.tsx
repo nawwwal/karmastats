@@ -36,8 +36,8 @@ export default function FamilyStudyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showReport, setShowReport] = useState(false);
   const [formData, setFormData] = useState({
-    studyDate: new Date().toISOString().split('T')[0],
-    familyId: `FAM-${Date.now().toString().substr(-6)}`,
+    studyDate: '', // Will be set on client mount to avoid hydration mismatch
+    familyId: '', // Will be set on client mount to avoid hydration mismatch
     familyHead: '',
     address: '',
     pincode: '',
@@ -94,6 +94,16 @@ export default function FamilyStudyPage() {
       }
     };
     loadData();
+  }, []);
+
+  // Set family ID and study date on client mount to avoid hydration mismatch
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    setFormData(prev => ({
+      ...prev,
+      studyDate: today,
+      familyId: `FAM-${Date.now().toString().substr(-6)}`
+    }));
   }, []);
 
   // Handler functions
@@ -298,7 +308,7 @@ export default function FamilyStudyPage() {
   const handleReset = () => {
     setFormData({
       studyDate: new Date().toISOString().split('T')[0],
-      familyId: `FAM-${Date.now().toString().substr(-6)}`,
+      familyId: `FAM-${Date.now().toString().substr(-6)}`, // This is in a function so it's safe
       familyHead: '',
       address: '',
       pincode: '',
