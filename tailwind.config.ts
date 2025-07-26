@@ -185,6 +185,25 @@ const config = {
           "100%": { transform: `translate(calc(var(--tx-1) * 100%), calc(var(--ty-1) * 100%))` },
         },
 
+        // Grid movement animation from HTML file
+        gridMove: {
+          "0%": { transform: "translate(0, 0)" },
+          "100%": { transform: "translate(10px, 10px)" },
+        },
+
+        // Card slide up animation from HTML file
+        cardSlideUp: {
+          "from": { opacity: "0", transform: "translateY(30px)" },
+          "to": { opacity: "1", transform: "translateY(0)" },
+        },
+
+        // Slide in animations from HTML file (additional)
+
+        slideOutRight: {
+          "from": { transform: "translateX(0)", opacity: "1" },
+          "to": { transform: "translateX(100%)", opacity: "0" },
+        },
+
         // Floating animations - Gentler movements
         floatGentle: {
           "0%, 100%": { transform: "translateY(0px)" },
@@ -285,6 +304,17 @@ const config = {
         // Background gradient animation for AnimatedGradient component
         "background-gradient": "backgroundGradient var(--background-gradient-speed, 20s) ease-in-out infinite",
 
+        // Grid movement from HTML file
+        gridMove: "gridMove 20s linear infinite",
+
+        // Card animations from HTML file
+        cardSlideUp: "cardSlideUp 0.6s ease-out",
+        'cardSlideUp-delay-100': 'cardSlideUp 0.6s ease-out 0.1s both',
+
+        // Notification animations from HTML file
+        slideInRightHtml: "slideInRightHtml 0.5s ease-out",
+        slideOutRight: "slideOutRight 0.5s ease-out",
+
         // Floating animations - Removed
         floatGentle: "none",
         floatSlow: "none",
@@ -324,14 +354,14 @@ const config = {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "hero-gradient": karmaTheme.gradients.hero,
-        "primary-gradient": karmaTheme.gradients.primary,
-        "secondary-gradient": karmaTheme.gradients.secondary,
-        "accent-gradient": karmaTheme.gradients.accent,
-        "sunset-gradient": karmaTheme.gradients.sunset,
-        "warm-gradient": karmaTheme.gradients.warm,
-        "mesh-gradient": `radial-gradient(circle at 25% 25%, ${karmaTheme.colors.primary.DEFAULT} 0%, transparent 50%), radial-gradient(circle at 75% 75%, ${karmaTheme.colors.secondary.DEFAULT} 0%, transparent 50%), radial-gradient(circle at 50% 50%, ${karmaTheme.colors.primary[400]} 0%, transparent 50%)`,
-        "rainbow-gradient": "linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff)",
+        "hero-gradient": "linear-gradient(135deg, #ff6b35 0%, #ffd700 100%)",
+        "primary-gradient": "linear-gradient(135deg, #ff6b35 0%, #ffd700 100%)",
+        "secondary-gradient": "linear-gradient(135deg, #ffd700 0%, #00d4aa 100%)",
+        "accent-gradient": "linear-gradient(135deg, #00d4aa 0%, #3b82f6 100%)",
+        "sunset-gradient": "linear-gradient(135deg, #ff6b35 0%, #ffd700 50%, #00d4aa 100%)",
+        "warm-gradient": "linear-gradient(135deg, #ff6b35 0%, #f59e0b 50%, #ffd700 100%)",
+        "mesh-gradient": `radial-gradient(circle at 25% 25%, #ff6b35 0%, transparent 50%), radial-gradient(circle at 75% 75%, #ffd700 0%, transparent 50%), radial-gradient(circle at 50% 50%, #00d4aa 0%, transparent 50%)`,
+        "rainbow-gradient": "linear-gradient(45deg, #ff6b35, #ffd700, #00d4aa, #10b981, #3b82f6, #f59e0b, #ef4444)",
         "glass-gradient": "linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))",
       },
       backdropBlur: {

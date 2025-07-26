@@ -1,0 +1,3581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT Adult Vaccination Excellence - Complete Health Protection</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b35;
+            --primary-light: #ff8c42;
+            --primary-dark: #e55a2b;
+            --secondary: #ffd700;
+            --accent: #00d4aa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #151b2d;
+            --bg-tertiary: #1e2746;
+            --bg-card: #252d4a;
+            --bg-glass: rgba(37, 45, 74, 0.95);
+            
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-inverse: #0a0e1a;
+            
+            --border: rgba(255, 107, 53, 0.2);
+            --border-light: rgba(255, 255, 255, 0.1);
+            
+            --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffd700 100%);
+            --gradient-dark: linear-gradient(135deg, #0a0e1a 0%, #151b2d 50%, #1e2746 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Light Theme */
+        body.light-theme {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --bg-card: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.95);
+            
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --text-inverse: #ffffff;
+            
+            --border: rgba(255, 107, 53, 0.3);
+            --border-light: rgba(0, 0, 0, 0.1);
+            
+            --gradient-dark: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .theme-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn.active {
+            background: var(--gradient-primary);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 70vh;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(10px, 10px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            max-width: 1200px;
+            padding: 0 30px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 900;
+            color: var(--text-inverse);
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            color: rgba(10,14,26,0.8);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .hero-tagline {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: rgba(10,14,26,0.7);
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+            padding: 15px 20px;
+            background: rgba(10,14,26,0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(10,14,26,0.3);
+        }
+
+        .hero-stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-inverse);
+            display: block;
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            color: rgba(10,14,26,0.8);
+            font-weight: 600;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            padding: 14px 28px;
+            background: rgba(10,14,26,0.2);
+            color: var(--text-inverse);
+            border: 2px solid rgba(10,14,26,0.3);
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero-btn:hover {
+            background: rgba(10,14,26,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .hero-btn.primary {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .hero-btn.primary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Navigation */
+        .nav-container {
+            margin-bottom: 40px;
+        }
+
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .nav-tab {
+            padding: 15px 20px;
+            background: transparent;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-tab:hover::before {
+            left: 0;
+        }
+
+        .nav-tab.active {
+            background: var(--gradient-primary);
+            color: var(--text-inverse);
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .nav-tab.active::before {
+            left: 0;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeSlideIn 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Wellness Assessment */
+        .wellness-assessment {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 35px;
+        }
+
+        .assessment-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .assessment-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .assessment-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 15px 18px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-label {
+            position: absolute;
+            top: -10px;
+            left: 18px;
+            background: var(--gradient-primary);
+            color: var(--text-inverse);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--primary);
+            background: var(--bg-tertiary);
+            transform: translateY(-1px);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        /* Wellness Button */
+        .wellness-btn {
+            background: var(--gradient-primary);
+            color: var(--text-inverse);
+            border: none;
+            padding: 18px 35px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 35px auto;
+            min-width: 280px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wellness-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .wellness-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        .wellness-btn:hover::before {
+            left: 100%;
+        }
+
+        .wellness-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Age Selection */
+        .age-selector {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .age-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+        }
+
+        .age-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .age-btn {
+            padding: 15px 30px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .age-btn:hover,
+        .age-btn.active {
+            background: var(--gradient-primary);
+            color: var(--text-inverse);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Vaccine Cards */
+        .vaccines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        .vaccine-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: cardSlideUp 0.6s ease-out;
+        }
+
+        .vaccine-card:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        @keyframes cardSlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .vaccine-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .vaccine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border-color: var(--primary);
+        }
+
+        .vaccine-card:hover::before {
+            left: 100%;
+        }
+
+        .vaccine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .vaccine-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        .vaccine-priority {
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .vaccine-info {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-content {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .frequency-badge {
+            background: var(--gradient-primary);
+            color: var(--text-inverse);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 18px;
+        }
+
+        .vaccine-sections {
+            margin-top: 20px;
+        }
+
+        .vaccine-section {
+            margin-bottom: 18px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 4px solid;
+        }
+
+        .vaccine-section.efficacy { border-left-color: var(--success); }
+        .vaccine-section.side-effects { border-left-color: var(--warning); }
+        .vaccine-section.contraindications { border-left-color: var(--danger); }
+        .vaccine-section.schedule { border-left-color: var(--info); }
+        .vaccine-section.india-specific { border-left-color: var(--accent); }
+
+        .section-title-small {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vaccine-section.efficacy .section-title-small { color: var(--success); }
+        .vaccine-section.side-effects .section-title-small { color: var(--warning); }
+        .vaccine-section.contraindications .section-title-small { color: var(--danger); }
+        .vaccine-section.schedule .section-title-small { color: var(--info); }
+        .vaccine-section.india-specific .section-title-small { color: var(--accent); }
+
+        .vaccine-list {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .vaccine-list li {
+            padding: 4px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.88rem;
+        }
+
+        .vaccine-list li::before {
+            content: "✨";
+            color: currentColor;
+            font-weight: bold;
+            margin-top: 1px;
+        }
+
+        /* Timeline Feature */
+        .timeline-section {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 35px;
+        }
+
+        .timeline-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .timeline-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .timeline-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50px;
+            top: 60px;
+            width: 2px;
+            height: 100%;
+            background: var(--border);
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-marker {
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-inverse);
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .timeline-content {
+            flex: 1;
+            margin-left: 25px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .timeline-age {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .timeline-vaccines {
+            list-style: none;
+        }
+
+        .timeline-vaccines li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-vaccines li:last-child {
+            border-bottom: none;
+        }
+
+        .vaccine-name-timeline {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .vaccine-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .vaccine-status.due {
+            background: var(--warning);
+            color: var(--text-inverse);
+        }
+
+        .vaccine-status.recommended {
+            background: var(--success);
+            color: var(--text-inverse);
+        }
+
+        .vaccine-status.future {
+            background: var(--info);
+            color: var(--text-inverse);
+        }
+
+        /* Results Container */
+        .results-container {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 35px;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .results-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .results-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .wellness-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stat-card.recommended .stat-number { color: var(--success); }
+        .stat-card.consult .stat-number { color: var(--warning); }
+        .stat-card.not-needed .stat-number { color: var(--text-muted); }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 35px 25px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer .love {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .footer .blessing {
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer .disclaimer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .vaccines-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-item::before {
+                left: 30px;
+            }
+
+            .timeline-marker {
+                width: 60px;
+                height: 60px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .age-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .age-btn {
+                min-width: 200px;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                height: 60vh;
+            }
+            
+            .wellness-assessment,
+            .results-container,
+            .timeline-section {
+                padding: 20px;
+            }
+            
+            .vaccine-card {
+                padding: 20px;
+            }
+            
+            .container {
+                padding: 25px 12px;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .mt-30 {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button class="theme-btn active" onclick="setTheme('dark')">🌙 Dark</button>
+        <button class="theme-btn" onclick="setTheme('light')">☀️ Light</button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">KARMASTAT</h1>
+            <h2 class="hero-subtitle">ADULT VACCINATION EXCELLENCE</h2>
+            <p class="hero-tagline">Complete Health Protection • Evidence-Based Medicine • Indian Healthcare Standards</p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">25+</span>
+                    <span class="hero-stat-label">Adult Vaccines</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">99%</span>
+                    <span class="hero-stat-label">Protection Rate</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">CDC</span>
+                    <span class="hero-stat-label">2024 Guidelines</span>
+                </div>
+            </div>
+            
+            <div class="hero-actions">
+                <a href="#wellness" class="hero-btn primary">🎯 Start Health Assessment</a>
+                <a href="#vaccines" class="hero-btn">💉 Explore All Vaccines</a>
+                <a href="#timeline" class="hero-btn">📅 My Vaccination Timeline</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Navigation -->
+        <nav class="nav-container">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('wellness')">
+                    🎯 Personal Health Assessment
+                </button>
+                <button class="nav-tab" onclick="switchTab('vaccines')">
+                    💉 Complete Vaccine Library
+                </button>
+                <button class="nav-tab" onclick="switchTab('conditions')">
+                    🏥 Risk-Based Protection
+                </button>
+                <button class="nav-tab" onclick="switchTab('timeline')">
+                    📅 Vaccination Timeline
+                </button>
+                <button class="nav-tab" onclick="switchTab('travel')">
+                    ✈️ Travel Medicine
+                </button>
+            </div>
+        </nav>
+
+        <!-- Personal Health Assessment Tab -->
+        <div id="wellness" class="tab-content active">
+            <div class="wellness-assessment">
+                <div class="assessment-header">
+                    <h2 class="assessment-title">Comprehensive Health Assessment</h2>
+                    <p class="assessment-subtitle">WHO & CDC guidelines for Indian healthcare • Complete protection planning</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">👤</div>
+                        <div class="section-title">Personal Information</div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" id="fullName" placeholder="Enter your full name">
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-input" id="age" placeholder="Your age" min="18" max="100">
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Gender</label>
+                            <select class="form-input form-select" id="gender">
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Location (State)</label>
+                            <select class="form-input form-select" id="state">
+                                <option value="">Select State</option>
+                                <option value="andhra-pradesh">Andhra Pradesh</option>
+                                <option value="arunachal-pradesh">Arunachal Pradesh</option>
+                                <option value="assam">Assam</option>
+                                <option value="bihar">Bihar</option>
+                                <option value="chhattisgarh">Chhattisgarh</option>
+                                <option value="goa">Goa</option>
+                                <option value="gujarat">Gujarat</option>
+                                <option value="haryana">Haryana</option>
+                                <option value="himachal-pradesh">Himachal Pradesh</option>
+                                <option value="jharkhand">Jharkhand</option>
+                                <option value="karnataka">Karnataka</option>
+                                <option value="kerala">Kerala</option>
+                                <option value="madhya-pradesh">Madhya Pradesh</option>
+                                <option value="maharashtra">Maharashtra</option>
+                                <option value="manipur">Manipur</option>
+                                <option value="meghalaya">Meghalaya</option>
+                                <option value="mizoram">Mizoram</option>
+                                <option value="nagaland">Nagaland</option>
+                                <option value="odisha">Odisha</option>
+                                <option value="punjab">Punjab</option>
+                                <option value="rajasthan">Rajasthan</option>
+                                <option value="sikkim">Sikkim</option>
+                                <option value="tamil-nadu">Tamil Nadu</option>
+                                <option value="telangana">Telangana</option>
+                                <option value="tripura">Tripura</option>
+                                <option value="uttar-pradesh">Uttar Pradesh</option>
+                                <option value="uttarakhand">Uttarakhand</option>
+                                <option value="west-bengal">West Bengal</option>
+                                <option value="delhi">Delhi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">🏥</div>
+                        <div class="section-title">Medical Conditions & Risk Factors</div>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                        Select all conditions that apply (this determines your priority vaccines)
+                    </p>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="diabetes" name="conditions" value="diabetes">
+                            <label for="diabetes">Diabetes Mellitus (Type 1 or 2)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="heart" name="conditions" value="heart">
+                            <label for="heart">Heart Disease (CAD, CHF, Congenital)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="lung" name="conditions" value="lung">
+                            <label for="lung">Chronic Lung Disease (COPD, Asthma)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kidney" name="conditions" value="kidney">
+                            <label for="kidney">Chronic Kidney Disease</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="liver" name="conditions" value="liver">
+                            <label for="liver">Chronic Liver Disease</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="immune" name="conditions" value="immune">
+                            <label for="immune">Immunocompromised (HIV, Cancer, Transplant)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pregnant" name="conditions" value="pregnant">
+                            <label for="pregnant">Pregnancy (Current or Planned)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="elderly" name="conditions" value="elderly">
+                            <label for="elderly">Lives in Long-term Care</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="smoking" name="conditions" value="smoking">
+                            <label for="smoking">Current Smoker</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="alcoholism" name="conditions" value="alcoholism">
+                            <label for="alcoholism">Chronic Alcohol Use</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">💼</div>
+                        <div class="section-title">Occupation & Lifestyle</div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="form-label">Primary Occupation</label>
+                            <select class="form-input form-select" id="profession">
+                                <option value="">Select Your Work</option>
+                                <option value="healthcare">Healthcare Worker (Doctor/Nurse/Tech)</option>
+                                <option value="education">Teacher/Academic/Training</option>
+                                <option value="travel">Travel/Tourism Industry</option>
+                                <option value="corporate">Corporate/Office Work</option>
+                                <option value="service">Service Industry/Hospitality</option>
+                                <option value="laboratory">Laboratory/Research Worker</option>
+                                <option value="veterinary">Veterinary/Animal Worker</option>
+                                <option value="military">Military/Police/Security</option>
+                                <option value="agriculture">Agriculture/Farming</option>
+                                <option value="student">Student</option>
+                                <option value="retired">Retired</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Travel Frequency</label>
+                            <select class="form-input form-select" id="travel">
+                                <option value="">Travel Patterns</option>
+                                <option value="international-frequent">Frequent International Travel</option>
+                                <option value="international-occasional">Occasional International Travel</option>
+                                <option value="domestic">Domestic India Travel Only</option>
+                                <option value="high-risk-areas">Travel to High-Risk Areas</option>
+                                <option value="minimal">Rarely Travel</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Last Vaccination</label>
+                            <select class="form-input form-select" id="lastVaccine">
+                                <option value="">When did you last get vaccinated?</option>
+                                <option value="recent">Within 1 year</option>
+                                <option value="1-3years">1-3 years ago</option>
+                                <option value="3-5years">3-5 years ago</option>
+                                <option value="5-10years">5-10 years ago</option>
+                                <option value="10+years">More than 10 years ago</option>
+                                <option value="unknown">Don't remember/Unknown</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Vaccine History</label>
+                            <select class="form-input form-select" id="vaccineHistory">
+                                <option value="">Childhood Vaccination Status</option>
+                                <option value="complete">Complete childhood vaccines</option>
+                                <option value="partial">Some childhood vaccines</option>
+                                <option value="incomplete">Incomplete vaccination</option>
+                                <option value="unknown">Don't know vaccination history</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="wellness-btn" onclick="generateComprehensivePlan()">
+                    🚀 Generate Complete Protection Plan
+                </button>
+            </div>
+
+            <div id="wellness-results" class="hidden">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+
+        <!-- Complete Vaccine Library Tab -->
+        <div id="vaccines" class="tab-content">
+            <div class="age-selector">
+                <h2 class="age-title">Adult Vaccination by Life Stage</h2>
+                <div class="age-buttons">
+                    <button class="age-btn active" onclick="showVaccinesByAge('young-adult')">Young Adults (18-29)</button>
+                    <button class="age-btn" onclick="showVaccinesByAge('mid-adult')">Mid Adults (30-49)</button>
+                    <button class="age-btn" onclick="showVaccinesByAge('mature-adult')">Mature Adults (50-64)</button>
+                    <button class="age-btn" onclick="showVaccinesByAge('senior')">Active Seniors (65+)</button>
+                    <button class="age-btn" onclick="showVaccinesByAge('all')">All Vaccines</button>
+                </div>
+            </div>
+
+            <!-- Young Adults (18-29) -->
+            <div id="vaccines-young-adult" class="vaccines-content">
+                <div class="vaccines-grid">
+                    <!-- Tdap Vaccine -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Tetanus, Diphtheria & Pertussis (Tdap)</div>
+                            <div class="vaccine-priority">🛡️</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🔬 Essential Protection</div>
+                            <div class="info-content">
+                                Critical protection against tetanus (lockjaw), diphtheria, and whooping cough. Essential for wound protection and community immunity.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Every 10 Years</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">✨ Efficacy & Benefits</div>
+                                <ul class="vaccine-list">
+                                    <li>95% effective against tetanus infection</li>
+                                    <li>98% effective against diphtheria</li>
+                                    <li>85% effective against pertussis in first year</li>
+                                    <li>Prevents tetanus from wounds and cuts</li>
+                                    <li>Protects against dangerous throat diphtheria</li>
+                                    <li>Reduces whooping cough transmission</li>
+                                    <li>Required for travel to many countries</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section side-effects">
+                                <div class="section-title-small">⚡ Side Effects & Reactions</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Common (15-75%):</strong> Arm pain, redness, swelling at injection site</li>
+                                    <li><strong>Moderate (5-15%):</strong> Mild fever, headache, fatigue</li>
+                                    <li><strong>Less Common (1-5%):</strong> Nausea, vomiting, body aches</li>
+                                    <li><strong>Rare (&lt;0.1%):</strong> Severe allergic reaction, brachial neuritis</li>
+                                    <li><strong>Duration:</strong> Most reactions resolve in 1-3 days</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section contraindications">
+                                <div class="section-title-small">🚫 Contraindications & Precautions</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Absolute:</strong> Severe allergic reaction to previous dose</li>
+                                    <li><strong>Precaution:</strong> Guillain-Barré Syndrome within 6 weeks of prior Td</li>
+                                    <li><strong>Precaution:</strong> Progressive neurologic disorder</li>
+                                    <li><strong>Temporary delay:</strong> Moderate/severe acute illness</li>
+                                    <li><strong>Safe during:</strong> Pregnancy (preferred in 3rd trimester)</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Recommended Schedule</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Primary Series:</strong> If never received childhood DTaP series</li>
+                                    <li><strong>Booster:</strong> One Tdap, then Td every 10 years</li>
+                                    <li><strong>Pregnancy:</strong> One dose during each pregnancy (27-36 weeks)</li>
+                                    <li><strong>Wound Management:</strong> Booster if >5 years since last dose</li>
+                                    <li><strong>Healthcare Workers:</strong> One-time Tdap dose</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 India-Specific Information</div>
+                                <div class="info-content">
+                                    <strong>Available Brands:</strong> Boostrix (GSK), Adacel (Sanofi)<br>
+                                    <strong>Cost:</strong> ₹1,500-2,500 per dose<br>
+                                    <strong>Availability:</strong> Major hospitals, private clinics<br>
+                                    <strong>Insurance:</strong> Usually covered under corporate health plans<br>
+                                    <strong>Special Note:</strong> High tetanus risk in India due to agricultural work
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HPV Vaccine -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Human Papillomavirus (HPV)</div>
+                            <div class="vaccine-priority">🌟</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🎯 Cancer Prevention</div>
+                            <div class="info-content">
+                                World's most effective cancer prevention vaccine. Protects against 6 types of cancer and genital warts. Best effectiveness when given before age 26.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">2-3 Dose Series</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">✨ Cancer Prevention Power</div>
+                                <ul class="vaccine-list">
+                                    <li>99% prevention of cervical cancer (types 16,18)</li>
+                                    <li>90% prevention of genital warts</li>
+                                    <li>95% prevention of anal cancer</li>
+                                    <li>85% prevention of oropharyngeal cancer</li>
+                                    <li>90% prevention of vulvar and vaginal cancer</li>
+                                    <li>Protects partners through herd immunity</li>
+                                    <li>Most effective before sexual debut</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section side-effects">
+                                <div class="section-title-small">💫 Side Effects Profile</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Very Common (80-90%):</strong> Injection site pain and swelling</li>
+                                    <li><strong>Common (25-30%):</strong> Redness, itching at injection site</li>
+                                    <li><strong>Sometimes (10-15%):</strong> Low fever, headache, nausea</li>
+                                    <li><strong>Occasional (5-10%):</strong> Dizziness, fainting (mostly teens)</li>
+                                    <li><strong>Rare (1-4%):</strong> Allergic reactions</li>
+                                    <li><strong>Safety Note:</strong> Over 270 million doses given worldwide</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section contraindications">
+                                <div class="section-title-small">🚫 Who Should Not Get HPV Vaccine</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Absolute:</strong> Severe allergic reaction to previous dose</li>
+                                    <li><strong>Absolute:</strong> Severe allergy to yeast or vaccine components</li>
+                                    <li><strong>Pregnancy:</strong> Not recommended, but not harmful if given accidentally</li>
+                                    <li><strong>Breastfeeding:</strong> Safe to receive</li>
+                                    <li><strong>Immunocompromised:</strong> Safe, may be less effective</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Dosing Schedule</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Ages 9-14:</strong> 2 doses, 6-12 months apart</li>
+                                    <li><strong>Ages 15-26:</strong> 3 doses (0, 1-2, 6 months)</li>
+                                    <li><strong>Ages 27-45:</strong> Shared clinical decision-making</li>
+                                    <li><strong>Catch-up:</strong> Available through age 26 (FDA approval)</li>
+                                    <li><strong>Accelerated:</strong> Minimum 4 weeks between dose 1 & 2</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 India Availability & Guidelines</div>
+                                <div class="info-content">
+                                    <strong>Available Vaccines:</strong> Gardasil-9 (9-valent), CERVAVAC (Indian 4-valent)<br>
+                                    <strong>Cost:</strong> ₹2,500-4,500 per dose (Gardasil-9), ₹500-1,000 (CERVAVAC)<br>
+                                    <strong>Recommendation:</strong> FOGSI & IAP recommend for 9-26 years<br>
+                                    <strong>Coverage:</strong> Some state programs, insurance variable<br>
+                                    <strong>Special Note:</strong> India has highest cervical cancer burden globally
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hepatitis B -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Hepatitis B</div>
+                            <div class="vaccine-priority">🏥</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🦠 Liver Protection</div>
+                            <div class="info-content">
+                                World's first anti-cancer vaccine. Essential protection against hepatitis B infection and liver cancer. Lifelong immunity for most people.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">3-Dose Series</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Liver Protection Benefits</div>
+                                <ul class="vaccine-list">
+                                    <li>95% protection against hepatitis B infection</li>
+                                    <li>85% reduction in liver cancer risk</li>
+                                    <li>99% prevention of chronic hepatitis B</li>
+                                    <li>Lifelong immunity in 90-95% of healthy adults</li>
+                                    <li>Prevents cirrhosis and liver failure</li>
+                                    <li>Community protection through vaccination</li>
+                                    <li>Essential for healthcare workers</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section side-effects">
+                                <div class="section-title-small">🌱 Safety Profile</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Mild (15-30%):</strong> Injection site soreness, redness</li>
+                                    <li><strong>Low grade (1-6%):</strong> Low fever, fatigue</li>
+                                    <li><strong>Uncommon (1-3%):</strong> Headache, nausea</li>
+                                    <li><strong>Rare (&lt;1%):</strong> Severe allergic reaction</li>
+                                    <li><strong>Safety Record:</strong> Over 1 billion doses given worldwide</li>
+                                    <li><strong>Long-term:</strong> No serious long-term effects identified</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section contraindications">
+                                <div class="section-title-small">🚫 Contraindications</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Absolute:</strong> Severe allergic reaction to previous dose</li>
+                                    <li><strong>Absolute:</strong> Severe allergy to yeast</li>
+                                    <li><strong>Precaution:</strong> Moderate to severe acute illness</li>
+                                    <li><strong>Pregnancy:</strong> Safe during pregnancy</li>
+                                    <li><strong>Immunocompromised:</strong> Safe, may need additional doses</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Vaccination Schedule</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Standard:</strong> 0, 1, 6 months (optimal immunity)</li>
+                                    <li><strong>Accelerated:</strong> 0, 1, 2, 12 months (travel/occupational)</li>
+                                    <li><strong>Combination:</strong> Available with Hepatitis A</li>
+                                    <li><strong>Post-vaccination testing:</strong> Recommended for high-risk groups</li>
+                                    <li><strong>Booster:</strong> Not routinely recommended for healthy adults</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 India Guidelines & Availability</div>
+                                <div class="info-content">
+                                    <strong>Available Vaccines:</strong> GeneVac-B (Serum Institute), Engerix-B, Revac-B<br>
+                                    <strong>Cost:</strong> ₹150-400 per dose (Indian), ₹800-1,200 (Imported)<br>
+                                    <strong>Universal recommendation:</strong> API recommends for all adults 19-59 years<br>
+                                    <strong>High-risk groups:</strong> Healthcare workers, dialysis patients, MSM<br>
+                                    <strong>Prevalence:</strong> 40+ million Indians infected with Hepatitis B
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Influenza -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Seasonal Influenza</div>
+                            <div class="vaccine-priority">🌪️</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🌏 Annual Protection</div>
+                            <div class="info-content">
+                                Annual protection against seasonal flu. Formulated specifically for Southern Hemisphere strains circulating in India.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Annual (Pre-Monsoon)</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">✨ Annual Protection Benefits</div>
+                                <ul class="vaccine-list">
+                                    <li>40-60% reduction in flu illness when well-matched</li>
+                                    <li>70% reduction in hospitalization</li>
+                                    <li>80% reduction in ICU admission</li>
+                                    <li>50% reduction in work absenteeism</li>
+                                    <li>Community protection for vulnerable groups</li>
+                                    <li>Reduced antibiotic usage for secondary infections</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 2024-25 India Formula</div>
+                                <div class="info-content">
+                                    <strong>Strains Included:</strong><br>
+                                    • A/Victoria/4897/2022 (H1N1)pdm09-like virus<br>
+                                    • A/Thailand/8/2022 (H3N2)-like virus<br>
+                                    • B/Austria/1359417/2021 (Victoria lineage)<br>
+                                    • B/Phuket/3073/2013 (Yamagata lineage)<br>
+                                    <strong>Best Timing:</strong> September-October (pre-monsoon)<br>
+                                    <strong>Cost:</strong> ₹500-1,500 per dose
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mid Adults (30-49) -->
+            <div id="vaccines-mid-adult" class="vaccines-content hidden">
+                <div class="vaccines-grid">
+                    <!-- All Young Adult vaccines plus: -->
+                    
+                    <!-- Pneumococcal PCV20/PCV21 -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Pneumococcal Conjugate (PCV20/PCV21)</div>
+                            <div class="vaccine-priority">🫁</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🎯 Advanced Lung Protection</div>
+                            <div class="info-content">
+                                Next-generation pneumococcal protection covering 20-21 serotypes. Essential for preventing pneumonia, meningitis, and bloodstream infections.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Risk-Based</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Protection Benefits</div>
+                                <ul class="vaccine-list">
+                                    <li>75-85% effective against invasive pneumococcal disease</li>
+                                    <li>45-75% effective against pneumonia</li>
+                                    <li>Covers most common serotypes in India</li>
+                                    <li>Reduces antibiotic-resistant infections</li>
+                                    <li>Protects against meningitis and sepsis</li>
+                                    <li>Herd immunity benefits</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 CDC 2024 Updates</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>NEW:</strong> Recommended for all adults ≥50 years</li>
+                                    <li><strong>Risk-based:</strong> Adults 19-49 with conditions</li>
+                                    <li><strong>PCV20:</strong> Single dose, no PPSV23 needed</li>
+                                    <li><strong>PCV21:</strong> Alternative single dose option</li>
+                                    <li><strong>Previous PCV13:</strong> Can upgrade to PCV20/21</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 Indian Serotype Coverage</div>
+                                <div class="info-content">
+                                    <strong>PCV20 covers:</strong> 74.6% of IPD cases in India<br>
+                                    <strong>Most important types:</strong> 14, 19F, 6B, 23F, 19A<br>
+                                    <strong>Cost:</strong> ₹8,000-12,000 per dose<br>
+                                    <strong>Availability:</strong> Major metro hospitals<br>
+                                    <strong>Note:</strong> Higher pneumonia burden in India than global average
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shingles Vaccine -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Shingles (Zoster) - Shingrix</div>
+                            <div class="vaccine-priority">🔥</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🛡️ Pain Prevention</div>
+                            <div class="info-content">
+                                Highly effective protection against shingles and post-herpetic neuralgia. Recommended for all adults ≥50 years, even if previously vaccinated.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">2-Dose Series</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">⚡ Outstanding Efficacy</div>
+                                <ul class="vaccine-list">
+                                    <li>97% effective against shingles (ages 50-69)</li>
+                                    <li>91% effective against shingles (ages 70+)</li>
+                                    <li>89% effective against post-herpetic neuralgia</li>
+                                    <li>Effectiveness maintained >4 years</li>
+                                    <li>Works even in immunocompromised patients</li>
+                                    <li>Significantly reduces severity if breakthrough occurs</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section side-effects">
+                                <div class="section-title-small">💫 Expected Reactions</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Very Common (75-80%):</strong> Injection site pain</li>
+                                    <li><strong>Common (35-40%):</strong> Muscle pain, fatigue, headache</li>
+                                    <li><strong>Sometimes (15-25%):</strong> Fever, GI symptoms</li>
+                                    <li><strong>Note:</strong> Reactions typically last 2-3 days</li>
+                                    <li><strong>Second dose:</strong> Similar or slightly less reactogenic</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 India Guidelines</div>
+                                <div class="info-content">
+                                    <strong>Age Recommendation:</strong> ≥50 years (API guidelines)<br>
+                                    <strong>Cost:</strong> ₹7,000-10,000 per dose<br>
+                                    <strong>Schedule:</strong> 2 doses, 2-6 months apart<br>
+                                    <strong>Availability:</strong> Premium hospitals and clinics<br>
+                                    <strong>Insurance:</strong> Usually not covered, out-of-pocket expense
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mature Adults (50-64) -->
+            <div id="vaccines-mature-adult" class="vaccines-content hidden">
+                <div class="vaccines-grid">
+                    <!-- All previous vaccines plus: -->
+                    
+                    <!-- RSV Vaccine -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Respiratory Syncytial Virus (RSV)</div>
+                            <div class="vaccine-priority">🌪️</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🫁 Respiratory Protection</div>
+                            <div class="info-content">
+                                New vaccine protecting against RSV lower respiratory tract disease. Three options available: Arexvy, Abrysvo, and mResvia.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Single Dose</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">✨ Real-World Effectiveness</div>
+                                <ul class="vaccine-list">
+                                    <li>Arexvy: 77% effective against ED visits, 83% against hospitalization</li>
+                                    <li>Abrysvo: 89% effective against lower respiratory disease</li>
+                                    <li>mResvia: 83.7% effective against LRTD</li>
+                                    <li>Protection lasts at least 2 years</li>
+                                    <li>Effective in immunocompromised patients</li>
+                                    <li>Reduces severity of breakthrough infections</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section side-effects">
+                                <div class="section-title-small">⚠️ Safety Considerations</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Common:</strong> Injection site pain, fatigue, headache</li>
+                                    <li><strong>Moderate:</strong> Muscle pain, fever, nausea</li>
+                                    <li><strong>Important:</strong> Increased risk of Guillain-Barré Syndrome</li>
+                                    <li><strong>GBS Risk:</strong> ~10 excess cases per 1 million vaccinated</li>
+                                    <li><strong>Monitor:</strong> Weakness, tingling in legs/arms</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 CDC 2024 Recommendations</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Ages 75+:</strong> Recommended for all</li>
+                                    <li><strong>Ages 60-74:</strong> Recommended if increased risk</li>
+                                    <li><strong>Ages 50-59:</strong> Risk-based decision making</li>
+                                    <li><strong>Timing:</strong> Late summer/early fall optimal</li>
+                                    <li><strong>Not annual:</strong> Single dose provides multi-year protection</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seniors (65+) -->
+            <div id="vaccines-senior" class="vaccines-content hidden">
+                <div class="vaccines-grid">
+                    <!-- High-Dose Influenza -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">High-Dose Influenza (65+)</div>
+                            <div class="vaccine-priority">💪</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">⚡ Enhanced Senior Protection</div>
+                            <div class="info-content">
+                                4x stronger flu vaccine specifically designed for seniors' immune systems. Superior protection compared to standard flu vaccine.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Annual (Enhanced)</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">💪 Superior Senior Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>24% more effective than standard flu vaccine in seniors</li>
+                                    <li>Lower hospitalization rates</li>
+                                    <li>Better immune response in age 65+</li>
+                                    <li>Reduced mortality from influenza</li>
+                                    <li>Protection against severe complications</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PPSV23 Completion -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">PPSV23 Pneumococcal Polysaccharide</div>
+                            <div class="vaccine-priority">🫁</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🎯 Complete Pneumococcal Coverage</div>
+                            <div class="info-content">
+                                Completes pneumococcal protection when given after PCV. Covers additional serotypes for comprehensive senior protection.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">65+ Series Completion</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Comprehensive Coverage</div>
+                                <ul class="vaccine-list">
+                                    <li>Covers 23 pneumococcal serotypes</li>
+                                    <li>Additive protection to PCV</li>
+                                    <li>65-84% effective against invasive disease</li>
+                                    <li>Important for immunocompromised seniors</li>
+                                    <li>Broader serotype coverage than PCV alone</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Sequential Schedule</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>After PCV:</strong> Give ≥1 year after PCV13/15</li>
+                                    <li><strong>Age 65:</strong> One dose if never received</li>
+                                    <li><strong>High-risk:</strong> May need booster doses</li>
+                                    <li><strong>Not with PCV20/21:</strong> Not needed if received PCV20 or PCV21</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Vaccines -->
+            <div id="vaccines-all" class="vaccines-content hidden">
+                <h3 style="text-align: center; margin-bottom: 30px; color: var(--text-primary);">Complete Adult Vaccine Compendium</h3>
+                
+                <div class="vaccines-grid">
+                    <!-- Travel Vaccines -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Yellow Fever</div>
+                            <div class="vaccine-priority">🌍</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">✈️ Travel Requirement</div>
+                            <div class="info-content">
+                                Live vaccine required for travel to endemic areas in Africa and South America. Provides lifelong immunity and international certificate.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Lifetime</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Travel Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>99% effective within 10 days</li>
+                                    <li>Lifelong immunity for most people</li>
+                                    <li>Required by International Health Regulations</li>
+                                    <li>Valid international certificate</li>
+                                    <li>Prevents potentially fatal yellow fever</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section contraindications">
+                                <div class="section-title-small">🚫 Important Restrictions</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Age:</strong> Higher risk >60 years, <9 months</li>
+                                    <li><strong>Pregnancy:</strong> Generally contraindicated</li>
+                                    <li><strong>Immunocompromised:</strong> Live vaccine contraindicated</li>
+                                    <li><strong>Egg allergy:</strong> Severe allergy is contraindication</li>
+                                    <li><strong>Thymus disease:</strong> Contraindicated</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 India Availability</div>
+                                <div class="info-content">
+                                    <strong>Available at:</strong> Designated International Vaccination Centers<br>
+                                    <strong>Major Centers:</strong> Delhi, Mumbai, Chennai, Kolkata<br>
+                                    <strong>Cost:</strong> ₹300-500<br>
+                                    <strong>Certificate:</strong> WHO International Certificate issued<br>
+                                    <strong>Validity:</strong> 10 days after vaccination, lifelong
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Japanese Encephalitis -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Japanese Encephalitis</div>
+                            <div class="vaccine-priority">🦟</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🧠 Brain Protection</div>
+                            <div class="info-content">
+                                Protection against Japanese encephalitis virus. Important for travelers to rural Asia and residents of endemic areas.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">2-Dose Series</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🛡️ Brain Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>95% effective against Japanese encephalitis</li>
+                                    <li>Prevents severe neurological complications</li>
+                                    <li>Long-lasting immunity (>3 years)</li>
+                                    <li>Reduces mortality from JE</li>
+                                    <li>Important in endemic areas</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Travel Schedule</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Primary:</strong> 2 doses, 28 days apart</li>
+                                    <li><strong>Travel:</strong> Complete 1 week before travel</li>
+                                    <li><strong>Booster:</strong> After 12-24 months if continued risk</li>
+                                    <li><strong>Long-term:</strong> Consider for >1 month in endemic areas</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 Indian Context</div>
+                                <div class="info-content">
+                                    <strong>Endemic States:</strong> Assam, Uttar Pradesh, Bihar, West Bengal<br>
+                                    <strong>Season:</strong> Monsoon and post-monsoon (June-October)<br>
+                                    <strong>Cost:</strong> ₹1,500-2,500 per dose<br>
+                                    <strong>Available:</strong> IXIARO (imported), SA-14-14-2 (limited)<br>
+                                    <strong>Risk Areas:</strong> Rural areas with rice farming, pig farming
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typhoid -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Typhoid</div>
+                            <div class="vaccine-priority">🌍</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🦠 Enteric Protection</div>
+                            <div class="info-content">
+                                Protection against typhoid fever. Available as injectable (Vi) or oral (Ty21a) vaccine. Important for South Asia travel.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Every 2-3 Years</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Travel Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>Injectable Vi: 70-80% effective</li>
+                                    <li>Oral Ty21a: 65-70% effective</li>
+                                    <li>Protects against S. Typhi infection</li>
+                                    <li>Reduces severity if breakthrough occurs</li>
+                                    <li>Important for South Asia travel</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Options Available</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Injectable Vi:</strong> Single dose, ≥2 weeks before travel</li>
+                                    <li><strong>Oral Ty21a:</strong> 4 capsules on alternate days</li>
+                                    <li><strong>Booster:</strong> Every 2 years (Vi), 5 years (oral)</li>
+                                    <li><strong>Combined:</strong> Available with hepatitis A</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 High Endemic Country</div>
+                                <div class="info-content">
+                                    <strong>Risk:</strong> High in India, especially rural areas<br>
+                                    <strong>Recommendation:</strong> All travelers to India<br>
+                                    <strong>Cost:</strong> ₹400-800 (Vi), ₹1,200-1,800 (oral)<br>
+                                    <strong>Available:</strong> Typbar-TCV, Typhim Vi, Vivotif<br>
+                                    <strong>Local use:</strong> Consider for high-risk Indian residents
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meningococcal -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Meningococcal (MenACWY/MenB)</div>
+                            <div class="vaccine-priority">🧠</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🛡️ Meningitis Prevention</div>
+                            <div class="info-content">
+                                Protection against bacterial meningitis. MenACWY for travel/high-risk, MenB for young adults and high-risk groups.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">Risk-Based</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Meningitis Prevention</div>
+                                <ul class="vaccine-list">
+                                    <li>MenACWY: 85-100% effective against serogroups A,C,W,Y</li>
+                                    <li>MenB: 63-88% effective against serogroup B</li>
+                                    <li>Rapid protection within 7-10 days</li>
+                                    <li>Prevents potentially fatal meningitis</li>
+                                    <li>Reduces transmission in communities</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 2024 ACIP Updates</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>MenACWY:</strong> Single dose for travel/high-risk</li>
+                                    <li><strong>MenB (Bexsero):</strong> 2 doses at 0, 6 months</li>
+                                    <li><strong>MenB (Trumenba):</strong> 2 doses at 0, 6 months</li>
+                                    <li><strong>Ages 16-23:</strong> Shared clinical decision-making</li>
+                                    <li><strong>High-risk:</strong> Both MenACWY and MenB recommended</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 Risk Assessment</div>
+                                <div class="info-content">
+                                    <strong>Risk Areas:</strong> Low endemic in India<br>
+                                    <strong>Travel Risk:</strong> Hajj pilgrimage (required), sub-Saharan Africa<br>
+                                    <strong>Cost:</strong> ₹3,000-5,000 (MenACWY), ₹8,000-12,000 (MenB)<br>
+                                    <strong>Availability:</strong> Limited to metro hospitals<br>
+                                    <strong>Outbreaks:</strong> College dormitories, military barracks
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hepatitis A -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Hepatitis A</div>
+                            <div class="vaccine-priority">🍽️</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🦠 Food & Water Protection</div>
+                            <div class="info-content">
+                                Protection against hepatitis A virus transmitted through contaminated food and water. Excellent safety profile and long-lasting immunity.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">2-Dose Series</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Excellent Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>95-100% effective after 2 doses</li>
+                                    <li>Protection begins 2-4 weeks after first dose</li>
+                                    <li>Immunity likely lifelong</li>
+                                    <li>Prevents acute hepatitis A infection</li>
+                                    <li>No chronic infection (unlike Hep B)</li>
+                                    <li>Community protection through vaccination</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Standard Schedule</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Primary:</strong> 2 doses, 6-12 months apart</li>
+                                    <li><strong>Travel:</strong> Single dose ≥2 weeks before travel</li>
+                                    <li><strong>Post-exposure:</strong> Within 2 weeks of exposure</li>
+                                    <li><strong>Combined:</strong> Available with hepatitis B or typhoid</li>
+                                    <li><strong>Accelerated:</strong> 0, 6-12 months for travel</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 Indian Epidemiology</div>
+                                <div class="info-content">
+                                    <strong>Endemicity:</strong> Intermediate in urban India, high in rural<br>
+                                    <strong>Age Groups:</strong> Young adults at higher risk<br>
+                                    <strong>Cost:</strong> ₹1,200-2,000 per dose<br>
+                                    <strong>Brands:</strong> Havrix, Avaxim, Indian HAV vaccines<br>
+                                    <strong>Recommendation:</strong> Travelers from low-endemic countries to India
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cholera -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Cholera (Dukoral)</div>
+                            <div class="vaccine-priority">🌊</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">💧 Water-Borne Protection</div>
+                            <div class="info-content">
+                                Oral cholera vaccine providing protection against cholera and ETEC. Recommended for high-risk travel and endemic areas.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">2-Dose Oral</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌊 Diarrheal Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>85% protection against cholera</li>
+                                    <li>23% protection against ETEC</li>
+                                    <li>Reduces severity of breakthrough cases</li>
+                                    <li>Safe oral administration</li>
+                                    <li>No injection required</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 Endemic Risk Areas</div>
+                                <div class="info-content">
+                                    <strong>High Risk:</strong> Coastal areas, flood-prone regions<br>
+                                    <strong>Seasonal:</strong> Monsoon and post-monsoon periods<br>
+                                    <strong>Cost:</strong> ₹2,000-3,000 per dose<br>
+                                    <strong>Availability:</strong> Limited, travel clinics<br>
+                                    <strong>WHO Use:</strong> Outbreak response and high-risk populations
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rabies Pre-Exposure -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Rabies (Pre-Exposure)</div>
+                            <div class="vaccine-priority">🐕</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🦠 Animal Bite Prevention</div>
+                            <div class="info-content">
+                                Pre-exposure rabies vaccination for high-risk occupations and travelers. Simplifies post-exposure treatment but doesn't eliminate need for it.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">3-Dose Series</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🛡️ Life-Saving Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>Nearly 100% effective when given properly</li>
+                                    <li>Simplifies post-exposure prophylaxis</li>
+                                    <li>No rabies immunoglobulin needed post-exposure</li>
+                                    <li>Provides time to seek medical care</li>
+                                    <li>Essential for high-risk occupations</li>
+                                    <li>Rabies is virtually 100% fatal without treatment</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section schedule">
+                                <div class="section-title-small">📅 Pre-Exposure Schedule</div>
+                                <ul class="vaccine-list">
+                                    <li><strong>Primary:</strong> 3 doses at 0, 7, 21-28 days</li>
+                                    <li><strong>Booster:</strong> Based on antibody levels or risk</li>
+                                    <li><strong>High Risk:</strong> Check antibody levels every 2 years</li>
+                                    <li><strong>Post-Exposure:</strong> Still need 2 additional doses</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 High Rabies Burden Country</div>
+                                <div class="info-content">
+                                    <strong>Global Burden:</strong> India accounts for 35% of world rabies deaths<br>
+                                    <strong>Animal Risk:</strong> Dogs (96%), cats, monkeys, bats<br>
+                                    <strong>Cost:</strong> ₹300-400 per dose (Indian), ₹1,500+ (imported)<br>
+                                    <strong>Recommendation:</strong> Veterinarians, animal handlers, rural workers<br>
+                                    <strong>Availability:</strong> Most hospitals stock rabies vaccines
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tick-Borne Encephalitis -->
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">Tick-Borne Encephalitis (TBE)</div>
+                            <div class="vaccine-priority">🕷️</div>
+                        </div>
+                        
+                        <div class="vaccine-info">
+                            <div class="info-title">🧠 Neurological Protection</div>
+                            <div class="info-content">
+                                Protection against tick-borne encephalitis virus. Important for travelers to endemic areas in Europe and Asia.
+                            </div>
+                        </div>
+                        
+                        <div class="frequency-badge">3-Dose Series</div>
+                        
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">🌟 Neurological Protection</div>
+                                <ul class="vaccine-list">
+                                    <li>95-99% effective after 3 doses</li>
+                                    <li>Prevents severe neurological complications</li>
+                                    <li>Reduces mortality from TBE</li>
+                                    <li>Long-lasting immunity (3-5 years)</li>
+                                    <li>No specific treatment for TBE available</li>
+                                </ul>
+                            </div>
+
+                            <div class="vaccine-section india-specific">
+                                <div class="section-title-small">🇮🇳 Travel Considerations</div>
+                                <div class="info-content">
+                                    <strong>Endemic Areas:</strong> Not endemic in India<br>
+                                    <strong>Travel Risk:</strong> Europe (Austria, Germany), Siberia<br>
+                                    <strong>Availability:</strong> Limited, special order<br>
+                                    <strong>Cost:</strong> ₹3,000-5,000 per dose<br>
+                                    <strong>Alternative:</strong> Tick prevention measures crucial
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk-Based Protection Tab -->
+        <div id="conditions" class="tab-content">
+            <h2 class="text-center mb-20" style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">
+                Risk-Based Vaccination Strategies
+            </h2>
+            <p class="text-center" style="color: var(--text-secondary); margin-bottom: 40px; font-size: 1.1rem;">
+                Personalized protection based on medical conditions, occupation, and lifestyle factors
+            </p>
+
+            <div class="vaccines-grid">
+                <!-- Diabetes -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">🩸 Diabetes Mellitus Management</div>
+                        <div class="vaccine-priority">⚠️</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">🔍 Enhanced Risk Profile</div>
+                        <div class="info-content">
+                            Diabetes impairs immune response and wound healing. Requires priority vaccination schedule and enhanced monitoring.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section efficacy">
+                            <div class="section-title-small">💉 Priority Vaccines</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Annual Influenza:</strong> 3x higher hospitalization risk without vaccine</li>
+                                <li><strong>Pneumococcal Complete:</strong> PCV20/21 followed by PPSV23 if indicated</li>
+                                <li><strong>COVID-19 Updated:</strong> Stay current with latest formulations</li>
+                                <li><strong>Hepatitis B:</strong> Higher risk of chronic infection</li>
+                                <li><strong>Tdap Current:</strong> Improved wound healing protection</li>
+                                <li><strong>Shingles (50+):</strong> Earlier recommendation due to increased risk</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section schedule">
+                            <div class="section-title-small">📅 Enhanced Schedule</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Pneumococcal:</strong> Sequential PCV-PPSV23 series</li>
+                                <li><strong>Influenza:</strong> High-dose if ≥65 years</li>
+                                <li><strong>Hepatitis B:</strong> Check post-vaccination titers</li>
+                                <li><strong>COVID-19:</strong> Additional doses per CDC guidance</li>
+                                <li><strong>Monitoring:</strong> Enhanced post-vaccination surveillance</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section india-specific">
+                            <div class="section-title-small">🇮🇳 Indian Diabetes Context</div>
+                            <div class="info-content">
+                                <strong>Prevalence:</strong> 77 million diabetics in India (2nd highest globally)<br>
+                                <strong>RSSDI Guidelines:</strong> Annual flu + pneumococcal for all diabetics<br>
+                                <strong>Insurance Coverage:</strong> Usually covered under diabetes management<br>
+                                <strong>Special Consideration:</strong> Higher infection rates in Indian diabetics
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Healthcare Workers -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">🩺 Healthcare Worker Protection</div>
+                        <div class="vaccine-priority">🛡️</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">👩‍⚕️ Occupational Safety</div>
+                        <div class="info-content">
+                            Comprehensive protection for healthcare workers. Protects both worker and patients through vaccination.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section efficacy">
+                            <div class="section-title-small">💉 Essential HCW Vaccines</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Hepatitis B Complete:</strong> 3-dose series with post-vaccination serology</li>
+                                <li><strong>Annual Influenza:</strong> Mandatory in most healthcare systems</li>
+                                <li><strong>MMR Immunity:</strong> Document immunity or vaccinate</li>
+                                <li><strong>Varicella Status:</strong> Check immunity, vaccinate if needed</li>
+                                <li><strong>Tdap Update:</strong> One-time Tdap, then Td boosters</li>
+                                <li><strong>COVID-19 Current:</strong> Stay updated per institutional policy</li>
+                                <li><strong>TB Screening:</strong> Annual tuberculosis screening</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section schedule">
+                            <div class="section-title-small">📅 HCW Requirements</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Pre-employment:</strong> Complete series before patient contact</li>
+                                <li><strong>Annual Requirements:</strong> Influenza, TB screening</li>
+                                <li><strong>Hepatitis B:</strong> Check anti-HBs levels 1-2 months post-series</li>
+                                <li><strong>Exposure Protocol:</strong> Post-exposure prophylaxis procedures</li>
+                                <li><strong>Documentation:</strong> Maintain vaccination records</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section india-specific">
+                            <div class="section-title-small">🇮🇳 Indian Healthcare Guidelines</div>
+                            <div class="info-content">
+                                <strong>Regulatory:</strong> MCI/NMC guidelines for medical professionals<br>
+                                <strong>Hepatitis B:</strong> Mandatory for all HCWs in India<br>
+                                <strong>Cost Coverage:</strong> Usually employer-provided<br>
+                                <strong>High Risk:</strong> Needle-stick injuries, blood exposure<br>
+                                <strong>Special Focus:</strong> TB screening critical in Indian context
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Immunocompromised -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">🛡️ Immunocompromised Patients</div>
+                        <div class="vaccine-priority">⚠️</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">🔬 Specialized Care</div>
+                        <div class="info-content">
+                            Modified vaccination approach for immunocompromised patients. Enhanced inactivated vaccines, avoid live vaccines.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section efficacy">
+                            <div class="section-title-small">💉 Safe Vaccines</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Inactivated Safe:</strong> Influenza, pneumococcal, hepatitis A/B</li>
+                                <li><strong>Enhanced Pneumococcal:</strong> PCV + PPSV23 sequence</li>
+                                <li><strong>Additional Doses:</strong> May need extra doses for immunity</li>
+                                <li><strong>Avoid Live:</strong> MMR, varicella, zoster, yellow fever</li>
+                                <li><strong>Timing:</strong> Vaccinate before immunosuppression if possible</li>
+                                <li><strong>Household:</strong> Ensure household contacts are vaccinated</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section contraindications">
+                            <div class="section-title-small">🚫 Live Vaccine Restrictions</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Contraindicated:</strong> MMR, varicella, zoster, yellow fever</li>
+                                <li><strong>Timing:</strong> Wait 3+ months after immunosuppression stops</li>
+                                <li><strong>Household:</strong> MMR, varicella OK for close contacts</li>
+                                <li><strong>Travel:</strong> Requires careful risk-benefit analysis</li>
+                                <li><strong>Consultation:</strong> Infectious disease specialist input</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section india-specific">
+                            <div class="section-title-small">🇮🇳 Specialized Care Centers</div>
+                            <div class="info-content">
+                                <strong>Centers:</strong> AIIMS, Tata Memorial, major cancer centers<br>
+                                <strong>Guidelines:</strong> ISN, hemato-oncology society recommendations<br>
+                                <strong>Cost:</strong> Often covered under cancer/transplant care<br>
+                                <strong>Monitoring:</strong> Regular antibody level checking<br>
+                                <strong>Support:</strong> Patient support groups available
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chronic Diseases -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">💔 Chronic Heart & Lung Disease</div>
+                        <div class="vaccine-priority">🫁</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">🔍 Enhanced Protection Needed</div>
+                        <div class="info-content">
+                            Chronic cardiopulmonary conditions increase infection risk. Priority vaccination prevents complications and hospitalizations.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section efficacy">
+                            <div class="section-title-small">💉 Priority Protection</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Annual Influenza:</strong> Prevents cardiac events during flu</li>
+                                <li><strong>Pneumococcal Complete:</strong> Both conjugate and polysaccharide</li>
+                                <li><strong>COVID-19 Updated:</strong> High-risk category for severe disease</li>
+                                <li><strong>RSV (60+):</strong> Respiratory protection for COPD patients</li>
+                                <li><strong>Tdap Current:</strong> Pertussis can worsen respiratory status</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section india-specific">
+                            <div class="section-title-small">🇮🇳 Indian Disease Burden</div>
+                            <div class="info-content">
+                                <strong>CVD Burden:</strong> Leading cause of death in India<br>
+                                <strong>COPD Prevalence:</strong> High due to air pollution, smoking<br>
+                                <strong>Cardiology Society:</strong> CSI recommends flu + pneumococcal<br>
+                                <strong>Pulmonology:</strong> NPCP guidelines for respiratory vaccines<br>
+                                <strong>Insurance:</strong> Often covered under chronic disease management
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pregnancy -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">🤱 Pregnancy & Maternal Health</div>
+                        <div class="vaccine-priority">👶</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">👩‍👧‍👦 Two-Generation Protection</div>
+                        <div class="info-content">
+                            Maternal vaccination protects both mother and baby. Safe vaccines during pregnancy, timing is crucial.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section efficacy">
+                            <div class="section-title-small">💉 Safe During Pregnancy</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Tdap (27-36 weeks):</strong> Every pregnancy, protects newborn</li>
+                                <li><strong>Influenza:</strong> Any trimester, protects mom and baby</li>
+                                <li><strong>COVID-19:</strong> Recommended during pregnancy</li>
+                                <li><strong>RSV (32-36 weeks):</strong> New maternal vaccine (Abrysvo)</li>
+                                <li><strong>Hepatitis B:</strong> Safe if high risk</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section contraindications">
+                            <div class="section-title-small">🚫 Avoid During Pregnancy</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Live Vaccines:</strong> MMR, varicella, zoster</li>
+                                <li><strong>Yellow Fever:</strong> Generally contraindicated</li>
+                                <li><strong>Travel Vaccines:</strong> Most travel vaccines avoided</li>
+                                <li><strong>Timing:</strong> Complete before conception if possible</li>
+                                <li><strong>Postpartum:</strong> Catch-up vaccination after delivery</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section india-specific">
+                            <div class="section-title-small">🇮🇳 FOGSI Guidelines</div>
+                            <div class="info-content">
+                                <strong>FOGSI Recommendations:</strong> Tdap every pregnancy, annual flu<br>
+                                <strong>TT Coverage:</strong> 89% pregnant women receive tetanus toxoid<br>
+                                <strong>Cost:</strong> Usually covered under maternal health programs<br>
+                                <strong>Rural Access:</strong> Available through ANM, ASHA workers<br>
+                                <strong>Cultural:</strong> High acceptance of pregnancy vaccines
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Elderly/Long-term Care -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">🏠 Long-term Care Residents</div>
+                        <div class="vaccine-priority">👴</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">🏥 High-Risk Environment</div>
+                        <div class="info-content">
+                            Long-term care facilities have increased infection transmission. Comprehensive vaccination prevents outbreaks.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section efficacy">
+                            <div class="section-title-small">💉 Complete Protection</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Annual High-Dose Flu:</strong> Enhanced protection for seniors</li>
+                                <li><strong>Pneumococcal Complete:</strong> All eligible vaccines</li>
+                                <li><strong>COVID-19 Updated:</strong> Stay current with recommendations</li>
+                                <li><strong>Shingles:</strong> Shingrix 2-dose series</li>
+                                <li><strong>RSV:</strong> New recommendation for 75+</li>
+                                <li><strong>Tdap/Td:</strong> Current tetanus protection</li>
+                            </ul>
+                        </div>
+
+                        <div class="vaccine-section india-specific">
+                            <div class="section-title-small">🇮🇳 Geriatric Care</div>
+                            <div class="info-content">
+                                <strong>Geriatric Society:</strong> Indian guidelines for older adult vaccination<br>
+                                <strong>Growing Sector:</strong> Increasing elderly care facilities<br>
+                                <strong>Family Care:</strong> Most elderly cared for at home<br>
+                                <strong>Urban Facilities:</strong> Better vaccination programs in cities<br>
+                                <strong>Cost:</strong> Family-funded or insurance coverage
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vaccination Timeline Tab -->
+        <div id="timeline" class="tab-content">
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <h2 class="timeline-title">Personal Vaccination Timeline</h2>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                        Complete your health assessment to generate your personalized vaccination schedule
+                    </p>
+                </div>
+
+                <div id="personal-timeline" class="hidden">
+                    <div class="timeline-container">
+                        <!-- Timeline will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div id="default-timeline">
+                    <h3 style="text-align: center; margin-bottom: 30px; color: var(--text-primary);">
+                        Standard Adult Vaccination Timeline
+                    </h3>
+                    
+                    <div class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="timeline-marker">18+</div>
+                            <div class="timeline-content">
+                                <div class="timeline-age">Young Adults (18-29 years)</div>
+                                <ul class="timeline-vaccines">
+                                    <li>
+                                        <span class="vaccine-name-timeline">Tdap Booster</span>
+                                        <span class="vaccine-status due">Due Every 10 Years</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">HPV Series (if not completed)</span>
+                                        <span class="vaccine-status recommended">High Priority</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">Hepatitis B Series</span>
+                                        <span class="vaccine-status recommended">If No Immunity</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">Annual Influenza</span>
+                                        <span class="vaccine-status due">Every Fall</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">MMR (if no immunity)</span>
+                                        <span class="vaccine-status recommended">Check Titers</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker">30+</div>
+                            <div class="timeline-content">
+                                <div class="timeline-age">Mid Adults (30-49 years)</div>
+                                <ul class="timeline-vaccines">
+                                    <li>
+                                        <span class="vaccine-name-timeline">Continue Annual Flu</span>
+                                        <span class="vaccine-status due">Every Year</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">Pneumococcal (if high-risk)</span>
+                                        <span class="vaccine-status recommended">Risk-Based</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">Travel Vaccines</span>
+                                        <span class="vaccine-status recommended">As Needed</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">COVID-19 Updates</span>
+                                        <span class="vaccine-status due">Stay Current</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker">50+</div>
+                            <div class="timeline-content">
+                                <div class="timeline-age">Mature Adults (50-64 years)</div>
+                                <ul class="timeline-vaccines">
+                                    <li>
+                                        <span class="vaccine-name-timeline">Pneumococcal PCV20/21</span>
+                                        <span class="vaccine-status due">NEW: All Adults 50+</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">Shingles (Shingrix)</span>
+                                        <span class="vaccine-status due">2-Dose Series</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">RSV (if high-risk)</span>
+                                        <span class="vaccine-status recommended">Risk-Based</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">Continue Annual Flu</span>
+                                        <span class="vaccine-status due">Every Year</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker">65+</div>
+                            <div class="timeline-content">
+                                <div class="timeline-age">Active Seniors (65+ years)</div>
+                                <ul class="timeline-vaccines">
+                                    <li>
+                                        <span class="vaccine-name-timeline">High-Dose Influenza</span>
+                                        <span class="vaccine-status due">Enhanced Formula</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">PPSV23 (if indicated)</span>
+                                        <span class="vaccine-status recommended">After PCV</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">RSV Vaccine</span>
+                                        <span class="vaccine-status due">All 75+, Risk-Based 60-74</span>
+                                    </li>
+                                    <li>
+                                        <span class="vaccine-name-timeline">COVID-19 Enhanced</span>
+                                        <span class="vaccine-status due">Additional Doses</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Travel Medicine Tab -->
+        <div id="travel" class="tab-content">
+            <h2 class="text-center mb-20" style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">
+                Travel Medicine & Vaccines
+            </h2>
+            <p class="text-center" style="color: var(--text-secondary); margin-bottom: 40px; font-size: 1.1rem;">
+                Destination-specific vaccination recommendations and travel health guidance
+            </p>
+
+            <div class="wellness-assessment">
+                <div class="assessment-header">
+                    <h3 class="assessment-title" style="font-size: 1.8rem;">Travel Health Assessment</h3>
+                    <p class="assessment-subtitle">Get personalized travel vaccine recommendations</p>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">✈️</div>
+                        <div class="section-title">Travel Details</div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="form-label">Destination Country</label>
+                            <select class="form-input form-select" id="destination">
+                                <option value="">Select Destination</option>
+                                <option value="southeast-asia">Southeast Asia (Thailand, Vietnam, Cambodia)</option>
+                                <option value="east-asia">East Asia (China, Japan, Korea)</option>
+                                <option value="central-asia">Central Asia (Nepal, Bhutan, Tibet)</option>
+                                <option value="middle-east">Middle East (UAE, Saudi Arabia, Iran)</option>
+                                <option value="africa">Africa (Kenya, Tanzania, South Africa)</option>
+                                <option value="west-africa">West Africa (Nigeria, Ghana, Senegal)</option>
+                                <option value="south-america">South America (Brazil, Peru, Colombia)</option>
+                                <option value="central-america">Central America (Mexico, Guatemala)</option>
+                                <option value="europe">Europe (Germany, France, Austria)</option>
+                                <option value="eastern-europe">Eastern Europe (Russia, Poland)</option>
+                                <option value="oceania">Oceania (Australia, New Zealand)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Duration of Travel</label>
+                            <select class="form-input form-select" id="duration">
+                                <option value="">Select Duration</option>
+                                <option value="short">Short-term (1-4 weeks)</option>
+                                <option value="medium">Medium-term (1-6 months)</option>
+                                <option value="long">Long-term (6+ months)</option>
+                                <option value="permanent">Permanent relocation</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Travel Purpose</label>
+                            <select class="form-input form-select" id="purpose">
+                                <option value="">Purpose of Travel</option>
+                                <option value="tourism">Tourism/Vacation</option>
+                                <option value="business">Business Travel</option>
+                                <option value="work">Work Assignment</option>
+                                <option value="education">Education/Study</option>
+                                <option value="volunteer">Volunteer Work</option>
+                                <option value="pilgrimage">Religious Pilgrimage</option>
+                                <option value="vfr">Visiting Friends/Relatives</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Departure Date</label>
+                            <input type="date" class="form-input" id="departureDate" min="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">🏕️</div>
+                        <div class="section-title">Activity & Accommodation</div>
+                    </div>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rural" name="activities" value="rural">
+                            <label for="rural">Rural/Remote Areas</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="camping" name="activities" value="camping">
+                            <label for="camping">Camping/Outdoor Activities</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="animal-contact" name="activities" value="animal-contact">
+                            <label for="animal-contact">Animal Contact Expected</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="healthcare-work" name="activities" value="healthcare-work">
+                            <label for="healthcare-work">Healthcare/Medical Work</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="adventure" name="activities" value="adventure">
+                            <label for="adventure">Adventure Sports/Trekking</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="urban-only" name="activities" value="urban-only">
+                            <label for="urban-only">Urban Areas Only</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="wellness-btn" onclick="generateTravelPlan()">
+                    🗺️ Generate Travel Health Plan
+                </button>
+            </div>
+
+            <div id="travel-results" class="hidden">
+                <!-- Travel recommendations will be populated here -->
+            </div>
+
+            <!-- Quick Reference Travel Vaccines -->
+            <div class="vaccines-grid" style="margin-top: 40px;">
+                <!-- Required/Routine -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">🌍 Required/Entry Vaccines</div>
+                        <div class="vaccine-priority">📋</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">🛂 Mandatory for Entry</div>
+                        <div class="info-content">
+                            Vaccines required by International Health Regulations or destination countries for entry.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section schedule">
+                            <div class="section-title-small">📋 Entry Requirements</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Yellow Fever:</strong> Africa, South America endemic areas</li>
+                                <li><strong>Meningococcal ACWY:</strong> Saudi Arabia (Hajj/Umrah)</li>
+                                <li><strong>Polio:</strong> Travelers from polio-endemic countries</li>
+                                <li><strong>COVID-19:</strong> Some countries still require vaccination</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Routine Travel -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">💉 Routine Travel Vaccines</div>
+                        <div class="vaccine-priority">✅</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">🌐 Universal Recommendations</div>
+                        <div class="info-content">
+                            Vaccines recommended for all international travelers regardless of destination.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section efficacy">
+                            <div class="section-title-small">✈️ All International Travel</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Hepatitis A:</strong> All international destinations</li>
+                                <li><strong>Influenza:</strong> Year-round in tropics, seasonal elsewhere</li>
+                                <li><strong>Tdap/Td:</strong> Ensure current tetanus protection</li>
+                                <li><strong>MMR:</strong> Check immunity, especially for measles</li>
+                                <li><strong>COVID-19:</strong> Stay updated with current vaccines</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High-Risk Travel -->
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">⚠️ High-Risk Destinations</div>
+                        <div class="vaccine-priority">🚨</div>
+                    </div>
+                    
+                    <div class="vaccine-info">
+                        <div class="info-title">🗺️ Destination-Specific</div>
+                        <div class="info-content">
+                            Additional vaccines for specific regions or high-risk activities.
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-sections">
+                        <div class="vaccine-section schedule">
+                            <div class="section-title-small">🌍 By Region</div>
+                            <ul class="vaccine-list">
+                                <li><strong>Asia:</strong> Japanese Encephalitis, Typhoid, Hepatitis B</li>
+                                <li><strong>Africa:</strong> Yellow Fever, Typhoid, Meningococcal, Rabies</li>
+                                <li><strong>South America:</strong> Yellow Fever, Typhoid, Hepatitis B</li>
+                                <li><strong>Europe:</strong> Tick-borne Encephalitis (endemic areas)</li>
+                                <li><strong>Monsoon Areas:</strong> Cholera for high-risk situations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="love">Developed with ❤️ for Indian Healthcare Excellence</div>
+            <div class="blessing">🙏 सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः 🙏</div>
+            <div class="disclaimer">
+                <strong>Medical Disclaimer:</strong> This information is for educational purposes only and does not replace professional medical advice. 
+                Always consult with qualified healthcare providers for personalized vaccination recommendations. Vaccine availability, 
+                costs, and recommendations may vary. This platform follows WHO, CDC, API, and FOGSI guidelines current as of 2024.
+                <br><br>
+                <strong>Data Sources:</strong> CDC/ACIP Guidelines 2024, WHO Recommendations, API Consensus 2024, FOGSI Guidelines, 
+                Indian Academy of Pediatrics, Association of Physicians of India, Geriatric Society of India.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set minimum date for departure date input
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const departureInput = document.getElementById('departureDate');
+            if (departureInput) {
+                departureInput.min = today;
+            }
+        });
+
+        // Theme Management
+        function setTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+            
+            // Update active theme button
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Store preference
+            localStorage.setItem('theme', theme);
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                document.querySelector('.theme-btn:last-child').classList.add('active');
+                document.querySelector('.theme-btn:first-child').classList.remove('active');
+            }
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected items
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Vaccine Age Group Display
+        function showVaccinesByAge(ageGroup) {
+            // Remove active class from all age buttons
+            document.querySelectorAll('.age-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Hide all vaccine content
+            document.querySelectorAll('.vaccines-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show selected age group content
+            const targetContent = document.getElementById('vaccines-' + ageGroup);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+            }
+        }
+
+        // Generate Comprehensive Health Plan
+        function generateComprehensivePlan() {
+            const name = document.getElementById('fullName').value;
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const state = document.getElementById('state').value;
+            const profession = document.getElementById('profession').value;
+            const travel = document.getElementById('travel').value;
+            const lastVaccine = document.getElementById('lastVaccine').value;
+            const vaccineHistory = document.getElementById('vaccineHistory').value;
+            
+            // Get selected health conditions
+            const conditions = Array.from(document.querySelectorAll('input[name="conditions"]:checked'))
+                .map(cb => cb.value);
+            
+            if (!name || !age || !gender) {
+                alert('Please complete the required fields: Name, Age, and Gender');
+                return;
+            }
+            
+            // Show loading state
+            const button = event.target;
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading-spinner"></span>Analyzing Your Health Profile...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                displayComprehensiveResults(name, age, gender, state, profession, travel, lastVaccine, vaccineHistory, conditions);
+                generatePersonalizedTimeline(name, age, conditions, profession);
+                button.textContent = originalText;
+                button.disabled = false;
+                
+                // Scroll to results
+                document.getElementById('wellness-results').scrollIntoView({ behavior: 'smooth' });
+                
+                // Show success message
+                showNotification('✅ Your comprehensive vaccination plan is ready!', 'success');
+            }, 3000);
+        }
+
+        // Display Comprehensive Results
+        function displayComprehensiveResults(name, age, gender, state, profession, travel, lastVaccine, vaccineHistory, conditions) {
+            const resultsDiv = document.getElementById('wellness-results');
+            resultsDiv.classList.remove('hidden');
+            
+            // Calculate comprehensive recommendations
+            let immediateCount = 0;
+            let consultCount = 0;
+            let futureCount = 0;
+            
+            let resultsHTML = `
+                <div class="results-container">
+                    <div class="results-header">
+                        <h3 class="results-title">${name}'s Comprehensive Vaccination Plan</h3>
+                        <p class="results-subtitle">Personalized for age ${age} • ${gender} • Evidence-based recommendations</p>
+                    </div>
+                    
+                    <div class="wellness-stats">
+                        <div class="stat-card recommended">
+                            <div class="stat-number" id="immediate-count">0</div>
+                            <div class="stat-label">Immediate Priority</div>
+                        </div>
+                        <div class="stat-card consult">
+                            <div class="stat-number" id="consult-count">0</div>
+                            <div class="stat-label">Doctor Consultation</div>
+                        </div>
+                        <div class="stat-card not-needed">
+                            <div class="stat-number" id="future-count">0</div>
+                            <div class="stat-label">Future Planning</div>
+                        </div>
+                    </div>
+                    
+                    <div class="vaccines-grid">
+            `;
+            
+            // Core vaccines based on age and status
+            if (lastVaccine === '10+years' || lastVaccine === 'unknown') {
+                resultsHTML += generateRecommendationCard(
+                    'Tetanus-Diphtheria-Pertussis (Tdap)',
+                    'immediate',
+                    'Critical Safety Update',
+                    'Essential protection overdue. Prevents tetanus from wounds, diphtheria throat infection, and whooping cough transmission.',
+                    'Single dose now, then Td every 10 years',
+                    '₹1,500-2,500'
+                );
+                immediateCount++;
+            }
+            
+            // Age-specific recommendations
+            if (age >= 18 && age <= 26 && gender === 'female') {
+                resultsHTML += generateRecommendationCard(
+                    'HPV Cancer Prevention (9-valent)',
+                    'immediate',
+                    'Optimal Age for Cancer Prevention',
+                    '99% effective against cervical cancer. Best protection when given before age 27. Covers 9 cancer-causing HPV types.',
+                    '3-dose series: 0, 1-2, 6 months',
+                    '₹4,500 per dose (Gardasil-9)'
+                );
+                immediateCount++;
+            } else if (age > 26 && age <= 45 && gender === 'female') {
+                resultsHTML += generateRecommendationCard(
+                    'HPV Vaccination (Consider)',
+                    'consult',
+                    'Shared Clinical Decision',
+                    'Still beneficial after age 26 with 40-60% effectiveness. Discuss benefits vs. cost with your doctor.',
+                    'Individual risk assessment needed',
+                    '₹4,500 per dose'
+                );
+                consultCount++;
+            }
+            
+            // Hepatitis B based on status
+            if (vaccineHistory === 'incomplete' || vaccineHistory === 'unknown') {
+                resultsHTML += generateRecommendationCard(
+                    'Hepatitis B Complete Series',
+                    'immediate',
+                    'Essential Liver Protection',
+                    'World\'s first anti-cancer vaccine. 95% effective against hepatitis B infection and liver cancer.',
+                    '3-dose series: 0, 1, 6 months',
+                    '₹400 per dose (Indian) or ₹1,200 (Imported)'
+                );
+                immediateCount++;
+            }
+            
+            // Annual influenza
+            resultsHTML += generateRecommendationCard(
+                age >= 65 ? 'High-Dose Influenza (Senior Formula)' : 'Annual Influenza Vaccine',
+                'immediate',
+                'Current Season Protection',
+                age >= 65 ? '4x stronger formula for seniors. 24% more effective than standard flu vaccine.' : 'India-specific strains for 2024-25 season. Best taken before monsoon.',
+                'Annual vaccination',
+                '₹500-1,500'
+            );
+            immediateCount++;
+            
+            // Age-milestone vaccines
+            if (age >= 50) {
+                resultsHTML += generateRecommendationCard(
+                    'Pneumococcal Conjugate (PCV20/PCV21)',
+                    'immediate',
+                    'NEW: All Adults 50+ (2024 Guidelines)',
+                    'Latest CDC recommendation for all adults ≥50 years. Protects against 20-21 types of pneumococcal disease.',
+                    'Single dose provides complete protection',
+                    '₹8,000-12,000'
+                );
+                immediateCount++;
+                
+                resultsHTML += generateRecommendationCard(
+                    'Shingles Prevention (Shingrix)',
+                    'immediate',
+                    'Highly Effective Pain Prevention',
+                    '97% effective against shingles. Prevents painful post-herpetic neuralgia. Much better than old zoster vaccine.',
+                    '2-dose series: 0, 2-6 months apart',
+                    '₹7,000-10,000 per dose'
+                );
+                immediateCount++;
+            }
+            
+            if (age >= 60) {
+                const rsvRisk = conditions.some(c => ['heart', 'lung', 'diabetes', 'immune'].includes(c));
+                resultsHTML += generateRecommendationCard(
+                    'RSV (Respiratory Syncytial Virus)',
+                    age >= 75 || rsvRisk ? 'immediate' : 'consult',
+                    age >= 75 ? 'Recommended for All 75+' : 'Risk-Based Decision',
+                    'New vaccine prevents serious RSV respiratory disease. 77-89% effective against hospitalizations.',
+                    'Single dose, protection lasts 2+ years',
+                    '₹8,000-12,000'
+                );
+                if (age >= 75 || rsvRisk) immediateCount++; else consultCount++;
+            }
+            
+            // Condition-based recommendations
+            if (conditions.includes('diabetes') || conditions.includes('heart') || conditions.includes('lung')) {
+                resultsHTML += generateRecommendationCard(
+                    'Enhanced High-Risk Protection',
+                    'immediate',
+                    'Priority for Chronic Conditions',
+                    'Complete pneumococcal vaccination series. Enhanced monitoring and additional doses may be needed.',
+                    'PCV20/21 + PPSV23 sequence if applicable',
+                    'Usually covered under chronic disease management'
+                );
+                immediateCount++;
+            }
+            
+            if (conditions.includes('immune')) {
+                resultsHTML += generateRecommendationCard(
+                    'Immunocompromised Protocol',
+                    'consult',
+                    'Infectious Disease Specialist Needed',
+                    'Modified vaccination schedule. Enhanced inactivated vaccines, avoid live vaccines. Requires specialist guidance.',
+                    'Individualized based on immune status',
+                    'Usually covered under treatment protocol'
+                );
+                consultCount++;
+            }
+            
+            // Pregnancy-specific
+            if (conditions.includes('pregnant')) {
+                resultsHTML += generateRecommendationCard(
+                    'Maternal Vaccination Package',
+                    'immediate',
+                    'Two-Generation Protection',
+                    'Tdap during 27-36 weeks every pregnancy. Annual flu any trimester. RSV maternal vaccine (32-36 weeks).',
+                    'Pregnancy-timed vaccines',
+                    'Usually covered under maternal care'
+                );
+                immediateCount++;
+            }
+            
+            // Professional recommendations
+            if (profession === 'healthcare') {
+                resultsHTML += generateRecommendationCard(
+                    'Healthcare Worker Complete Package',
+                    'immediate',
+                    'Occupational Safety Requirement',
+                    'Hepatitis B with titers, annual flu, MMR immunity, varicella status, current Tdap. TB screening.',
+                    'Complete HCW protocol',
+                    'Usually employer-provided'
+                );
+                immediateCount++;
+            }
+            
+            if (travel === 'international-frequent') {
+                resultsHTML += generateRecommendationCard(
+                    'International Traveler Package',
+                    'consult',
+                    'Destination-Specific Planning',
+                    'Hepatitis A, typhoid, Japanese encephalitis, yellow fever, meningococcal based on destinations.',
+                    'Travel medicine consultation',
+                    '₹3,000-15,000 depending on destinations'
+                );
+                consultCount++;
+            }
+            
+            // Future planning
+            if (age < 50) futureCount += 2; // Pneumococcal + Shingles
+            if (age < 60) futureCount += 1; // RSV
+            if (age < 65) futureCount += 1; // High-dose flu
+            
+            resultsHTML += `
+                    </div>
+                    
+                    <div style="background: var(--bg-card); border-radius: 18px; padding: 25px; margin-top: 30px; border-left: 4px solid var(--info);">
+                        <h4 style="color: var(--info); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            📋 Next Steps & Recommendations
+                        </h4>
+                        <div style="color: var(--text-secondary); line-height: 1.6;">
+                            <p><strong>1. Immediate Actions:</strong> Schedule appointments for ${immediateCount} priority vaccines</p>
+                            <p><strong>2. Doctor Consultation:</strong> Discuss ${consultCount} vaccines requiring medical evaluation</p>
+                            <p><strong>3. Documentation:</strong> Maintain vaccination records and set reminders</p>
+                            <p><strong>4. Cost Planning:</strong> Check insurance coverage and budget for out-of-pocket expenses</p>
+                            <p><strong>5. Timeline:</strong> Complete priority vaccines within 3-6 months</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = resultsHTML;
+            
+            // Animate summary counts
+            animateCount('immediate-count', immediateCount);
+            animateCount('consult-count', consultCount);
+            animateCount('future-count', futureCount);
+        }
+
+        // Generate Recommendation Card
+        function generateRecommendationCard(name, priority, subtitle, description, schedule, cost) {
+            const priorityIcon = priority === 'immediate' ? '🔴' : priority === 'consult' ? '🟡' : '⏳';
+            const priorityColor = priority === 'immediate' ? 'var(--danger)' : priority === 'consult' ? 'var(--warning)' : 'var(--info)';
+            
+            return `
+                <div class="vaccine-card">
+                    <div class="vaccine-header">
+                        <div class="vaccine-name">${name}</div>
+                        <div class="vaccine-priority">${priorityIcon}</div>
+                    </div>
+                    <div class="frequency-badge" style="background: ${priorityColor}; color: var(--text-inverse);">${subtitle}</div>
+                    <div class="info-content" style="color: var(--text-secondary); margin: 15px 0;">
+                        ${description}
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                        <div style="background: var(--bg-tertiary); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">SCHEDULE</div>
+                            <div style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">${schedule}</div>
+                        </div>
+                        <div style="background: var(--bg-tertiary); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">COST</div>
+                            <div style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">${cost}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Generate Personalized Timeline
+        function generatePersonalizedTimeline(name, age, conditions, profession) {
+            const timelineDiv = document.getElementById('personal-timeline');
+            const defaultTimeline = document.getElementById('default-timeline');
+            
+            timelineDiv.classList.remove('hidden');
+            defaultTimeline.classList.add('hidden');
+            
+            const timelineContainer = timelineDiv.querySelector('.timeline-container') || 
+                timelineDiv.appendChild(document.createElement('div'));
+            timelineContainer.className = 'timeline-container';
+            
+            let timelineHTML = '';
+            
+            // Current age milestone
+            timelineHTML += generateTimelineItem(
+                'NOW',
+                `Age ${age} - Immediate Actions`,
+                [
+                    { name: 'Health Assessment Complete', status: 'completed' },
+                    { name: 'Priority Vaccines Identified', status: 'completed' },
+                    { name: 'Schedule Medical Appointments', status: 'due' },
+                    { name: 'Update Vaccination Records', status: 'due' }
+                ]
+            );
+            
+            // Next 3 months
+            timelineHTML += generateTimelineItem(
+                '3M',
+                'Next 3 Months - Priority Vaccines',
+                [
+                    { name: 'Complete Immediate Priority Vaccines', status: 'due' },
+                    { name: 'Annual Influenza (Pre-Monsoon)', status: 'due' },
+                    { name: 'Healthcare Provider Consultations', status: 'due' }
+                ]
+            );
+            
+            // Next year
+            timelineHTML += generateTimelineItem(
+                '1Y',
+                'Next 12 Months - Complete Series',
+                [
+                    { name: 'Complete Multi-dose Series', status: 'future' },
+                    { name: 'Annual Health Review', status: 'future' },
+                    { name: 'Next Annual Influenza', status: 'future' }
+                ]
+            );
+            
+            // Future milestones
+            if (age < 50) {
+                timelineHTML += generateTimelineItem(
+                    '50',
+                    'Age 50 Milestone',
+                    [
+                        { name: 'Pneumococcal PCV20/21', status: 'future' },
+                        { name: 'Shingles Vaccine (Shingrix)', status: 'future' },
+                        { name: 'Enhanced Health Screening', status: 'future' }
+                    ]
+                );
+            }
+            
+            if (age < 65) {
+                timelineHTML += generateTimelineItem(
+                    '65',
+                    'Age 65 Senior Transition',
+                    [
+                        { name: 'High-Dose Influenza Annual', status: 'future' },
+                        { name: 'PPSV23 (if indicated)', status: 'future' },
+                        { name: 'RSV Vaccine', status: 'future' },
+                        { name: 'Enhanced Medicare Coverage', status: 'future' }
+                    ]
+                );
+            }
+            
+            timelineContainer.innerHTML = timelineHTML;
+        }
+
+        // Generate Timeline Item
+        function generateTimelineItem(marker, title, vaccines) {
+            let vaccineList = vaccines.map(vaccine => `
+                <li>
+                    <span class="vaccine-name-timeline">${vaccine.name}</span>
+                    <span class="vaccine-status ${vaccine.status}">${vaccine.status.toUpperCase()}</span>
+                </li>
+            `).join('');
+            
+            return `
+                <div class="timeline-item">
+                    <div class="timeline-marker">${marker}</div>
+                    <div class="timeline-content">
+                        <div class="timeline-age">${title}</div>
+                        <ul class="timeline-vaccines">
+                            ${vaccineList}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Generate Travel Plan
+        function generateTravelPlan() {
+            const destination = document.getElementById('destination').value;
+            const duration = document.getElementById('duration').value;
+            const purpose = document.getElementById('purpose').value;
+            const departureDate = document.getElementById('departureDate').value;
+            
+            if (!destination || !duration || !departureDate) {
+                alert('Please complete travel destination, duration, and departure date');
+                return;
+            }
+            
+            const button = event.target;
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading-spinner"></span>Analyzing Travel Requirements...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                displayTravelResults(destination, duration, purpose, departureDate);
+                button.textContent = originalText;
+                button.disabled = false;
+                
+                document.getElementById('travel-results').scrollIntoView({ behavior: 'smooth' });
+                showNotification('🗺️ Your travel health plan is ready!', 'success');
+            }, 2500);
+        }
+
+        // Display Travel Results
+        function displayTravelResults(destination, duration, purpose, departureDate) {
+            const resultsDiv = document.getElementById('travel-results');
+            resultsDiv.classList.remove('hidden');
+            
+            const departure = new Date(departureDate);
+            const now = new Date();
+            const weeksUntilTravel = Math.ceil((departure - now) / (1000 * 60 * 60 * 24 * 7));
+            
+            let travelPlan = generateTravelRecommendations(destination, duration, weeksUntilTravel);
+            
+            resultsDiv.innerHTML = `
+                <div class="results-container">
+                    <div class="results-header">
+                        <h3 class="results-title">Travel Health Plan</h3>
+                        <p class="results-subtitle">${destination.replace('-', ' ').toUpperCase()} • ${duration} trip • ${weeksUntilTravel} weeks to prepare</p>
+                    </div>
+                    ${travelPlan}
+                </div>
+            `;
+        }
+
+        // Generate Travel Recommendations
+        function generateTravelRecommendations(destination, duration, weeksUntilTravel) {
+            const recommendations = {
+                'southeast-asia': {
+                    required: ['Hepatitis A'],
+                    recommended: ['Typhoid', 'Japanese Encephalitis'],
+                    consider: ['Hepatitis B', 'Rabies pre-exposure'],
+                    timing: 'Japanese Encephalitis: 2 doses, 28 days apart (complete 1 week before travel)'
+                },
+                'africa': {
+                    required: ['Yellow Fever', 'Hepatitis A'],
+                    recommended: ['Typhoid', 'Meningococcal ACWY'],
+                    consider: ['Cholera', 'Rabies pre-exposure'],
+                    timing: 'Yellow Fever: Single dose, effective 10 days after vaccination'
+                },
+                'south-america': {
+                    required: ['Yellow Fever', 'Hepatitis A'],
+                    recommended: ['Typhoid'],
+                    consider: ['Hepatitis B', 'Rabies pre-exposure'],
+                    timing: 'Yellow Fever: Required for most countries, check specific requirements'
+                }
+            };
+            
+            const rec = recommendations[destination] || {
+                required: ['Hepatitis A'],
+                recommended: ['Typhoid'],
+                consider: ['Hepatitis B'],
+                timing: 'Most vaccines should be completed 2-4 weeks before travel'
+            };
+            
+            return `
+                <div class="vaccines-grid">
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">🔴 Required/Essential</div>
+                            <div class="vaccine-priority">⚠️</div>
+                        </div>
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">Must Have</div>
+                                <ul class="vaccine-list">
+                                    ${rec.required.map(v => `<li>${v}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">🟡 Highly Recommended</div>
+                            <div class="vaccine-priority">⭐</div>
+                        </div>
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">Strongly Advised</div>
+                                <ul class="vaccine-list">
+                                    ${rec.recommended.map(v => `<li>${v}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vaccine-card">
+                        <div class="vaccine-header">
+                            <div class="vaccine-name">🔵 Consider Based on Activities</div>
+                            <div class="vaccine-priority">💭</div>
+                        </div>
+                        <div class="vaccine-sections">
+                            <div class="vaccine-section efficacy">
+                                <div class="section-title-small">Risk-Based</div>
+                                <ul class="vaccine-list">
+                                    ${rec.consider.map(v => `<li>${v}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-card); border-radius: 18px; padding: 25px; margin-top: 25px; border-left: 4px solid var(--warning);">
+                    <h4 style="color: var(--warning); margin-bottom: 15px;">⏰ Timing Considerations</h4>
+                    <p style="color: var(--text-secondary); line-height: 1.6;">
+                        ${rec.timing}<br><br>
+                        <strong>Weeks until travel: ${weeksUntilTravel}</strong><br>
+                        ${weeksUntilTravel < 4 ? 
+                            '⚠️ Limited time for complete vaccination series. Prioritize essential vaccines and consider accelerated schedules.' :
+                            '✅ Sufficient time for complete vaccination series including multi-dose vaccines.'
+                        }
+                    </p>
+                </div>
+            `;
+        }
+
+        // Animate Count Numbers
+        function animateCount(elementId, targetCount) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            let currentCount = 0;
+            const increment = Math.max(1, targetCount / 30);
+            
+            const timer = setInterval(() => {
+                currentCount += increment;
+                if (currentCount >= targetCount) {
+                    currentCount = targetCount;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(currentCount);
+            }, 50);
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: var(--gradient-primary);
+                color: var(--text-inverse);
+                padding: 15px 25px;
+                border-radius: 12px;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+                animation: slideInRight 0.5s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.5s ease-out';
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+
+        // Enhanced form interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation styles
+            const animationStyles = document.createElement('style');
+            animationStyles.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(animationStyles);
+            
+            // Enhanced form interactions
+            const inputs = document.querySelectorAll('.form-input, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = 'var(--primary)';
+                    this.style.boxShadow = '0 0 0 3px rgba(255, 107, 53, 0.1)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (this.checkValidity() && this.value) {
+                        this.style.borderColor = 'var(--success)';
+                        this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+                    } else if (!this.checkValidity() && this.value) {
+                        this.style.borderColor = 'var(--danger)';
+                        this.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+                    } else {
+                        this.style.borderColor = 'var(--border)';
+                        this.style.boxShadow = 'none';
+                    }
+                });
+            });
+            
+            // Initialize displays
+            showVaccinesByAge('young-adult');
+            
+            // Add smooth navigation to hero buttons
+            document.querySelectorAll('.hero-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetTab = document.querySelector(`[onclick="switchTab('${targetId}')"]`);
+                    if (targetTab) {
+                        targetTab.click();
+                        setTimeout(() => {
+                            document.querySelector('.nav-container').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+                

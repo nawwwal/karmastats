@@ -168,6 +168,17 @@ const allTools = [
     category: "Health Studies",
     color: "from-green-500 to-emerald-500",
     badge: "Complete"
+  },
+
+  // Adult Vaccination Module
+  {
+    title: "Adult Vaccination",
+    description: "Comprehensive immunization assessment",
+    href: "/adult-vaccination",
+    icon: <Shield className="h-6 w-6" />,
+    category: "Health Studies",
+    color: "from-amber-500 to-orange-500",
+    badge: "Assessment"
   }
 ];
 
@@ -286,7 +297,7 @@ export default function HomePage() {
             <div className="space-y-4">
                           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4 text-warning" />
-              <span>14 Advanced Statistical Tools</span>
+              <span>15 Advanced Statistical Tools</span>
               <Sparkles className="w-4 h-4 text-warning" />
             </div>
 
@@ -338,7 +349,7 @@ export default function HomePage() {
               Complete Statistical Toolkit
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              14 specialized tools covering every aspect of statistical analysis, from sample size calculations to epidemiological modeling
+              15 specialized tools covering every aspect of statistical analysis, from sample size calculations to epidemiological modeling and health assessments
             </p>
           </div>
 
@@ -356,7 +367,7 @@ export default function HomePage() {
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
             <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-gradient">14</div>
+              <div className="text-3xl font-bold text-gradient">15</div>
               <div className="text-sm text-muted-foreground">Statistical Tools</div>
             </div>
             <div className="text-center space-y-2">
@@ -369,7 +380,7 @@ export default function HomePage() {
             </div>
             <div className="text-center space-y-2">
               <div className="text-3xl font-bold text-gradient">2</div>
-              <div className="text-sm text-muted-foreground">Disease Models</div>
+              <div className="text-sm text-muted-foreground">Health Studies</div>
             </div>
           </div>
         </div>

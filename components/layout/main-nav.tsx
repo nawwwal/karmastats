@@ -47,6 +47,11 @@ export function MainNav({ toggleSidebar }: MainNavProps) {
       label: "Family Study",
       active: pathname?.startsWith("/family-study"),
     },
+    {
+      href: "/adult-vaccination",
+      label: "Adult Vaccination",
+      active: pathname?.startsWith("/adult-vaccination"),
+    },
   ];
 
   return (

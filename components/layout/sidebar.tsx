@@ -27,6 +27,8 @@ import {
   Database,
   LineChart,
   Target,
+  Shield,
+  Syringe,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -297,6 +299,23 @@ export function Sidebar({ isCollapsed, onToggle, isHovered = false }: SidebarPro
           icon: <Heart size={16} />,
           title: "Family Health Study",
           description: "ICMR-NIN 2020 compliance",
+        },
+      ],
+    },
+    {
+      type: "category",
+      key: "health",
+      icon: <Shield />,
+      title: "Health Protection",
+      description: "Vaccination & prevention",
+      badge: "1",
+      isActive: isCategoryActive(["/adult-vaccination"]),
+      children: [
+        {
+          href: "/adult-vaccination",
+          icon: <Syringe size={16} />,
+          title: "Adult Vaccination",
+          description: "Evidence-based immunization",
         },
       ],
     },

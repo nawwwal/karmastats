@@ -4,130 +4,164 @@
 
 @layer base {
   :root {
-    /* Base colors - Light theme using correct Karmastat colors */
-    --background: 210 20% 98%; /* Light gray-blue background */
+    /* Base colors - Light theme with warm orange-yellow theme from HTML */
+    --background: 0 0% 100%; /* Pure white background */
     --foreground: 210 20% 15%; /* Dark text */
-    --card: 210 20% 100%; /* Pure white cards */
+    --card: 0 0% 100%; /* Pure white cards */
     --card-foreground: 210 20% 15%; /* Dark text */
-    --popover: 210 20% 100%; /* White popover */
+    --popover: 0 0% 100%; /* White popover */
     --popover-foreground: 210 20% 15%; /* Dark text */
 
-    /* Primary colors - Karmastat primary blue #146C94 */
-    --primary: 207 75% 33%; /* #146C94 - Karmastat primary blue */
-    --primary-foreground: 210 20% 98%; /* Light text on blue */
+    /* Primary colors - Orange from HTML theme #ff6b35 */
+    --primary: 15 100% 60%; /* #ff6b35 - Orange primary */
+    --primary-foreground: 210 20% 8%; /* Dark text on orange */
 
-    /* Secondary colors - Karmastat secondary blue #19A7CE */
-    --secondary: 195 76% 45%; /* #19A7CE - Karmastat secondary blue */
-    --secondary-foreground: 210 20% 15%; /* Dark text on light blue */
+    /* Secondary colors - Gold from HTML theme #ffd700 */
+    --secondary: 51 100% 50%; /* #ffd700 - Gold secondary */
+    --secondary-foreground: 210 20% 8%; /* Dark text on gold */
 
-    /* Muted colors - Neutral grays */
-    --muted: 210 20% 96%; /* Light gray background */
-    --muted-foreground: 210 10% 45%; /* Medium gray text */
+    /* Muted colors - Neutral grays with warm tint */
+    --muted: 30 30% 96%; /* Warm light gray background */
+    --muted-foreground: 30 10% 45%; /* Warm medium gray text */
 
-    /* Accent colors - Karmastat accent #F8FDCF */
-    --accent: 60 67% 90%; /* #F8FDCF - Karmastat accent cream */
-    --accent-foreground: 210 20% 15%; /* Dark text on cream */
+    /* Accent colors - Teal accent from HTML #00d4aa */
+    --accent: 168 100% 42%; /* #00d4aa - Teal accent */
+    --accent-foreground: 0 0% 100%; /* White text on teal */
 
     /* Semantic colors */
-    --success: 122 39% 49%; /* Green */
-    --success-foreground: 210 20% 98%; /* Light text on green */
-    --warning: 38 92% 50%; /* Orange warning */
-    --warning-foreground: 210 20% 98%; /* Light text on orange */
-    --error: 0 84% 60%; /* Red error */
-    --error-foreground: 210 20% 98%; /* Light text on red */
-    --info: 207 75% 33%; /* Primary blue for info */
-    --info-foreground: 210 20% 98%; /* Light text on blue */
+    --success: 142 76% 36%; /* #10b981 - Green from HTML */
+    --success-foreground: 0 0% 100%; /* White text on green */
+    --warning: 38 92% 50%; /* #f59e0b - Orange warning from HTML */
+    --warning-foreground: 0 0% 100%; /* White text on orange */
+    --error: 0 84% 60%; /* #ef4444 - Red error from HTML */
+    --error-foreground: 0 0% 100%; /* White text on red */
+    --info: 217 91% 60%; /* #3b82f6 - Blue info from HTML */
+    --info-foreground: 0 0% 100%; /* White text on blue */
 
     /* Destructive (error variant) */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border and input */
-    --border: 210 20% 90%; /* Light gray borders */
-    --input: 210 20% 90%; /* Light gray input borders */
-    --ring: 207 75% 33%; /* Primary blue focus ring */
+    /* Border and input - warm theme */
+    --border: 15 100% 85%; /* Light orange borders */
+    --input: 15 100% 90%; /* Very light orange input borders */
+    --ring: 15 100% 60%; /* Orange focus ring */
 
     /* Radius */
     --radius: 0.75rem;
 
-    /* Chart colors - Karmastat blue palette */
-    --chart-1: 207 75% 33%; /* Primary blue */
-    --chart-2: 195 76% 45%; /* Secondary blue */
-    --chart-3: 200 80% 55%; /* Light blue */
-    --chart-4: 215 70% 40%; /* Dark blue */
-    --chart-5: 185 85% 60%; /* Cyan blue */
+    /* Chart colors - Orange-yellow palette from HTML */
+    --chart-1: 15 100% 60%; /* Orange primary */
+    --chart-2: 51 100% 50%; /* Gold secondary */
+    --chart-3: 168 100% 42%; /* Teal accent */
+    --chart-4: 142 76% 36%; /* Green success */
+    --chart-5: 217 91% 60%; /* Blue info */
 
     /* Sidebar colors */
-    --sidebar: 210 20% 100%; /* White sidebar */
+    --sidebar: 0 0% 100%; /* White sidebar */
     --sidebar-foreground: 210 20% 15%; /* Dark text */
-    --sidebar-primary: 207 75% 33%; /* Primary blue */
-    --sidebar-primary-foreground: 210 20% 98%; /* Light text on blue */
-    --sidebar-accent: 210 20% 96%; /* Light gray accent */
+    --sidebar-primary: 15 100% 60%; /* Orange primary */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on orange */
+    --sidebar-accent: 30 30% 96%; /* Warm light gray accent */
     --sidebar-accent-foreground: 210 20% 15%; /* Dark text */
-    --sidebar-border: 210 20% 90%; /* Light gray border */
-    --sidebar-ring: 207 75% 33%; /* Primary blue focus ring */
+    --sidebar-border: 15 100% 90%; /* Light orange border */
+    --sidebar-ring: 15 100% 60%; /* Orange focus ring */
+
+    /* Glass morphism variables from HTML */
+    --bg-primary: 0 0% 100%;
+    --bg-secondary: 30 30% 98%;
+    --bg-tertiary: 30 20% 95%;
+    --bg-card: 0 0% 100%;
+    --bg-glass: 0 0% 100% / 0.95;
+
+    --text-primary: 210 20% 15%;
+    --text-secondary: 210 15% 25%;
+    --text-muted: 210 10% 45%;
+    --text-inverse: 0 0% 100%;
+
+    --border-light: 0 0% 0% / 0.1;
+
+    --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffd700 100%);
+    --gradient-dark: linear-gradient(135deg, #ffffff 0%, #fef7f0 50%, #fef2e7 100%);
   }
 
   .dark {
-    /* Base colors - Dark theme with Karmastat blues */
-    --background: 210 20% 8%; /* Dark background */
+    /* Base colors - Dark theme from HTML file */
+    --background: 220 40% 4%; /* #0a0e1a - Dark background */
     --foreground: 210 20% 95%; /* Light text */
-    --card: 210 20% 12%; /* Dark card background */
+    --card: 220 35% 8%; /* #151b2d - Dark card background */
     --card-foreground: 210 20% 95%; /* Light text */
-    --popover: 210 20% 12%; /* Dark popover */
+    --popover: 220 35% 8%; /* Dark popover */
     --popover-foreground: 210 20% 95%; /* Light text */
 
-    /* Primary colors - Lighter blue for dark mode */
-    --primary: 195 76% 65%; /* Lighter blue for dark mode */
-    --primary-foreground: 210 20% 8%; /* Dark text on blue */
+    /* Primary colors - Orange for dark mode */
+    --primary: 15 100% 60%; /* #ff6b35 - Orange remains same */
+    --primary-foreground: 220 40% 4%; /* Dark text on orange */
 
-    /* Secondary colors - Lighter secondary for dark mode */
-    --secondary: 185 85% 70%; /* Lighter secondary blue */
-    --secondary-foreground: 210 20% 8%; /* Dark text */
+    /* Secondary colors - Gold for dark mode */
+    --secondary: 51 100% 50%; /* #ffd700 - Gold remains same */
+    --secondary-foreground: 220 40% 4%; /* Dark text on gold */
 
     /* Muted colors */
-    --muted: 210 20% 20%; /* Dark muted background */
+    --muted: 220 30% 12%; /* #1e2746 - Dark muted background */
     --muted-foreground: 210 20% 70%; /* Light muted text */
 
     /* Accent colors */
-    --accent: 210 20% 25%; /* Dark accent background */
-    --accent-foreground: 210 20% 95%; /* Light text */
+    --accent: 168 100% 42%; /* #00d4aa - Teal accent remains same */
+    --accent-foreground: 220 40% 4%; /* Dark text on teal */
 
     /* Semantic colors - Dark theme variants */
-    --success: 122 39% 69%; /* Lighter green */
-    --success-foreground: 210 20% 8%; /* Dark text on green */
-    --warning: 38 92% 70%; /* Lighter orange */
-    --warning-foreground: 210 20% 8%; /* Dark text on orange */
-    --error: 0 84% 70%; /* Lighter red */
-    --error-foreground: 210 20% 8%; /* Dark text on red */
-    --info: 195 76% 65%; /* Lighter blue */
-    --info-foreground: 210 20% 8%; /* Dark text on blue */
+    --success: 142 76% 36%; /* Green remains same */
+    --success-foreground: 220 40% 4%; /* Dark text on green */
+    --warning: 38 92% 50%; /* Orange warning remains same */
+    --warning-foreground: 220 40% 4%; /* Dark text on orange */
+    --error: 0 84% 60%; /* Red error remains same */
+    --error-foreground: 220 40% 4%; /* Dark text on red */
+    --info: 217 91% 60%; /* Blue info remains same */
+    --info-foreground: 220 40% 4%; /* Dark text on blue */
 
     /* Destructive */
     --destructive: 0 63% 51%;
     --destructive-foreground: 0 0% 100%;
 
     /* Border and input */
-    --border: 210 20% 25%; /* Dark borders */
-    --input: 210 20% 25%; /* Dark input borders */
-    --ring: 195 76% 65%; /* Light blue focus ring */
+    --border: 15 100% 60% / 0.2; /* Orange borders with transparency */
+    --input: 15 100% 60% / 0.2; /* Orange input borders with transparency */
+    --ring: 15 100% 60%; /* Orange focus ring */
 
     /* Chart colors - Dark theme */
-    --chart-1: 195 76% 65%; /* Lighter primary for dark */
-    --chart-2: 185 85% 70%; /* Lighter secondary for dark */
-    --chart-3: 200 80% 75%; /* Light blue for dark */
-    --chart-4: 215 70% 60%; /* Dark blue for dark */
-    --chart-5: 185 85% 80%; /* Cyan blue for dark */
+    --chart-1: 15 100% 60%; /* Orange primary */
+    --chart-2: 51 100% 50%; /* Gold secondary */
+    --chart-3: 168 100% 42%; /* Teal accent */
+    --chart-4: 142 76% 36%; /* Green success */
+    --chart-5: 217 91% 60%; /* Blue info */
 
     /* Sidebar colors - Dark theme */
-    --sidebar: 210 20% 12%; /* Dark sidebar */
+    --sidebar: 220 35% 8%; /* Dark sidebar */
     --sidebar-foreground: 210 20% 95%; /* Light text */
-    --sidebar-primary: 195 76% 65%; /* Lighter blue */
-    --sidebar-primary-foreground: 210 20% 8%; /* Dark text */
-    --sidebar-accent: 210 20% 25%; /* Dark accent */
+    --sidebar-primary: 15 100% 60%; /* Orange primary */
+    --sidebar-primary-foreground: 220 40% 4%; /* Dark text */
+    --sidebar-accent: 220 30% 12%; /* Dark accent */
     --sidebar-accent-foreground: 210 20% 95%; /* Light text */
-    --sidebar-border: 210 20% 25%; /* Dark border */
-    --sidebar-ring: 195 76% 65%; /* Light blue focus ring */
+    --sidebar-border: 15 100% 60% / 0.2; /* Orange border */
+    --sidebar-ring: 15 100% 60%; /* Orange focus ring */
+
+    /* Glass morphism variables from HTML dark theme */
+    --bg-primary: 220 40% 4%; /* #0a0e1a */
+    --bg-secondary: 220 35% 8%; /* #151b2d */
+    --bg-tertiary: 220 30% 12%; /* #1e2746 */
+    --bg-card: 220 25% 15%; /* #252d4a */
+    --bg-glass: 220 25% 15% / 0.95;
+
+    --text-primary: 0 0% 100%;
+    --text-secondary: 210 20% 80%;
+    --text-muted: 210 15% 65%;
+    --text-inverse: 220 40% 4%;
+
+    --border-light: 0 0% 100% / 0.1;
+
+    --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffd700 100%);
+    --gradient-dark: linear-gradient(135deg, #0a0e1a 0%, #151b2d 50%, #1e2746 100%);
   }
 
   /* Base element styles */
@@ -419,166 +453,286 @@
 }
 
 @layer components {
-  /* Custom component styles using warm orange-yellow theme variables */
+  /* Orange-yellow theme components from HTML file */
   .gradient-bg {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 50%, hsl(var(--accent)) 100%);
+    background: var(--gradient-primary);
   }
 
   .glass-morphism {
-    backdrop-filter: blur(16px) saturate(180%);
-    background-color: rgba(255, 248, 237, 0.75); /* Warm white with orange tint */
-    border: 1px solid rgba(251, 146, 60, 0.2); /* Orange border */
+    backdrop-filter: blur(20px) saturate(180%);
+    background-color: hsl(var(--bg-glass));
+    border: 1px solid hsl(var(--border));
   }
 
   .dark .glass-morphism {
-    background-color: rgba(41, 25, 15, 0.75); /* Warm dark brown */
-    border: 1px solid rgba(251, 146, 60, 0.3); /* Orange border */
+    backdrop-filter: blur(20px) saturate(180%);
+    background-color: hsl(var(--bg-glass));
+    border: 1px solid hsl(var(--border));
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02];
   }
 
   .btn-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
-    @apply text-primary-foreground hover:opacity-90 transition-opacity;
+    background: var(--gradient-primary);
+    @apply text-white hover:opacity-90 transition-all duration-300;
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* New warm-specific utilities - using centralized theme */
-  .sunset-gradient {
-    background: linear-gradient(135deg, #FFB570 0%, #FF8C42 25%, #2C5282 75%, #3182CE 100%);
+  /* Hero section from HTML file */
+  .hero-gradient {
+    background: var(--gradient-primary);
+    position: relative;
+    overflow: hidden;
   }
 
-  .warm-glow {
-    box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+  .hero-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    animation: gridMove 20s linear infinite;
   }
 
-  .dark .warm-glow {
-    box-shadow: 0 0 20px rgba(251, 146, 60, 0.4);
+  @keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(10px, 10px); }
   }
 
-  /* Animation delay utilities */
-  .animate-delay-100 {
-    animation-delay: 100ms;
+  /* Glass cards from HTML file */
+  .glass-card {
+    @apply backdrop-blur-xl border;
+    background: hsl(var(--bg-glass));
+    border-color: hsl(var(--border));
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.1);
   }
 
-  .animate-delay-200 {
-    animation-delay: 200ms;
+  .dark .glass-card {
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.15);
   }
 
-  .animate-delay-300 {
-    animation-delay: 300ms;
+  /* Tab navigation from HTML file */
+  .nav-tab {
+    @apply relative overflow-hidden transition-all duration-300 transform;
   }
 
-  .animate-delay-500 {
-    animation-delay: 500ms;
+  .nav-tab::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: left 0.4s ease;
+    z-index: -1;
   }
 
-  /* Mobile-specific animations */
-  .animate-fadeInUp {
-    animation: fadeInUp 0.3s ease-out forwards;
+  .nav-tab:hover::before,
+  .nav-tab.active::before {
+    left: 0;
   }
 
-  .animate-slideUp {
-    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* Button styles from HTML file */
+  .btn-glass {
+    @apply backdrop-blur-md border transition-all duration-300;
+    background: hsl(var(--bg-glass));
+    border-color: hsl(var(--border));
   }
 
-  .animate-slideInFromRight {
-    animation: slideInFromRight 0.3s ease-out forwards;
+  .btn-glass:hover {
+    @apply transform -translate-y-0.5;
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
   }
 
-  .animate-bounceIn {
-    animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  .btn-primary {
+    background: var(--gradient-primary);
+    @apply text-white font-semibold transition-all duration-300;
+    position: relative;
+    overflow: hidden;
   }
 
-  /* Neuomorphic Button Enhancements */
-  .neuomorphic-button {
-    background: #2C5282;
-    border-radius: 12px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 600;
-    letter-spacing: 0.025em;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-
-    /* Default state - raised appearance */
-    box-shadow:
-      8px 8px 16px rgba(26, 58, 92, 0.4),
-      -8px -8px 16px rgba(62, 106, 168, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
   }
 
-  .neuomorphic-button:hover {
-    /* Slightly pressed on hover */
-    box-shadow:
-      6px 6px 12px rgba(26, 58, 92, 0.35),
-      -6px -6px 12px rgba(62, 106, 168, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
-    background: #2e5a8a;
+  .btn-primary:hover {
+    @apply transform -translate-y-0.5;
+    box-shadow: 0 12px 30px rgba(255, 107, 53, 0.4);
   }
 
-  .neuomorphic-button:active {
-    /* Deeply pressed - engraved effect */
-    box-shadow:
-      inset 4px 4px 8px rgba(26, 58, 92, 0.4),
-      inset -4px -4px 8px rgba(62, 106, 168, 0.1),
-      inset 0 0 0 1px rgba(26, 58, 92, 0.1);
-    transform: translateY(1px) scale(0.98);
-    background: #254976;
+  .btn-primary:hover::before {
+    left: 100%;
   }
 
-  .neuomorphic-button:focus-visible {
-    outline: none;
-    box-shadow:
-      8px 8px 16px rgba(26, 58, 92, 0.4),
-      -8px -8px 16px rgba(62, 106, 168, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 0 0 3px rgba(44, 82, 130, 0.3);
+  /* Vaccine cards from HTML file */
+  .vaccine-card {
+    @apply glass-card transition-all duration-300 relative overflow-hidden;
   }
 
-  .neuomorphic-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    box-shadow:
-      4px 4px 8px rgba(26, 58, 92, 0.2),
-      -4px -4px 8px rgba(62, 106, 168, 0.1);
-    transform: none;
+  .vaccine-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: left 0.5s ease;
   }
 
-  .neuomorphic-button:disabled:hover,
-  .neuomorphic-button:disabled:active {
-    transform: none;
-    background: #2C5282;
-    box-shadow:
-      4px 4px 8px rgba(26, 58, 92, 0.2),
-      -4px -4px 8px rgba(62, 106, 168, 0.1);
+  .vaccine-card:hover {
+    @apply transform -translate-y-1;
+    box-shadow: 0 15px 35px rgba(255, 107, 53, 0.2);
+    border-color: hsl(var(--primary));
   }
 
-  /* Medical-specific utility classes */
-  .medical-success {
-    @apply bg-success/10 text-success border border-success/20;
+  .vaccine-card:hover::before {
+    left: 100%;
   }
 
-  .medical-warning {
-    @apply bg-warning/10 text-warning-foreground border border-warning/20;
+  /* Form styles from HTML file */
+  .form-glass {
+    @apply backdrop-blur-sm border transition-all duration-300;
+    background: hsl(var(--bg-primary) / 0.6);
+    border-color: hsl(var(--border) / 0.7);
   }
 
-  .medical-error {
-    @apply bg-error/10 text-error border border-error/20;
+  .form-glass:focus {
+    @apply outline-none;
+    border-color: hsl(var(--primary));
+    background: hsl(var(--bg-tertiary));
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
   }
 
-  .medical-info {
-    @apply bg-info/10 text-info border border-info/20;
+  /* Priority indicators from HTML file */
+  .priority-high {
+    @apply text-red-500 animate-pulse;
+  }
+
+  .priority-medium {
+    @apply text-yellow-500;
+  }
+
+  .priority-low {
+    @apply text-blue-500;
+  }
+
+  /* Timeline styles from HTML file */
+  .timeline-marker {
+    background: var(--gradient-primary);
+    @apply flex items-center justify-center text-white font-bold shadow-lg;
+    box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+  }
+
+  /* Section icons from HTML file */
+  .section-icon {
+    background: var(--gradient-primary);
+    @apply flex items-center justify-center text-white;
+  }
+
+  /* Frequency badges from HTML file */
+  .frequency-badge {
+    background: var(--gradient-primary);
+    @apply text-white px-4 py-2 rounded-full text-sm font-semibold inline-block;
+  }
+
+  /* Medical status badges */
+  .status-due {
+    @apply bg-warning text-warning-foreground px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .status-recommended {
+    @apply bg-success text-success-foreground px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .status-future {
+    @apply bg-info text-info-foreground px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  /* Loading spinner from HTML file */
+  .loading-spinner {
+    @apply inline-block w-4 h-4 border-2 rounded-full animate-spin;
+    border-color: hsl(var(--primary) / 0.3);
+    border-top-color: hsl(var(--primary));
+  }
+
+  /* Notification styles from HTML file */
+  .notification {
+    background: var(--gradient-primary);
+    @apply text-white px-6 py-4 rounded-xl font-semibold fixed top-24 right-5 z-50;
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+    animation: slideInRight 0.5s ease-out;
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+
+  /* Checkbox styles from HTML file */
+  .checkbox-item {
+    @apply glass-card cursor-pointer transition-all duration-300 flex items-center gap-3;
+  }
+
+  .checkbox-item:hover {
+    border-color: hsl(var(--primary));
+    @apply transform -translate-y-0.5;
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    accent-color: hsl(var(--primary));
+  }
+
+  /* Age selection buttons from HTML file */
+  .age-btn {
+    @apply glass-card cursor-pointer font-semibold transition-all duration-300;
+  }
+
+  .age-btn:hover,
+  .age-btn.active {
+    background: var(--gradient-primary);
+    @apply text-white border-transparent transform -translate-y-0.5;
+    box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+  }
+
+  /* Theme toggle from HTML file */
+  .theme-toggle {
+    @apply fixed top-5 right-5 z-50 backdrop-blur-xl border rounded-full p-2 flex gap-1;
+    background: hsl(var(--bg-glass));
+    border-color: hsl(var(--border));
+  }
+
+  .theme-btn {
+    @apply px-4 py-2 bg-transparent border-none cursor-pointer rounded-full text-sm font-medium transition-all duration-300;
+    color: hsl(var(--text-secondary));
+  }
+
+  .theme-btn.active {
+    background: var(--gradient-primary);
+    @apply text-white font-semibold;
   }
 }
 
