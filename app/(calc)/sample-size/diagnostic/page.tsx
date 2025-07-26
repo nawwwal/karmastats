@@ -99,8 +99,8 @@ export default function DiagnosticTestPage() {
             // Convert all relevant fields to numbers before validation
             const processedData = {
                 ...data,
-                alpha: data.alpha !== undefined && data.alpha !== '' ? Number(data.alpha) : undefined,
-                power: data.power !== undefined && data.power !== '' ? Number(data.power) : undefined,
+                alpha: data.alpha !== undefined ? Number(data.alpha) : undefined,
+                power: data.power !== undefined ? Number(data.power) : undefined,
                 expectedSensitivity: data.expectedSensitivity ? Number(data.expectedSensitivity) : undefined,
                 expectedSpecificity: data.expectedSpecificity ? Number(data.expectedSpecificity) : undefined,
                 diseasePrevalence: data.diseasePrevalence ? Number(data.diseasePrevalence) : undefined,
@@ -565,7 +565,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -585,7 +585,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -613,7 +613,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -639,7 +639,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -663,7 +663,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -732,7 +732,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -752,7 +752,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -776,7 +776,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -812,7 +812,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -835,7 +835,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -859,7 +859,7 @@ export default function DiagnosticTestPage() {
                                                     onChange={(e) =>
                                                         field.onChange(
                                                             e.target.value === ''
-                                                                ? ''
+                                                                ? undefined
                                                                 : parseFloat(e.target.value)
                                                         )
                                                     }
@@ -893,7 +893,7 @@ export default function DiagnosticTestPage() {
                                             onChange={(e) =>
                                                 field.onChange(
                                                     e.target.value === ''
-                                                        ? ''
+                                                        ? undefined
                                                         : parseFloat(e.target.value)
                                                 )
                                             }
@@ -914,7 +914,7 @@ export default function DiagnosticTestPage() {
                                             onChange={(e) =>
                                                 field.onChange(
                                                     e.target.value === ''
-                                                        ? ''
+                                                        ? undefined
                                                         : parseFloat(e.target.value)
                                                 )
                                             }
@@ -938,7 +938,7 @@ export default function DiagnosticTestPage() {
                                             onChange={(e) =>
                                                 field.onChange(
                                                     e.target.value === ''
-                                                        ? ''
+                                                        ? undefined
                                                         : parseFloat(e.target.value)
                                                 )
                                             }

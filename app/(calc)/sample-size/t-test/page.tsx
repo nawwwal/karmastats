@@ -82,8 +82,8 @@ export default function TTestPage() {
       // Convert all relevant fields to numbers before validation
       const processedData = {
         ...data,
-        alpha: data.alpha !== undefined && data.alpha !== '' ? Number(data.alpha) : undefined,
-        power: data.power !== undefined && data.power !== '' ? Number(data.power) : undefined,
+        alpha: data.alpha !== undefined ? Number(data.alpha) : undefined,
+        power: data.power !== undefined ? Number(data.power) : undefined,
         group1Mean: data.group1Mean ? Number(data.group1Mean) : undefined,
         group2Mean: data.group2Mean ? Number(data.group2Mean) : undefined,
         pooledSD: data.pooledSD ? Number(data.pooledSD) : undefined,
@@ -503,7 +503,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -523,7 +523,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -543,7 +543,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -563,7 +563,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -596,7 +596,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -616,7 +616,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -638,7 +638,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -671,7 +671,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -691,7 +691,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
@@ -711,7 +711,7 @@ export default function TTestPage() {
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value === ''
-                                    ? ''
+                                    ? undefined
                                     : parseFloat(e.target.value)
                                 )
                               }
