@@ -51,7 +51,7 @@ export function VaccinationTimeline() {
 
   return (
     <div className="space-y-8">
-      <div className="glass-card p-8 rounded-3xl">
+      <div className="glass-card p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gradient mb-4">
             Your Personalized Vaccination Timeline
@@ -76,7 +76,7 @@ export function VaccinationTimeline() {
 
               {/* Timeline Content */}
               <div className="flex-1 ml-8">
-                <div className="glass-card p-6 rounded-2xl">
+                <div className="glass-card p-6 rounded-2xl transition-all duration-200 hover:bg-white/20 hover:scale-105">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
                     {item.age}
                   </h3>
@@ -106,7 +106,7 @@ export function VaccinationTimeline() {
           ))}
         </div>
 
-        <div className="glass-card p-6 rounded-2xl border-l-4 border-primary mt-12">
+        <div className="glass-card p-6 rounded-2xl border-l-4 border-primary mt-12 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
             💡 Timeline Planning Tips
           </h3>

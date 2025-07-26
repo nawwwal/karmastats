@@ -83,12 +83,12 @@ export function AdultVaccinationPage() {
           onValueChange={(value) => setActiveTab(value as TabType)}
           className="space-y-6"
         >
-          <EnhancedTabsList className="grid w-full grid-cols-5" variant="modern">
+          <EnhancedTabsList className="grid w-full grid-cols-2 lg:grid-cols-5 gap-2" variant="modern">
             {tabs.map((tab) => (
-              <EnhancedTabsTrigger key={tab.value} value={tab.value} variant="modern">
+              <EnhancedTabsTrigger key={tab.value} value={tab.value} variant="modern" className="min-h-[3rem] px-2">
                 <div className="flex flex-col items-center gap-1 text-center">
-                  <span className="text-sm font-medium">{tab.label}</span>
-                  <span className="text-xs text-muted-foreground hidden sm:block">
+                  <span className="text-xs lg:text-sm font-medium leading-tight">{tab.label}</span>
+                  <span className="text-[10px] lg:text-xs text-muted-foreground hidden sm:block leading-tight">
                     {tab.description}
                   </span>
                 </div>

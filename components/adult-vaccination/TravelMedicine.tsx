@@ -171,7 +171,7 @@ export function TravelMedicine() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="frequency-badge">Destination</Label>
+                <Label className="text-sm font-medium text-foreground">Destination</Label>
                 <Select value={formData.destination} onValueChange={(value) => setFormData(prev => ({ ...prev, destination: value }))}>
                   <SelectTrigger className="form-glass">
                     <SelectValue placeholder="Select destination region" />
@@ -190,7 +190,7 @@ export function TravelMedicine() {
               </div>
 
               <div className="space-y-2">
-                <Label className="frequency-badge">Duration</Label>
+                <Label className="text-sm font-medium text-foreground">Duration</Label>
                 <Select value={formData.duration} onValueChange={(value) => setFormData(prev => ({ ...prev, duration: value }))}>
                   <SelectTrigger className="form-glass">
                     <SelectValue placeholder="Length of stay" />
@@ -205,7 +205,7 @@ export function TravelMedicine() {
               </div>
 
               <div className="space-y-2">
-                <Label className="frequency-badge">Purpose</Label>
+                <Label className="text-sm font-medium text-foreground">Purpose</Label>
                 <Select value={formData.purpose} onValueChange={(value) => setFormData(prev => ({ ...prev, purpose: value }))}>
                   <SelectTrigger className="form-glass">
                     <SelectValue placeholder="Purpose of travel" />
@@ -223,7 +223,7 @@ export function TravelMedicine() {
               </div>
 
               <div className="space-y-2">
-                <Label className="frequency-badge">Departure Date</Label>
+                <Label className="text-sm font-medium text-foreground">Departure Date</Label>
                 <Input
                   type="date"
                   className="form-glass"
@@ -238,7 +238,7 @@ export function TravelMedicine() {
           <Button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="btn-primary w-full md:w-auto mx-auto block px-8 py-4 text-lg font-bold uppercase tracking-wider"
+            className="btn-primary w-full md:w-auto mx-auto block px-8 py-4 text-lg font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 bg-gradient-to-r from-primary to-secondary hover:shadow-xl"
           >
             {isLoading && <div className="loading-spinner mr-2" />}
             {isLoading ? 'Analyzing Travel Requirements...' : '🗺️ Generate Travel Health Plan'}
@@ -254,7 +254,7 @@ export function TravelMedicine() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {travelVaccines.map((category, index) => (
-            <div key={index} className="vaccine-card p-8 rounded-3xl">
+            <div key={index} className="vaccine-card p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]">
               <div className="flex items-center gap-4 mb-6">
                 <span className="text-3xl">{category.icon}</span>
                 <h4 className="text-xl font-bold text-slate-900 dark:text-white">

@@ -127,7 +127,7 @@ export function RiskBasedProtection() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {riskCategories.map((category, index) => (
-          <div key={index} className="vaccine-card p-8 rounded-3xl">
+          <div key={index} className="vaccine-card p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]">
             <div className="flex items-center gap-4 mb-6">
               <div className="section-icon w-16 h-16 rounded-2xl text-2xl">
                 {category.icon}
@@ -144,7 +144,7 @@ export function RiskBasedProtection() {
             </p>
 
             <div className="space-y-6">
-              <div className="glass-card p-5 rounded-xl border-l-4 border-green-500">
+              <div className="glass-card p-5 rounded-xl border-l-4 border-green-500 transition-all duration-200 hover:bg-white/20 hover:scale-105">
                 <div className="text-green-600 font-semibold text-sm mb-3 flex items-center gap-2">
                   💉 Recommended Vaccines
                 </div>
@@ -158,7 +158,7 @@ export function RiskBasedProtection() {
                 </ul>
               </div>
 
-              <div className="glass-card p-5 rounded-xl border-l-4 border-primary">
+              <div className="glass-card p-5 rounded-xl border-l-4 border-primary transition-all duration-200 hover:bg-white/20 hover:scale-105">
                 <div className="text-primary font-semibold text-sm mb-3 flex items-center gap-2">
                   📋 Additional Considerations
                 </div>
@@ -176,7 +176,7 @@ export function RiskBasedProtection() {
         ))}
       </div>
 
-      <div className="glass-card p-8 rounded-3xl border-l-4 border-orange-500 mt-12">
+      <div className="glass-card p-8 rounded-3xl border-l-4 border-orange-500 mt-12 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-3">
           <span className="text-2xl">⚠️</span>
           Important Safety Information

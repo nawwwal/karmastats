@@ -100,7 +100,7 @@ export function WellnessAssessment() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label className="frequency-badge">Full Name *</Label>
+              <Label className="text-sm font-medium text-foreground">Full Name *</Label>
               <Input
                 className="form-glass"
                 placeholder="Enter your full name"
@@ -110,7 +110,7 @@ export function WellnessAssessment() {
             </div>
 
             <div className="space-y-2">
-              <Label className="frequency-badge">Age *</Label>
+              <Label className="text-sm font-medium text-foreground">Age *</Label>
               <Input
                 type="number"
                 className="form-glass"
@@ -121,7 +121,7 @@ export function WellnessAssessment() {
             </div>
 
             <div className="space-y-2">
-              <Label className="frequency-badge">Gender *</Label>
+              <Label className="text-sm font-medium text-foreground">Gender *</Label>
               <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
                 <SelectTrigger className="form-glass">
                   <SelectValue placeholder="Select gender" />
@@ -135,7 +135,7 @@ export function WellnessAssessment() {
             </div>
 
             <div className="space-y-2">
-              <Label className="frequency-badge">State/Region</Label>
+              <Label className="text-sm font-medium text-foreground">State/Region</Label>
               <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value }))}>
                 <SelectTrigger className="form-glass">
                   <SelectValue placeholder="Select your state" />
@@ -154,7 +154,7 @@ export function WellnessAssessment() {
             </div>
 
             <div className="space-y-2">
-              <Label className="frequency-badge">Profession</Label>
+              <Label className="text-sm font-medium text-foreground">Profession</Label>
               <Select value={formData.profession} onValueChange={(value) => setFormData(prev => ({ ...prev, profession: value }))}>
                 <SelectTrigger className="form-glass">
                   <SelectValue placeholder="Select profession" />
@@ -171,7 +171,7 @@ export function WellnessAssessment() {
             </div>
 
             <div className="space-y-2">
-              <Label className="frequency-badge">Travel Frequency</Label>
+              <Label className="text-sm font-medium text-foreground">Travel Frequency</Label>
               <Select value={formData.travel} onValueChange={(value) => setFormData(prev => ({ ...prev, travel: value }))}>
                 <SelectTrigger className="form-glass">
                   <SelectValue placeholder="Select travel frequency" />
@@ -234,7 +234,7 @@ export function WellnessAssessment() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="frequency-badge">Last Tetanus/Tdap Vaccine</Label>
+              <Label className="text-sm font-medium text-foreground">Last Tetanus/Tdap Vaccine</Label>
               <Select value={formData.lastVaccine} onValueChange={(value) => setFormData(prev => ({ ...prev, lastVaccine: value }))}>
                 <SelectTrigger className="form-glass">
                   <SelectValue placeholder="When did you last receive Tdap?" />
@@ -250,7 +250,7 @@ export function WellnessAssessment() {
             </div>
 
             <div className="space-y-2">
-              <Label className="frequency-badge">Childhood Vaccination Status</Label>
+                            <Label className="text-sm font-medium text-foreground">Last MMR Vaccine</Label>
               <Select value={formData.vaccineHistory} onValueChange={(value) => setFormData(prev => ({ ...prev, vaccineHistory: value }))}>
                 <SelectTrigger className="form-glass">
                   <SelectValue placeholder="Childhood vaccination status" />
@@ -268,9 +268,10 @@ export function WellnessAssessment() {
         <Button
           onClick={handleSubmit}
           disabled={isLoading}
-          className="btn-primary w-full md:w-auto mx-auto block px-8 py-4 text-lg font-bold uppercase tracking-wider"
+          size="xl"
+          className="w-full md:w-auto mx-auto block text-lg font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 bg-gradient-to-r from-primary to-secondary hover:shadow-xl"
         >
-          {isLoading && <div className="loading-spinner mr-2" />}
+          {isLoading && <div className="loading-spinner mr-2 animate-spin" />}
           {isLoading ? 'Analyzing Your Health Profile...' : '🚀 Generate Complete Protection Plan'}
         </Button>
       </div>
@@ -315,25 +316,25 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
 
         {/* Sample Recommendations */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="vaccine-card p-6 rounded-2xl">
+          <div className="vaccine-card p-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Tdap (Tetanus-Diphtheria-Pertussis)
               </h3>
               <span className="priority-high text-2xl">🔴</span>
             </div>
-            <div className="frequency-badge mb-4">Immediate Priority</div>
+            <div className="text-lg font-bold text-orange-600 mb-4">Immediate Priority</div>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
               Due for booster based on your last vaccination history. Essential protection against tetanus, diphtheria, and whooping cough.
             </p>
             <div className="space-y-3">
-              <div className="glass-card p-4 rounded-xl">
+              <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-white/20 hover:scale-105">
                 <div className="text-primary font-semibold text-sm mb-1">📊 Effectiveness</div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">
                   95% protection against tetanus for 10+ years
                 </div>
               </div>
-              <div className="glass-card p-4 rounded-xl">
+              <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-white/20 hover:scale-105">
                 <div className="text-yellow-600 font-semibold text-sm mb-1">💰 Cost</div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">
                   ₹500-800 (Government facilities) | ₹1,200-1,800 (Private)
@@ -342,14 +343,14 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
             </div>
           </div>
 
-          <div className="vaccine-card p-6 rounded-2xl">
+          <div className="vaccine-card p-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Annual Influenza Vaccine
               </h3>
               <span className="priority-high text-2xl">🔴</span>
             </div>
-            <div className="frequency-badge mb-4">Annual - Current Season</div>
+            <div className="text-lg font-bold text-yellow-600 mb-4">Annual - Current Season</div>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
               2024-25 season protection. India-specific strains recommended before monsoon season.
             </p>
@@ -384,7 +385,7 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
         </div>
 
         <div className="flex justify-center mt-8">
-          <Button onClick={onBack} variant="outline" className="px-6 py-2">
+          <Button onClick={onBack} variant="outline" size="lg" className="px-6">
             ← Back to Assessment
           </Button>
         </div>

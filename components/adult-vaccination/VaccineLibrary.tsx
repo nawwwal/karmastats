@@ -246,7 +246,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {vaccines.map((vaccine, index) => (
-        <div key={index} className="vaccine-card p-8 rounded-3xl">
+        <div key={index} className="vaccine-card p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-6">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
               {vaccine.name}
@@ -254,7 +254,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
             <span className="text-3xl animate-pulse">{vaccine.priority}</span>
           </div>
 
-          <div className="frequency-badge mb-6">{vaccine.subtitle}</div>
+          <div className="text-lg font-semibold text-orange-600 mb-6">{vaccine.subtitle}</div>
 
           <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
             {vaccine.description}
