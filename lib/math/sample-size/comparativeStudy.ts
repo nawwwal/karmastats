@@ -71,8 +71,8 @@ export function calculateCohortSampleSize(
 
     const baseSize = numerator / Math.pow(p1 - p2, 2);
 
-    const n_exposed = Math.ceil(baseSize * k);
-    const n_unexposed = Math.ceil(baseSize);
+    const n_exposed = Math.ceil(baseSize);
+    const n_unexposed = Math.ceil(baseSize * k);
 
     return { n_exposed, n_unexposed };
 }
