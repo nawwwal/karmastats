@@ -313,7 +313,7 @@ export const lightTheme = {
   destructiveForeground: '#FFFFFF', // white text
   border: '#E2E8F0', // border-color from legacy
   input: '#E2E8F0', // border-color from legacy
-  ring: '#FF9500', // primary focus ring
+  ring: '#FEAB4C', // primary focus ring
   success: '#38A169', // success from legacy
   warning: '#D69E2E', // warning from legacy
   error: '#E53E3E', // danger from legacy
@@ -322,14 +322,14 @@ export const lightTheme = {
 
 // Dark theme configuration - From legacy dark theme
 export const darkTheme = {
-  background: '#1A202C', // bg-primary from legacy dark
-  foreground: '#F7FAFC', // text-primary from legacy dark
+  background: '#000000', // black background for high contrast
+  foreground: '#FFFFFF', // white text
   card: '#2D3748', // bg-card from legacy dark
   cardForeground: '#F7FAFC', // text-primary from legacy dark
   popover: '#2D3748', // bg-secondary from legacy dark
   popoverForeground: '#F7FAFC', // text-primary from legacy dark
-  primary: '#FF9500', // bright orange
-  primaryForeground: '#1A202C', // dark text on orange
+  primary: '#FEAB4C', // brighter orange for dark mode
+  primaryForeground: '#000000', // dark text on orange
   secondary: '#FFA900', // golden secondary
   secondaryForeground: '#1A202C', // dark text
   muted: '#2D3748', // bg-secondary from legacy dark
@@ -340,7 +340,7 @@ export const darkTheme = {
   destructiveForeground: '#F7FAFC', // light text
   border: '#4A5568', // border-color from legacy dark
   input: '#4A5568', // border-color from legacy dark
-  ring: '#FF9500', // primary focus ring
+  ring: '#FEAB4C', // primary focus ring
   success: '#38A169', // success from legacy
   warning: '#D69E2E', // warning from legacy
   error: '#E53E3E', // danger from legacy
