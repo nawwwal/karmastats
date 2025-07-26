@@ -298,27 +298,45 @@ export default function HomePage() {
 
         {/* Floating Particles */}
         <div className="absolute inset-0 overflow-hidden">
-          {/* Predefined particle positions to avoid hydration issues */}
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '15%', top: '20%', animationDelay: '0s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '85%', top: '10%', animationDelay: '2s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '60%', top: '30%', animationDelay: '4s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '25%', top: '70%', animationDelay: '1s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '75%', top: '80%', animationDelay: '3s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '40%', top: '15%', animationDelay: '5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '90%', top: '45%', animationDelay: '6s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '10%', top: '60%', animationDelay: '7s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '55%', top: '85%', animationDelay: '8s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '70%', top: '25%', animationDelay: '9s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '30%', top: '50%', animationDelay: '1.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '80%', top: '65%', animationDelay: '2.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '20%', top: '40%', animationDelay: '3.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '65%', top: '75%', animationDelay: '4.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '45%', top: '35%', animationDelay: '5.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '95%', top: '55%', animationDelay: '6.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '5%', top: '90%', animationDelay: '7.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-3" style={{ left: '50%', top: '5%', animationDelay: '8.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-1" style={{ left: '35%', top: '95%', animationDelay: '9.5s' }} />
-          <div className="absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-2" style={{ left: '85%', top: '30%', animationDelay: '10s' }} />
+          {[...Array(20)].map((_, i) => {
+            // Use deterministic values based on index to avoid hydration issues
+            const positions = [
+              { left: '5%', top: '10%', delay: '0s', duration: '15s' },
+              { left: '15%', top: '20%', delay: '1s', duration: '18s' },
+              { left: '25%', top: '5%', delay: '2s', duration: '20s' },
+              { left: '35%', top: '30%', delay: '0.5s', duration: '16s' },
+              { left: '45%', top: '15%', delay: '3s', duration: '19s' },
+              { left: '55%', top: '25%', delay: '1.5s', duration: '17s' },
+              { left: '65%', top: '8%', delay: '2.5s', duration: '21s' },
+              { left: '75%', top: '35%', delay: '4s', duration: '15s' },
+              { left: '85%', top: '12%', delay: '0.8s', duration: '18s' },
+              { left: '95%', top: '28%', delay: '3.5s', duration: '16s' },
+              { left: '10%', top: '45%', delay: '1.2s', duration: '20s' },
+              { left: '20%', top: '55%', delay: '2.8s', duration: '17s' },
+              { left: '30%', top: '65%', delay: '0.3s', duration: '19s' },
+              { left: '40%', top: '75%', delay: '4.2s', duration: '15s' },
+              { left: '50%', top: '85%', delay: '1.8s', duration: '18s' },
+              { left: '60%', top: '95%', delay: '3.2s', duration: '16s' },
+              { left: '70%', top: '50%', delay: '0.7s', duration: '21s' },
+              { left: '80%', top: '60%', delay: '2.3s', duration: '17s' },
+              { left: '90%', top: '70%', delay: '4.5s', duration: '19s' },
+              { left: '8%', top: '80%', delay: '1.6s', duration: '15s' }
+            ];
+            const position = positions[i] || positions[0];
+
+            return (
+              <div
+                key={i}
+                className={`absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-${i % 3 + 1}`}
+                style={{
+                  left: position.left,
+                  top: position.top,
+                  animationDelay: position.delay,
+                  animationDuration: position.duration
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Geometric Shapes */}

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +22,12 @@ export function TravelMedicine() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
+  const [minDate, setMinDate] = useState('')
+
+  // Set minimum date after hydration to avoid SSR mismatch
+  useEffect(() => {
+    setMinDate(new Date().toISOString().split('T')[0])
+  }, [])
 
   const handleSubmit = async () => {
     if (!formData.destination || !formData.duration || !formData.departureDate) {
@@ -229,7 +235,7 @@ export function TravelMedicine() {
                   className="form-glass"
                   value={formData.departureDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, departureDate: e.target.value }))}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={minDate}
                 />
               </div>
             </div>
@@ -291,9 +297,16 @@ export function TravelMedicine() {
 }
 
 function TravelResults({ formData, onBack }: { formData: TravelFormData; onBack: () => void }) {
-  const departure = new Date(formData.departureDate)
-  const now = new Date()
-  const weeksUntilTravel = Math.ceil((departure.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 7))
+  const [weeksUntilTravel, setWeeksUntilTravel] = useState(0)
+
+  useEffect(() => {
+    if (formData.departureDate) {
+      const departure = new Date(formData.departureDate)
+      const now = new Date()
+      const weeks = Math.ceil((departure.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 7))
+      setWeeksUntilTravel(weeks)
+    }
+  }, [formData.departureDate])
 
   return (
     <div className="space-y-8">

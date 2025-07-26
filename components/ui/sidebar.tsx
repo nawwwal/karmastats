@@ -650,9 +650,10 @@ const SidebarMenuSkeleton = React.forwardRef<
     showIcon?: boolean
   }
 >(({ className, showIcon = false, ...props }, ref) => {
-  // Fixed width to avoid hydration mismatch - using CSS animation instead
+  // Deterministic width to avoid hydration issues
   const width = React.useMemo(() => {
-    return "70%" // Fixed width, animation will provide variation
+    // Use a consistent value based on component props or context
+    return `70%` // Fixed width to avoid SSR/client mismatch
   }, [])
 
   return (

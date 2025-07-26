@@ -17,7 +17,6 @@ import { consumptionUnits, sesClassifications } from "@/lib/family-study";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
-import { EnhancedFormField } from '@/components/ui/enhanced-form-field';
 
 // Import the loadFoodDatabase function directly
 async function loadFoodDatabase() {
@@ -36,8 +35,8 @@ export default function FamilyStudyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showReport, setShowReport] = useState(false);
   const [formData, setFormData] = useState({
-    studyDate: '', // Will be set on client mount to avoid hydration mismatch
-    familyId: '', // Will be set on client mount to avoid hydration mismatch
+    studyDate: '', // Will be set after hydration
+    familyId: '', // Will be set after hydration
     familyHead: '',
     address: '',
     pincode: '',
@@ -96,12 +95,11 @@ export default function FamilyStudyPage() {
     loadData();
   }, []);
 
-  // Set family ID and study date on client mount to avoid hydration mismatch
+  // Set date and ID after hydration to avoid SSR/client mismatch
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
     setFormData(prev => ({
       ...prev,
-      studyDate: today,
+      studyDate: new Date().toISOString().split('T')[0],
       familyId: `FAM-${Date.now().toString().substr(-6)}`
     }));
   }, []);
@@ -209,6 +207,13 @@ export default function FamilyStudyPage() {
     try {
       const { generateModernPDF } = await import('@/lib/pdf-utils');
 
+      // Calculate stats
+      const totalMembers = familyMembers.length;
+      const maleCount = familyMembers.filter(m => m.sex === 'male').length;
+      const femaleCount = familyMembers.filter(m => m.sex === 'female').length;
+      const childrenCount = familyMembers.filter(m => m.age < 18).length;
+      const elderlyCount = familyMembers.filter(m => m.age >= 60).length;
+
       const config = {
         calculatorType: "Family Health Study Assessment",
         title: "Comprehensive Family Health Assessment Report",
@@ -231,52 +236,52 @@ export default function FamilyStudyPage() {
         results: [
           {
             label: "Total Family Members",
-            value: familyMembers.length,
+            value: totalMembers,
             highlight: true,
-            category: "primary",
-            format: "integer"
+            category: "primary" as const,
+            format: "integer" as const
           },
           {
             label: "Male Members",
-            value: familyMembers.filter(m => m.sex === 'male').length,
-            category: "secondary",
-            format: "integer"
+            value: maleCount,
+            category: "secondary" as const,
+            format: "integer" as const
           },
           {
             label: "Female Members",
-            value: familyMembers.filter(m => m.sex === 'female').length,
-            category: "secondary",
-            format: "integer"
+            value: femaleCount,
+            category: "secondary" as const,
+            format: "integer" as const
           },
           {
             label: "Children (<18 years)",
-            value: familyMembers.filter(m => m.age < 18).length,
-            category: "secondary",
-            format: "integer"
+            value: childrenCount,
+            category: "secondary" as const,
+            format: "integer" as const
           },
           {
             label: "Elderly (≥60 years)",
-            value: familyMembers.filter(m => m.age >= 60).length,
-            category: "secondary",
-            format: "integer"
+            value: elderlyCount,
+            category: "secondary" as const,
+            format: "integer" as const
           },
           {
             label: "Socio-Economic Status",
             value: formData.sesClass.split(' ')[0] || 'Not Classified',
-            category: "statistical"
+            category: "statistical" as const
           },
           {
             label: "Per Capita Monthly Income",
             value: parseFloat(formData.perCapitaIncome),
-            category: "primary",
-            format: "currency",
-            unit: "₹"
+            category: "primary" as const,
+            format: "decimal" as const,
+            precision: 2
           },
           {
             label: "Chronic Diseases Count",
             value: formData.chronicDiseases.length,
-            category: "warning",
-            format: "integer"
+            category: "secondary" as const,
+            format: "integer" as const
           }
         ],
         interpretation: {
@@ -308,7 +313,7 @@ export default function FamilyStudyPage() {
   const handleReset = () => {
     setFormData({
       studyDate: new Date().toISOString().split('T')[0],
-      familyId: `FAM-${Date.now().toString().substr(-6)}`, // This is in a function so it's safe
+      familyId: `FAM-${Date.now().toString().substr(-6)}`,
       familyHead: '',
       address: '',
       pincode: '',
@@ -394,7 +399,7 @@ export default function FamilyStudyPage() {
       {
         label: 'Per Capita Monthly Income',
         value: perCapitaIncome,
-        format: 'currency' as const,
+        format: 'decimal' as const,
         unit: '₹',
         category: 'primary' as const,
         highlight: true,
