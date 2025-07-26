@@ -27,28 +27,33 @@ export function AdultVaccinationPage() {
   const tabs = [
     {
       value: 'wellness' as TabType,
-      label: '🎯 Health Assessment',
-      description: 'Personal health screening'
+      label: '🎯 Health',
+      shortLabel: '🎯',
+      description: 'Personal screening'
     },
     {
       value: 'vaccines' as TabType,
-      label: '💉 Vaccine Library',
-      description: 'Complete vaccination guide'
+      label: '💉 Library',
+      shortLabel: '💉',
+      description: 'Vaccine guide'
     },
     {
       value: 'conditions' as TabType,
-      label: '🏥 Risk Protection',
-      description: 'Condition-based recommendations'
+      label: '🏥 Risk',
+      shortLabel: '🏥',
+      description: 'Conditions'
     },
     {
       value: 'timeline' as TabType,
       label: '📅 Timeline',
-      description: 'Vaccination scheduling'
+      shortLabel: '📅',
+      description: 'Schedule'
     },
     {
       value: 'travel' as TabType,
-      label: '✈️ Travel Medicine',
-      description: 'Travel-specific vaccines'
+      label: '✈️ Travel',
+      shortLabel: '✈️',
+      description: 'Travel vaccines'
     }
   ]
 
@@ -83,12 +88,21 @@ export function AdultVaccinationPage() {
           onValueChange={(value) => setActiveTab(value as TabType)}
           className="space-y-6"
         >
-          <EnhancedTabsList className="grid w-full grid-cols-2 lg:grid-cols-5 gap-2" variant="modern">
+          <EnhancedTabsList className="grid w-full grid-cols-5 gap-0.5 max-w-full overflow-hidden" variant="modern">
             {tabs.map((tab) => (
-              <EnhancedTabsTrigger key={tab.value} value={tab.value} variant="modern" className="min-h-[3rem] px-2">
-                <div className="flex flex-col items-center gap-1 text-center">
-                  <span className="text-xs lg:text-sm font-medium leading-tight">{tab.label}</span>
-                  <span className="text-[10px] lg:text-xs text-muted-foreground hidden sm:block leading-tight">
+              <EnhancedTabsTrigger
+                key={tab.value}
+                value={tab.value}
+                variant="modern"
+                className="min-h-[2.5rem] px-0.5 py-1 whitespace-normal !justify-center !items-center max-w-full overflow-hidden tab-container"
+              >
+                <div className="flex flex-col items-center gap-0.5 text-center w-full max-w-full overflow-hidden">
+                  <span className="font-medium leading-none w-full overflow-hidden text-center tab-text-safe">
+                    <span className="hidden md:inline text-xs">{tab.label}</span>
+                    <span className="hidden sm:inline md:hidden text-[10px]">{tab.label.split(' ')[0] + ' ' + tab.label.split(' ')[1]}</span>
+                    <span className="sm:hidden text-lg">{tab.shortLabel}</span>
+                  </span>
+                  <span className="text-[7px] lg:text-[9px] text-muted-foreground hidden lg:block leading-none w-full tab-text-safe">
                     {tab.description}
                   </span>
                 </div>

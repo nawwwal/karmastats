@@ -328,13 +328,13 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
               Due for booster based on your last vaccination history. Essential protection against tetanus, diphtheria, and whooping cough.
             </p>
             <div className="space-y-3">
-              <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-white/20 hover:scale-105">
+              <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-muted/20 hover:scale-105">
                 <div className="text-primary font-semibold text-sm mb-1">📊 Effectiveness</div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">
                   95% protection against tetanus for 10+ years
                 </div>
               </div>
-              <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-white/20 hover:scale-105">
+              <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-muted/20 hover:scale-105">
                 <div className="text-yellow-600 font-semibold text-sm mb-1">💰 Cost</div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">
                   ₹500-800 (Government facilities) | ₹1,200-1,800 (Private)

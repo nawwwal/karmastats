@@ -61,7 +61,7 @@ export function ToolPageWrapper({
       {/* Header - Mobile optimized */}
       <div
         className={cn(
-          "sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40",
+          "sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border",
           // Mobile: add safe area for notched devices
           isMobile && "pt-safe-area-inset-top",
         )}

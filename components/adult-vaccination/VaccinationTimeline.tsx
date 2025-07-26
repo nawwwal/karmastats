@@ -76,14 +76,14 @@ export function VaccinationTimeline() {
 
               {/* Timeline Content */}
               <div className="flex-1 ml-8">
-                <div className="glass-card p-6 rounded-2xl transition-all duration-200 hover:bg-white/20 hover:scale-105">
+                <div className="glass-card p-6 rounded-2xl transition-all duration-200 hover:bg-muted/20 hover:scale-105">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
                     {item.age}
                   </h3>
 
                   <div className="space-y-3">
                     {item.vaccines.map((vaccine, vIndex) => (
-                      <div key={vIndex} className="flex justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700 last:border-b-0">
+                      <div key={vIndex} className="flex justify-between items-center py-3 border-b border-border last:border-b-0">
                         <div className="flex-1">
                           <div className="font-semibold text-slate-900 dark:text-white">
                             {vaccine.name}

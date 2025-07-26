@@ -31,7 +31,7 @@ const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
       <div
         className={cn(
           "relative rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-500 ease-out",
-          glass && "border-white/20 backdrop-blur-sm bg-card/80",
+          glass && "border-border/20 backdrop-blur-sm bg-card/80",
           hover && "cursor-pointer",
           gradient && "bg-gradient-to-br from-card to-card/80",
           // Enhanced hover effects - classy and sophisticated

@@ -144,7 +144,7 @@ export function RiskBasedProtection() {
             </p>
 
             <div className="space-y-6">
-              <div className="glass-card p-5 rounded-xl border-l-4 border-green-500 transition-all duration-200 hover:bg-white/20 hover:scale-105">
+              <div className="glass-card p-5 rounded-xl border-l-4 border-green-500 transition-all duration-200 hover:bg-muted/20 hover:scale-105">
                 <div className="text-green-600 font-semibold text-sm mb-3 flex items-center gap-2">
                   💉 Recommended Vaccines
                 </div>
@@ -158,7 +158,7 @@ export function RiskBasedProtection() {
                 </ul>
               </div>
 
-              <div className="glass-card p-5 rounded-xl border-l-4 border-primary transition-all duration-200 hover:bg-white/20 hover:scale-105">
+              <div className="glass-card p-5 rounded-xl border-l-4 border-primary transition-all duration-200 hover:bg-muted/20 hover:scale-105">
                 <div className="text-primary font-semibold text-sm mb-3 flex items-center gap-2">
                   📋 Additional Considerations
                 </div>

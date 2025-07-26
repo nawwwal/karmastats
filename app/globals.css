@@ -995,3 +995,17 @@
     content: '...';
   }
 }
+
+/* Tab text overflow prevention */
+.tab-text-safe {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: block;
+}
+
+.tab-container {
+  min-width: 0;
+  flex: 1;
+}

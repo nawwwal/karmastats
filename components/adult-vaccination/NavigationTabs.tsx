@@ -26,7 +26,7 @@ export function NavigationTabs({ activeTab, onTabChange }: NavigationTabsProps) 
             onClick={() => onTabChange(tab.id)}
             className={cn(
               'nav-tab px-5 py-4 rounded-xl text-sm font-semibold text-center transition-all duration-300',
-              'border border-slate-200 dark:border-slate-700',
+              'border border-border',
               activeTab === tab.id
                 ? 'active text-white shadow-lg'
                 : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
