@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss"
-import { karmaTheme } from "./lib/theme"
 
 const config = {
   darkMode: ["class"],
@@ -20,9 +19,6 @@ const config = {
     },
     extend: {
       colors: {
-        // Use our centralized theme colors
-        ...karmaTheme.colors,
-
         // CSS variable-based colors for light/dark mode
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,6 +53,36 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        // Semantic colors
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        error: {
+          DEFAULT: "hsl(var(--error))",
+          foreground: "hsl(var(--error-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+
+        // Text hierarchy colors - replacing hard-coded text colors
+        "text-primary": "hsl(var(--text-primary))",
+        "text-secondary": "hsl(var(--text-secondary))",
+        "text-muted": "hsl(var(--text-muted))",
+        "text-inverse": "hsl(var(--text-inverse))",
+
+        // Background variations - replacing hard-coded backgrounds  
+        "bg-subtle": "hsl(var(--bg-subtle))",
+        "bg-soft": "hsl(var(--bg-soft))",
+        "bg-hover": "hsl(var(--bg-hover))",
+        "bg-active": "hsl(var(--bg-active))",
         success: {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
@@ -95,15 +121,12 @@ const config = {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
-      spacing: karmaTheme.spacing,
       borderRadius: {
-        ...karmaTheme.borderRadius,
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        ...karmaTheme.shadows,
         'glass': '0 8px 32px rgba(31, 38, 135, 0.15)',
         'glass-dark': '0 8px 32px rgba(0, 0, 0, 0.2)',
         'glow-sm': '0 0 10px rgba(249, 115, 22, 0.25)',
@@ -111,7 +134,6 @@ const config = {
         'glow-lg': '0 0 40px rgba(249, 115, 22, 0.25)',
         'glow-secondary': '0 0 20px rgba(234, 179, 8, 0.35)',
       },
-      zIndex: karmaTheme.zIndex,
       transitionDuration: {
         DEFAULT: "400ms",
         fast: "200ms",

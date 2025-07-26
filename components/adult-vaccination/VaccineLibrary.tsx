@@ -37,7 +37,7 @@ export function VaccineLibrary() {
     <div className="space-y-8">
       {/* Age Selector */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">
+        <h2 className="text-3xl font-bold text-foreground mb-8">
           Adult Vaccination by Life Stage
         </h2>
         <div className="flex flex-wrap justify-center gap-4">
@@ -248,7 +248,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
       {vaccines.map((vaccine, index) => (
         <div key={index} className="vaccine-card p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-6">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
+            <h3 className="text-xl font-bold text-foreground leading-tight">
               {vaccine.name}
             </h3>
             <span className="text-3xl animate-pulse">{vaccine.priority}</span>
@@ -256,7 +256,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
 
           <div className="text-lg font-semibold text-orange-600 mb-6">{vaccine.subtitle}</div>
 
-          <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+          <p className="text-muted-foreground mb-6 leading-relaxed">
             {vaccine.description}
           </p>
 
@@ -265,7 +265,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
               <div className="text-green-600 font-semibold text-sm mb-2 flex items-center gap-2">
                 ✨ Efficacy
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 {vaccine.efficacy}
               </div>
             </div>
@@ -274,7 +274,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
               <div className="text-yellow-600 font-semibold text-sm mb-2 flex items-center gap-2">
                 ⚠️ Side Effects
               </div>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="text-sm text-muted-foreground space-y-1">
                 {vaccine.sideEffects.map((effect: string, idx: number) => (
                   <li key={idx} className="flex items-start gap-2">
                     <span className="text-yellow-500 mt-1">•</span>
@@ -288,7 +288,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
               <div className="text-red-600 font-semibold text-sm mb-2 flex items-center gap-2">
                 🚫 Contraindications
               </div>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+              <ul className="text-sm text-muted-foreground space-y-1">
                 {vaccine.contraindications.map((contra: string, idx: number) => (
                   <li key={idx} className="flex items-start gap-2">
                     <span className="text-red-500 mt-1">•</span>
@@ -302,7 +302,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
               <div className="text-primary font-semibold text-sm mb-2 flex items-center gap-2">
                 📅 Schedule
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 {vaccine.schedule}
               </div>
             </div>
@@ -311,7 +311,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
               <div className="text-teal-600 font-semibold text-sm mb-2 flex items-center gap-2">
                 🇮🇳 India-Specific
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 {vaccine.indiaSpecific}
               </div>
             </div>
@@ -320,7 +320,7 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
               <div className="text-orange-600 font-semibold text-sm mb-2 flex items-center gap-2">
                 💰 Cost
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 <strong>Frequency:</strong> {vaccine.frequency}<br />
                 <strong>Cost:</strong> {vaccine.cost}
               </div>

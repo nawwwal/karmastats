@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Base colors - Light theme with warm orange-yellow theme from HTML */
+    /* Base colors - Light theme with warm orange-yellow theme */
     --background: 0 0% 100%; /* Pure white background */
     --foreground: 210 20% 15%; /* Dark text */
     --card: 0 0% 100%; /* Pure white cards */
@@ -12,11 +12,11 @@
     --popover: 0 0% 100%; /* White popover */
     --popover-foreground: 210 20% 15%; /* Dark text */
 
-    /* Primary colors - Orange from HTML theme #ff6b35 */
+    /* Primary colors - Orange #ff6b35 */
     --primary: 15 100% 60%; /* #ff6b35 - Orange primary */
-    --primary-foreground: 210 20% 8%; /* Dark text on orange */
+    --primary-foreground: 0 0% 100%; /* White text on orange */
 
-    /* Secondary colors - Gold from HTML theme #ffd700 */
+    /* Secondary colors - Gold #ffd700 */
     --secondary: 51 100% 50%; /* #ffd700 - Gold secondary */
     --secondary-foreground: 210 20% 8%; /* Dark text on gold */
 
@@ -24,28 +24,40 @@
     --muted: 30 30% 96%; /* Warm light gray background */
     --muted-foreground: 30 10% 45%; /* Warm medium gray text */
 
-    /* Accent colors - Teal accent from HTML #00d4aa */
+    /* Accent colors - Teal accent #00d4aa */
     --accent: 168 100% 42%; /* #00d4aa - Teal accent */
     --accent-foreground: 0 0% 100%; /* White text on teal */
 
     /* Semantic colors */
-    --success: 142 76% 36%; /* #10b981 - Green from HTML */
+    --success: 142 76% 36%; /* Green */
     --success-foreground: 0 0% 100%; /* White text on green */
-    --warning: 38 92% 50%; /* #f59e0b - Orange warning from HTML */
+    --warning: 38 92% 50%; /* Orange warning */
     --warning-foreground: 0 0% 100%; /* White text on orange */
-    --error: 0 84% 60%; /* #ef4444 - Red error from HTML */
+    --error: 0 84% 60%; /* Red error */
     --error-foreground: 0 0% 100%; /* White text on red */
-    --info: 217 91% 60%; /* #3b82f6 - Blue info from HTML */
+    --info: 217 91% 60%; /* Blue info */
     --info-foreground: 0 0% 100%; /* White text on blue */
 
     /* Destructive (error variant) */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border and input - warm theme */
+    /* Border and input */
     --border: 15 100% 85%; /* Light orange borders */
     --input: 15 100% 90%; /* Very light orange input borders */
     --ring: 15 100% 60%; /* Orange focus ring */
+
+    /* Content hierarchy colors - replacing hard-coded text colors */
+    --text-primary: 210 20% 15%; /* Primary text color */
+    --text-secondary: 30 10% 45%; /* Secondary text color */
+    --text-muted: 30 10% 60%; /* Muted text color */
+    --text-inverse: 0 0% 100%; /* White text for dark backgrounds */
+
+    /* Background variations - replacing hard-coded backgrounds */
+    --bg-subtle: 30 30% 98%; /* Very subtle background */
+    --bg-soft: 30 30% 96%; /* Soft background */
+    --bg-hover: 15 100% 95%; /* Hover background */
+    --bg-active: 15 100% 90%; /* Active/pressed background */
 
     /* Radius */
     --radius: 0.75rem;
@@ -86,25 +98,60 @@
   }
 
   .dark {
-    /* Base colors - Dark theme from HTML file */
-    --background: 220 40% 4%; /* #0a0e1a - Dark background */
+    /* Base colors - Dark theme */
+    --background: 220 40% 4%; /* Dark background */
     --foreground: 210 20% 95%; /* Light text */
-    --card: 220 35% 8%; /* #151b2d - Dark card background */
+    --card: 220 35% 8%; /* Dark card background */
     --card-foreground: 210 20% 95%; /* Light text */
     --popover: 220 35% 8%; /* Dark popover */
     --popover-foreground: 210 20% 95%; /* Light text */
 
     /* Primary colors - Orange for dark mode */
-    --primary: 15 100% 60%; /* #ff6b35 - Orange remains same */
-    --primary-foreground: 220 40% 4%; /* Dark text on orange */
+    --primary: 15 100% 60%; /* Orange remains same */
+    --primary-foreground: 0 0% 100%; /* White text on orange */
 
     /* Secondary colors - Gold for dark mode */
-    --secondary: 51 100% 50%; /* #ffd700 - Gold remains same */
+    --secondary: 51 100% 50%; /* Gold remains same */
     --secondary-foreground: 220 40% 4%; /* Dark text on gold */
 
     /* Muted colors */
-    --muted: 220 30% 12%; /* #1e2746 - Dark muted background */
+    --muted: 220 30% 12%; /* Dark muted background */
     --muted-foreground: 210 20% 70%; /* Light muted text */
+
+    /* Accent colors */
+    --accent: 168 100% 42%; /* Teal accent remains same */
+    --accent-foreground: 220 40% 4%; /* Dark text on teal */
+
+    /* Semantic colors - Dark theme variants */
+    --success: 142 76% 36%; /* Green remains same */
+    --success-foreground: 0 0% 100%; /* White text on green */
+    --warning: 38 92% 50%; /* Orange warning remains same */
+    --warning-foreground: 0 0% 100%; /* White text on orange */
+    --error: 0 84% 60%; /* Red error remains same */
+    --error-foreground: 0 0% 100%; /* White text on red */
+    --info: 217 91% 60%; /* Blue info remains same */
+    --info-foreground: 0 0% 100%; /* White text on blue */
+
+    /* Destructive */
+    --destructive: 0 63% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and input */
+    --border: 15 100% 60% / 0.2; /* Orange borders with transparency */
+    --input: 15 100% 60% / 0.2; /* Orange input borders with transparency */
+    --ring: 15 100% 60%; /* Orange focus ring */
+
+    /* Content hierarchy colors - dark mode */
+    --text-primary: 210 20% 95%; /* Light primary text */
+    --text-secondary: 210 20% 80%; /* Secondary text */
+    --text-muted: 210 20% 65%; /* Muted text */
+    --text-inverse: 220 40% 4%; /* Dark text for light backgrounds */
+
+    /* Background variations - dark mode */
+    --bg-subtle: 220 35% 6%; /* Very subtle dark background */
+    --bg-soft: 220 30% 10%; /* Soft dark background */
+    --bg-hover: 15 100% 60% / 0.1; /* Orange hover background */
+    --bg-active: 15 100% 60% / 0.2; /* Orange active background */
 
     /* Accent colors */
     --accent: 168 100% 42%; /* #00d4aa - Teal accent remains same */

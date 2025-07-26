@@ -28,8 +28,8 @@ export function NavigationTabs({ activeTab, onTabChange }: NavigationTabsProps) 
               'nav-tab px-5 py-4 rounded-xl text-sm font-semibold text-center transition-all duration-300',
               'border border-border',
               activeTab === tab.id
-                ? 'active text-white shadow-lg'
-                : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                ? 'active text-primary-foreground shadow-lg'
+                : 'text-foreground/80 hover:text-foreground'
             )}
           >
             {tab.label}

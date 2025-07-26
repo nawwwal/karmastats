@@ -81,7 +81,7 @@ export function WellnessAssessment() {
         <h2 className="text-3xl font-bold text-gradient mb-3">
           Comprehensive Health Assessment
         </h2>
-        <p className="text-lg text-slate-600 dark:text-slate-400 font-medium">
+        <p className="text-lg text-muted-foreground font-medium">
           WHO & CDC guidelines for Indian healthcare • Complete protection planning
         </p>
       </div>
@@ -93,7 +93,7 @@ export function WellnessAssessment() {
             <div className="section-icon w-12 h-12 rounded-xl text-xl">
               👤
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h3 className="text-xl font-bold text-foreground">
               Personal Information
             </h3>
           </div>
@@ -193,12 +193,12 @@ export function WellnessAssessment() {
             <div className="section-icon w-12 h-12 rounded-xl text-xl">
               🏥
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h3 className="text-xl font-bold text-foreground">
               Health Conditions & Risk Factors
             </h3>
           </div>
 
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
+          <p className="text-muted-foreground mb-6">
             Select any conditions that apply to you. This helps determine your vaccination priorities.
           </p>
 
@@ -227,7 +227,7 @@ export function WellnessAssessment() {
             <div className="section-icon w-12 h-12 rounded-xl text-xl">
               💉
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h3 className="text-xl font-bold text-foreground">
               Vaccination History
             </h3>
           </div>
@@ -287,7 +287,7 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
           <h2 className="text-3xl font-bold text-gradient mb-3">
             Your Personalized Vaccination Plan
           </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
+          <p className="text-lg text-muted-foreground">
             Based on your health profile and current guidelines
           </p>
         </div>
@@ -296,19 +296,19 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="glass-card p-6 rounded-2xl text-center border-l-4 border-red-500">
             <div className="text-3xl font-bold text-red-500 mb-2">3</div>
-            <div className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
+            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Immediate Priority
             </div>
           </div>
           <div className="glass-card p-6 rounded-2xl text-center border-l-4 border-yellow-500">
             <div className="text-3xl font-bold text-yellow-500 mb-2">2</div>
-            <div className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
+            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Consult Required
             </div>
           </div>
           <div className="glass-card p-6 rounded-2xl text-center border-l-4 border-primary">
             <div className="text-3xl font-bold text-primary mb-2">4</div>
-            <div className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
+            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Future Planning
             </div>
           </div>
@@ -318,25 +318,25 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="vaccine-card p-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h3 className="text-lg font-bold text-foreground">
                 Tdap (Tetanus-Diphtheria-Pertussis)
               </h3>
               <span className="priority-high text-2xl">🔴</span>
             </div>
             <div className="text-lg font-bold text-orange-600 mb-4">Immediate Priority</div>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Due for booster based on your last vaccination history. Essential protection against tetanus, diphtheria, and whooping cough.
             </p>
             <div className="space-y-3">
               <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-muted/20 hover:scale-105">
                 <div className="text-primary font-semibold text-sm mb-1">📊 Effectiveness</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   95% protection against tetanus for 10+ years
                 </div>
               </div>
               <div className="glass-card p-4 rounded-xl transition-all duration-200 hover:bg-muted/20 hover:scale-105">
                 <div className="text-yellow-600 font-semibold text-sm mb-1">💰 Cost</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   ₹500-800 (Government facilities) | ₹1,200-1,800 (Private)
                 </div>
               </div>
@@ -345,25 +345,25 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
 
           <div className="vaccine-card p-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h3 className="text-lg font-bold text-foreground">
                 Annual Influenza Vaccine
               </h3>
               <span className="priority-high text-2xl">🔴</span>
             </div>
             <div className="text-lg font-bold text-yellow-600 mb-4">Annual - Current Season</div>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               2024-25 season protection. India-specific strains recommended before monsoon season.
             </p>
             <div className="space-y-3">
               <div className="glass-card p-4 rounded-xl">
                 <div className="text-primary font-semibold text-sm mb-1">📊 Effectiveness</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   40-60% reduction in flu risk when well-matched
                 </div>
               </div>
               <div className="glass-card p-4 rounded-xl">
                 <div className="text-yellow-600 font-semibold text-sm mb-1">💰 Cost</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   ₹500-1,000 (Quadrivalent) | Free at some govt centers
                 </div>
               </div>
@@ -372,10 +372,10 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
         </div>
 
         <div className="mt-8 p-6 glass-card rounded-2xl border-l-4 border-primary">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
+          <h3 className="text-lg font-bold text-foreground mb-3">
             📋 Next Steps & Important Notes
           </h3>
-          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <p>• Consult with your healthcare provider before starting any new vaccines</p>
             <p>• Maintain a vaccination record card or digital tracker</p>
             <p>• Schedule annual flu shots before monsoon season (June-July)</p>

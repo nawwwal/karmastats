@@ -66,18 +66,18 @@ export function VaccinationTimeline() {
             <div key={index} className="flex mb-12 relative">
               {/* Timeline Line */}
               {index < timelineItems.length - 1 && (
-                <div className="absolute left-12 top-24 w-0.5 h-full bg-slate-200 dark:bg-slate-700"></div>
+                <div className="absolute left-12 top-24 w-0.5 h-full bg-border"></div>
               )}
 
               {/* Timeline Marker */}
-              <div className="timeline-marker w-24 h-24 rounded-full flex-shrink-0 text-white font-bold text-lg">
+              <div className="timeline-marker w-24 h-24 rounded-full flex-shrink-0 text-primary-foreground font-bold text-lg">
                 {item.marker}
               </div>
 
               {/* Timeline Content */}
               <div className="flex-1 ml-8">
                 <div className="glass-card p-6 rounded-2xl transition-all duration-200 hover:bg-muted/20 hover:scale-105">
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                  <h3 className="text-xl font-bold text-foreground mb-4">
                     {item.age}
                   </h3>
 
@@ -85,10 +85,10 @@ export function VaccinationTimeline() {
                     {item.vaccines.map((vaccine, vIndex) => (
                       <div key={vIndex} className="flex justify-between items-center py-3 border-b border-border last:border-b-0">
                         <div className="flex-1">
-                          <div className="font-semibold text-slate-900 dark:text-white">
+                          <div className="font-semibold text-foreground">
                             {vaccine.name}
                           </div>
-                          <div className="text-sm text-slate-600 dark:text-slate-400">
+                          <div className="text-sm text-muted-foreground">
                             {vaccine.description}
                           </div>
                         </div>
@@ -107,12 +107,12 @@ export function VaccinationTimeline() {
         </div>
 
         <div className="glass-card p-6 rounded-2xl border-l-4 border-primary mt-12 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
             💡 Timeline Planning Tips
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-400">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Scheduling Strategy:</h4>
+              <h4 className="font-semibold text-foreground mb-2">Scheduling Strategy:</h4>
               <ul className="space-y-1">
                 <li>• Plan vaccines around travel dates</li>
                 <li>• Combine with annual check-ups</li>
@@ -121,7 +121,7 @@ export function VaccinationTimeline() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Record Keeping:</h4>
+              <h4 className="font-semibold text-foreground mb-2">Record Keeping:</h4>
               <ul className="space-y-1">
                 <li>• Maintain digital vaccination record</li>
                 <li>• Request copies from all providers</li>
