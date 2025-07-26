@@ -288,14 +288,14 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-warning/20 to-transparent animate-pulse-slow" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,107,53,0.3),transparent_50%)] animate-float" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(255,215,0,0.3),transparent_50%)] animate-float-delayed" />
-        
+
         {/* Animated Sun Rays */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-gradient-to-r from-warning/30 to-primary/30 animate-spin-slow blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-gradient-to-r from-secondary/40 to-warning/40 animate-spin-reverse blur-2xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-gradient-to-r from-primary/50 to-secondary/50 animate-pulse-fast blur-xl" />
         </div>
-        
+
         {/* Floating Particles */}
         <div className="absolute inset-0 overflow-hidden">
           {[...Array(20)].map((_, i) => (
@@ -342,17 +342,17 @@ export default function HomePage() {
                   KARMASTAT
                 </div>
               </div>
-              
+
               {/* Subtitle with Enhanced Typography */}
               <div className="text-xl md:text-3xl text-white/95 font-light max-w-3xl mx-auto leading-relaxed tracking-wide animate-fade-in-up">
                 <span className="bg-gradient-to-r from-white via-warning/80 to-white bg-clip-text text-transparent">
                   Advanced Statistical Analysis Platform
                 </span>
               </div>
-              
+
               {/* Description with Motion */}
               <div className="text-lg md:text-xl text-white/85 max-w-2xl mx-auto leading-relaxed animate-fade-in-up-delayed">
-                Comprehensive tools for research, epidemiology, and data science with beautiful 
+                Comprehensive tools for research, epidemiology, and data science with beautiful
                 <span className="text-warning font-semibold"> interactive visualizations</span>
               </div>
             </div>

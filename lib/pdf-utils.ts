@@ -1,7 +1,5 @@
 'use client';
 
-import { karmaTheme, lightTheme, darkTheme } from './theme';
-
 export interface ExtractionPatterns {
   [key: string]: RegExp[];
 }
@@ -91,29 +89,29 @@ export interface PDFReportConfig {
 // Use centralized theme colors for PDF generation
 export const pdfTheme = {
   colors: {
-    primary: karmaTheme.colors.primary.DEFAULT, // #FF8C42
-    secondary: karmaTheme.colors.secondary.DEFAULT, // #2C5282
-    accent: karmaTheme.colors.accent.DEFAULT, // #F6AD55
-    success: karmaTheme.colors.success.DEFAULT, // #38A169
-    warning: karmaTheme.colors.warning.DEFAULT, // #D69E2E
-    error: karmaTheme.colors.error.DEFAULT, // #E53E3E
+    primary: '#ff6b35', // Primary orange
+    secondary: '#ffd700', // Secondary gold
+    accent: '#00d4aa', // Accent teal
+    success: '#10b981', // Success green
+    warning: '#f59e0b', // Warning amber
+    error: '#ef4444', // Error red
   },
 
   textColors: {
-    primary: karmaTheme.colors.gray[700], // #2D3748
-    secondary: karmaTheme.colors.gray[600], // #4A5568
-    muted: karmaTheme.colors.gray[500], // #718096
+    primary: '#374151', // Dark gray
+    secondary: '#6b7280', // Medium gray
+    muted: '#9ca3af', // Light gray
   },
 
   backgrounds: {
-    light: '#F7FAFC', // bg-secondary from theme
-    card: '#FFFFFF', // bg-primary from theme
-    border: karmaTheme.colors.gray[200], // #E2E8F0
+    light: '#f7fafc', // Light background
+    card: '#ffffff', // Card background
+    border: '#e5e7eb', // Border gray
   },
 
   gradients: {
-    primary: [karmaTheme.colors.primary.DEFAULT, karmaTheme.colors.primary[400]], // Orange gradient
-    secondary: [karmaTheme.colors.secondary.DEFAULT, karmaTheme.colors.secondary[400]], // Blue gradient
+    primary: ['#ff6b35', '#ff8c42'], // Orange gradient
+    secondary: ['#ffd700', '#fbbf24'], // Gold gradient
   },
 };
 

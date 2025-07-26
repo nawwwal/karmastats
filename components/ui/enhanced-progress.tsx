@@ -4,7 +4,6 @@ import * as React from "react"
 import * as ProgressPrimitive from "@radix-ui/react-progress"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { karmaTheme } from '@/lib/theme';
 
 export interface EnhancedProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
@@ -91,21 +90,21 @@ const EnhancedProgress = React.forwardRef<
 
   const getProgressColor = (percentage: number): string => {
     if (percentage >= 70) {
-      return karmaTheme.colors.primary.DEFAULT // #FF8C42
+      return '#ff6b35' // Primary color
     } else if (percentage >= 40) {
-      return karmaTheme.colors.secondary.DEFAULT // #FFD700 (gold)
+      return '#ffd700' // Secondary (gold)
     } else {
-      return karmaTheme.colors.warning.DEFAULT // #D69E2E
+      return '#f59e0b' // Warning color
     }
   }
 
   const getGlowColor = (percentage: number): string => {
     if (percentage >= 70) {
-      return karmaTheme.colors.primary.DEFAULT // #FF8C42
+      return '#ff6b35' // Primary color
     } else if (percentage >= 40) {
-      return karmaTheme.colors.secondary.DEFAULT // #FFD700 (gold)
+      return '#ffd700' // Secondary (gold)
     } else {
-      return karmaTheme.colors.warning.DEFAULT // #D69E2E
+      return '#f59e0b' // Warning color
     }
   }
 
@@ -202,17 +201,17 @@ const CircularProgress = React.forwardRef<
   const getStrokeColor = () => {
     switch (color) {
       case 'primary':
-        return karmaTheme.colors.primary.DEFAULT // #FF8C42
+        return '#ff6b35' // Primary color
       case 'secondary':
-        return karmaTheme.colors.secondary.DEFAULT // #FFD700 (gold)
+        return '#ffd700' // Secondary (gold)
       case 'success':
-        return karmaTheme.colors.success.DEFAULT // #38A169
+        return '#10b981' // Success green
       case 'warning':
-        return karmaTheme.colors.warning.DEFAULT // #D69E2E
+        return '#f59e0b' // Warning amber
       case 'error':
-        return karmaTheme.colors.error.DEFAULT // #E53E3E
+        return '#ef4444' // Error red
       default:
-        return karmaTheme.colors.primary.DEFAULT // #FF8C42
+        return '#ff6b35' // Primary color
     }
   }
 
