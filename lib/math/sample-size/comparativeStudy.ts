@@ -16,34 +16,28 @@ export function calculateCaseControlSampleSize(
     p0: number,
     p1: number
 ): { n_cases: number; n_controls: number } {
-    // Calculate odds ratio
-    const oddsRatio = (p1 * (1 - p0)) / (p0 * (1 - p1));
+    const k = ratio;
+    const zAlpha = normalQuantile(1 - alpha / 2);
+    const zBeta = normalQuantile(power);
 
-    // Calculate average proportion of exposure
-    const p_bar = (p0 + ratio * p1) / (1 + ratio);
+    const pBar = (p1 + k * p0) / (1 + k);
+    const qBar = 1 - pBar;
 
-    // Calculate standard error
-    const se = Math.sqrt(
-        (1 / (p0 * (1 - p0))) + (1 / (p1 * (1 - p1)))
+    const numerator = Math.pow(
+        zAlpha * Math.sqrt((1 + 1 / k) * pBar * qBar) +
+        zBeta * Math.sqrt(p1 * (1 - p1) + (p0 * (1 - p0)) / k),
+        2
     );
 
-    // Calculate z-scores
-    const z_alpha = normalQuantile(1 - alpha / 2);
-    const z_beta = normalQuantile(power);
+    const baseSize = numerator / Math.pow(p1 - p0, 2);
 
-    // Calculate sample size for cases
-    const n_cases = Math.ceil(
-        (Math.pow(z_alpha + z_beta, 2) * p_bar * (1 - p_bar) * (1 + ratio)) /
-        (ratio * Math.pow(p1 - p0, 2))
-    );
+    // Continuity correction used in legacy HTML implementation
+    const correctedSize = baseSize * (1 + 2 / (k + 1));
 
-    // Calculate sample size for controls
-    const n_controls = Math.ceil(n_cases * ratio);
+    const n_cases = Math.ceil(correctedSize);
+    const n_controls = Math.ceil(correctedSize * k);
 
-    return {
-        n_cases,
-        n_controls
-    };
+    return { n_cases, n_controls };
 }
 
 /**
@@ -62,32 +56,23 @@ export function calculateCohortSampleSize(
     p1: number,
     p2: number
 ): { n_exposed: number; n_unexposed: number } {
-    // Calculate risk ratio
-    const riskRatio = p1 / p2;
+    const k = ratio;
+    const zAlpha = normalQuantile(1 - alpha / 2);
+    const zBeta = normalQuantile(power);
 
-    // Calculate average proportion of disease
-    const p_bar = (p1 + ratio * p2) / (1 + ratio);
+    const pBar = (k * p1 + p2) / (k + 1);
+    const qBar = 1 - pBar;
 
-    // Calculate standard error
-    const se = Math.sqrt(
-        (1 / (p1 * (1 - p1))) + (1 / (p2 * (1 - p2)))
+    const numerator = Math.pow(
+        zAlpha * Math.sqrt((1 + 1 / k) * pBar * qBar) +
+        zBeta * Math.sqrt(p1 * (1 - p1) + (p2 * (1 - p2)) / k),
+        2
     );
 
-    // Calculate z-scores
-    const z_alpha = normalQuantile(1 - alpha / 2);
-    const z_beta = normalQuantile(power);
+    const baseSize = numerator / Math.pow(p1 - p2, 2);
 
-    // Calculate sample size for exposed group
-    const n_exposed = Math.ceil(
-        (Math.pow(z_alpha + z_beta, 2) * p_bar * (1 - p_bar) * (1 + ratio)) /
-        (ratio * Math.pow(p1 - p2, 2))
-    );
+    const n_exposed = Math.ceil(baseSize * k);
+    const n_unexposed = Math.ceil(baseSize);
 
-    // Calculate sample size for unexposed group
-    const n_unexposed = Math.ceil(n_exposed * ratio);
-
-    return {
-        n_exposed,
-        n_unexposed
-    };
+    return { n_exposed, n_unexposed };
 }
