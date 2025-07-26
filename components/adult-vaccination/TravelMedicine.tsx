@@ -143,14 +143,14 @@ export function TravelMedicine() {
         <h2 className="text-3xl font-bold text-gradient mb-4">
           Travel Medicine & Vaccines
         </h2>
-        <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Destination-specific vaccination recommendations and travel health guidance
         </p>
       </div>
 
       <div className="glass-card p-8 rounded-3xl">
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+          <h3 className="text-2xl font-bold text-foreground mb-3">
             Travel Health Planning
           </h3>
           <p className="text-slate-600 dark:text-slate-400">
@@ -332,8 +332,8 @@ function TravelResults({ formData, onBack }: { formData: TravelFormData; onBack:
                 Recommended
               </div>
             </div>
-            <div className="glass-card p-6 rounded-2xl text-center border-l-4 border-blue-500">
-              <div className="text-3xl font-bold text-blue-500 mb-2">1</div>
+            <div className="glass-card p-6 rounded-2xl text-center border-l-4 border-primary">
+              <div className="text-3xl font-bold text-primary mb-2">1</div>
               <div className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
                 Consider
               </div>

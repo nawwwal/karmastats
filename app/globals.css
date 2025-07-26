@@ -632,7 +632,7 @@
   }
 
   .priority-low {
-    @apply text-blue-500;
+    @apply text-primary;
   }
 
   /* Timeline styles from HTML file */

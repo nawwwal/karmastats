@@ -93,7 +93,7 @@ const EnhancedProgress = React.forwardRef<
     if (percentage >= 70) {
       return karmaTheme.colors.primary.DEFAULT // #FF8C42
     } else if (percentage >= 40) {
-      return karmaTheme.colors.secondary.DEFAULT // #2C5282
+      return karmaTheme.colors.secondary.DEFAULT // #FFD700 (gold)
     } else {
       return karmaTheme.colors.warning.DEFAULT // #D69E2E
     }
@@ -103,7 +103,7 @@ const EnhancedProgress = React.forwardRef<
     if (percentage >= 70) {
       return karmaTheme.colors.primary.DEFAULT // #FF8C42
     } else if (percentage >= 40) {
-      return karmaTheme.colors.secondary.DEFAULT // #2C5282
+      return karmaTheme.colors.secondary.DEFAULT // #FFD700 (gold)
     } else {
       return karmaTheme.colors.warning.DEFAULT // #D69E2E
     }
@@ -204,7 +204,7 @@ const CircularProgress = React.forwardRef<
       case 'primary':
         return karmaTheme.colors.primary.DEFAULT // #FF8C42
       case 'secondary':
-        return karmaTheme.colors.secondary.DEFAULT // #2C5282
+        return karmaTheme.colors.secondary.DEFAULT // #FFD700 (gold)
       case 'success':
         return karmaTheme.colors.success.DEFAULT // #38A169
       case 'warning':

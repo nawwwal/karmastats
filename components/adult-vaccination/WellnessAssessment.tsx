@@ -305,8 +305,8 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
               Consult Required
             </div>
           </div>
-          <div className="glass-card p-6 rounded-2xl text-center border-l-4 border-blue-500">
-            <div className="text-3xl font-bold text-blue-500 mb-2">4</div>
+          <div className="glass-card p-6 rounded-2xl text-center border-l-4 border-primary">
+            <div className="text-3xl font-bold text-primary mb-2">4</div>
             <div className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
               Future Planning
             </div>
@@ -370,7 +370,7 @@ function WellnessResults({ formData, onBack }: { formData: FormData; onBack: () 
           </div>
         </div>
 
-        <div className="mt-8 p-6 glass-card rounded-2xl border-l-4 border-blue-500">
+        <div className="mt-8 p-6 glass-card rounded-2xl border-l-4 border-primary">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
             📋 Next Steps & Important Notes
           </h3>

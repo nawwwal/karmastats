@@ -158,14 +158,14 @@ export function RiskBasedProtection() {
                 </ul>
               </div>
 
-              <div className="glass-card p-5 rounded-xl border-l-4 border-blue-500">
-                <div className="text-blue-600 font-semibold text-sm mb-3 flex items-center gap-2">
+              <div className="glass-card p-5 rounded-xl border-l-4 border-primary">
+                <div className="text-primary font-semibold text-sm mb-3 flex items-center gap-2">
                   📋 Additional Considerations
                 </div>
                 <ul className="space-y-2">
                   {category.additional.map((item, idx) => (
                     <li key={idx} className="text-sm text-slate-600 dark:text-slate-400 flex items-start gap-2">
-                      <span className="text-blue-500 mt-1">•</span>
+                      <span className="text-primary mt-1">•</span>
                       {item}
                     </li>
                   ))}

@@ -24,7 +24,7 @@ const enhancedButtonVariants = cva(
         glass: "border border-primary/20 hover:border-primary/40 shadow-lg hover:shadow-xl backdrop-blur-md bg-background/60 hover:bg-background/80",
         glow: "bg-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 font-medium",
         shimmer: "bg-gradient-to-r from-primary to-secondary text-white shadow-lg hover:shadow-xl font-semibold",
-        neuomorphic: "bg-[#2C5282] text-white font-semibold transition-all duration-200 ease-in-out shadow-[8px_8px_16px_#1a3a5c,_-8px_-8px_16px_#3e6aa8] hover:shadow-[6px_6px_12px_#1a3a5c,_-6px_-6px_12px_#3e6aa8] active:shadow-[inset_4px_4px_8px_#1a3a5c,_inset_-4px_-4px_8px_#3e6aa8] active:scale-[0.98] focus:shadow-[8px_8px_16px_#1a3a5c,_-8px_-8px_16px_#3e6aa8,_0_0_0_3px_rgba(44,82,130,0.3)]"
+        neuomorphic: "bg-primary text-primary-foreground font-semibold transition-all duration-200 ease-in-out shadow-lg hover:shadow-xl active:shadow-md active:scale-[0.98] focus:ring-2 focus:ring-primary/30"
       },
       size: {
         default: "h-10 px-4 py-2",

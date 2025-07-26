@@ -43,7 +43,7 @@ const allTools = [
     href: "/sample-size/intelligent-detector",
     icon: <Brain className="h-6 w-6" />,
     category: "Sample Size",
-    color: "from-purple-500 to-blue-500",
+    color: "from-purple-500 to-orange-500",
     badge: "AI-Powered"
   },
   {
@@ -61,7 +61,7 @@ const allTools = [
     href: "/sample-size/comparative",
     icon: <BarChart3 className="h-6 w-6" />,
     category: "Sample Size",
-    color: "from-blue-500 to-indigo-500",
+    color: "from-orange-500 to-red-500",
     badge: "Two-group"
   },
   {
@@ -97,7 +97,7 @@ const allTools = [
     href: "/sample-size/cross-sectional",
     icon: <Database className="h-6 w-6" />,
     category: "Sample Size",
-    color: "from-cyan-500 to-blue-500",
+    color: "from-cyan-500 to-teal-500",
     badge: "Survey"
   },
 
@@ -117,7 +117,7 @@ const allTools = [
     href: "/regression",
     icon: <Waves className="h-6 w-6" />,
     category: "Regression",
-    color: "from-indigo-500 to-blue-500",
+    color: "from-amber-500 to-orange-500",
     badge: "Polynomial"
   },
   {

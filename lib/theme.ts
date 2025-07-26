@@ -19,19 +19,19 @@ export const karmaTheme = {
       DEFAULT: '#FF8C42',
     },
 
-    // Secondary colors - Academic blue spectrum
+    // Secondary colors - Gold/yellow spectrum (updated from blue)
     secondary: {
-      50: '#eff6ff',
-      100: '#dbeafe',
-      200: '#bfdbfe',
-      300: '#93c5fd',
-      400: '#60a5fa',
-      500: '#2C5282', // Brand secondary - academic blue (legacy)
-      600: '#1e40af',
-      700: '#1d4ed8',
-      800: '#1e3a8a',
-      900: '#1e3a8a',
-      DEFAULT: '#2C5282',
+      50: '#fffbeb',
+      100: '#fef3c7',
+      200: '#fde68a',
+      300: '#fcd34d',
+      400: '#fbbf24',
+      500: '#FFD700', // Brand secondary - gold (updated from blue)
+      600: '#d97706',
+      700: '#b45309',
+      800: '#92400e',
+      900: '#78350f',
+      DEFAULT: '#FFD700',
     },
 
     // Accent color - From legacy
@@ -206,21 +206,21 @@ export const karmaTheme = {
     radius: '12px', // radius from legacy
   },
 
-  // Gradients - From legacy academic design
+  // Gradients - Updated for orange/gold theme
   gradients: {
     primary: 'linear-gradient(135deg, #FF8C42, #F6AD55, #FFB570)', // gradient-primary from legacy
-    secondary: 'linear-gradient(135deg, #2C5282, #3182CE, #4299E1)', // gradient-secondary from legacy
+    secondary: 'linear-gradient(135deg, #FFD700, #FCD34d, #FDE68A)', // gradient-secondary updated to gold
     bg: 'linear-gradient(135deg, #FFF5F0, #FEEBC8, #FED7AA)', // gradient-bg from legacy
     card: 'linear-gradient(145deg, #FFFFFF, #F7FAFC)', // gradient-card from legacy
-    magic: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // gradient-magic from legacy
-    analytical: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', // gradient-analytical from legacy
-    formula: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // gradient-formula from legacy
+    magic: 'linear-gradient(135deg, #ff8c42 0%, #ffd700 100%)', // gradient-magic updated to orange-gold
+    analytical: 'linear-gradient(135deg, #ff8c42 0%, #00d4aa 100%)', // gradient-analytical updated
+    formula: 'linear-gradient(135deg, #ffd700 0%, #ff8c42 100%)', // gradient-formula updated
     accent: 'linear-gradient(135deg, #F8FDCF, #F6AD55)', // Accent gradient
     success: 'linear-gradient(135deg, #38A169, #68D391)',
     warning: 'linear-gradient(135deg, #D69E2E, #F6E05E)',
     error: 'linear-gradient(135deg, #E53E3E, #FC8181)',
-    hero: 'linear-gradient(135deg, #FF8C42 0%, #2C5282 50%, #F8FDCF 100%)', // Orange to blue to cream
-    sunset: 'linear-gradient(135deg, #FFB570 0%, #FF8C42 25%, #2C5282 75%, #3182CE 100%)', // Full spectrum
+    hero: 'linear-gradient(135deg, #FF8C42 0%, #FFD700 50%, #F8FDCF 100%)', // Orange to gold to cream
+    sunset: 'linear-gradient(135deg, #FFB570 0%, #FF8C42 25%, #FFD700 75%, #FCD34D 100%)', // Full orange-gold spectrum
     warm: 'linear-gradient(135deg, #FFF5F0, #F8FDCF)', // Soft warm gradient
   },
 
@@ -303,8 +303,8 @@ export const lightTheme = {
   popoverForeground: '#2D3748', // text-primary from legacy
   primary: '#FF8C42', // primary from legacy
   primaryForeground: '#FFFFFF', // white text on orange
-  secondary: '#2C5282', // secondary from legacy
-  secondaryForeground: '#FFFFFF', // white text on blue
+  secondary: '#FFD700', // secondary updated to gold
+  secondaryForeground: '#1A202C', // dark text on gold for better contrast
   muted: '#F7FAFC', // bg-secondary from legacy
   mutedForeground: '#718096', // text-muted from legacy
   accent: '#F6AD55', // accent from legacy
@@ -330,8 +330,8 @@ export const darkTheme = {
   popoverForeground: '#F7FAFC', // text-primary from legacy dark
   primary: '#FF8C42', // primary from legacy (same in dark)
   primaryForeground: '#1A202C', // dark text on orange
-  secondary: '#2C5282', // secondary from legacy (same in dark)
-  secondaryForeground: '#F7FAFC', // light text on blue
+  secondary: '#FFD700', // secondary updated to gold (same in dark)
+  secondaryForeground: '#1A202C', // dark text on gold
   muted: '#2D3748', // bg-secondary from legacy dark
   mutedForeground: '#A0AEC0', // text-muted from legacy dark
   accent: '#F6AD55', // accent from legacy (same in dark)

@@ -37,7 +37,7 @@ const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
           // Enhanced hover effects - classy and sophisticated
           hover && "hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.02]",
           // Subtle background shift on hover using proper theme colors
-          hover && "hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-950/10 dark:hover:to-cyan-950/10",
+          hover && "hover:bg-gradient-to-br hover:from-orange-50 hover:to-yellow-50 dark:hover:from-orange-950/10 dark:hover:to-yellow-950/10",
           className
         )}
         ref={ref}
@@ -58,7 +58,7 @@ const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
       >
         {/* Gradient overlay for hover effect - more subtle and elegant */}
         {gradient && isHovered && (
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-cyan-50/30 dark:from-blue-950/10 dark:to-cyan-950/10 rounded-lg transition-opacity duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-50/30 to-yellow-50/30 dark:from-orange-950/10 dark:to-yellow-950/10 rounded-lg transition-opacity duration-500" />
         )}
 
         {/* Replaced cheap glow with elegant accent border */}

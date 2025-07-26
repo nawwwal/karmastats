@@ -106,7 +106,7 @@ export function VaccinationTimeline() {
           ))}
         </div>
 
-        <div className="glass-card p-6 rounded-2xl border-l-4 border-blue-500 mt-12">
+        <div className="glass-card p-6 rounded-2xl border-l-4 border-primary mt-12">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
             💡 Timeline Planning Tips
           </h3>

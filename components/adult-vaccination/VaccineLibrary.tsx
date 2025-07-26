@@ -298,8 +298,8 @@ function VaccineGrid({ vaccines }: { vaccines: any[] }) {
               </ul>
             </div>
 
-            <div className="glass-card p-5 rounded-xl border-l-4 border-blue-500">
-              <div className="text-blue-600 font-semibold text-sm mb-2 flex items-center gap-2">
+            <div className="glass-card p-5 rounded-xl border-l-4 border-primary">
+              <div className="text-primary font-semibold text-sm mb-2 flex items-center gap-2">
                 📅 Schedule
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400">
