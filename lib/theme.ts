@@ -2,43 +2,43 @@
 // Based on legacy karmastat_comparative_fixed.html and ICMR-NIN 2020 Guidelines
 
 export const karmaTheme = {
-  // Core color palette - KARMASTAT Academic Orange-Blue theme
+  // Core color palette - vibrant "sun rays" orange theme
   colors: {
-    // Primary colors - Academic orange spectrum
+    // Primary colors - warm and bright oranges
     primary: {
-      50: '#fff7ed',
-      100: '#ffedd5',
-      200: '#fed7aa',
-      300: '#fdba74',
-      400: '#FFB570', // primary-light from legacy
-      500: '#FF8C42', // Brand primary - vibrant orange (legacy)
-      600: '#E67A2F', // primary-dark from legacy
-      700: '#c2410c',
-      800: '#9a3412',
-      900: '#7c2d12',
-      DEFAULT: '#FF8C42',
+      50: '#FFF7ED',
+      100: '#FFE8D6',
+      200: '#FFD2AD',
+      300: '#FFBB85',
+      400: '#FFA45C',
+      500: '#FF9500', // vivid orange
+      600: '#DB7700',
+      700: '#BB5F00',
+      800: '#9B4500',
+      900: '#7B3200',
+      DEFAULT: '#FF9500',
     },
 
-    // Secondary colors - Academic blue spectrum
+    // Secondary colors - golden yellows complementing the orange
     secondary: {
-      50: '#eff6ff',
-      100: '#dbeafe',
-      200: '#bfdbfe',
-      300: '#93c5fd',
-      400: '#60a5fa',
-      500: '#2C5282', // Brand secondary - academic blue (legacy)
-      600: '#1e40af',
-      700: '#1d4ed8',
-      800: '#1e3a8a',
-      900: '#1e3a8a',
-      DEFAULT: '#2C5282',
+      50: '#FFFBEB',
+      100: '#FEF3C7',
+      200: '#FDE68A',
+      300: '#FCD34D',
+      400: '#FBBF24',
+      500: '#FFA900',
+      600: '#D48806',
+      700: '#B27005',
+      800: '#8F5904',
+      900: '#6C4303',
+      DEFAULT: '#FFA900',
     },
 
     // Accent color - From legacy
     accent: {
-      light: '#F8FDCF', // accent from legacy
-      neutral: '#fdf4e6',
-      DEFAULT: '#F6AD55', // accent from legacy
+      light: '#FFF7D1',
+      neutral: '#FFE9B0',
+      DEFAULT: '#FFD166', // vibrant accent yellow
     },
 
     // Additional legacy colors
@@ -208,20 +208,20 @@ export const karmaTheme = {
 
   // Gradients - From legacy academic design
   gradients: {
-    primary: 'linear-gradient(135deg, #FF8C42, #F6AD55, #FFB570)', // gradient-primary from legacy
-    secondary: 'linear-gradient(135deg, #2C5282, #3182CE, #4299E1)', // gradient-secondary from legacy
-    bg: 'linear-gradient(135deg, #FFF5F0, #FEEBC8, #FED7AA)', // gradient-bg from legacy
+    primary: 'linear-gradient(135deg, #FF9500, #FFA45C, #FFD166)', // bright orange gradient
+    secondary: 'linear-gradient(135deg, #FFA900, #FFD166, #FFE9B0)', // golden secondary gradient
+    bg: 'linear-gradient(135deg, #2B1A08, #4B2A0A, #000)', // dark background gradient
     card: 'linear-gradient(145deg, #FFFFFF, #F7FAFC)', // gradient-card from legacy
     magic: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // gradient-magic from legacy
     analytical: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', // gradient-analytical from legacy
     formula: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // gradient-formula from legacy
-    accent: 'linear-gradient(135deg, #F8FDCF, #F6AD55)', // Accent gradient
+    accent: 'linear-gradient(135deg, #FFE9B0, #FFD166)', // Accent gradient
     success: 'linear-gradient(135deg, #38A169, #68D391)',
     warning: 'linear-gradient(135deg, #D69E2E, #F6E05E)',
     error: 'linear-gradient(135deg, #E53E3E, #FC8181)',
-    hero: 'linear-gradient(135deg, #FF8C42 0%, #2C5282 50%, #F8FDCF 100%)', // Orange to blue to cream
-    sunset: 'linear-gradient(135deg, #FFB570 0%, #FF8C42 25%, #2C5282 75%, #3182CE 100%)', // Full spectrum
-    warm: 'linear-gradient(135deg, #FFF5F0, #F8FDCF)', // Soft warm gradient
+    hero: 'linear-gradient(135deg, #FF9500 0%, #FFA900 50%, #FFD166 100%)', // orange sunrise
+    sunset: 'linear-gradient(135deg, #FFD166 0%, #FF9500 50%, #2B1A08 100%)', // warm sunset
+    warm: 'linear-gradient(135deg, #4B2A0A, #2B1A08)', // Soft dark gradient
   },
 
   // Transitions - From legacy
@@ -301,19 +301,19 @@ export const lightTheme = {
   cardForeground: '#2D3748', // text-primary from legacy
   popover: '#FFFFFF', // bg-primary from legacy
   popoverForeground: '#2D3748', // text-primary from legacy
-  primary: '#FF8C42', // primary from legacy
+  primary: '#FF9500', // bright orange primary
   primaryForeground: '#FFFFFF', // white text on orange
-  secondary: '#2C5282', // secondary from legacy
-  secondaryForeground: '#FFFFFF', // white text on blue
+  secondary: '#FFA900', // golden secondary
+  secondaryForeground: '#1A202C', // dark text on yellow
   muted: '#F7FAFC', // bg-secondary from legacy
   mutedForeground: '#718096', // text-muted from legacy
-  accent: '#F6AD55', // accent from legacy
+  accent: '#FFD166', // yellow accent
   accentForeground: '#2D3748', // text-primary from legacy
   destructive: '#E53E3E', // danger from legacy
   destructiveForeground: '#FFFFFF', // white text
   border: '#E2E8F0', // border-color from legacy
   input: '#E2E8F0', // border-color from legacy
-  ring: '#FF8C42', // primary focus ring
+  ring: '#FF9500', // primary focus ring
   success: '#38A169', // success from legacy
   warning: '#D69E2E', // warning from legacy
   error: '#E53E3E', // danger from legacy
@@ -328,19 +328,19 @@ export const darkTheme = {
   cardForeground: '#F7FAFC', // text-primary from legacy dark
   popover: '#2D3748', // bg-secondary from legacy dark
   popoverForeground: '#F7FAFC', // text-primary from legacy dark
-  primary: '#FF8C42', // primary from legacy (same in dark)
+  primary: '#FF9500', // bright orange
   primaryForeground: '#1A202C', // dark text on orange
-  secondary: '#2C5282', // secondary from legacy (same in dark)
-  secondaryForeground: '#F7FAFC', // light text on blue
+  secondary: '#FFA900', // golden secondary
+  secondaryForeground: '#1A202C', // dark text
   muted: '#2D3748', // bg-secondary from legacy dark
   mutedForeground: '#A0AEC0', // text-muted from legacy dark
-  accent: '#F6AD55', // accent from legacy (same in dark)
-  accentForeground: '#1A202C', // dark text on accent
+  accent: '#FFD166',
+  accentForeground: '#1A202C',
   destructive: '#E53E3E', // danger from legacy
   destructiveForeground: '#F7FAFC', // light text
   border: '#4A5568', // border-color from legacy dark
   input: '#4A5568', // border-color from legacy dark
-  ring: '#FF8C42', // primary focus ring
+  ring: '#FF9500', // primary focus ring
   success: '#38A169', // success from legacy
   warning: '#D69E2E', // warning from legacy
   error: '#E53E3E', // danger from legacy

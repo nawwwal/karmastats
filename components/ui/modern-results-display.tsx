@@ -211,7 +211,7 @@ export function ModernResultsDisplay({
             {getTrendIcon(item.trend)}
           </div>
           <div className="space-y-2">
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-extrabold text-glow">
               {formatNumber(item.value, item.format)}
             </div>
             {item.description && (
@@ -230,7 +230,7 @@ export function ModernResultsDisplay({
     <div className={cn("space-y-6", className)}>
       {title && (
         <div className="space-y-2">
-                  <h2 className="text-3xl font-bold text-foreground">{title}</h2>
+                  <h2 className="text-4xl font-extrabold text-foreground text-glow">{title}</h2>
         <p className="text-lg text-muted-foreground">
             Statistical analysis results
           </p>

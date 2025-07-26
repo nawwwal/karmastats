@@ -4,29 +4,29 @@
 
 @layer base {
   :root {
-    /* Base colors - Light theme using correct Karmastat colors */
-    --background: 210 20% 98%; /* Light gray-blue background */
-    --foreground: 210 20% 15%; /* Dark text */
+    /* Base colors - Light theme using new vibrant orange palette */
+    --background: 34 100% 97%; /* very light orange tint */
+    --foreground: 24 90% 10%; /* dark brown text */
     --card: 210 20% 100%; /* Pure white cards */
     --card-foreground: 210 20% 15%; /* Dark text */
     --popover: 210 20% 100%; /* White popover */
     --popover-foreground: 210 20% 15%; /* Dark text */
 
-    /* Primary colors - Karmastat primary blue #146C94 */
-    --primary: 207 75% 33%; /* #146C94 - Karmastat primary blue */
-    --primary-foreground: 210 20% 98%; /* Light text on blue */
+    /* Primary colors - bright sunburst orange */
+    --primary: 32 100% 50%; /* vivid orange */
+    --primary-foreground: 0 0% 100%; /* white text */
 
-    /* Secondary colors - Karmastat secondary blue #19A7CE */
-    --secondary: 195 76% 45%; /* #19A7CE - Karmastat secondary blue */
-    --secondary-foreground: 210 20% 15%; /* Dark text on light blue */
+    /* Secondary colors - complementary golden yellow */
+    --secondary: 40 100% 55%;
+    --secondary-foreground: 24 90% 10%;
 
     /* Muted colors - Neutral grays */
     --muted: 210 20% 96%; /* Light gray background */
     --muted-foreground: 210 10% 45%; /* Medium gray text */
 
-    /* Accent colors - Karmastat accent #F8FDCF */
-    --accent: 60 67% 90%; /* #F8FDCF - Karmastat accent cream */
-    --accent-foreground: 210 20% 15%; /* Dark text on cream */
+    /* Accent colors */
+    --accent: 45 100% 85%; /* soft yellow */
+    --accent-foreground: 24 90% 10%;
 
     /* Semantic colors */
     --success: 122 39% 49%; /* Green */
@@ -45,53 +45,53 @@
     /* Border and input */
     --border: 210 20% 90%; /* Light gray borders */
     --input: 210 20% 90%; /* Light gray input borders */
-    --ring: 207 75% 33%; /* Primary blue focus ring */
+    --ring: 32 100% 50%; /* Orange focus ring */
 
     /* Radius */
     --radius: 0.75rem;
 
-    /* Chart colors - Karmastat blue palette */
-    --chart-1: 207 75% 33%; /* Primary blue */
-    --chart-2: 195 76% 45%; /* Secondary blue */
-    --chart-3: 200 80% 55%; /* Light blue */
-    --chart-4: 215 70% 40%; /* Dark blue */
-    --chart-5: 185 85% 60%; /* Cyan blue */
+    /* Chart colors - warm oranges */
+    --chart-1: 32 100% 50%;
+    --chart-2: 40 100% 55%;
+    --chart-3: 45 100% 60%;
+    --chart-4: 24 90% 45%;
+    --chart-5: 15 90% 40%;
 
     /* Sidebar colors */
     --sidebar: 210 20% 100%; /* White sidebar */
     --sidebar-foreground: 210 20% 15%; /* Dark text */
-    --sidebar-primary: 207 75% 33%; /* Primary blue */
-    --sidebar-primary-foreground: 210 20% 98%; /* Light text on blue */
-    --sidebar-accent: 210 20% 96%; /* Light gray accent */
-    --sidebar-accent-foreground: 210 20% 15%; /* Dark text */
-    --sidebar-border: 210 20% 90%; /* Light gray border */
-    --sidebar-ring: 207 75% 33%; /* Primary blue focus ring */
+    --sidebar-primary: 32 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 34 100% 97%;
+    --sidebar-accent-foreground: 24 90% 10%;
+    --sidebar-border: 34 100% 90%;
+    --sidebar-ring: 32 100% 50%;
   }
 
   .dark {
-    /* Base colors - Dark theme with Karmastat blues */
-    --background: 210 20% 8%; /* Dark background */
-    --foreground: 210 20% 95%; /* Light text */
-    --card: 210 20% 12%; /* Dark card background */
-    --card-foreground: 210 20% 95%; /* Light text */
-    --popover: 210 20% 12%; /* Dark popover */
-    --popover-foreground: 210 20% 95%; /* Light text */
+    /* Base colors - Dark orange theme */
+    --background: 24 90% 8%;
+    --foreground: 34 100% 95%;
+    --card: 24 90% 10%;
+    --card-foreground: 34 100% 95%;
+    --popover: 24 90% 10%;
+    --popover-foreground: 34 100% 95%;
 
-    /* Primary colors - Lighter blue for dark mode */
-    --primary: 195 76% 65%; /* Lighter blue for dark mode */
-    --primary-foreground: 210 20% 8%; /* Dark text on blue */
+    /* Primary colors - bright orange for dark mode */
+    --primary: 32 100% 60%;
+    --primary-foreground: 24 90% 10%;
 
-    /* Secondary colors - Lighter secondary for dark mode */
-    --secondary: 185 85% 70%; /* Lighter secondary blue */
-    --secondary-foreground: 210 20% 8%; /* Dark text */
+    /* Secondary colors - golden accent */
+    --secondary: 40 100% 60%;
+    --secondary-foreground: 24 90% 10%;
 
     /* Muted colors */
     --muted: 210 20% 20%; /* Dark muted background */
     --muted-foreground: 210 20% 70%; /* Light muted text */
 
     /* Accent colors */
-    --accent: 210 20% 25%; /* Dark accent background */
-    --accent-foreground: 210 20% 95%; /* Light text */
+    --accent: 35 100% 25%;
+    --accent-foreground: 34 100% 95%;
 
     /* Semantic colors - Dark theme variants */
     --success: 122 39% 69%; /* Lighter green */
@@ -110,24 +110,24 @@
     /* Border and input */
     --border: 210 20% 25%; /* Dark borders */
     --input: 210 20% 25%; /* Dark input borders */
-    --ring: 195 76% 65%; /* Light blue focus ring */
+    --ring: 32 100% 60%;
 
     /* Chart colors - Dark theme */
-    --chart-1: 195 76% 65%; /* Lighter primary for dark */
-    --chart-2: 185 85% 70%; /* Lighter secondary for dark */
-    --chart-3: 200 80% 75%; /* Light blue for dark */
-    --chart-4: 215 70% 60%; /* Dark blue for dark */
-    --chart-5: 185 85% 80%; /* Cyan blue for dark */
+    --chart-1: 32 100% 60%;
+    --chart-2: 40 100% 60%;
+    --chart-3: 45 100% 65%;
+    --chart-4: 24 90% 50%;
+    --chart-5: 15 90% 45%;
 
     /* Sidebar colors - Dark theme */
-    --sidebar: 210 20% 12%; /* Dark sidebar */
-    --sidebar-foreground: 210 20% 95%; /* Light text */
-    --sidebar-primary: 195 76% 65%; /* Lighter blue */
-    --sidebar-primary-foreground: 210 20% 8%; /* Dark text */
-    --sidebar-accent: 210 20% 25%; /* Dark accent */
-    --sidebar-accent-foreground: 210 20% 95%; /* Light text */
-    --sidebar-border: 210 20% 25%; /* Dark border */
-    --sidebar-ring: 195 76% 65%; /* Light blue focus ring */
+    --sidebar: 24 90% 10%;
+    --sidebar-foreground: 34 100% 95%;
+    --sidebar-primary: 32 100% 60%;
+    --sidebar-primary-foreground: 24 90% 10%;
+    --sidebar-accent: 35 100% 25%;
+    --sidebar-accent-foreground: 34 100% 95%;
+    --sidebar-border: 24 90% 15%;
+    --sidebar-ring: 32 100% 60%;
   }
 
   /* Base element styles */
