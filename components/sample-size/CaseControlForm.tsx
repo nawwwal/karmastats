@@ -28,8 +28,8 @@ import {
 import { Calculator, AlertCircle, FileUp, Users } from 'lucide-react';
 
 const formSchema = z.object({
-  alpha: z.string().min(1, "Alpha level is required"),
-  power: z.string().min(1, "Power is required"),
+  alpha: z.number().min(1, "Alpha level is required"),
+  power: z.number().min(1, "Power is required"),
   ratio: z.number().min(0.1, "Ratio must be at least 0.1").max(10, "Ratio must be at most 10"),
   p0: z.number().min(0.001, "Control exposure rate must be at least 0.1%").max(0.999, "Control exposure rate must be less than 99.9%"),
   p1: z.number().min(0.001, "Case exposure rate must be at least 0.1%").max(0.999, "Case exposure rate must be less than 99.9%"),
@@ -47,8 +47,8 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      alpha: '5',
-      power: '80',
+      alpha: 5,
+      power: 80,
       ratio: 1,
       p0: 0.2, // 20% exposure in controls (realistic for case-control studies)
       p1: 0.4, // 40% exposure in cases (detectable odds ratio ~2.67)
@@ -58,8 +58,8 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
   const onSubmit = useCallback((values: FormData) => {
     try {
       setError(null);
-      const alpha = parseFloat(values.alpha) / 100;
-      const power = parseFloat(values.power) / 100;
+      const alpha = values.alpha / 100;
+      const power = values.power / 100;
       const { ratio, p0, p1 } = values;
 
     const sampleSize = calculateCaseControlSampleSize(

@@ -44,7 +44,7 @@ const FormSchema = z.object({
     expectedSpecificity: z.number().min(1, "Specificity must be at least 1%").max(100, "Specificity cannot exceed 100%").optional(),
     diseasePrevalence: z.number().min(0.1, "Prevalence must be at least 0.1%").max(99.9, "Prevalence cannot exceed 99.9%").optional(),
     marginOfError: z.number().min(0.1, "Margin of error must be at least 0.1%").max(50, "Margin of error cannot exceed 50%").optional(),
-    alpha: z.string().min(1, "Alpha level is required").optional(),
+    alpha: z.number().min(1, "Alpha level is required").optional(),
     dropoutRate: z.number().min(0, "Dropout rate cannot be negative").max(50, "Dropout rate cannot exceed 50%").optional(),
     // Comparative
     studyDesign: z.enum(['paired', 'unpaired']).optional(),
@@ -52,7 +52,7 @@ const FormSchema = z.object({
     test1Performance: z.number().min(1, "Test 1 performance must be at least 1%").max(100, "Test 1 performance cannot exceed 100%").optional(),
     test2Performance: z.number().min(1, "Test 2 performance must be at least 1%").max(100, "Test 2 performance cannot exceed 100%").optional(),
     testCorrelation: z.number().min(0, "Correlation cannot be negative").max(1, "Correlation cannot exceed 1").optional(),
-    power: z.string().min(1, "Power is required").optional(),
+    power: z.number().min(1, "Power is required").optional(),
     // ROC
     expectedAUC: z.number().min(0.5, "AUC must be at least 0.5").max(1, "AUC cannot exceed 1").optional(),
     nullAUC: z.number().min(0.5, "Null AUC must be at least 0.5").max(1, "Null AUC cannot exceed 1").optional(),
@@ -72,7 +72,7 @@ export default function DiagnosticTestPage() {
             expectedSpecificity: 90, // 90% specificity (good specificity)
             diseasePrevalence: 20, // 20% prevalence (moderate prevalence)
             marginOfError: 5, // 5% margin of error (typical precision)
-            alpha: '5', // 5% alpha level
+            alpha: 5, // 5% alpha level
             dropoutRate: 10, // 10% dropout rate
             // Comparative
             studyDesign: 'paired',
@@ -80,7 +80,7 @@ export default function DiagnosticTestPage() {
             test1Performance: 80, // 80% performance for test 1
             test2Performance: 90, // 90% performance for test 2 (detectable difference)
             testCorrelation: 0.5, // Moderate correlation
-            power: '80', // 80% power
+            power: 80, // 80% power
             // ROC
             expectedAUC: 0.80, // 80% AUC (good discriminative ability)
             nullAUC: 0.5, // 50% null hypothesis
@@ -99,8 +99,8 @@ export default function DiagnosticTestPage() {
             // Convert all relevant fields to numbers before validation
             const processedData = {
                 ...data,
-                alpha: data.alpha ? parseFloat(data.alpha) : undefined,
-                power: data.power ? parseFloat(data.power) : undefined,
+                alpha: data.alpha !== undefined ? Number(data.alpha) : undefined,
+                power: data.power !== undefined ? Number(data.power) : undefined,
                 expectedSensitivity: data.expectedSensitivity ? Number(data.expectedSensitivity) : undefined,
                 expectedSpecificity: data.expectedSpecificity ? Number(data.expectedSpecificity) : undefined,
                 diseasePrevalence: data.diseasePrevalence ? Number(data.diseasePrevalence) : undefined,
@@ -558,7 +558,18 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Expected Sensitivity (%)</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.1" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    {...field}
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -567,7 +578,18 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Expected Specificity (%)</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.1" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    {...field}
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -583,7 +605,19 @@ export default function DiagnosticTestPage() {
                                                 <FormLabel>Disease Prevalence (%)</FormLabel>
                                             </FieldPopover>
                                             <FormControl>
-                                                <Input type="number" step="0.1" {...field} className="w-full" />
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    {...field}
+                                                    className="w-full"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -597,7 +631,19 @@ export default function DiagnosticTestPage() {
                                                 <FormLabel>Margin of Error (%)</FormLabel>
                                             </FieldPopover>
                                             <FormControl>
-                                                <Input type="number" step="0.1" {...field} className="w-full" />
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    {...field}
+                                                    className="w-full"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -609,7 +655,19 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Confidence Level (%)</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="1" {...field} className="w-full" />
+                                                <Input
+                                                    type="number"
+                                                    step="1"
+                                                    {...field}
+                                                    className="w-full"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -667,7 +725,18 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Test 1 Performance (%)</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.1" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    {...field}
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -676,7 +745,18 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Test 2 Performance (%)</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.1" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    {...field}
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -687,7 +767,20 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Test Correlation</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.01" min="0" max="1" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    max="1"
+                                                    {...field}
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -709,7 +802,21 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Expected AUC</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.01" min="0" max="1" {...field} className="w-full" />
+                                                <Input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    max="1"
+                                                    {...field}
+                                                    className="w-full"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -718,7 +825,21 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Null AUC</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.01" min="0" max="1" {...field} className="w-full" />
+                                                <Input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    max="1"
+                                                    {...field}
+                                                    className="w-full"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -730,7 +851,19 @@ export default function DiagnosticTestPage() {
                                         <FormItem>
                                             <FormLabel>Negative:Positive Ratio</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.1" {...field} className="w-full" />
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    {...field}
+                                                    className="w-full"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.value === ''
+                                                                ? undefined
+                                                                : parseFloat(e.target.value)
+                                                        )
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -752,7 +885,19 @@ export default function DiagnosticTestPage() {
                                 <FormItem>
                                     <FormLabel>Significance Level (%)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" step="0.1" {...field} className="w-full" />
+                                        <Input
+                                            type="number"
+                                            step="0.1"
+                                            {...field}
+                                            className="w-full"
+                                            onChange={(e) =>
+                                                field.onChange(
+                                                    e.target.value === ''
+                                                        ? undefined
+                                                        : parseFloat(e.target.value)
+                                                )
+                                            }
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -761,7 +906,19 @@ export default function DiagnosticTestPage() {
                                 <FormItem>
                                     <FormLabel>Power (%)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" step="1" {...field} className="w-full" />
+                                        <Input
+                                            type="number"
+                                            step="1"
+                                            {...field}
+                                            className="w-full"
+                                            onChange={(e) =>
+                                                field.onChange(
+                                                    e.target.value === ''
+                                                        ? undefined
+                                                        : parseFloat(e.target.value)
+                                                )
+                                            }
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -773,7 +930,19 @@ export default function DiagnosticTestPage() {
                                 <FormItem>
                                     <FormLabel>Dropout Rate (%)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" step="0.1" {...field} className="w-full" />
+                                        <Input
+                                            type="number"
+                                            step="0.1"
+                                            {...field}
+                                            className="w-full"
+                                            onChange={(e) =>
+                                                field.onChange(
+                                                    e.target.value === ''
+                                                        ? undefined
+                                                        : parseFloat(e.target.value)
+                                                )
+                                            }
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

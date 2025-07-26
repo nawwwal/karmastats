@@ -45,8 +45,8 @@ type Results = SuperiorityBinaryOutput | SuperiorityContinuousOutput | NonInferi
 const FormSchema = z.object({
     superiorityOutcome: z.enum(['binary', 'continuous']).optional(),
     // Allow all fields to be optional for the combined form
-    alpha: z.string().optional(),
-    power: z.string().optional(),
+    alpha: z.number().optional(),
+    power: z.number().optional(),
     allocationRatio: z.number().optional(),
     dropoutRate: z.number().optional(),
     // Superiority binary
@@ -71,8 +71,8 @@ export default function ClinicalTrialsPage() {
         resolver: zodResolver(FormSchema),
         defaultValues: {
             superiorityOutcome: 'binary',
-            alpha: '5',
-            power: '80',
+            alpha: 5,
+            power: 80,
             allocationRatio: 1,
             dropoutRate: 15,
             // Superiority Binary - Realistic clinical trial scenario (success rates)

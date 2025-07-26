@@ -51,8 +51,8 @@ export default function TTestPage() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       // Common
-      alpha: '5', // 5% alpha level
-      power: '80', // 80% power
+      alpha: 5, // 5% alpha level
+      power: 80, // 80% power
       dropoutRate: 10,
 
       // Independent
@@ -82,8 +82,8 @@ export default function TTestPage() {
       // Convert all relevant fields to numbers before validation
       const processedData = {
         ...data,
-        alpha: parseFloat(data.alpha || '0'),
-        power: parseFloat(data.power || '0'),
+        alpha: data.alpha !== undefined ? Number(data.alpha) : undefined,
+        power: data.power !== undefined ? Number(data.power) : undefined,
         group1Mean: data.group1Mean ? Number(data.group1Mean) : undefined,
         group2Mean: data.group2Mean ? Number(data.group2Mean) : undefined,
         pooledSD: data.pooledSD ? Number(data.pooledSD) : undefined,
@@ -189,8 +189,8 @@ export default function TTestPage() {
           { label: "Group 2 Mean", value: formData.group2Mean },
           { label: "Pooled Standard Deviation", value: formData.pooledSD },
           { label: "Allocation Ratio", value: formData.allocationRatio },
-          { label: "Significance Level", value: parseFloat(formData.alpha || '5'), unit: "%" },
-          { label: "Statistical Power", value: parseFloat(formData.power || '80'), unit: "%" }
+          { label: "Significance Level", value: Number(formData.alpha ?? 5), unit: "%" },
+          { label: "Statistical Power", value: Number(formData.power ?? 80), unit: "%" }
         ];
         config.results = [
           { label: "Total Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
@@ -206,8 +206,8 @@ export default function TTestPage() {
           { label: "Expected Mean Difference", value: formData.meanDifference },
           { label: "Standard Deviation of Differences", value: formData.sdDifference },
           { label: "Correlation between Pairs", value: formData.correlation },
-          { label: "Significance Level", value: parseFloat(formData.alpha || '5'), unit: "%" },
-          { label: "Statistical Power", value: parseFloat(formData.power || '80'), unit: "%" }
+          { label: "Significance Level", value: Number(formData.alpha ?? 5), unit: "%" },
+          { label: "Statistical Power", value: Number(formData.power ?? 80), unit: "%" }
         ];
         config.results = [
           { label: "Required Number of Pairs", value: results.pairsSize, highlight: true, category: "primary", format: "integer" },
@@ -222,8 +222,8 @@ export default function TTestPage() {
           { label: "Expected Sample Mean", value: formData.sampleMean },
           { label: "Population Mean (H₀)", value: formData.populationMean },
           { label: "Population Standard Deviation", value: formData.populationSD },
-          { label: "Significance Level", value: parseFloat(formData.alpha || '5'), unit: "%" },
-          { label: "Statistical Power", value: parseFloat(formData.power || '80'), unit: "%" }
+          { label: "Significance Level", value: Number(formData.alpha ?? 5), unit: "%" },
+          { label: "Statistical Power", value: Number(formData.power ?? 80), unit: "%" }
         ];
         config.results = [
           { label: "Required Sample Size", value: results.sampleSize, highlight: true, category: "primary", format: "integer" },
@@ -496,7 +496,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Group 1 Mean</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -505,7 +516,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Group 2 Mean</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -514,7 +536,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Pooled Standard Deviation</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -523,7 +556,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Allocation Ratio (Group 1:Group 2)</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.1" {...field} />
+                            <Input
+                              type="number"
+                              step="0.1"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -545,7 +589,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Expected Mean Difference</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -554,7 +609,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Standard Deviation of Differences</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -563,7 +629,20 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Correlation between Pairs</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" min="0" max="1" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              max="1"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -585,7 +664,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Expected Sample Mean</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -594,7 +684,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Population Mean (H₀)</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -603,7 +704,18 @@ export default function TTestPage() {
                         <FormItem>
                           <FormLabel>Population Standard Deviation</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
