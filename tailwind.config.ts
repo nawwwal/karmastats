@@ -375,6 +375,11 @@ const config = {
         "fade-in-up": "fade-in-up 1s ease-out",
         "fade-in-up-delayed": "fade-in-up-delayed 2s ease-out",
         "fade-in-up-late": "fade-in-up-late 3s ease-out",
+
+        // Sun-like glow animations for KARMASTAT title
+        "solar-pulse": "solar-pulse 2s ease-in-out infinite",
+        "solar-rays": "solar-rays 8s linear infinite",
+        "solar-radiance": "solar-radiance 3s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -388,6 +393,10 @@ const config = {
         "mesh-gradient": `radial-gradient(circle at 25% 25%, #ff6b35 0%, transparent 50%), radial-gradient(circle at 75% 75%, #ffd700 0%, transparent 50%), radial-gradient(circle at 50% 50%, #00d4aa 0%, transparent 50%)`,
         "rainbow-gradient": "linear-gradient(45deg, #ff6b35, #ffd700, #00d4aa, #10b981, #3b82f6, #f59e0b, #ef4444)",
         "glass-gradient": "linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))",
+
+        // Sun glow gradients for KARMASTAT title
+        "sun-radial": "radial-gradient(circle, #ff6b35 0%, #ffd700 30%, transparent 70%)",
+        "sun-glow": "radial-gradient(circle, rgba(255, 107, 53, 0.4) 0%, rgba(255, 215, 0, 0.3) 40%, transparent 70%)",
       },
       backdropBlur: {
         xs: '2px',

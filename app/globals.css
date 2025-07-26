@@ -1404,6 +1404,61 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
+/* Sun-like Glow Animations for KARMASTAT Title */
+@keyframes solar-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes solar-rays {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.3;
+  }
+}
+
+@keyframes solar-radiance {
+  0%, 100% {
+    opacity: 0.2;
+    filter: blur(20px);
+  }
+  50% {
+    opacity: 0.5;
+    filter: blur(15px);
+  }
+}
+
+/* Custom gradient utilities */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+.animate-solar-pulse {
+  animation: solar-pulse 2s ease-in-out infinite;
+}
+
+.animate-solar-rays {
+  animation: solar-rays 8s linear infinite;
+}
+
+.animate-solar-radiance {
+  animation: solar-radiance 3s ease-in-out infinite;
+}
+
 /* Responsive animations */
 @media (prefers-reduced-motion: reduce) {
   .animate-gradient-x,
@@ -1417,7 +1472,10 @@
   .animate-bounce-slow,
   .animate-glow-pulse,
   .animate-glow-button,
-  .animate-border-glow {
+  .animate-border-glow,
+  .animate-solar-pulse,
+  .animate-solar-rays,
+  .animate-solar-radiance {
     animation: none;
   }
 }
