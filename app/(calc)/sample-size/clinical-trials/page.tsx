@@ -71,8 +71,8 @@ export default function ClinicalTrialsPage() {
         resolver: zodResolver(FormSchema),
         defaultValues: {
             superiorityOutcome: 'binary',
-            alpha: '5',
-            power: '80',
+            alpha: 5,
+            power: 80,
             allocationRatio: 1,
             dropoutRate: 15,
             // Superiority Binary - Realistic clinical trial scenario (success rates)

@@ -47,8 +47,8 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      alpha: '5',
-      power: '80',
+      alpha: 5,
+      power: 80,
       ratio: 1,
       p0: 0.2, // 20% exposure in controls (realistic for case-control studies)
       p1: 0.4, // 40% exposure in cases (detectable odds ratio ~2.67)

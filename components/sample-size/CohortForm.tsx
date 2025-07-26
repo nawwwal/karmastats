@@ -47,8 +47,8 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      alpha: '5',
-      power: '80',
+      alpha: 5,
+      power: 80,
       ratio: 1,
       p1: 0.25, // 25% disease rate in exposed (meaningful relative risk)
       p2: 0.10, // 10% disease rate in unexposed (baseline rate)
