@@ -28,8 +28,8 @@ import {
 import { Calculator, AlertCircle, FileUp, TrendingUp } from 'lucide-react';
 
 const formSchema = z.object({
-  alpha: z.string().min(1, "Alpha level is required"),
-  power: z.string().min(1, "Power is required"),
+  alpha: z.number().min(1, "Alpha level is required"),
+  power: z.number().min(1, "Power is required"),
   ratio: z.number().min(0.1, "Ratio must be at least 0.1").max(10, "Ratio must be at most 10"),
   p1: z.number().min(0.001, "Disease rate in exposed must be at least 0.1%").max(0.999, "Disease rate in exposed must be less than 99.9%"),
   p2: z.number().min(0.001, "Disease rate in unexposed must be at least 0.1%").max(0.999, "Disease rate in unexposed must be less than 99.9%"),
@@ -58,8 +58,8 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
   const onSubmit = useCallback((values: FormData) => {
     try {
       setError(null);
-      const alpha = parseFloat(values.alpha) / 100;
-      const power = parseFloat(values.power) / 100;
+      const alpha = values.alpha / 100;
+      const power = values.power / 100;
       const { ratio, p1, p2 } = values;
 
     const sampleSize = calculateCohortSampleSize(

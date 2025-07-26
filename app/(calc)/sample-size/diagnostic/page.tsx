@@ -44,7 +44,7 @@ const FormSchema = z.object({
     expectedSpecificity: z.number().min(1, "Specificity must be at least 1%").max(100, "Specificity cannot exceed 100%").optional(),
     diseasePrevalence: z.number().min(0.1, "Prevalence must be at least 0.1%").max(99.9, "Prevalence cannot exceed 99.9%").optional(),
     marginOfError: z.number().min(0.1, "Margin of error must be at least 0.1%").max(50, "Margin of error cannot exceed 50%").optional(),
-    alpha: z.string().min(1, "Alpha level is required").optional(),
+    alpha: z.number().min(1, "Alpha level is required").optional(),
     dropoutRate: z.number().min(0, "Dropout rate cannot be negative").max(50, "Dropout rate cannot exceed 50%").optional(),
     // Comparative
     studyDesign: z.enum(['paired', 'unpaired']).optional(),
@@ -52,7 +52,7 @@ const FormSchema = z.object({
     test1Performance: z.number().min(1, "Test 1 performance must be at least 1%").max(100, "Test 1 performance cannot exceed 100%").optional(),
     test2Performance: z.number().min(1, "Test 2 performance must be at least 1%").max(100, "Test 2 performance cannot exceed 100%").optional(),
     testCorrelation: z.number().min(0, "Correlation cannot be negative").max(1, "Correlation cannot exceed 1").optional(),
-    power: z.string().min(1, "Power is required").optional(),
+    power: z.number().min(1, "Power is required").optional(),
     // ROC
     expectedAUC: z.number().min(0.5, "AUC must be at least 0.5").max(1, "AUC cannot exceed 1").optional(),
     nullAUC: z.number().min(0.5, "Null AUC must be at least 0.5").max(1, "Null AUC cannot exceed 1").optional(),
@@ -99,8 +99,8 @@ export default function DiagnosticTestPage() {
             // Convert all relevant fields to numbers before validation
             const processedData = {
                 ...data,
-                alpha: data.alpha ? parseFloat(data.alpha) : undefined,
-                power: data.power ? parseFloat(data.power) : undefined,
+                alpha: data.alpha !== undefined && data.alpha !== '' ? Number(data.alpha) : undefined,
+                power: data.power !== undefined && data.power !== '' ? Number(data.power) : undefined,
                 expectedSensitivity: data.expectedSensitivity ? Number(data.expectedSensitivity) : undefined,
                 expectedSpecificity: data.expectedSpecificity ? Number(data.expectedSpecificity) : undefined,
                 diseasePrevalence: data.diseasePrevalence ? Number(data.diseasePrevalence) : undefined,
