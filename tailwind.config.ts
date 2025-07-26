@@ -321,7 +321,7 @@ const config = {
         gradientFast: "gradientShift 8s ease-in-out infinite",
         meshMove: "meshMove 60s ease-in-out infinite",
         rainbowShift: "rainbowShift 30s ease-in-out infinite",
-        shimmer: "shimmer 8s ease-in-out infinite",
+        shimmer: "shimmer 3s ease-in-out infinite",
 
         // Background gradient animation for AnimatedGradient component
         "background-gradient": "backgroundGradient var(--background-gradient-speed, 20s) ease-in-out infinite",
@@ -372,6 +372,25 @@ const config = {
         ping: "ping 3s cubic-bezier(0, 0, 0.2, 1) infinite",
         spin: "spin 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite",
         scale: "scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+
+        // Hero section dynamic animations
+        "gradient-x": "gradient-x 8s ease infinite",
+        "float": "float 6s ease-in-out infinite",
+        "float-delayed": "float-delayed 8s ease-in-out infinite",
+        "float-particle-1": "float-particle-1 20s linear infinite",
+        "float-particle-2": "float-particle-2 25s linear infinite",
+        "float-particle-3": "float-particle-3 18s linear infinite",
+        "pulse-slow": "pulse-slow 4s ease-in-out infinite",
+        "pulse-fast": "pulse-fast 2s ease-in-out infinite",
+        "spin-slow": "spin-slow 20s linear infinite",
+        "spin-reverse": "spin-reverse 15s linear infinite",
+        "bounce-slow": "bounce-slow 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "glow-button": "glow-button 2s ease-in-out infinite",
+        "border-glow": "border-glow 2.5s ease-in-out infinite",
+        "fade-in-up": "fade-in-up 1s ease-out",
+        "fade-in-up-delayed": "fade-in-up-delayed 2s ease-out",
+        "fade-in-up-late": "fade-in-up-late 3s ease-out",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

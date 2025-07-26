@@ -283,45 +283,91 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
-        {/* Simple gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-secondary/60 to-accent/40" />
-        <div className="absolute inset-0 bg-black/10" />
+        {/* Dynamic Background with Multiple Layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent animate-gradient-x" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-warning/20 to-transparent animate-pulse-slow" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,107,53,0.3),transparent_50%)] animate-float" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(255,215,0,0.3),transparent_50%)] animate-float-delayed" />
+        
+        {/* Animated Sun Rays */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-gradient-to-r from-warning/30 to-primary/30 animate-spin-slow blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-gradient-to-r from-secondary/40 to-warning/40 animate-spin-reverse blur-2xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-gradient-to-r from-primary/50 to-secondary/50 animate-pulse-fast blur-xl" />
+        </div>
+        
+        {/* Floating Particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className={`absolute w-2 h-2 bg-white/40 rounded-full animate-float-particle-${i % 3 + 1}`}
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: `${15 + Math.random() * 10}s`
+              }}
+            />
+          ))}
+        </div>
 
-        {/* Static decorative elements */}
-        <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl" />
-        <div className="absolute top-40 right-32 w-24 h-24 bg-secondary/20 rounded-full blur-xl" />
-        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-primary/15 rounded-full blur-xl" />
+        {/* Geometric Shapes */}
+        <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-warning/30 to-primary/30 rounded-full blur-xl animate-bounce-slow" />
+        <div className="absolute top-1/4 right-20 w-24 h-24 bg-gradient-to-br from-secondary/40 to-accent/40 rounded-full blur-lg animate-float" />
+        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-gradient-to-br from-primary/25 to-warning/25 rounded-full blur-2xl animate-pulse-slow" />
+        <div className="absolute top-1/3 right-1/3 w-16 h-16 bg-gradient-to-br from-accent/50 to-secondary/50 rotate-45 blur-sm animate-spin-slow" />
+        <div className="absolute bottom-1/4 right-10 w-20 h-20 bg-gradient-to-br from-warning/40 to-primary/40 rounded-full blur-lg animate-float-delayed" />
 
-        <div className="relative container mx-auto px-4 text-center w-full text-white">
+        <div className="relative container mx-auto px-4 text-center w-full text-white z-10">
           <div className="max-w-4xl mx-auto space-y-8">
-            <div className="space-y-4">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6">
-              <Sparkles className="w-4 h-4 text-warning" />
-              <span>15 Advanced Statistical Tools</span>
-              <Sparkles className="w-4 h-4 text-warning" />
+            <div className="space-y-6">
+              {/* Enhanced Badge with Glow */}
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/30 rounded-full text-sm font-medium mb-8 shadow-2xl animate-glow-pulse">
+                <Sparkles className="w-4 h-4 text-warning animate-spin-slow" />
+                <span className="bg-gradient-to-r from-white to-warning bg-clip-text text-transparent font-semibold">15 Advanced Statistical Tools</span>
+                <Sparkles className="w-4 h-4 text-warning animate-spin-slow" />
+              </div>
+
+              {/* Main Title with Sun-like Radiance */}
+              <div className="relative">
+                <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-transparent bg-gradient-to-r from-warning via-white to-warning bg-clip-text animate-shimmer drop-shadow-2xl">
+                  KARMASTAT
+                </h1>
+                {/* Radiating Glow Effect */}
+                <div className="absolute inset-0 text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-warning/20 blur-sm animate-pulse-fast">
+                  KARMASTAT
+                </div>
+                <div className="absolute inset-0 text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-white/10 blur-lg animate-pulse-slow">
+                  KARMASTAT
+                </div>
+              </div>
+              
+              {/* Subtitle with Enhanced Typography */}
+              <div className="text-xl md:text-3xl text-white/95 font-light max-w-3xl mx-auto leading-relaxed tracking-wide animate-fade-in-up">
+                <span className="bg-gradient-to-r from-white via-warning/80 to-white bg-clip-text text-transparent">
+                  Advanced Statistical Analysis Platform
+                </span>
+              </div>
+              
+              {/* Description with Motion */}
+              <div className="text-lg md:text-xl text-white/85 max-w-2xl mx-auto leading-relaxed animate-fade-in-up-delayed">
+                Comprehensive tools for research, epidemiology, and data science with beautiful 
+                <span className="text-warning font-semibold"> interactive visualizations</span>
+              </div>
             </div>
 
-              <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-shimmer">
-                KARMASTAT
-              </h1>
-              <div className="text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto leading-relaxed">
-                Advanced Statistical Analysis Platform
-              </div>
-              <div className="text-lg text-white/80 max-w-2xl mx-auto">
-                Comprehensive tools for research, epidemiology, and data science with beautiful interactive visualizations
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* Enhanced Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
               <EnhancedButton
                 variant="default"
                 size="lg"
                 animation="hover"
-                icon={<Calculator className="h-4 w-4" />}
-                className="min-w-[200px] bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground shadow-2xl hover:shadow-3xl transform hover:scale-105 border-0"
+                icon={<Calculator className="h-5 w-5" />}
+                className="min-w-[220px] bg-white/90 text-primary hover:bg-white hover:text-primary shadow-2xl hover:shadow-warning/25 transform hover:scale-110 border-0 font-semibold text-lg py-4 rounded-xl backdrop-blur-sm animate-glow-button"
               >
                 <Link href="/sample-size/intelligent-detector">
-                  Explore Tools
+                  🚀 Explore Tools
                 </Link>
               </EnhancedButton>
 
@@ -329,13 +375,29 @@ export default function HomePage() {
                 variant="ghost"
                 size="lg"
                 animation="bounce"
-                icon={<Heart className="h-4 w-4" />}
-                className="min-w-[200px] border border-white/30 text-white hover:bg-white/10 hover:text-white hover:border-white/50"
+                icon={<Heart className="h-5 w-5" />}
+                className="min-w-[220px] border-2 border-white/40 text-white hover:bg-white/20 hover:text-white hover:border-white/70 font-semibold text-lg py-4 rounded-xl backdrop-blur-md shadow-xl animate-border-glow"
               >
                 <Link href="#mission">
-                  Our Mission
+                  💫 Our Mission
                 </Link>
               </EnhancedButton>
+            </div>
+
+            {/* Quick Stats with Animation */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 animate-fade-in-up-late">
+              {[
+                { number: "25+", label: "Advanced Tools", icon: "🔬" },
+                { number: "100%", label: "Open Source", icon: "🌟" },
+                { number: "∞", label: "Possibilities", icon: "🚀" },
+                { number: "0₹", label: "Always Free", icon: "💎" }
+              ].map((stat, index) => (
+                <div key={stat.label} className="text-center space-y-2 p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 animate-float" style={{ animationDelay: `${index * 0.2}s` }}>
+                  <div className="text-2xl">{stat.icon}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-warning drop-shadow-lg">{stat.number}</div>
+                  <div className="text-sm text-white/80 font-medium">{stat.label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
