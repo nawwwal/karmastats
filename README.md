@@ -34,6 +34,10 @@ Karmastats is built with some seriously cool tech:
 - **Schema Validation:** Zod - Keep your data clean and reliable.
 - **Deployment:** Vercel - Bringing Karmastats to the world! (as implied by @vercel/analytics and @vercel/speed-insights)
 
+## 🔧 Backend Architecture
+
+All statistical calculators share a unified backend interface. Calculation logic lives in `lib/tools`, and each tool—from regression and sample size to survival analysis and study detection—is accessible through the API route `/api/tools/[tool]`. Handlers are lazy-loaded on demand for better performance, and client components invoke them via `runTool` from `lib/tools/client.ts`.
+
 ## 🚀 Getting Started 🚦
 
 Ready to jump in? Here’s how to get Karmastats running on your local machine:

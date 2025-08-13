@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { multipleRegression, MultipleRegressionResult } from "@/lib/regression";
+import type { MultipleRegressionResult } from "@/lib/regression";
+import { runTool } from "@/lib/tools/client";
 import dynamic from "next/dynamic";
 
 // Dynamically import Chart.js to prevent SSR issues
@@ -69,7 +70,7 @@ export function MultipleRegressionTab() {
   const [error, setError] = useState<string | null>(null);
   const [showChart, setShowChart] = useState<'predicted' | 'residuals'>("predicted");
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     const yVals = parseVectorInput(yInput);
     const xRows = parseColumnInput(xInput);
     // Transpose to get columns as variables
@@ -90,8 +91,8 @@ export function MultipleRegressionTab() {
       setResult(null);
       return;
     }
-    const res = multipleRegression(yVals, X);
-    if ("error" in res) {
+    const res = await runTool<MultipleRegressionResult | { error: string }>('multiple-regression', { y: yVals, X });
+    if ('error' in res) {
       setError(res.error);
       setResult(null);
     } else {
