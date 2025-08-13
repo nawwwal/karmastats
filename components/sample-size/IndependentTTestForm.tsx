@@ -24,11 +24,11 @@ import {
 import { useState, useRef } from "react";
 import { jsPDF } from "jspdf";
 import {
-    calculateIndependentSampleSize,
     IndependentSampleSizeSchema,
     type IndependentSampleSizeInput,
     type IndependentSampleSizeOutput
 } from "@/lib/math/sample-size/tTest";
+import { runTool } from "@/lib/tools/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertCircle, Target, Calculator, Users, TrendingUp } from "lucide-react";
@@ -59,8 +59,11 @@ export function IndependentTTestForm() {
     },
   });
 
-  function onSubmit(values: IndependentSampleSizeInput) {
-    const sampleSize = calculateIndependentSampleSize(values);
+  async function onSubmit(values: IndependentSampleSizeInput) {
+    const sampleSize = await runTool<IndependentSampleSizeOutput>(
+      'independent-ttest-sample-size',
+      values
+    );
     setResult(sampleSize);
   }
 

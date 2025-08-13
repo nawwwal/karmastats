@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from "react";
-import { multipleRegression, MultipleRegressionResult } from "@/lib/regression";
+import type { MultipleRegressionResult } from "@/lib/regression";
+import { runTool } from "@/lib/tools/client";
 import { Button, NeuomorphicButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -137,16 +138,16 @@ export function MultipleRegressionForm({ onResultsChange }: MultipleRegressionFo
         onResultsChange?.(null);
     };
 
-    const handleCalculate = () => {
+    const handleCalculate = async () => {
         setError(null);
         setResult(null);
         onResultsChange?.(null);
 
         try {
             const { y, X } = parseMatrixInput(dataMatrix);
-            const regressionResult = multipleRegression(y, X);
+            const regressionResult = await runTool<MultipleRegressionResult | { error: string }>('multiple-regression', { y, X });
 
-            if ("error" in regressionResult) {
+            if ('error' in regressionResult) {
                 setError(regressionResult.error);
             } else {
                 setResult(regressionResult);

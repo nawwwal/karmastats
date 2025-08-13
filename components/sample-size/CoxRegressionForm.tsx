@@ -3,7 +3,8 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { calculateCox, CoxParams } from '@/lib/survivalAnalysis';
+import { CoxParams, type SurvivalAnalysisResults } from '@/lib/survivalAnalysis';
+import { runTool } from '@/lib/tools/client';
 import { NeuomorphicButton } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,8 +38,11 @@ export function CoxRegressionForm({ onResultsChange }: CoxRegressionFormProps) {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    const calculatedResult = calculateCox(data as CoxParams);
+  const onSubmit = async (data: FormData) => {
+    const calculatedResult = await runTool<SurvivalAnalysisResults>(
+      'cox-regression',
+      data as CoxParams
+    );
     onResultsChange?.(calculatedResult);
   };
 

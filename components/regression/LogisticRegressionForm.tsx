@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from "react";
-import { logisticRegression, LogisticRegressionResult } from "@/lib/regression";
+import type { LogisticRegressionResult } from "@/lib/regression";
+import { runTool } from "@/lib/tools/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,16 +117,16 @@ export function LogisticRegressionForm({ onResultsChange }: LogisticRegressionFo
         onResultsChange?.(null);
     };
 
-    const handleCalculate = () => {
+    const handleCalculate = async () => {
         setError(null);
         setResult(null);
         onResultsChange?.(null);
 
         try {
             const { y, X } = parseMatrixInput(dataMatrix);
-            const regressionResult = logisticRegression(y, X);
+            const regressionResult = await runTool<LogisticRegressionResult | { error: string }>('logistic-regression', { y, X });
 
-            if ("error" in regressionResult) {
+            if ('error' in regressionResult) {
                 setError(regressionResult.error);
             } else {
                 setResult(regressionResult);

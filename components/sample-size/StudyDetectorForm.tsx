@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import { analyzeStudy, StudyRecommendation } from "@/lib/studyDetector";
+import { StudyRecommendation } from "@/lib/studyDetector";
+import { runTool } from "@/lib/tools/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -31,7 +32,10 @@ export function StudyDetectorForm({ onAnalysisComplete, setIsLoading, isLoading 
         try {
             // Simulate processing time for better UX
             await new Promise(resolve => setTimeout(resolve, 1500));
-            const recommendations = analyzeStudy(researchText);
+            const recommendations = await runTool<StudyRecommendation[]>(
+                'study-detector',
+                { text: researchText }
+            );
             onAnalysisComplete(recommendations);
         } catch (err: any) {
             setError(`Analysis failed: ${err.message}`);

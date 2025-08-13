@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FieldPopover } from "@/components/ui/field-popover";
 import { getFieldExplanation } from "@/lib/field-explanations";
-import { calculateCohortSampleSize } from "@/lib/math/sample-size/comparativeStudy";
+import { runTool } from "@/lib/tools/client";
 import {
   PowerField,
   AlphaField,
@@ -55,20 +55,17 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
     },
   });
 
-  const onSubmit = useCallback((values: FormData) => {
+  const onSubmit = useCallback(async (values: FormData) => {
     try {
       setError(null);
       const alpha = values.alpha / 100;
       const power = values.power / 100;
       const { ratio, p1, p2 } = values;
 
-    const sampleSize = calculateCohortSampleSize(
-        1 - alpha, // Convert to confidence level
-        power,
-      ratio,
-      p1,
-      p2,
-    );
+      const sampleSize = await runTool<{ n_exposed: number; n_unexposed: number }>(
+        'cohort-sample-size',
+        { alpha: 1 - alpha, power, ratio, p1, p2 }
+      );
 
     // Structure results for display
     const results = {
@@ -112,7 +109,7 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       const defaultData = form.getValues();
-      onSubmit(defaultData);
+      void onSubmit(defaultData);
     }, 100);
     return () => clearTimeout(timer);
   }, [form, onSubmit]);
@@ -145,7 +142,7 @@ export function CohortForm({ onResultsChange }: CohortFormProps) {
 
         // Trigger calculation with new values
         const updatedData = form.getValues();
-        onSubmit(updatedData);
+        void onSubmit(updatedData);
       } catch (err: any) {
         setError(`Failed to process PDF: ${err.message}`);
       }

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from "react";
-import { polynomialRegression, MultipleRegressionResult } from "@/lib/regression";
+import type { MultipleRegressionResult } from "@/lib/regression";
+import { runTool } from "@/lib/tools/client";
 import { Button, NeuomorphicButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -180,7 +181,7 @@ export function PolynomialRegressionForm({ onResultsChange }: PolynomialRegressi
         }
     };
 
-    const handleCalculate = () => {
+    const handleCalculate = async () => {
         setError(null);
         setResult(null);
         onResultsChange?.(null);
@@ -194,9 +195,13 @@ export function PolynomialRegressionForm({ onResultsChange }: PolynomialRegressi
             return;
         }
 
-        const regressionResult = polynomialRegression(parsedX, parsedY, parsedDegree);
+        const regressionResult = await runTool<MultipleRegressionResult | { error: string }>('polynomial-regression', {
+            xValues: parsedX,
+            yValues: parsedY,
+            degree: parsedDegree
+        });
 
-        if ("error" in regressionResult) {
+        if ('error' in regressionResult) {
             setError(regressionResult.error);
         } else {
             setResult(regressionResult);

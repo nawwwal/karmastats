@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FieldPopover } from "@/components/ui/field-popover";
 import { getFieldExplanation } from "@/lib/field-explanations";
-import { calculateCaseControlSampleSize } from "@/lib/math/sample-size/comparativeStudy";
+import { runTool } from "@/lib/tools/client";
 import {
   PowerField,
   AlphaField,
@@ -55,20 +55,17 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
     },
   });
 
-  const onSubmit = useCallback((values: FormData) => {
+  const onSubmit = useCallback(async (values: FormData) => {
     try {
       setError(null);
       const alpha = values.alpha / 100;
       const power = values.power / 100;
       const { ratio, p0, p1 } = values;
 
-    const sampleSize = calculateCaseControlSampleSize(
-        1 - alpha, // Convert to confidence level
-        power,
-      ratio,
-      p0,
-      p1,
-    );
+      const sampleSize = await runTool<{ n_cases: number; n_controls: number }>(
+        'case-control-sample-size',
+        { alpha: 1 - alpha, power, ratio, p0, p1 }
+      );
 
     // Structure results for display
     const results = {
@@ -111,7 +108,7 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       const defaultData = form.getValues();
-      onSubmit(defaultData);
+      void onSubmit(defaultData);
     }, 100);
     return () => clearTimeout(timer);
   }, [form, onSubmit]);
@@ -144,7 +141,7 @@ export function CaseControlForm({ onResultsChange }: CaseControlFormProps) {
 
         // Trigger calculation with new values
         const updatedData = form.getValues();
-        onSubmit(updatedData);
+        void onSubmit(updatedData);
       } catch (err: any) {
         setError(`Failed to process PDF: ${err.message}`);
       }

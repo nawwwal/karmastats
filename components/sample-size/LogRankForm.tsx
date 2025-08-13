@@ -3,7 +3,8 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { calculateLogRank, LogRankParams } from '@/lib/survivalAnalysis';
+import { LogRankParams, type SurvivalAnalysisResults } from '@/lib/survivalAnalysis';
+import { runTool } from '@/lib/tools/client';
 import { NeuomorphicButton } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,8 +42,11 @@ export function LogRankForm({ onResultsChange }: LogRankFormProps) {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    const calculatedResult = calculateLogRank(data as LogRankParams);
+  const onSubmit = async (data: FormData) => {
+    const calculatedResult = await runTool<SurvivalAnalysisResults>(
+      'log-rank',
+      data as LogRankParams
+    );
     onResultsChange(calculatedResult);
     // Scroll to top to show results
   };

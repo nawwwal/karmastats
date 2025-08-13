@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { calculateOneArm, OneArmParams } from '@/lib/survivalAnalysis';
+import { OneArmParams, type SurvivalAnalysisResults } from '@/lib/survivalAnalysis';
+import { runTool } from '@/lib/tools/client';
 
 const OneArmSurvivalSchema = z.object({
   historicalMedianSurvival: z.number().min(0.1),
@@ -41,10 +42,13 @@ export function OneArmSurvivalForm({ onResultsChange }: OneArmSurvivalFormProps)
     },
   });
 
-  const onSubmit = (data: OneArmSurvivalInput) => {
+  const onSubmit = async (data: OneArmSurvivalInput) => {
     try {
       setError(null);
-      const result = calculateOneArm(data);
+      const result = await runTool<SurvivalAnalysisResults>(
+        'one-arm-survival',
+        data as OneArmParams
+      );
       onResultsChange(result);
       // Scroll to top to show results
     } catch (err: any) {

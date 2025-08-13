@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { linearRegression, LinearRegressionResult } from "@/lib/regression";
+import type { LinearRegressionResult } from "@/lib/regression";
+import { runTool } from "@/lib/tools/client";
 import dynamic from "next/dynamic";
 
 // Dynamically import Chart.js to prevent SSR issues
@@ -55,11 +56,14 @@ export function LinearRegressionTab() {
   const [error, setError] = useState<string | null>(null);
   const [showResidual, setShowResidual] = useState(false);
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     const xVals = parseInput(xInput);
     const yVals = parseInput(yInput);
-    const res = linearRegression(xVals, yVals);
-    if ("error" in res) {
+    const res = await runTool<LinearRegressionResult | { error: string }>('linear-regression', {
+      xValues: xVals,
+      yValues: yVals
+    });
+    if ('error' in res) {
       setError(res.error);
       setResult(null);
     } else {

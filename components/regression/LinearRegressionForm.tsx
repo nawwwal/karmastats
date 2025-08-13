@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { linearRegression, LinearRegressionResult } from "@/lib/regression";
+import type { LinearRegressionResult } from "@/lib/regression";
+import { runTool } from "@/lib/tools/client";
 import { Button, NeuomorphicButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -138,7 +139,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
     onResultsChange?.(null);
   };
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
       setError(null);
       setResult(null);
@@ -162,7 +163,10 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
         return;
       }
 
-      const regressionResult = linearRegression(parsedX, parsedY);
+      const regressionResult = await runTool<LinearRegressionResult | { error: string }>('linear-regression', {
+        xValues: parsedX,
+        yValues: parsedY
+      });
 
       if ("error" in regressionResult) {
         setError(regressionResult.error);
