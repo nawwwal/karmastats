@@ -15,6 +15,7 @@ import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calculator, AlertCircle, Download } from 'lucide-react';
 import TTestFormFormedible from '@/components/sample-size/TTestFormFormedible';
+import { EnhancedTabs, EnhancedTabsList, EnhancedTabsTrigger } from '@/components/ui/enhanced-tabs';
 
 type Results = IndependentSampleSizeOutput | PairedSampleSizeOutput | OneSampleSampleSizeOutput;
 
@@ -38,7 +39,7 @@ export default function TTestPage() {
       const formData = (lastValues || {}) as any;
 
       let config: any = {
-        calculatorType: `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} T-Test`,
+        calculatorType: `T-Test`,
         inputs: [],
         results: [],
         interpretation: {
@@ -326,17 +327,6 @@ export default function TTestPage() {
     >
       <div className="space-y-8">
         <Card className="shadow-lg border-border bg-card/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl flex items-center space-x-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Calculator className="h-6 w-6 text-primary" />
-              </div>
-              <span>T-Test Sample Size Calculator</span>
-            </CardTitle>
-            <CardDescription className="text-lg">
-              Calculate sample sizes for independent, paired, and one-sample t-tests with power analysis
-            </CardDescription>
-          </CardHeader>
           <CardContent>
             {error && (
               <Alert className="mb-6 border-destructive/20 bg-destructive/10">
@@ -345,15 +335,24 @@ export default function TTestPage() {
               </Alert>
             )}
 
-            <TTestFormFormedible
-              activeTab={activeTab}
-              onActiveTabChange={(t) => setActiveTab(t)}
-              onResults={(r, vals) => {
-                setResults(r);
-                setLastValues(vals);
-              }}
-              onError={(msg) => setError(msg || null)}
-            />
+            <div className="space-y-6">
+              <EnhancedTabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
+                <EnhancedTabsList className="grid w-full grid-cols-3" variant="modern">
+                  <EnhancedTabsTrigger value="independent" variant="modern">Independent</EnhancedTabsTrigger>
+                  <EnhancedTabsTrigger value="paired" variant="modern">Paired</EnhancedTabsTrigger>
+                  <EnhancedTabsTrigger value="one-sample" variant="modern">One-Sample</EnhancedTabsTrigger>
+                </EnhancedTabsList>
+              </EnhancedTabs>
+
+              <TTestFormFormedible
+                activeTab={activeTab}
+                onResults={(r, vals) => {
+                  setResults(r);
+                  setLastValues(vals);
+                }}
+                onError={(msg) => setError(msg || null)}
+              />
+            </div>
           </CardContent>
         </Card>
 

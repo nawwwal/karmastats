@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { LogRankForm } from "@/components/sample-size/LogRankForm";
-import { CoxRegressionForm } from "@/components/sample-size/CoxRegressionForm";
-import { OneArmSurvivalForm } from "@/components/sample-size/OneArmSurvivalForm";
+import SurvivalAnalysisFormFormedible from "@/components/sample-size/SurvivalAnalysisFormFormedible";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
@@ -18,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Clock, Target, Activity, Download } from 'lucide-react';
 
 export default function SurvivalAnalysisPage() {
-  const [activeTab, setActiveTab] = useState("log-rank");
+  const [activeTab, setActiveTab] = useState<"log-rank" | "cox" | "one-arm">("log-rank");
   const [results, setResults] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -136,7 +134,7 @@ export default function SurvivalAnalysisPage() {
     <div className="space-y-8">
       <EnhancedTabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={(tab) => setActiveTab(tab as "log-rank" | "cox" | "one-arm")}
         className="space-y-4"
       >
         <EnhancedTabsList className="grid w-full grid-cols-3" variant="modern">
@@ -162,7 +160,7 @@ export default function SurvivalAnalysisPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <LogRankForm onResultsChange={setResults} />
+              <SurvivalAnalysisFormFormedible onResultsChange={setResults} analysisType="log-rank" />
             </CardContent>
           </Card>
         </EnhancedTabsContent>
@@ -176,7 +174,7 @@ export default function SurvivalAnalysisPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CoxRegressionForm onResultsChange={setResults} />
+              <SurvivalAnalysisFormFormedible onResultsChange={setResults} analysisType="cox" />
             </CardContent>
           </Card>
         </EnhancedTabsContent>
@@ -190,7 +188,7 @@ export default function SurvivalAnalysisPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <OneArmSurvivalForm onResultsChange={setResults} />
+              <SurvivalAnalysisFormFormedible onResultsChange={setResults} analysisType="one-arm" />
             </CardContent>
           </Card>
         </EnhancedTabsContent>
@@ -334,7 +332,6 @@ export default function SurvivalAnalysisPage() {
           />
         </div>
 
-        {/* PDF Export Card */}
         <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
           <CardContent className="py-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">

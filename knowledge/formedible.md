@@ -111,78 +111,62 @@ export default function ToolNameFormFormedible(props: {
       canSubmitWhenInvalid: false,
       asyncDebounceMs: 0,
     },
-    showSubmitButton: true,
+    // Live updates and autosave
+    autoSubmitOnChange: true,
+    autoSubmitDebounceMs: 400,
+    persistence: { key: '<tool>-form', storage: 'localStorage', debounceMs: 800, restoreOnMount: true },
+    // Hide calculate button unless required by UX
+    showSubmitButton: false,
     submitButton: Button,
     submitLabel: 'Calculate',
   });
 
+  // Do not add duplicate tool titles here; the page shell provides it
   return <Form />;
 }
 ```
 
-- Page usage skeleton:
+- Tabbed form skeleton (single instance with fields assigned to tabs):
 ```tsx
-// app/(calc)/<tool>/page.tsx
-'use client';
-import React, { useState } from 'react';
-import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Calculator, AlertCircle, Download } from 'lucide-react';
-import ToolNameFormFormedible from '@/components/<tool>/ToolNameFormFormedible';
+const fields: FieldConfig[] = [
+  { name: 'paramA', type: 'number', label: 'Param A', tab: 'tab1', validation: z.number() },
+  { name: 'paramB', type: 'number', label: 'Param B', tab: 'tab1' },
+  { name: 'paramX', type: 'number', label: 'Param X', tab: 'tab2' },
+  // ...
+];
 
-export default function ToolPage() {
-  const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<any | null>(null);
-  const [lastValues, setLastValues] = useState<Record<string, unknown> | null>(null);
+const { Form } = useFormedible({
+  fields,
+  tabs: [
+    { id: 'tab1', label: 'Scenario 1' },
+    { id: 'tab2', label: 'Scenario 2' },
+  ],
+  layout: { type: 'grid', columns: 2, gap: '6', responsive: true },
+  autoSubmitOnChange: true,
+  autoSubmitDebounceMs: 400,
+  showSubmitButton: false,
+  // optional: compute results live without waiting for submit
+  formOptions: {
+    onChange: ({ value, formApi }) => {
+      // Validate and compute; emit results to page shell
+    },
+  },
+});
 
-  return (
-    <ToolPageWrapper title="Tool Name" description="Calculator description" icon={Calculator} layout="single-column">
-      <div className="space-y-8">
-        <Card className="shadow-lg border-border bg-card/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl">Tool Name</CardTitle>
-            <CardDescription className="text-lg">Short description</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <Alert className="mb-6 border-destructive/20 bg-destructive/10">
-                <AlertCircle className="h-4 w-4 text-destructive" />
-                <AlertDescription className="text-destructive">{error}</AlertDescription>
-              </Alert>
-            )}
-            <ToolNameFormFormedible
-              onResults={(r, vals) => {
-                setResults(r);
-                setLastValues(vals);
-                setError(null);
-              }}
-              onError={(msg) => setError(msg)}
-            />
-          </CardContent>
-        </Card>
-
-        {results && (
-          // Keep your EnhancedResultsDisplay + visualizations here
-          <Button onClick={() => { /* generate PDF using lastValues + results */ }} size="lg" className="px-8">
-            <Download className="h-5 w-5 mr-3" /> Download PDF
-          </Button>
-        )}
-      </div>
-    </ToolPageWrapper>
-  );
-}
+return <Form />;
 ```
 
-### Field mapping guide (RHF → Formedible)
-- RHF `FormField control name="x"` → `FieldConfig` with `name: 'x'`, `type`, and `validation`.
-- `zodResolver(schema)` → put per-field Zod into `FieldConfig.validation`. If you also need whole-form validation, keep small validators in `formOptions.onSubmit` around `Schema.parse`.
-- Input semantics:
-  - Percentages: `type: 'number'` with `min: 0, max: 100, step: 0.1`.
-  - Ratios / probabilities: constrain with `min`, `max`.
-  - Integers: add `step: 1`, `numberConfig: { step: 1 }`.
-- Conditional fields: use `conditional` on `FieldConfig` or conditional sections for grouped visibility.
+### Accessibility & Keyboard Standards (Updated)
+- Numeric inputs must support robust keyboard interactions:
+  - ArrowUp/ArrowDown: increment/decrement by `step`
+  - Shift + Arrow: 10x step multiplier
+  - PageUp/PageDown: 10x step multiplier
+  - Home/End: jump to min/max (when provided)
+  - Enter: prevent form submit (for autosave/live-calc UX)
+  - Wheel: disabled while focused to avoid accidental changes
+- Clamp values to `min`/`max` on blur
+- Use `inputMode="decimal"` and appropriate `aria-*` attributes
+- Prevent focus from jumping to the next field during key increments
 
 ### Naming conventions
 - Form components: `XxxFormFormedible.tsx` colocated under `components/<tool>/`.
@@ -195,10 +179,14 @@ export default function ToolPage() {
 - Formedible component
   - [ ] Create `components/<tool>/<ToolName>FormFormedible.tsx`.
   - [ ] Define `fields: FieldConfig[]` with Zod `validation` per field.
+  - [ ] Use a single form instance (use `tabs` and `field.tab` for multi-mode tools).
   - [ ] Set `layout` to 2 columns, `gap: '6'`, `responsive: true`.
   - [ ] Provide realistic defaults, labels, descriptions.
   - [ ] Implement `onSubmit` → Zod parse → calculate → `onResults`.
-  - [ ] Translate all RHF-only conditions into `conditional` or conditional sections.
+  - [ ] Enable autosubmit (`autoSubmitOnChange`) with debounce; enable `persistence` with restore.
+  - [ ] Live results on change (`formOptions.onChange`) when feasible.
+  - [ ] Hide the submit button by default (`showSubmitButton: false`) unless manual submit is required.
+  - [ ] Do NOT render internal tool titles in the form; rely on page shell to avoid duplication.
 - Page integration
   - [ ] Replace RHF form and inputs with new Formedible component.
   - [ ] Keep `ToolPageWrapper` and results UI intact.
@@ -211,32 +199,173 @@ export default function ToolPage() {
   - [ ] Verify bounds and messages; aggregated errors in alert.
   - [ ] Labels/ARIA and touch targets ≥ 44px.
 - QA (functional)
-  - [ ] Defaults auto-calc (if desired) or first submit behaves correctly.
+  - [ ] Defaults auto-calc (with debounce) behaves correctly across tabs.
   - [ ] Cross-check results with reference values.
   - [ ] PDF output matches on-screen data, correct units and titles.
 - Code health
   - [ ] Lint passes; remove unused imports.
   - [ ] Types are explicit for emitted results.
 
-### Team QA checklist (shared)
-- [ ] Desktop and mobile screenshots for form and results.
-- [ ] Validation failure states are clear.
-- [ ] Conditional fields and tabs work without re-render thrash.
-- [ ] Performance acceptable while typing (numbers/debounce).
-- [ ] No visual overflow or >2 fields per row.
+### Standardized Form Pipeline (All Tools)
+1) Input (UI)
+- All numeric fields allow free typing. No premature errors for partial strings.
+- Wheel disabled while focused; Enter does not submit.
 
-### Rollout plan
-- Phase 1: T-Test (completed) as reference.
-- Phase 2: Diagnostic and Cross-Sectional (shared percentage/ratio patterns).
-- Phase 3: Clinical Trials and Comparative (larger forms; add conditional sections).
-- Phase 4: Survival and Regression (specialized inputs; step/per-field validation).
-- Phase 5: Intelligent Detector and disease-math modules.
+2) Tolerant Field Validation (per-field)
+- For `type: 'number'`, validators:
+  - accept numeric strings
+  - ignore partial states (`''`, '-', '.', '-.')
+  - only validate when a finite number is present
 
-### Definition of done (per tool)
-- Uses Formedible with field-level Zod.
-- Adheres to 2-column layout, spacing, cards, and theme.
-- Results and PDF export function correctly with last submitted values.
-- No linter errors; types explicit for API surfaces.
-- Screenshots added to PR; short test notes included.
+3) Coercion Layer (form-level)
+```ts
+const coerceValues = (raw: Record<string, unknown>) => {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (typeof v === 'string') {
+      const t = v.trim();
+      if (t === '' || t === '-' || t === '.' || t === '-.') { out[k] = undefined; continue; }
+      const n = Number(t);
+      out[k] = Number.isFinite(n) ? n : v;
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
+};
+```
 
-If you’d like, I can proceed to migrate the next calculators using this exact recipe and open a PR per tool with the completed checklists.
+4) Schema Parse → Compute
+- In `formOptions.onChange` (debounced) and `onSubmit`:
+  - `const coerced = coerceValues(value)`
+  - `Schema.safeParse(coerced)` for live; `Schema.parse(coerced)` for submit
+  - compute results only if parse succeeds
+
+5) Emit
+- `onResults(result, coerced, activeTab)`
+- Clear errors on success; surface Zod errors on submit or meaningful failure
+
+6) Tabs + Shared Fields
+- Common parameters (e.g., alpha/power/dropout) should be defined once (no `tab`) so they render on all tabs.
+- Tab-specific fields include `tab: '...'`.
+- Renderer merges `default` fields with the active tab.
+
+### Manager/Converter Standard (Tools)
+- Converter: `coerceValues(raw)` converts numeric strings to numbers; ignores partial states.
+- Manager: `computeTool(tab, raw)` orchestrates: coerce → schema selection → safeParse/parse → compute → standardized result/err.
+- Schemas: Zod schemas per tab, exported from `lib/tools/<tool>/schemas.ts`.
+
+### Tab Patterns
+- **Diagnostic Style**: page owns tabs; passes `activeTab` to form; form shows fields based on `activeTab`. Use for complex layouts with unique fields per tab.
+  - Page: `useState<TabType>('default')`, renders `<EnhancedTabs>`, passes `activeTab` to Formedible.
+  - Form: receives `activeTab`, uses `getFieldsForTab(activeTab)`.
+- **T-Test Style**: form owns tabs (`useFormedible({ tabs })`), manages its own state. Use for simpler forms where `field.tab` is sufficient.
+  - Form: `useState<TabType>('default')`, `analytics.onTabChange` updates state.
+
+### Reference Implementation (T-Test)
+```ts
+// lib/tools/tTest/converter.ts
+export function coerceValues(raw: Record<string, unknown>): Record<string, unknown> { /* ... */ }
+
+// lib/tools/tTest/manager.ts
+export async function computeTTest(tab: TTestTab, raw: Record<string, unknown>) {
+  // coerce → pick schema → safeParse/parse → compute → standardized result
+}
+```
+
+Usage in a form:
+```ts
+// Page owns tabs
+const [activeTab, setActiveTab] = useState<TTestTab>('independent');
+// ...
+<EnhancedTabs value={activeTab} onValueChange={setActiveTab}>...</EnhancedTabs>
+<TTestFormFormedible activeTab={activeTab} ... />
+
+// Form receives activeTab
+export default function TTestFormFormedible({ activeTab, onResults, onError }: Props) {
+  const fields = getFieldsForTab(activeTab); // Selects fields based on tab
+  const { Form } = useFormedible({
+    fields,
+    formOptions: {
+      onSubmit: async ({ value }) => { // Autosave uses onChange
+        const res = await computeTTest(activeTab, value as any);
+        if (res.ok) onResults(res.result, res.values, activeTab);
+        else throw new Error(res.message);
+      },
+    },
+    showSubmitButton: true, // Diagnostic style uses manual submit
+  });
+  return <Form />;
+}
+```
+
+### Migration Steps
+- [ ] Create `lib/tools/<tool>/{schemas,converter,manager,types,pdf}.ts`.
+- [ ] Choose tab pattern (diagnostic recommended for consistency).
+- [ ] Form receives `activeTab` and selects fields.
+- [ ] Page owns tabs.
+- [ ] Form calls Manager in `onSubmit` (diagnostic) or `onChange` (autosave).
+- [ ] Remove duplicate common fields.
+- [ ] Coerce values pre-parse in Manager.
+- [ ] No internal titles.
+
+### Error Handling
+- Field-level: friendly messages; no errors while typing partials.
+- Form-level: only show aggregated Zod errors on submit or when helpful.
+
+### Clean Code Checklist
+- [ ] No duplicated field names across tabs.
+- [ ] No ad-hoc validation; use centralized tolerant validator.
+- [ ] Coercion used consistently pre-parse.
+- [ ] Strong typing for results; no `any` in public APIs.
+
+### Manager/Converter Standard (Tools)
+- Converter: `coerceValues(raw)` converts numeric strings to numbers; ignores partial states.
+- Manager: `computeTool(tab, raw)` orchestrates: coerce → schema selection → safeParse/parse → compute → standardized result/err.
+- Schemas: Zod schemas per tab, exported from `lib/tools/<tool>/schemas.ts`.
+
+### Tab Patterns
+- **Diagnostic Style**: page owns tabs; passes `activeTab` to form; form shows fields based on `activeTab`. Use for complex layouts with unique fields per tab.
+  - Page: `useState<TabType>('default')`, renders `<EnhancedTabs>`, passes `activeTab` to Formedible.
+  - Form: receives `activeTab`, uses `getFieldsForTab(activeTab)`.
+- **T-Test Style**: form owns tabs (`useFormedible({ tabs })`), manages its own state. Use for simpler forms where `field.tab` is sufficient.
+  - Form: `useState<TabType>('default')`, `analytics.onTabChange` updates state.
+
+### Reference Implementation (T-Test)
+```ts
+// lib/tools/tTest/converter.ts
+export function coerceValues(raw: Record<string, unknown>): Record<string, unknown> { /* ... */ }
+
+// lib/tools/tTest/manager.ts
+export async function computeTTest(tab: TTestTab, raw: Record<string, unknown>) {
+  // coerce → pick schema → safeParse/parse → compute → standardized result
+}
+```
+
+Usage in a form:
+```ts
+// Page owns tabs
+const [activeTab, setActiveTab] = useState<TTestTab>('independent');
+// ...
+<EnhancedTabs value={activeTab} onValueChange={setActiveTab}>...</EnhancedTabs>
+<TTestFormFormedible activeTab={activeTab} ... />
+
+// Form receives activeTab
+export default function TTestFormFormedible({ activeTab, onResults, onError }: Props) {
+  const fields = getFieldsForTab(activeTab); // Selects fields based on tab
+  const { Form } = useFormedible({
+    fields,
+    formOptions: {
+      onSubmit: async ({ value }) => { // Autosave uses onChange
+        const res = await computeTTest(activeTab, value as any);
+        if (res.ok) onResults(res.result, res.values, activeTab);
+        else throw new Error(res.message);
+      },
+    },
+    showSubmitButton: true, // Diagnostic style uses manual submit
+  });
+  return <Form />;
+}
+```
+
+Apply this pattern across tools to ensure consistent validation, calculation, and error handling.

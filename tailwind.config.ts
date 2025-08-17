@@ -343,7 +343,7 @@ const config = {
   					content: '..'
   				},
   				'80%, 100%': {
-                        ...
+  					content: '...'
   				}
   			},
   			loading: {
@@ -414,22 +414,6 @@ const config = {
   				},
   				'100%': {
   					transform: 'scale(1)'
-  				}
-  			},
-  			'accordion-down': {
-  				from: {
-  					height: '0'
-  				},
-  				to: {
-  					height: 'var(--radix-accordion-content-height)'
-  				}
-  			},
-  			'accordion-up': {
-  				from: {
-  					height: 'var(--radix-accordion-content-height)'
-  				},
-  				to: {
-  					height: '0'
   				}
   			}
   		},

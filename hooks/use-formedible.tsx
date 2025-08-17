@@ -92,8 +92,8 @@ const FieldConditionalRenderer = ({
 }: FieldConditionalRendererProps) => {
   const { conditional } = fieldConfig;
 
-  // If no conditional logic, always render
-  if (!conditional) {
+  // If conditional is missing or not a function, always render
+  if (!conditional || typeof conditional !== 'function') {
     return <>{children(true)}</>;
   }
 
@@ -1112,7 +1112,7 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
         }
 
         // Call user's onChange handler only if form is valid (debounced)
-        if (formOptions?.onChange && formApi.state.isValid) {
+        if (formOptions?.onChange) {
           clearTimeout(onChangeTimeout);
           onChangeTimeout = setTimeout(() => {
             if (!formOptions.onChange) return;
@@ -1287,10 +1287,6 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
   }, [analytics?.onFormAbandon, fields.length]); // Include dependencies
 
   const getCurrentPageFields = () => {
-    if (hasTabs) {
-      // When using tabs, return all fields (tabs handle their own filtering)
-      return fields;
-    }
     // Get the actual page number from visible pages array
     const actualPageNumber = visiblePages[currentPage - 1];
     return actualPageNumber ? fieldsByPage[actualPageNumber] || [] : [];
@@ -1440,6 +1436,8 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
     "aria-describedby": ariaDescribedby,
     tabIndex,
   }) => {
+    const FormFieldComponent = (form as any).Field as React.ComponentType<any>;
+    const FormSubscribeComponent = (form as any).Subscribe as React.ComponentType<any>;
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1612,23 +1610,43 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
         } = fieldConfig;
 
         return (
-          <form.Field
+          <FormFieldComponent
             key={name}
             name={name as keyof TFormValues & string}
             validators={
               validation
                 ? {
-                    onChange: ({ value }) => {
-                      const result = validation.safeParse(value);
+                    onChange: ({ value }: { value: unknown }) => {
+                      // Central tolerant validation for number fields
+                      let candidate: unknown = value;
+                      if (type === 'number') {
+                        if (typeof value === 'string') {
+                          const trimmed = value.trim();
+                          if (
+                            trimmed === '' ||
+                            trimmed === '-' ||
+                            trimmed === '.' ||
+                            trimmed === '-.'
+                          ) {
+                            return undefined;
+                          }
+                          const num = Number(trimmed);
+                          if (!Number.isFinite(num)) {
+                            return 'Enter a valid number';
+                          }
+                          candidate = num;
+                        }
+                      }
+                      const result = validation.safeParse(candidate);
                       return result.success
                         ? undefined
-                        : result.error.issues[0]?.message || "Invalid value";
+                        : result.error.issues[0]?.message || 'Invalid value';
                     },
                   }
                 : undefined
             }
           >
-            {(field) => {
+            {(field: AnyFieldApi) => {
               // TanStack Form Best Practice: Use FieldConditionalRenderer to prevent parent re-renders
               return (
                 <FieldConditionalRenderer form={form} fieldConfig={fieldConfig}>
@@ -1639,7 +1657,7 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
 
                     // Subscribe to form values for dynamic options
                     return (
-                      <form.Subscribe selector={(state: any) => state.values}>
+                      <FormSubscribeComponent selector={(state: any) => state.values}>
                         {(currentValues: any) => {
                           // Check for cross-field validation errors
                           const crossFieldError = crossFieldErrors[name];
@@ -1844,13 +1862,13 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
                             fieldWithHelp
                           );
                         }}
-                      </form.Subscribe>
+                      </FormSubscribeComponent>
                     );
                   }}
                 </FieldConditionalRenderer>
               );
             }}
-          </form.Field>
+          </FormFieldComponent>
         );
       },
       [resolveOptions]
@@ -1858,83 +1876,39 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
 
     const renderTabContent = React.useCallback(
       (tabFields: FieldConfig[]) => {
-        // TanStack Form Best Practice: Use reusable subscription component
+        const sharedFields = fieldsByTab['default'] || [];
+        const combinedFields = [...sharedFields, ...tabFields];
         return (
           <ConditionalFieldsSubscription
             form={form}
-            fields={tabFields}
+            fields={combinedFields}
             conditionalSections={conditionalSections}
           >
             {(currentValues) => {
-              // Filter fields based on conditional sections using subscribed values
-              const visibleFields = tabFields.filter((field) => {
+              const visibleFields = combinedFields.filter((field) => {
                 const conditionalSection = conditionalSections.find((section) =>
                   section.fields.includes(field.name)
                 );
-
                 if (conditionalSection) {
                   return conditionalSection.condition(
                     currentValues as TFormValues
                   );
                 }
-
                 return true;
               });
 
-              // Group fields by section and group
-              const groupedFields = visibleFields.reduce((acc, field) => {
-                const sectionKey = field.section?.title || "default";
-                const groupKey = field.group || "default";
-
-                if (!acc[sectionKey]) {
-                  acc[sectionKey] = {
-                    section: field.section,
-                    groups: {},
-                  };
-                }
-
-                if (!acc[sectionKey].groups[groupKey]) {
-                  acc[sectionKey].groups[groupKey] = [];
-                }
-
-                acc[sectionKey].groups[groupKey].push(field);
-                return acc;
-              }, {} as Record<string, { section?: { title?: string; description?: string; collapsible?: boolean; defaultExpanded?: boolean }; groups: Record<string, FieldConfig[]> }>);
-
-              const renderSection = (
-                sectionKey: string,
-                sectionData: {
-                  section?: {
-                    title?: string;
-                    description?: string;
-                    collapsible?: boolean;
-                    defaultExpanded?: boolean;
-                  };
-                  groups: Record<string, FieldConfig[]>;
-                }
-              ) => (
-                <SectionRenderer
-                  key={sectionKey}
-                  sectionKey={sectionKey}
-                  sectionData={sectionData}
-                  renderField={renderField}
-                  collapseLabel={collapseLabel}
-                  expandLabel={expandLabel}
-                  form={form as unknown as AnyFormApi}
-                  layout={layout}
-                />
+              return (
+                <FormGrid
+                  columns={layout?.type === 'grid' ? (layout.columns as FormGridProps['columns']) : 2}
+                  gap={(layout?.gap as FormGridProps['gap']) || '6'}
+                  responsive={layout?.responsive ?? true}
+                  className={layout?.className}
+                >
+                  {visibleFields.map((field) => (
+                    <div key={field.name}>{renderField(field)}</div>
+                  ))}
+                </FormGrid>
               );
-
-              const sectionsToRender = Object.entries(groupedFields);
-
-              return sectionsToRender.length === 1 &&
-                sectionsToRender[0][0] === "default"
-                ? sectionsToRender[0][1].groups.default?.map(
-                    (field: FieldConfig) => renderField(field)
-                  )
-                : sectionsToRender.map(([sectionKey, sectionData]) =>
-                    renderSection(sectionKey, sectionData)
-                  );
             }}
           </ConditionalFieldsSubscription>
         );
@@ -1944,7 +1918,6 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
 
     const renderPageContent = React.useCallback(() => {
       if (hasTabs) {
-        // Render tabs - memoize tab content to prevent rerenders
         const tabsToRender = tabs!.map((tab) => ({
           id: tab.id,
           label: tab.label,
@@ -1960,120 +1933,36 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
         );
       }
 
-      // Original page rendering logic with TanStack Form best practices
       const currentFields = getCurrentPageFields();
-      const pageConfig = getCurrentPageConfig();
-
-      // For now, subscribe to all form values since we don't have explicit dependencies
-      // This could be optimized further by analyzing the condition functions
-
-      // TanStack Form Best Practice: Use targeted selector for minimal re-renders
       return (
-        <form.Subscribe selector={(state: any) => state.values}>
+        <FormSubscribeComponent selector={(state: any) => state.values}>
           {(currentValues: any) => {
-            // Filter fields based on conditional sections using subscribed values
             const visibleFields = currentFields.filter((field) => {
               const conditionalSection = conditionalSections.find((section) =>
                 section.fields.includes(field.name)
               );
-
               if (conditionalSection) {
                 return conditionalSection.condition(
                   currentValues as TFormValues
                 );
               }
-
               return true;
             });
 
-            // Group fields by section and group
-            const groupedFields = visibleFields.reduce((acc, field) => {
-              const sectionKey = field.section?.title || "default";
-              const groupKey = field.group || "default";
-
-              if (!acc[sectionKey]) {
-                acc[sectionKey] = {
-                  section: field.section,
-                  groups: {},
-                };
-              }
-
-              if (!acc[sectionKey].groups[groupKey]) {
-                acc[sectionKey].groups[groupKey] = [];
-              }
-
-              acc[sectionKey].groups[groupKey].push(field);
-              return acc;
-            }, {} as Record<string, { section?: { title?: string; description?: string; collapsible?: boolean; defaultExpanded?: boolean }; groups: Record<string, FieldConfig[]> }>);
-
-            const renderSection = (
-              sectionKey: string,
-              sectionData: {
-                section?: {
-                  title?: string;
-                  description?: string;
-                  collapsible?: boolean;
-                  defaultExpanded?: boolean;
-                };
-                groups: Record<string, FieldConfig[]>;
-              }
-            ) => (
-              <SectionRenderer
-                key={sectionKey}
-                sectionKey={sectionKey}
-                sectionData={sectionData}
-                renderField={renderField}
-                collapseLabel={collapseLabel}
-                expandLabel={expandLabel}
-                form={form as unknown as AnyFormApi}
-                layout={layout}
-              />
-            );
-
-            const sectionsToRender = Object.entries(groupedFields);
-
-            const PageComponent = pageConfig?.component || DefaultPageComponent;
-
-            // Debug logging for page description
-            // if (
-            //   pageConfig?.description &&
-            //   pageConfig.description.includes("{{")
-            // ) {
-            //   console.log("DEBUG - Page description:", pageConfig.description);
-            //   console.log("DEBUG - Current values:", currentValues);
-            //   console.log(
-            //     "DEBUG - Resolved description:",
-            //     resolveDynamicText(pageConfig.description, currentValues)
-            //   );
-            // }
-
             return (
-              <PageComponent
-                title={
-                  pageConfig?.title
-                    ? resolveDynamicText(pageConfig.title, currentValues)
-                    : undefined
-                }
-                description={
-                  pageConfig?.description
-                    ? resolveDynamicText(pageConfig.description, currentValues)
-                    : undefined
-                }
-                page={currentPage}
-                totalPages={totalPages}
+              <FormGrid
+                columns={layout?.type === 'grid' ? (layout.columns as FormGridProps['columns']) : 2}
+                gap={(layout?.gap as FormGridProps['gap']) || '6'}
+                responsive={layout?.responsive ?? true}
+                className={layout?.className}
               >
-                {sectionsToRender.length === 1 &&
-                sectionsToRender[0][0] === "default"
-                  ? sectionsToRender[0][1].groups.default?.map(
-                      (field: FieldConfig) => renderField(field)
-                    )
-                  : sectionsToRender.map(([sectionKey, sectionData]) =>
-                      renderSection(sectionKey, sectionData)
-                    )}
-              </PageComponent>
+                {visibleFields.map((field) => (
+                  <div key={field.name}>{renderField(field)}</div>
+                ))}
+              </FormGrid>
             );
           }}
-        </form.Subscribe>
+        </FormSubscribeComponent>
       );
     }, [renderTabContent, renderField, activeTab, handleTabChange]);
 
@@ -2098,17 +1987,14 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
       if (!showSubmitButton) return null;
       if (!hasPages) {
         return (
-          <form.Subscribe
-            selector={(state) => ({
+          <FormSubscribeComponent
+            selector={(state: any) => ({
               canSubmit: state.canSubmit,
               isSubmitting: state.isSubmitting,
             })}
           >
-            {(state) => {
-              const { canSubmit, isSubmitting } = state as {
-                canSubmit: boolean;
-                isSubmitting: boolean;
-              };
+            {(state: { canSubmit: boolean; isSubmitting: boolean }) => {
+              const { canSubmit, isSubmitting } = state;
 
               const SubmitButton = submitButton || Button;
 
@@ -2128,22 +2014,19 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
                 </div>
               );
             }}
-          </form.Subscribe>
+          </FormSubscribeComponent>
         );
       }
 
       return (
-        <form.Subscribe
-          selector={(state) => ({
+        <FormSubscribeComponent
+          selector={(state: any) => ({
             canSubmit: state.canSubmit,
             isSubmitting: state.isSubmitting,
           })}
         >
-          {(state) => {
-            const { canSubmit, isSubmitting } = state as {
-              canSubmit: boolean;
-              isSubmitting: boolean;
-            };
+          {(state: { canSubmit: boolean; isSubmitting: boolean }) => {
+            const { canSubmit, isSubmitting } = state;
 
             const SubmitButton = submitButton || Button;
 
@@ -2184,7 +2067,7 @@ export function useFormedible<TFormValues extends Record<string, unknown>>(
               </div>
             );
           }}
-        </form.Subscribe>
+        </FormSubscribeComponent>
       );
     };
 
