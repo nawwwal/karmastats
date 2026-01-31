@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONSORT/STROBE Checklists - KARMASTAT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --primary-light: #60A5FA;
+            --secondary: #1E40AF;
+            --accent: #DBEAFE;
+            --bg-gradient-start: #EFF6FF;
+            --bg-gradient-end: #DBEAFE;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent: #1e3a5f;
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .karma-page-loader .loader-content {
+            text-align: center;
+        }
+
+        .karma-page-loader .loader-text {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes karmaFlow {
+            0% { stroke-dashoffset: 300; opacity: 0.4; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -300; opacity: 0.4; }
+        }
+
+        .karma-point {
+            animation: karmaPulse 1.2s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(3) { animation-delay: 0.2s; }
+        .karma-point:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes karmaPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1.5s linear infinite;
+        }
+
+        @keyframes spinnerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-path {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 15;
+            animation: spinnerDash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinnerDash {
+            0% { stroke-dashoffset: 60; }
+            50% { stroke-dashoffset: 15; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .results-loading .karma-infinity {
+            width: 80px;
+            height: 40px;
+        }
+
+        .results-loading .karma-path {
+            stroke: var(--primary);
+        }
+
+        .results-loading .karma-point {
+            fill: var(--primary-light);
+        }
+
+        .results-loading p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .checklist-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .checklist-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .checklist-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .checklist-btn.active {
+            border-color: var(--primary);
+            background: var(--accent);
+        }
+
+        .checklist-btn h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .checklist-btn p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-container {
+            background: var(--border-color);
+            border-radius: 10px;
+            height: 24px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 24px;
+            top: 0;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0 0.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .section-header:hover { opacity: 0.95; }
+        .section-header h3 { font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .section-header .toggle-icon { transition: transform 0.3s ease; }
+        .section-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+
+        .section-progress {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .checklist-items {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-items.collapsed { display: none; }
+
+        .checklist-item {
+            display: grid;
+            grid-template-columns: auto 60px 1fr auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            align-items: start;
+            transition: background 0.2s ease;
+        }
+
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-item:hover { background: var(--accent); }
+        .checklist-item.completed { background: rgba(16, 185, 129, 0.1); }
+
+        .item-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .item-number { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+        .item-content h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--text-primary); cursor: pointer; }
+        .item-content p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .item-explanation {
+            background: var(--accent);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: none;
+            border-left: 3px solid var(--primary);
+        }
+
+        .item-explanation.show { display: block; }
+
+        .item-link {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .item-link:hover { background: var(--primary-dark); }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover { border-color: var(--primary); }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+            color: white;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover { transform: scale(1.1); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--accent);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .search-input:focus { outline: none; border-color: var(--primary); }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .footer a { color: var(--primary); text-decoration: none; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal h3 { color: var(--primary); margin-bottom: 1rem; }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .pdf-theme-selector {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .pdf-theme-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .pdf-theme-btn:hover, .pdf-theme-btn.selected {
+            border-color: var(--primary);
+            background: var(--accent);
+        }
+
+        .pdf-theme-btn .theme-preview {
+            width: 100%;
+            height: 40px;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .pdf-theme-btn.light .theme-preview { background: linear-gradient(135deg, #fff 50%, #f0f0f0 50%); }
+        .pdf-theme-btn.dark .theme-preview { background: linear-gradient(135deg, #1e293b 50%, #0f172a 50%); }
+
+        .hidden { display: none !important; }
+
+        .variant-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .variant-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .variant-btn:hover, .variant-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .container { padding: 1rem; }
+            .checklist-item {
+                grid-template-columns: auto 1fr;
+                gap: 0.5rem;
+            }
+            .item-number { grid-column: 2; }
+            .item-content { grid-column: 1 / -1; }
+            .item-link { grid-column: 1 / -1; justify-self: start; }
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#ffffff"/>
+                            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path"
+                          d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30"
+                          fill="none" stroke="url(#loaderGrad)" stroke-width="5" stroke-linecap="round"/>
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                      fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                <circle cx="20" cy="20" r="3" fill="white"/>
+                <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+            </svg>
+            <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+        </div>
+        <h1>Research Reporting Checklists</h1>
+        <p>CONSORT, STROBE, PRISMA & STARD Guidelines</p>
+        <div class="nav-buttons">
+            <a href="karmastat_2_0_main.html" class="nav-btn">Back to Main</a>
+            <a href="karmastat_report_generator.html" class="nav-btn">Report Generator</a>
+            <a href="karmastat_power_analysis.html" class="nav-btn">Power Analysis</a>
+            <a href="karmastat_effect_size.html" class="nav-btn">Effect Size</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="checklist-selector">
+            <div class="checklist-btn active" data-checklist="consort">
+                <h3>CONSORT 2010</h3>
+                <p>Randomized Controlled Trials (25 items)</p>
+            </div>
+            <div class="checklist-btn" data-checklist="strobe">
+                <h3>STROBE</h3>
+                <p>Observational Studies (22 items)</p>
+            </div>
+            <div class="checklist-btn" data-checklist="prisma">
+                <h3>PRISMA 2020</h3>
+                <p>Systematic Reviews (27 items)</p>
+            </div>
+            <div class="checklist-btn" data-checklist="stard">
+                <h3>STARD 2015</h3>
+                <p>Diagnostic Studies (30 items)</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Progress Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="completedCount">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="percentComplete">0%</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                <div class="progress-text" id="progressText">0 / 0 items completed</div>
+            </div>
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All Items</button>
+                <button class="filter-btn" data-filter="incomplete">Incomplete</button>
+                <button class="filter-btn" data-filter="complete">Completed</button>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search items...">
+            </div>
+        </div>
+
+        <div class="card" id="checklistContent"></div>
+
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="openExportModal()">Export to PDF</button>
+            <button class="btn btn-danger" onclick="resetCurrentChecklist()">Reset Checklist</button>
+            <button class="btn btn-secondary" onclick="expandAll()">Expand All</button>
+            <button class="btn btn-secondary" onclick="collapseAll()">Collapse All</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal">
+            <h3>Export Checklist to PDF</h3>
+            <p>Select the PDF theme:</p>
+            <div class="pdf-theme-selector">
+                <div class="pdf-theme-btn light selected" data-pdf-theme="light">
+                    <div class="theme-preview"></div>
+                    <span>Light Theme</span>
+                </div>
+                <div class="pdf-theme-btn dark" data-pdf-theme="dark">
+                    <div class="theme-preview"></div>
+                    <span>Dark Theme</span>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeExportModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="exportToPDF()">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <span id="themeIcon">&#9789;</span>
+    </button>
+
+    <div class="footer">
+        <p>KARMASTAT - Crafted by Karmayogi</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+            <a href="https://www.consort-statement.org/" target="_blank">CONSORT</a> |
+            <a href="https://www.strobe-statement.org/" target="_blank">STROBE</a> |
+            <a href="https://www.prisma-statement.org/" target="_blank">PRISMA</a> |
+            <a href="https://www.stard-statement.org/" target="_blank">STARD</a>
+        </p>
+    </div>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Hide page loader when content is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button loading state functions
+        function showButtonLoader(btn) {
+            if (btn) btn.classList.add('loading');
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) btn.classList.remove('loading');
+        }
+
+        // Wrap calculation with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 600);
+        }
+
+        // Checklist Data
+        const checklistData = {
+            consort: {
+                name: "CONSORT 2010",
+                description: "Checklist for reporting randomized controlled trials",
+                reference: "Schulz KF, Altman DG, Moher D. CONSORT 2010 Statement.",
+                sections: [
+                    {
+                        id: "title-abstract",
+                        name: "Title and Abstract",
+                        items: [
+                            { id: "1a", title: "Title", description: "Identification as a randomised trial in the title", explanation: "The title should clearly indicate that the study is a randomised trial. This helps readers and database indexers identify the study design." },
+                            { id: "1b", title: "Abstract", description: "Structured summary of trial design, methods, results, and conclusions (for specific guidance see CONSORT for abstracts)", explanation: "A well-structured abstract allows readers to quickly assess the trial's relevance. Include key elements: objectives, methods, results, and conclusions." }
+                        ]
+                    },
+                    {
+                        id: "introduction",
+                        name: "Introduction",
+                        items: [
+                            { id: "2a", title: "Background", description: "Scientific background and explanation of rationale", explanation: "Explain why this research is needed. Summarize previous research and identify gaps that justify the trial." },
+                            { id: "2b", title: "Objectives", description: "Specific objectives or hypotheses", explanation: "Clearly state the research question. Pre-specified hypotheses help prevent post-hoc rationalization of findings." }
+                        ]
+                    },
+                    {
+                        id: "methods",
+                        name: "Methods",
+                        items: [
+                            { id: "3a", title: "Trial design", description: "Description of trial design (such as parallel, factorial) including allocation ratio", explanation: "Specify if the trial is parallel, crossover, factorial, etc. State the allocation ratio (e.g., 1:1).", link: "karmastat_clinical_trials.html" },
+                            { id: "3b", title: "Changes to design", description: "Important changes to methods after trial commencement, with reasons", explanation: "Document any protocol amendments. Transparency about changes helps readers assess potential bias." },
+                            { id: "4a", title: "Eligibility criteria", description: "Eligibility criteria for participants", explanation: "List all inclusion and exclusion criteria. These define the target population and affect generalizability." },
+                            { id: "4b", title: "Settings", description: "Settings and locations where the data were collected", explanation: "Describe where participants were recruited and treated. This affects applicability to other settings." },
+                            { id: "5", title: "Interventions", description: "The interventions for each group with sufficient details to allow replication, including how and when they were actually administered", explanation: "Provide enough detail for replication: dose, frequency, duration, mode of administration, etc." },
+                            { id: "6a", title: "Outcomes", description: "Completely defined pre-specified primary and secondary outcome measures, including how and when they were assessed", explanation: "Clearly define what was measured, how, and when. Primary outcome drives sample size calculation." },
+                            { id: "6b", title: "Outcome changes", description: "Any changes to trial outcomes after the trial commenced, with reasons", explanation: "Changing outcomes after seeing data can introduce bias. Document any such changes honestly." },
+                            { id: "7a", title: "Sample size", description: "How sample size was determined", explanation: "Report the basis for sample size calculation: effect size, power, alpha level, and any adjustments.", link: "karmastat_power_analysis.html" },
+                            { id: "7b", title: "Interim analyses", description: "When applicable, explanation of any interim analyses and stopping guidelines", explanation: "Interim analyses can inflate type I error if not properly planned. Describe any stopping rules used." },
+                            { id: "8a", title: "Sequence generation", description: "Method used to generate the random allocation sequence", explanation: "Describe how randomization was generated (e.g., computer-generated, random number tables)." },
+                            { id: "8b", title: "Randomisation type", description: "Type of randomisation; details of any restriction (such as blocking and block size)", explanation: "Specify if simple, blocked, or stratified randomization was used. If blocked, state block sizes." },
+                            { id: "9", title: "Allocation concealment", description: "Mechanism used to implement the random allocation sequence, describing any steps taken to conceal the sequence until interventions were assigned", explanation: "Concealment prevents selection bias. Methods include central randomization, sequentially numbered sealed envelopes." },
+                            { id: "10", title: "Implementation", description: "Who generated the random allocation sequence, who enrolled participants, and who assigned participants to interventions", explanation: "Separating these roles helps prevent selection bias." },
+                            { id: "11a", title: "Blinding", description: "If done, who was blinded after assignment to interventions and how", explanation: "Specify who was blinded: participants, care providers, outcome assessors, data analysts." },
+                            { id: "11b", title: "Blinding similarity", description: "If relevant, description of the similarity of interventions", explanation: "Describe how interventions were made to look/feel similar (e.g., matching placebo)." },
+                            { id: "12a", title: "Statistical methods", description: "Statistical methods used to compare groups for primary and secondary outcomes", explanation: "Specify the statistical tests used and why they were appropriate.", link: "karmastat_effect_size.html" },
+                            { id: "12b", title: "Additional analyses", description: "Methods for additional analyses, such as subgroup analyses and adjusted analyses", explanation: "Describe any pre-planned subgroup or sensitivity analyses. Distinguish from exploratory analyses." }
+                        ]
+                    },
+                    {
+                        id: "results",
+                        name: "Results",
+                        items: [
+                            { id: "13a", title: "Participant flow", description: "For each group, the numbers of participants who were randomly assigned, received intended treatment, and were analysed for the primary outcome", explanation: "A flow diagram is recommended. Show numbers at each stage: enrollment, allocation, follow-up, analysis." },
+                            { id: "13b", title: "Losses and exclusions", description: "For each group, losses and exclusions after randomisation, together with reasons", explanation: "Report dropouts and protocol deviations. High attrition may introduce bias." },
+                            { id: "14a", title: "Recruitment dates", description: "Dates defining the periods of recruitment and follow-up", explanation: "Helps readers understand when the trial was conducted and the historical context." },
+                            { id: "14b", title: "Why stopped", description: "Why the trial ended or was stopped", explanation: "Trials may stop early due to efficacy, harm, or futility. Document the reason." },
+                            { id: "15", title: "Baseline data", description: "A table showing baseline demographic and clinical characteristics for each group", explanation: "Baseline table allows assessment of group comparability. Do not use p-values for baseline comparisons." },
+                            { id: "16", title: "Numbers analysed", description: "For each group, number of participants (denominator) included in each analysis and whether the analysis was by original assigned groups", explanation: "State if analysis was intention-to-treat, per-protocol, or modified ITT." },
+                            { id: "17a", title: "Outcomes and estimation", description: "For each primary and secondary outcome, results for each group, and the estimated effect size and its precision (such as 95% confidence interval)", explanation: "Report point estimates with confidence intervals. Effect sizes are more informative than p-values alone." },
+                            { id: "17b", title: "Binary outcomes", description: "For binary outcomes, presentation of both absolute and relative effect sizes is recommended", explanation: "Report both absolute risk reduction (ARR) and relative risk reduction (RRR) or odds ratio." },
+                            { id: "18", title: "Ancillary analyses", description: "Results of any other analyses performed, including subgroup analyses and adjusted analyses, distinguishing pre-specified from exploratory", explanation: "Clearly label which analyses were planned vs. exploratory to aid interpretation." },
+                            { id: "19", title: "Harms", description: "All important harms or unintended effects in each group", explanation: "Report adverse events systematically. Include frequency, severity, and relationship to intervention." }
+                        ]
+                    },
+                    {
+                        id: "discussion",
+                        name: "Discussion",
+                        items: [
+                            { id: "20", title: "Limitations", description: "Trial limitations, addressing sources of potential bias, imprecision, and if relevant, multiplicity of analyses", explanation: "Honestly discuss limitations: potential biases, small sample size, short follow-up, etc." },
+                            { id: "21", title: "Generalisability", description: "Generalisability (external validity, applicability) of the trial findings", explanation: "Discuss how findings apply to other populations, settings, or treatment variations." },
+                            { id: "22", title: "Interpretation", description: "Interpretation consistent with results, balancing benefits and harms, and considering other relevant evidence", explanation: "Conclusions should match the results. Consider the totality of evidence." }
+                        ]
+                    },
+                    {
+                        id: "other",
+                        name: "Other Information",
+                        items: [
+                            { id: "23", title: "Registration", description: "Registration number and name of trial registry", explanation: "Trial registration promotes transparency and helps prevent selective reporting." },
+                            { id: "24", title: "Protocol", description: "Where the full trial protocol can be accessed, if available", explanation: "Published protocols allow comparison of planned vs. reported analyses." },
+                            { id: "25", title: "Funding", description: "Sources of funding and other support, role of funders", explanation: "Disclose all funding sources and their role in the trial. Conflicts of interest should be declared." }
+                        ]
+                    }
+                ]
+            },
+            strobe: {
+                name: "STROBE",
+                description: "Checklist for observational studies (cohort, case-control, cross-sectional)",
+                reference: "von Elm E, et al. The STROBE statement.",
+                variants: ["cohort", "case-control", "cross-sectional"],
+                sections: [
+                    {
+                        id: "title-abstract",
+                        name: "Title and Abstract",
+                        items: [
+                            { id: "1", title: "Title and abstract", description: "(a) Indicate the study's design with a commonly used term in the title or abstract. (b) Provide an informative and balanced summary", explanation: "Clearly identify the study design (cohort, case-control, cross-sectional) for proper indexing and reader understanding." }
+                        ]
+                    },
+                    {
+                        id: "introduction",
+                        name: "Introduction",
+                        items: [
+                            { id: "2", title: "Background/rationale", description: "Explain the scientific background and rationale for the investigation being reported", explanation: "Summarize existing knowledge and explain why this study was needed." },
+                            { id: "3", title: "Objectives", description: "State specific objectives, including any prespecified hypotheses", explanation: "Clearly state research questions or hypotheses that guided the study." }
+                        ]
+                    },
+                    {
+                        id: "methods",
+                        name: "Methods",
+                        items: [
+                            { id: "4", title: "Study design", description: "Present key elements of study design early in the paper", explanation: "State whether cohort, case-control, or cross-sectional. Describe key design features." },
+                            { id: "5", title: "Setting", description: "Describe the setting, locations, and relevant dates, including periods of recruitment, exposure, follow-up, and data collection", explanation: "Context helps readers assess applicability. Include dates to understand historical context." },
+                            { id: "6", title: "Participants", description: "Cohort: Give eligibility criteria, sources and methods of selection, and follow-up. Case-control: Give eligibility criteria, sources and methods of case ascertainment and control selection. Cross-sectional: Give eligibility criteria, sources and methods of selection", explanation: "Detailed participant description is essential for assessing selection bias and generalizability." },
+                            { id: "7", title: "Variables", description: "Clearly define all outcomes, exposures, predictors, potential confounders, and effect modifiers. Give diagnostic criteria, if applicable", explanation: "Precise definitions enable replication and comparison across studies." },
+                            { id: "8", title: "Data sources/measurement", description: "For each variable, give sources of data and details of methods of assessment. Describe comparability of assessment methods if more than one group", explanation: "Measurement methods affect validity. Different methods between groups can introduce bias." },
+                            { id: "9", title: "Bias", description: "Describe any efforts to address potential sources of bias", explanation: "Acknowledge and describe how selection, information, and confounding biases were addressed." },
+                            { id: "10", title: "Study size", description: "Explain how the study size was arrived at", explanation: "Whether sample size was calculated a priori or determined by available data affects interpretation.", link: "karmastat_power_analysis.html" },
+                            { id: "11", title: "Quantitative variables", description: "Explain how quantitative variables were handled in the analyses. If applicable, describe which groupings were chosen and why", explanation: "Categorization of continuous variables and handling of transformations should be justified." },
+                            { id: "12", title: "Statistical methods", description: "(a) Describe all statistical methods, (b) methods to control confounding, (c) methods to examine subgroups, (d) how missing data were addressed, (e) cohort: sensitivity analyses; case-control: matching; cross-sectional: sampling strategy", explanation: "Complete statistical description enables replication and critical appraisal.", link: "karmastat_effect_size.html" }
+                        ]
+                    },
+                    {
+                        id: "results",
+                        name: "Results",
+                        items: [
+                            { id: "13", title: "Participants", description: "(a) Report numbers at each stage. (b) Give reasons for non-participation. (c) Consider use of a flow diagram", explanation: "A flow diagram helps readers understand participant selection and potential selection bias." },
+                            { id: "14", title: "Descriptive data", description: "(a) Give characteristics of participants and information on exposures. (b) Indicate number of participants with missing data. (c) Cohort: summarise follow-up time", explanation: "Baseline characteristics help assess comparability and generalizability." },
+                            { id: "15", title: "Outcome data", description: "Cohort: Report numbers of outcome events or summary measures over time. Case-control: Report numbers in each exposure category. Cross-sectional: Report numbers of outcome events or summary measures", explanation: "Raw numbers allow readers to calculate additional measures if needed." },
+                            { id: "16", title: "Main results", description: "(a) Give unadjusted estimates and, if applicable, confounder-adjusted estimates and their precision. (b) Report category boundaries when continuous variables were categorized. (c) If relevant, consider translating relative risk into absolute risk", explanation: "Both crude and adjusted estimates help readers understand the role of confounding." },
+                            { id: "17", title: "Other analyses", description: "Report other analyses done (e.g., analyses of subgroups and interactions, and sensitivity analyses)", explanation: "Distinguish pre-specified from exploratory analyses. Multiple comparisons increase false positive risk." }
+                        ]
+                    },
+                    {
+                        id: "discussion",
+                        name: "Discussion",
+                        items: [
+                            { id: "18", title: "Key results", description: "Summarise key results with reference to study objectives", explanation: "Begin discussion with a concise summary of main findings." },
+                            { id: "19", title: "Limitations", description: "Discuss limitations of the study, taking into account sources of potential bias or imprecision. Discuss both direction and magnitude of any potential bias", explanation: "Honest discussion of limitations enhances credibility and helps readers interpret findings." },
+                            { id: "20", title: "Interpretation", description: "Give a cautious overall interpretation of results considering objectives, limitations, multiplicity of analyses, results from similar studies, and other relevant evidence", explanation: "Conclusions should be proportionate to the evidence. Avoid overstating findings." },
+                            { id: "21", title: "Generalisability", description: "Discuss the generalisability (external validity) of the study results", explanation: "Consider how findings apply to other populations, settings, or time periods." }
+                        ]
+                    },
+                    {
+                        id: "other",
+                        name: "Other Information",
+                        items: [
+                            { id: "22", title: "Funding", description: "Give the source of funding and the role of the funders for the present study", explanation: "Disclosure of funding sources and potential conflicts of interest is essential for transparency." }
+                        ]
+                    }
+                ]
+            },
+            prisma: {
+                name: "PRISMA 2020",
+                description: "Checklist for systematic reviews and meta-analyses",
+                reference: "Page MJ, et al. The PRISMA 2020 statement.",
+                sections: [
+                    {
+                        id: "title",
+                        name: "Title",
+                        items: [
+                            { id: "1", title: "Title", description: "Identify the report as a systematic review", explanation: "The title should clearly indicate the report is a systematic review, meta-analysis, or both." }
+                        ]
+                    },
+                    {
+                        id: "abstract",
+                        name: "Abstract",
+                        items: [
+                            { id: "2", title: "Abstract", description: "Provide a structured summary including background, objectives, data sources, study eligibility criteria, participants and interventions, study appraisal and synthesis methods, results, limitations, conclusions and implications, and registration number", explanation: "A comprehensive abstract allows readers to quickly assess the review's relevance and quality." }
+                        ]
+                    },
+                    {
+                        id: "introduction",
+                        name: "Introduction",
+                        items: [
+                            { id: "3", title: "Rationale", description: "Describe the rationale for the review in the context of existing knowledge", explanation: "Explain why the review is needed. Reference previous reviews and identify gaps." },
+                            { id: "4", title: "Objectives", description: "Provide an explicit statement of the objective(s) or question(s) the review addresses", explanation: "Use PICO format (Population, Intervention, Comparison, Outcome) to structure the question." }
+                        ]
+                    },
+                    {
+                        id: "methods",
+                        name: "Methods",
+                        items: [
+                            { id: "5", title: "Eligibility criteria", description: "Specify the inclusion and exclusion criteria for the review and how studies were grouped for synthesis", explanation: "Clear criteria allow readers to assess whether all relevant studies were included." },
+                            { id: "6", title: "Information sources", description: "Specify all databases, registers, websites, organisations, reference lists and other sources searched. Specify the date of the last search", explanation: "Comprehensive searching is essential. Document all sources searched and search dates." },
+                            { id: "7", title: "Search strategy", description: "Present the full search strategies for all databases, registers and websites, including any filters and limits used", explanation: "Detailed search strategy allows replication. Include Boolean operators and limits." },
+                            { id: "8", title: "Selection process", description: "Specify the methods used to decide whether a study met the inclusion criteria, including how many reviewers screened each record and each report, and whether they worked independently, and if applicable, details of automation tools used", explanation: "Dual independent screening reduces errors. Describe how disagreements were resolved." },
+                            { id: "9", title: "Data collection", description: "Specify the methods used to collect data from reports, including how many reviewers collected data, whether they worked independently, any processes for obtaining or confirming data, and if applicable, details of automation tools used", explanation: "Describe data extraction forms and pilot testing. Independent extraction improves accuracy." },
+                            { id: "10a", title: "Data items", description: "List and define all outcomes for which data were sought. Specify whether all results that were compatible with each outcome domain were sought", explanation: "Pre-specify outcomes to prevent selective outcome reporting." },
+                            { id: "10b", title: "Data items", description: "List and define all other variables for which data were sought. Describe methods used to collect data about intervention and comparison groups", explanation: "Document all variables extracted including study characteristics and risk of bias items." },
+                            { id: "11", title: "Study risk of bias", description: "Specify the methods used to assess risk of bias in included studies, including details of the tool(s) used, how many reviewers assessed each study, and whether they worked independently", explanation: "Use validated tools (e.g., Cochrane RoB, Newcastle-Ottawa). Independent assessment is preferred." },
+                            { id: "12", title: "Effect measures", description: "Specify for each outcome the effect measure(s) used in the synthesis or presentation of results", explanation: "Common measures: risk ratio, odds ratio, mean difference, standardized mean difference." },
+                            { id: "13a", title: "Synthesis methods", description: "Describe the processes used to decide which studies were eligible for each synthesis", explanation: "Not all studies may be suitable for meta-analysis. Describe grouping decisions." },
+                            { id: "13b", title: "Synthesis methods", description: "Describe any methods required to prepare the data for presentation or synthesis, such as handling of multi-arm studies or missing summary statistics", explanation: "Document data transformations, handling of multiple groups, and imputation methods." },
+                            { id: "13c", title: "Synthesis methods", description: "Describe any methods used to tabulate or visually display results of individual studies and syntheses", explanation: "Forest plots, tables, and other displays help readers understand results." },
+                            { id: "13d", title: "Synthesis methods", description: "Describe any methods used to synthesize results and provide a rationale for the choice(s). If meta-analysis was performed, describe the model(s), method(s) to identify heterogeneity, and software used", explanation: "Specify if fixed or random effects model was used and why. Report heterogeneity assessment." },
+                            { id: "13e", title: "Synthesis methods", description: "Describe any methods used to explore possible causes of heterogeneity among study results", explanation: "Subgroup analysis or meta-regression can explore sources of heterogeneity." },
+                            { id: "13f", title: "Synthesis methods", description: "Describe any sensitivity analyses conducted to assess robustness of the synthesized results", explanation: "Sensitivity analyses test whether results change with different analytical decisions." },
+                            { id: "14", title: "Reporting bias", description: "Describe any methods used to assess risk of bias due to missing results in a synthesis", explanation: "Publication bias can distort results. Use funnel plots, statistical tests, or selection models." },
+                            { id: "15", title: "Certainty assessment", description: "Describe any methods used to assess certainty in the body of evidence for an outcome", explanation: "GRADE approach is commonly used to rate confidence in effect estimates." }
+                        ]
+                    },
+                    {
+                        id: "results",
+                        name: "Results",
+                        items: [
+                            { id: "16a", title: "Study selection", description: "Describe the results of the search and selection process, ideally with a flow diagram", explanation: "PRISMA flow diagram shows numbers identified, screened, excluded (with reasons), and included." },
+                            { id: "16b", title: "Study selection", description: "Cite studies that might appear to meet the inclusion criteria but were excluded, and explain why", explanation: "Explaining borderline exclusions helps readers assess completeness." },
+                            { id: "17", title: "Study characteristics", description: "Cite each included study and present its characteristics", explanation: "A table of study characteristics (design, participants, interventions, outcomes) is standard." },
+                            { id: "18", title: "Risk of bias in studies", description: "Present assessments of risk of bias for each included study", explanation: "Present risk of bias in tables or figures. Summarize across studies." },
+                            { id: "19", title: "Results of individual studies", description: "For all outcomes, present for each study: (a) summary statistics and (b) effect estimate and precision", explanation: "Forest plots are an effective way to display individual study results." },
+                            { id: "20a", title: "Results of syntheses", description: "For each synthesis, briefly summarise the characteristics and risk of bias among contributing studies", explanation: "Contextualise pooled results by noting study quality and characteristics." },
+                            { id: "20b", title: "Results of syntheses", description: "Present results of all statistical syntheses conducted. If meta-analysis was done, present pooled estimate and confidence/credible interval, and measures of statistical heterogeneity", explanation: "Report I-squared, tau-squared, or other heterogeneity measures." },
+                            { id: "20c", title: "Results of syntheses", description: "Present results of all investigations of possible causes of heterogeneity among study results", explanation: "Report subgroup analyses and meta-regression results." },
+                            { id: "20d", title: "Results of syntheses", description: "Present results of all sensitivity analyses conducted to assess robustness", explanation: "Show how results change when analytical decisions are varied." },
+                            { id: "21", title: "Reporting biases", description: "Present assessments of risk of bias due to missing results for each synthesis assessed", explanation: "Present funnel plots and publication bias test results." },
+                            { id: "22", title: "Certainty of evidence", description: "Present assessments of certainty in the body of evidence for each outcome assessed", explanation: "GRADE ratings (high, moderate, low, very low) summarise confidence in findings." }
+                        ]
+                    },
+                    {
+                        id: "discussion",
+                        name: "Discussion",
+                        items: [
+                            { id: "23", title: "Discussion", description: "Provide a general interpretation of the results in the context of other evidence", explanation: "Discuss how findings relate to existing evidence and theories." },
+                            { id: "24", title: "Limitations", description: "Discuss any limitations of the evidence included in the review and of the review process", explanation: "Address study-level limitations (bias, inconsistency) and review-level limitations." },
+                            { id: "25", title: "Conclusions", description: "Provide a general interpretation of the results in the context of other evidence, and implications for future research", explanation: "Conclusions should be proportionate to findings. Identify research gaps." }
+                        ]
+                    },
+                    {
+                        id: "other",
+                        name: "Other Information",
+                        items: [
+                            { id: "26", title: "Registration and protocol", description: "Provide registration information including register name, number, and where accessible. Indicate where the review protocol can be accessed and, if available, provide registration information and the protocol", explanation: "PROSPERO registration promotes transparency. Published protocols allow comparison." },
+                            { id: "27", title: "Support and funding", description: "Describe sources of financial or non-financial support for the review, and the role of the funders", explanation: "Disclose all funding and potential conflicts of interest." }
+                        ]
+                    }
+                ]
+            },
+            stard: {
+                name: "STARD 2015",
+                description: "Checklist for diagnostic accuracy studies",
+                reference: "Bossuyt PM, et al. STARD 2015: An Updated List of Essential Items for Reporting Diagnostic Accuracy Studies.",
+                sections: [
+                    {
+                        id: "title-abstract",
+                        name: "Title and Abstract",
+                        items: [
+                            { id: "1", title: "Title/Abstract", description: "Identification as a study of diagnostic accuracy using at least one measure of accuracy (such as sensitivity, specificity, predictive values, or AUC)", explanation: "The title or abstract should clearly indicate the study evaluates diagnostic accuracy." }
+                        ]
+                    },
+                    {
+                        id: "abstract",
+                        name: "Abstract",
+                        items: [
+                            { id: "2", title: "Structured abstract", description: "Structured abstract with study design, methods, results, and conclusions", explanation: "A structured abstract helps readers quickly assess the study's relevance and quality." }
+                        ]
+                    },
+                    {
+                        id: "introduction",
+                        name: "Introduction",
+                        items: [
+                            { id: "3", title: "Scientific background", description: "Scientific and clinical background, including the intended use and clinical role of the index test", explanation: "Explain the clinical problem and how the test might be used in practice." },
+                            { id: "4", title: "Objectives", description: "Study objectives and hypotheses", explanation: "State the specific aims. Is this a development, validation, or comparative accuracy study?" }
+                        ]
+                    },
+                    {
+                        id: "methods",
+                        name: "Methods",
+                        items: [
+                            { id: "5", title: "Study design", description: "Whether data collection was planned before the index test and reference standard were performed (prospective study) or after (retrospective study)", explanation: "Prospective studies generally have higher quality. Retrospective studies risk selection bias." },
+                            { id: "6", title: "Participants", description: "Eligibility criteria", explanation: "Describe inclusion and exclusion criteria. Consider the spectrum of disease severity." },
+                            { id: "7", title: "Sampling", description: "On what basis potentially eligible participants were identified (such as symptoms, results from previous tests, inclusion in registry)", explanation: "How participants were identified affects the applicability of results to clinical practice." },
+                            { id: "8", title: "Recruitment", description: "Where and when potentially eligible participants were identified (setting, location and dates)", explanation: "The setting affects disease prevalence and spectrum, which impact accuracy estimates." },
+                            { id: "9", title: "Sample size", description: "Whether participants formed a consecutive, random or convenience series", explanation: "Consecutive enrollment minimizes selection bias. Convenience samples may be biased." },
+                            { id: "10a", title: "Index test", description: "Index test, in sufficient detail to allow replication", explanation: "Describe the test procedure, equipment, reagents, and interpretation criteria." },
+                            { id: "10b", title: "Reference standard", description: "Reference standard, in sufficient detail to allow replication", explanation: "The reference standard defines the target condition. Describe how it was determined." },
+                            { id: "11", title: "Rationale for cut-offs", description: "Rationale for choosing the reference standard (if alternatives exist)", explanation: "Justify choice of reference standard if multiple options exist." },
+                            { id: "12a", title: "Test positivity", description: "Definition of and rationale for test positivity cut-offs or result categories of the index test, distinguishing pre-specified from exploratory", explanation: "Pre-specified cut-offs are more valid than those chosen after seeing data." },
+                            { id: "12b", title: "Reference standard positivity", description: "Definition of and rationale for test positivity cut-offs or result categories of the reference standard, distinguishing pre-specified from exploratory", explanation: "The threshold for a positive reference standard should be clearly defined." },
+                            { id: "13a", title: "Blinding", description: "Whether clinical information and reference standard results were available to the performers/readers of the index test", explanation: "Blinding prevents interpretation bias. Index test readers should ideally be blind to reference standard." },
+                            { id: "13b", title: "Blinding", description: "Whether clinical information and index test results were available to the assessors of the reference standard", explanation: "Reference standard assessors should ideally be blind to index test results." },
+                            { id: "14", title: "Analysis", description: "Methods for estimating or comparing measures of diagnostic accuracy", explanation: "Describe how sensitivity, specificity, and other measures were calculated. Report confidence intervals." },
+                            { id: "15", title: "Handling indeterminate results", description: "How indeterminate index test or reference standard results were handled", explanation: "Excluding indeterminate results can inflate accuracy estimates." },
+                            { id: "16", title: "Missing data", description: "How missing data on the index test and reference standard were handled", explanation: "Describe the extent of missing data and how it was addressed." },
+                            { id: "17", title: "Variability analysis", description: "Any analyses of variability in diagnostic accuracy, distinguishing pre-specified from exploratory", explanation: "Subgroup analyses can identify where test performance varies." },
+                            { id: "18", title: "Sample size calculation", description: "Intended sample size and how it was determined", explanation: "Power calculations for diagnostic studies require specification of expected accuracy and precision.", link: "karmastat_power_analysis.html" }
+                        ]
+                    },
+                    {
+                        id: "results",
+                        name: "Results",
+                        items: [
+                            { id: "19", title: "Flow diagram", description: "Flow of participants, using a diagram", explanation: "STARD flow diagram shows numbers at each stage and reasons for exclusion." },
+                            { id: "20", title: "Baseline characteristics", description: "Baseline demographic and clinical characteristics of participants", explanation: "Describe characteristics relevant to the test and target condition." },
+                            { id: "21a", title: "Distribution of disease severity", description: "Distribution of severity of disease in those with the target condition", explanation: "Test accuracy may vary with disease severity." },
+                            { id: "21b", title: "Alternative diagnoses", description: "Distribution of alternative diagnoses in those without the target condition", explanation: "Accuracy may depend on the differential diagnosis." },
+                            { id: "22", title: "Time interval", description: "Time interval and any clinical interventions between index test and reference standard", explanation: "Long intervals or treatment between tests can affect accuracy estimates." },
+                            { id: "23", title: "Cross tabulation", description: "Cross tabulation of the index test results (or their distribution) by the results of the reference standard", explanation: "The 2x2 table allows readers to calculate accuracy measures." },
+                            { id: "24", title: "Accuracy estimates", description: "Estimates of diagnostic accuracy and their precision (such as 95% confidence intervals)", explanation: "Report sensitivity, specificity, predictive values, likelihood ratios, or AUC with confidence intervals." },
+                            { id: "25", title: "Adverse events", description: "Any adverse events from performing the index test or the reference standard", explanation: "Report complications or harms from testing." }
+                        ]
+                    },
+                    {
+                        id: "discussion",
+                        name: "Discussion",
+                        items: [
+                            { id: "26", title: "Study limitations", description: "Study limitations, including sources of potential bias, statistical uncertainty, and generalisability", explanation: "Address verification bias, spectrum bias, and other methodological issues." },
+                            { id: "27", title: "Implications", description: "Implications for practice, including the intended use and clinical role of the index test", explanation: "Discuss how findings should influence clinical decision-making." }
+                        ]
+                    },
+                    {
+                        id: "other",
+                        name: "Other Information",
+                        items: [
+                            { id: "28", title: "Registration", description: "Registration number and name of registry", explanation: "Pre-registration promotes transparency and reduces selective reporting." },
+                            { id: "29", title: "Protocol", description: "Where the full study protocol can be accessed", explanation: "Published protocols allow comparison of planned and reported analyses." },
+                            { id: "30", title: "Funding", description: "Sources of funding and other support; role of funders", explanation: "Disclose funding sources and potential conflicts of interest." }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // State
+        let currentChecklist = 'consort';
+        let progress = {};
+        let currentFilter = 'all';
+        let pdfTheme = 'light';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadProgress();
+            renderChecklist(currentChecklist);
+            setupEventListeners();
+        });
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('karmastat-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀' : '☾';
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('karmastat-theme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀' : '☾';
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('karmastat-checklist-progress');
+            if (saved) {
+                progress = JSON.parse(saved);
+            } else {
+                progress = { consort: {}, strobe: {}, prisma: {}, stard: {} };
+            }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('karmastat-checklist-progress', JSON.stringify(progress));
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.checklist-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.checklist-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentChecklist = btn.dataset.checklist;
+                    renderChecklist(currentChecklist);
+                });
+            });
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    applyFilter();
+                });
+            });
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                applySearch(e.target.value);
+            });
+
+            document.querySelectorAll('.pdf-theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.pdf-theme-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    pdfTheme = btn.dataset.pdfTheme;
+                });
+            });
+        }
+
+        function renderChecklist(checklistId) {
+            const data = checklistData[checklistId];
+            const container = document.getElementById('checklistContent');
+
+            let html = `<h2>${data.name}</h2>
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">${data.description}. Reference: ${data.reference}</p>`;
+
+            if (data.variants) {
+                html += `<div class="variant-selector">
+                    ${data.variants.map((v, i) => `<button class="variant-btn ${i === 0 ? 'active' : ''}" data-variant="${v}">${v.charAt(0).toUpperCase() + v.slice(1)}</button>`).join('')}
+                </div>`;
+            }
+
+            data.sections.forEach(section => {
+                const sectionProgress = getSectionProgress(checklistId, section);
+                html += `
+                    <div class="section-header" data-section="${section.id}">
+                        <h3><span class="toggle-icon">&#9660;</span> ${section.name}</h3>
+                        <span class="section-progress">${sectionProgress.completed}/${sectionProgress.total}</span>
+                    </div>
+                    <div class="checklist-items" id="${section.id}-items">
+                        ${section.items.map(item => renderItem(checklistId, item)).join('')}
+                    </div>`;
+            });
+
+            container.innerHTML = html;
+
+            // Setup section toggle
+            container.querySelectorAll('.section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.classList.toggle('collapsed');
+                    const items = document.getElementById(header.dataset.section + '-items');
+                    items.classList.toggle('collapsed');
+                });
+            });
+
+            // Setup checkbox listeners
+            container.querySelectorAll('.item-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const item = e.target.closest('.checklist-item');
+                    const itemId = item.dataset.item;
+
+                    if (!progress[checklistId]) progress[checklistId] = {};
+                    progress[checklistId][itemId] = e.target.checked;
+
+                    item.classList.toggle('completed', e.target.checked);
+                    saveProgress();
+                    updateProgress();
+                    updateSectionProgress();
+                });
+            });
+
+            // Setup explanation toggle
+            container.querySelectorAll('.item-content h4').forEach(title => {
+                title.addEventListener('click', () => {
+                    const explanation = title.parentElement.querySelector('.item-explanation');
+                    if (explanation) {
+                        explanation.classList.toggle('show');
+                    }
+                });
+            });
+
+            if (data.variants) {
+                container.querySelectorAll('.variant-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        container.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+            }
+
+            updateProgress();
+            applyFilter();
+        }
+
+        function renderItem(checklistId, item) {
+            const isChecked = progress[checklistId] && progress[checklistId][item.id];
+            return `
+                <div class="checklist-item ${isChecked ? 'completed' : ''}" data-item="${item.id}">
+                    <input type="checkbox" class="item-checkbox" ${isChecked ? 'checked' : ''}>
+                    <span class="item-number">${item.id}</span>
+                    <div class="item-content">
+                        <h4>${item.title} &#9432;</h4>
+                        <p>${item.description}</p>
+                        <div class="item-explanation">${item.explanation}</div>
+                    </div>
+                    ${item.link ? `<a href="${item.link}" class="item-link">Calculator</a>` : ''}
+                </div>`;
+        }
+
+        function getSectionProgress(checklistId, section) {
+            let completed = 0;
+            section.items.forEach(item => {
+                if (progress[checklistId] && progress[checklistId][item.id]) {
+                    completed++;
+                }
+            });
+            return { completed, total: section.items.length };
+        }
+
+        function updateProgress() {
+            const data = checklistData[currentChecklist];
+            let total = 0;
+            let completed = 0;
+
+            data.sections.forEach(section => {
+                total += section.items.length;
+                section.items.forEach(item => {
+                    if (progress[currentChecklist] && progress[currentChecklist][item.id]) {
+                        completed++;
+                    }
+                });
+            });
+
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('percentComplete').textContent = percent + '%';
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressText').textContent = `${completed} / ${total} items completed`;
+        }
+
+        function updateSectionProgress() {
+            const data = checklistData[currentChecklist];
+            data.sections.forEach(section => {
+                const sectionProgress = getSectionProgress(currentChecklist, section);
+                const header = document.querySelector(`[data-section="${section.id}"] .section-progress`);
+                if (header) {
+                    header.textContent = `${sectionProgress.completed}/${sectionProgress.total}`;
+                }
+            });
+        }
+
+        function applyFilter() {
+            const items = document.querySelectorAll('.checklist-item');
+            items.forEach(item => {
+                const isCompleted = item.classList.contains('completed');
+                let show = true;
+
+                if (currentFilter === 'complete' && !isCompleted) show = false;
+                if (currentFilter === 'incomplete' && isCompleted) show = false;
+
+                item.style.display = show ? '' : 'none';
+            });
+        }
+
+        function applySearch(query) {
+            const items = document.querySelectorAll('.checklist-item');
+            const q = query.toLowerCase();
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.section-header').forEach(h => h.classList.remove('collapsed'));
+            document.querySelectorAll('.checklist-items').forEach(i => i.classList.remove('collapsed'));
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.section-header').forEach(h => h.classList.add('collapsed'));
+            document.querySelectorAll('.checklist-items').forEach(i => i.classList.add('collapsed'));
+        }
+
+        function resetCurrentChecklist() {
+            if (confirm(`Are you sure you want to reset all progress for ${checklistData[currentChecklist].name}?`)) {
+                progress[currentChecklist] = {};
+                saveProgress();
+                renderChecklist(currentChecklist);
+            }
+        }
+
+        function openExportModal() {
+            document.getElementById('exportModal').classList.add('show');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('show');
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const data = checklistData[currentChecklist];
+
+            // Theme colors
+            const colors = pdfTheme === 'dark'
+                ? { bg: [30, 41, 59], text: [241, 245, 249], primary: [59, 130, 246], secondary: [148, 163, 184], accent: [30, 58, 95] }
+                : { bg: [255, 255, 255], text: [30, 41, 59], primary: [59, 130, 246], secondary: [71, 85, 105], accent: [239, 246, 255] };
+
+            // Background
+            if (pdfTheme === 'dark') {
+                doc.setFillColor(...colors.bg);
+                doc.rect(0, 0, 210, 297, 'F');
+            }
+
+            // Header
+            doc.setFillColor(...colors.primary);
+            doc.rect(0, 0, 210, 35, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont(undefined, 'bold');
+            doc.text('KARMASTAT', 105, 15, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text(`${data.name} Checklist`, 105, 25, { align: 'center' });
+
+            // Progress summary
+            let total = 0, completed = 0;
+            data.sections.forEach(section => {
+                total += section.items.length;
+                section.items.forEach(item => {
+                    if (progress[currentChecklist] && progress[currentChecklist][item.id]) completed++;
+                });
+            });
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            doc.setFillColor(...colors.accent);
+            doc.rect(15, 42, 180, 15, 'F');
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(11);
+            doc.text(`Progress: ${completed}/${total} items (${percent}%)`, 20, 51);
+
+            // Progress bar
+            doc.setDrawColor(...colors.primary);
+            doc.setFillColor(200, 200, 200);
+            doc.rect(120, 46, 70, 6, 'F');
+            doc.setFillColor(...colors.primary);
+            doc.rect(120, 46, 70 * (percent/100), 6, 'F');
+
+            let y = 65;
+            const pageHeight = 280;
+            const lineHeight = 6;
+
+            data.sections.forEach(section => {
+                if (y > pageHeight - 30) {
+                    doc.addPage();
+                    if (pdfTheme === 'dark') {
+                        doc.setFillColor(...colors.bg);
+                        doc.rect(0, 0, 210, 297, 'F');
+                    }
+                    y = 20;
+                }
+
+                // Section header
+                doc.setFillColor(...colors.primary);
+                doc.rect(15, y - 5, 180, 10, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.text(section.name, 20, y + 2);
+                y += 12;
+
+                section.items.forEach(item => {
+                    if (y > pageHeight - 20) {
+                        doc.addPage();
+                        if (pdfTheme === 'dark') {
+                            doc.setFillColor(...colors.bg);
+                            doc.rect(0, 0, 210, 297, 'F');
+                        }
+                        y = 20;
+                    }
+
+                    const isChecked = progress[currentChecklist] && progress[currentChecklist][item.id];
+
+                    // Checkbox
+                    doc.setDrawColor(...colors.primary);
+                    doc.setFillColor(...(isChecked ? colors.primary : colors.bg));
+                    doc.rect(17, y - 3, 4, 4, isChecked ? 'FD' : 'D');
+
+                    if (isChecked) {
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(8);
+                        doc.text('X', 18, y);
+                    }
+
+                    // Item number
+                    doc.setTextColor(...colors.primary);
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'bold');
+                    doc.text(item.id, 25, y);
+
+                    // Item title
+                    doc.setTextColor(...colors.text);
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'bold');
+                    doc.text(item.title, 38, y);
+
+                    y += lineHeight;
+
+                    // Description (wrapped)
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(...colors.secondary);
+                    doc.setFontSize(8);
+                    const lines = doc.splitTextToSize(item.description, 155);
+                    lines.forEach(line => {
+                        if (y > pageHeight - 20) {
+                            doc.addPage();
+                            if (pdfTheme === 'dark') {
+                                doc.setFillColor(...colors.bg);
+                                doc.rect(0, 0, 210, 297, 'F');
+                            }
+                            y = 20;
+                        }
+                        doc.text(line, 38, y);
+                        y += 4;
+                    });
+
+                    y += 3;
+                });
+
+                y += 5;
+            });
+
+            // Footer on last page
+            const timestamp = new Date().toLocaleString();
+            doc.setFontSize(8);
+            doc.setTextColor(...colors.secondary);
+            doc.text(`Generated: ${timestamp}`, 15, 290);
+            doc.text('Generated by KARMASTAT - Crafted by Karmayogi', 195, 290, { align: 'right' });
+
+            doc.save(`${currentChecklist}_checklist_${new Date().toISOString().split('T')[0]}.pdf`);
+            closeExportModal();
+        }
+    </script>
+</body>
+</html>

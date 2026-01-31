@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Accuracy Studies - KARMASTAT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #EC4899;
+            --primary-dark: #DB2777;
+            --primary-light: #F472B6;
+            --secondary: #9D174D;
+            --accent: #FCE7F3;
+            --bg-gradient-start: #FDF2F8;
+            --bg-gradient-end: #FCE7F3;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent: #4a1d3f;
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .karma-page-loader .loader-content {
+            text-align: center;
+        }
+
+        .karma-page-loader .loader-text {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes karmaFlow {
+            0% { stroke-dashoffset: 300; opacity: 0.4; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -300; opacity: 0.4; }
+        }
+
+        .karma-point {
+            animation: karmaPulse 1.2s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(3) { animation-delay: 0.2s; }
+        .karma-point:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes karmaPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1.5s linear infinite;
+        }
+
+        @keyframes spinnerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-path {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 15;
+            animation: spinnerDash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinnerDash {
+            0% { stroke-dashoffset: 60; }
+            50% { stroke-dashoffset: 15; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .results-loading .karma-infinity {
+            width: 80px;
+            height: 40px;
+        }
+
+        .results-loading .karma-path {
+            stroke: var(--primary);
+        }
+
+        .results-loading .karma-point {
+            fill: var(--primary-light);
+        }
+
+        .results-loading p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+
+        .nav-buttons { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 { color: var(--primary); margin-bottom: 1.5rem; }
+
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .tab:hover { border-color: var(--primary); }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary); }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        .btn-export {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-export:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        .btn-export:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--accent);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .results.show { display: block; }
+
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .result-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .result-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+        .formula-box {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .formula-box h4 { color: var(--primary); margin-bottom: 0.75rem; }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .interpretation-box {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .interpretation-box h4 { color: var(--primary); margin-bottom: 0.75rem; }
+
+        .interpretation-box p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .export-options {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .export-options h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .export-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .pdf-theme-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+        }
+
+        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); }
+        .footer a { color: var(--primary); text-decoration: none; }
+        .help-text { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; }
+        .hidden { display: none !important; }
+
+        .step-calculation {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-calculation h4 { color: var(--primary); margin-bottom: 0.75rem; }
+
+        .step-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .step-item:last-child { border-bottom: none; }
+
+        .step-label {
+            color: var(--text-secondary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#ffffff"/>
+                            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path"
+                          d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30"
+                          fill="none" stroke="url(#loaderGrad)" stroke-width="5" stroke-linecap="round"/>
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                      fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                <circle cx="20" cy="20" r="3" fill="white"/>
+                <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+            </svg>
+            <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+        </div>
+        <h1>Diagnostic Accuracy Studies</h1>
+        <p>Sample size for sensitivity, specificity, and ROC analysis</p>
+        <div class="nav-buttons">
+            <a href="karmastat_2_0_main.html" class="nav-btn">Back to Main</a>
+            <a href="karmastat_checklists.html" class="nav-btn">STARD Checklist</a>
+            <a href="karmastat_references.html" class="nav-btn">References</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="sensitivity">Sensitivity/Specificity</button>
+            <button class="tab" data-tab="auc">AUC/ROC Analysis</button>
+            <button class="tab" data-tab="ppv">Predictive Values</button>
+        </div>
+
+        <!-- Sensitivity/Specificity -->
+        <div class="card tab-content" id="sensitivity-content">
+            <h2>Sensitivity & Specificity Estimation</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Sample size for estimating diagnostic test sensitivity or specificity with specified precision.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expected Sensitivity/Specificity</label>
+                    <input type="number" id="sens-p" value="0.90" min="0.5" max="0.99" step="0.01">
+                    <p class="help-text">Expected value based on pilot/literature</p>
+                </div>
+                <div class="form-group">
+                    <label>Precision (Half-width of CI)</label>
+                    <input type="number" id="sens-d" value="0.05" min="0.01" max="0.15" step="0.01">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Disease Prevalence</label>
+                    <input type="number" id="sens-prev" value="0.20" min="0.01" max="0.99" step="0.01">
+                    <p class="help-text">Expected prevalence in study population</p>
+                </div>
+                <div class="form-group">
+                    <label>Confidence Level</label>
+                    <select id="sens-conf">
+                        <option value="1.96">95%</option>
+                        <option value="2.576">99%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcSensitivity(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+            <button class="btn btn-export" id="sens-export-btn" onclick="exportSensitivityPDF()" disabled>Export PDF</button>
+
+            <div class="results" id="sens-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="sens-diseased">-</div>
+                        <div class="result-label">Diseased Subjects<br>(for Sensitivity)</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="sens-nondiseased">-</div>
+                        <div class="result-label">Non-Diseased<br>(for Specificity)</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="sens-total">-</div>
+                        <div class="result-label">Total Sample</div>
+                    </div>
+                </div>
+
+                <div class="step-calculation" id="sens-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="sens-steps-content"></div>
+                </div>
+
+                <div class="formula-box">
+                    <h4>Formula (Buderer)</h4>
+                    <div class="formula">
+                        n = Z^2 x SN x (1 - SN) / d^2<br><br>
+                        Total = n_diseased / prevalence<br>
+                        n_non-diseased = Total x (1 - prevalence)
+                    </div>
+                </div>
+
+                <div class="interpretation-box" id="sens-interpretation">
+                    <h4>Interpretation</h4>
+                    <div id="sens-interpretation-content"></div>
+                </div>
+
+                <div class="export-options">
+                    <h4>PDF Export Options</h4>
+                    <div class="export-row">
+                        <label>PDF Theme:</label>
+                        <select class="pdf-theme-select" id="sens-pdf-theme">
+                            <option value="light">Light Theme</option>
+                            <option value="dark">Dark Theme</option>
+                        </select>
+                        <button class="btn btn-export" onclick="exportSensitivityPDF()">Download PDF Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AUC Analysis -->
+        <div class="card tab-content hidden" id="auc-content">
+            <h2>AUC/ROC Analysis</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Sample size for estimating area under the ROC curve.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expected AUC</label>
+                    <input type="number" id="auc-val" value="0.80" min="0.5" max="0.99" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Null AUC (H0)</label>
+                    <input type="number" id="auc-null" value="0.50" min="0.5" max="0.99" step="0.01">
+                    <p class="help-text">Usually 0.5 (random)</p>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Case:Control Ratio</label>
+                    <select id="auc-ratio">
+                        <option value="1">1:1</option>
+                        <option value="2">1:2</option>
+                        <option value="3">1:3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alpha (Type I Error)</label>
+                    <select id="auc-alpha">
+                        <option value="0.05">0.05</option>
+                        <option value="0.01">0.01</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Power (1 - Beta)</label>
+                    <select id="auc-power">
+                        <option value="0.80">80%</option>
+                        <option value="0.90">90%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcAUC(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+            <button class="btn btn-export" id="auc-export-btn" onclick="exportAUCPDF()" disabled>Export PDF</button>
+
+            <div class="results" id="auc-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="auc-cases">-</div>
+                        <div class="result-label">Diseased (Cases)</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="auc-controls">-</div>
+                        <div class="result-label">Non-Diseased (Controls)</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="auc-total">-</div>
+                        <div class="result-label">Total Sample</div>
+                    </div>
+                </div>
+
+                <div class="step-calculation" id="auc-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="auc-steps-content"></div>
+                </div>
+
+                <div class="formula-box">
+                    <h4>Formula (Hanley-McNeil)</h4>
+                    <div class="formula">
+                        SE(AUC) = sqrt[(AUC(1-AUC) + (nA-1)(Q1-AUC^2) + (nB-1)(Q2-AUC^2)) / (nA x nB)]<br><br>
+                        n = [(Za + Zb) x SE(AUC) / (AUC - AUC0)]^2<br><br>
+                        Where: Q1 = AUC/(2-AUC), Q2 = 2xAUC^2/(1+AUC)
+                    </div>
+                </div>
+
+                <div class="interpretation-box" id="auc-interpretation">
+                    <h4>Interpretation</h4>
+                    <div id="auc-interpretation-content"></div>
+                </div>
+
+                <div class="export-options">
+                    <h4>PDF Export Options</h4>
+                    <div class="export-row">
+                        <label>PDF Theme:</label>
+                        <select class="pdf-theme-select" id="auc-pdf-theme">
+                            <option value="light">Light Theme</option>
+                            <option value="dark">Dark Theme</option>
+                        </select>
+                        <button class="btn btn-export" onclick="exportAUCPDF()">Download PDF Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PPV/NPV -->
+        <div class="card tab-content hidden" id="ppv-content">
+            <h2>Predictive Values</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Sample size for estimating positive/negative predictive values.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expected PPV/NPV</label>
+                    <input type="number" id="ppv-val" value="0.85" min="0.5" max="0.99" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Precision (d)</label>
+                    <input type="number" id="ppv-d" value="0.05" min="0.01" max="0.15" step="0.01">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Confidence Level</label>
+                    <select id="ppv-conf">
+                        <option value="1.96">95%</option>
+                        <option value="2.576">99%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcPPV(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+            <button class="btn btn-export" id="ppv-export-btn" onclick="exportPPVPDF()" disabled>Export PDF</button>
+
+            <div class="results" id="ppv-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="ppv-n">-</div>
+                        <div class="result-label">Test Positives Needed</div>
+                    </div>
+                </div>
+
+                <div class="step-calculation" id="ppv-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="ppv-steps-content"></div>
+                </div>
+
+                <div class="formula-box">
+                    <h4>Formula (Flahault)</h4>
+                    <div class="formula">
+                        n = Z^2 x PPV x (1 - PPV) / d^2<br><br>
+                        Where: Z = critical value, PPV = expected predictive value, d = precision
+                    </div>
+                </div>
+
+                <div class="interpretation-box" id="ppv-interpretation">
+                    <h4>Interpretation</h4>
+                    <div id="ppv-interpretation-content"></div>
+                </div>
+
+                <div class="export-options">
+                    <h4>PDF Export Options</h4>
+                    <div class="export-row">
+                        <label>PDF Theme:</label>
+                        <select class="pdf-theme-select" id="ppv-pdf-theme">
+                            <option value="light">Light Theme</option>
+                            <option value="dark">Dark Theme</option>
+                        </select>
+                        <button class="btn btn-export" onclick="exportPPVPDF()">Download PDF Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Made with love by Karmayogi | <a href="karmastat_references.html">References</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Jai Shri Ram</p>
+    </footer>
+
+    <button class="theme-toggle" onclick="toggleTheme()">Moon</button>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Hide page loader when content is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button loading state functions
+        function showButtonLoader(btn) {
+            if (btn) btn.classList.add('loading');
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) btn.classList.remove('loading');
+        }
+
+        // Wrap calculation with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 600);
+        }
+
+        // Global calculation storage
+        let calculationData = {
+            sensitivity: null,
+            auc: null,
+            ppv: null
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? '' : 'dark');
+            document.querySelector('.theme-toggle').textContent = isDark ? 'Moon' : 'Sun';
+            localStorage.setItem('karmastat-theme', isDark ? 'light' : 'dark');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('karmastat-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.querySelector('.theme-toggle').textContent = 'Sun';
+            }
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                document.getElementById(this.dataset.tab + '-content').classList.remove('hidden');
+            });
+        });
+
+        function calcSensitivity(btn) {
+            withLoader(btn, function() {
+            const p = parseFloat(document.getElementById('sens-p').value);
+            const d = parseFloat(document.getElementById('sens-d').value);
+            const prev = parseFloat(document.getElementById('sens-prev').value);
+            const z = parseFloat(document.getElementById('sens-conf').value);
+            const confLevel = document.getElementById('sens-conf').options[document.getElementById('sens-conf').selectedIndex].text;
+
+            // Step-by-step calculation
+            const zSquared = z * z;
+            const pTimesOneMinusP = p * (1 - p);
+            const dSquared = d * d;
+            const nDiseased = Math.ceil((zSquared * pTimesOneMinusP) / dSquared);
+            const total = Math.ceil(nDiseased / prev);
+            const nNonDiseased = Math.ceil(total * (1 - prev));
+
+            // Store calculation data
+            calculationData.sensitivity = {
+                studyType: 'Sensitivity/Specificity Estimation',
+                inputs: {
+                    expectedSensSpec: p,
+                    precision: d,
+                    prevalence: prev,
+                    confidenceLevel: confLevel,
+                    zValue: z
+                },
+                intermediateValues: {
+                    zSquared: zSquared,
+                    pTimesOneMinusP: pTimesOneMinusP,
+                    dSquared: dSquared
+                },
+                results: {
+                    diseasedSubjects: nDiseased,
+                    nonDiseasedSubjects: nNonDiseased,
+                    totalSample: total
+                },
+                formula: 'Buderer Formula: n = Z^2 x SN x (1 - SN) / d^2',
+                reference: 'Buderer NMF. Statistical methodology: I. Incorporating the prevalence of disease into the sample size calculation for sensitivity and specificity. Acad Emerg Med. 1996;3(9):895-900.'
+            };
+
+            // Display results
+            document.getElementById('sens-diseased').textContent = nDiseased;
+            document.getElementById('sens-nondiseased').textContent = nNonDiseased;
+            document.getElementById('sens-total').textContent = total;
+
+            // Display step-by-step
+            document.getElementById('sens-steps-content').innerHTML = `
+                <div class="step-item"><span class="step-label">Step 1:</span> Z value for ${confLevel} CI = ${z}</div>
+                <div class="step-item"><span class="step-label">Step 2:</span> Z^2 = ${z}^2 = ${zSquared.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 3:</span> SN x (1 - SN) = ${p} x ${(1-p).toFixed(2)} = ${pTimesOneMinusP.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 4:</span> d^2 = ${d}^2 = ${dSquared.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 5:</span> n_diseased = ${zSquared.toFixed(4)} x ${pTimesOneMinusP.toFixed(4)} / ${dSquared.toFixed(4)} = ${(zSquared * pTimesOneMinusP / dSquared).toFixed(2)} -> ${nDiseased}</div>
+                <div class="step-item"><span class="step-label">Step 6:</span> Total = ${nDiseased} / ${prev} = ${(nDiseased/prev).toFixed(2)} -> ${total}</div>
+                <div class="step-item"><span class="step-label">Step 7:</span> n_non-diseased = ${total} x ${(1-prev).toFixed(2)} = ${(total*(1-prev)).toFixed(2)} -> ${nNonDiseased}</div>
+            `;
+
+            // Display interpretation
+            document.getElementById('sens-interpretation-content').innerHTML = `
+                <p><strong>What this study will achieve:</strong></p>
+                <p>With a total sample of ${total} subjects (${nDiseased} diseased and ${nNonDiseased} non-diseased), this diagnostic accuracy study will be able to estimate the sensitivity/specificity of the test with a precision of +/-${(d*100).toFixed(1)}% around the expected value of ${(p*100).toFixed(1)}%.</p>
+                <p style="margin-top: 1rem;"><strong>Recommendations:</strong></p>
+                <p>1. Ensure consecutive or random sampling of patients from the target population.</p>
+                <p>2. Apply both the index test and reference standard to all participants.</p>
+                <p>3. Interpret test results independently and blinded to each other.</p>
+                <p>4. Report results following STARD guidelines for diagnostic accuracy studies.</p>
+                <p>5. Consider adding 10-15% to account for potential dropouts or inconclusive results.</p>
+            `;
+
+            document.getElementById('sens-results').classList.add('show');
+            document.getElementById('sens-export-btn').disabled = false;
+            });
+        }
+
+        function calcAUC(btn) {
+            withLoader(btn, function() {
+            const auc = parseFloat(document.getElementById('auc-val').value);
+            const auc0 = parseFloat(document.getElementById('auc-null').value);
+            const r = parseFloat(document.getElementById('auc-ratio').value);
+            const alpha = document.getElementById('auc-alpha').value;
+            const power = document.getElementById('auc-power').value;
+            const ratioText = document.getElementById('auc-ratio').options[document.getElementById('auc-ratio').selectedIndex].text;
+
+            const za = alpha === '0.05' ? 1.96 : 2.576;
+            const zb = power === '0.80' ? 0.842 : 1.282;
+
+            // Hanley-McNeil approximation - step by step
+            const q1 = auc / (2 - auc);
+            const q2 = 2 * auc * auc / (1 + auc);
+            const aucSquared = auc * auc;
+            const variance = auc * (1 - auc) + (r - 1) * (q1 - aucSquared) + (r - 1) * (q2 - aucSquared);
+            const seAuc = Math.sqrt(variance / r);
+            const effectSize = auc - auc0;
+            const zSum = za + zb;
+            const n = Math.ceil(Math.pow(zSum * seAuc / effectSize, 2));
+            const controls = Math.ceil(n * r);
+
+            // Store calculation data
+            calculationData.auc = {
+                studyType: 'ROC Analysis (AUC Estimation)',
+                inputs: {
+                    expectedAUC: auc,
+                    nullAUC: auc0,
+                    caseControlRatio: ratioText,
+                    alpha: alpha,
+                    power: power,
+                    zaValue: za,
+                    zbValue: zb
+                },
+                intermediateValues: {
+                    q1: q1,
+                    q2: q2,
+                    variance: variance,
+                    seAuc: seAuc,
+                    effectSize: effectSize
+                },
+                results: {
+                    cases: n,
+                    controls: controls,
+                    totalSample: n + controls
+                },
+                formula: 'Hanley-McNeil Method: SE(AUC) based variance estimation',
+                reference: 'Hanley JA, McNeil BJ. The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology. 1982;143(1):29-36.'
+            };
+
+            document.getElementById('auc-cases').textContent = n;
+            document.getElementById('auc-controls').textContent = controls;
+            document.getElementById('auc-total').textContent = n + controls;
+
+            // Display step-by-step
+            document.getElementById('auc-steps-content').innerHTML = `
+                <div class="step-item"><span class="step-label">Step 1:</span> Za (alpha=${alpha}) = ${za}, Zb (power=${power}) = ${zb}</div>
+                <div class="step-item"><span class="step-label">Step 2:</span> Q1 = AUC / (2 - AUC) = ${auc} / ${(2-auc).toFixed(2)} = ${q1.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 3:</span> Q2 = 2 x AUC^2 / (1 + AUC) = 2 x ${aucSquared.toFixed(4)} / ${(1+auc).toFixed(2)} = ${q2.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 4:</span> Variance component = ${variance.toFixed(6)}</div>
+                <div class="step-item"><span class="step-label">Step 5:</span> SE(AUC) = sqrt(${variance.toFixed(6)} / ${r}) = ${seAuc.toFixed(6)}</div>
+                <div class="step-item"><span class="step-label">Step 6:</span> Effect size = AUC - AUC0 = ${auc} - ${auc0} = ${effectSize.toFixed(2)}</div>
+                <div class="step-item"><span class="step-label">Step 7:</span> n_cases = [(${za} + ${zb}) x ${seAuc.toFixed(4)} / ${effectSize.toFixed(2)}]^2 = ${n}</div>
+                <div class="step-item"><span class="step-label">Step 8:</span> n_controls = ${n} x ${r} = ${controls}</div>
+            `;
+
+            // Display interpretation
+            const aucInterpretation = auc >= 0.9 ? 'excellent' : auc >= 0.8 ? 'good' : auc >= 0.7 ? 'fair' : 'poor';
+            document.getElementById('auc-interpretation-content').innerHTML = `
+                <p><strong>What this study will achieve:</strong></p>
+                <p>With ${n} cases and ${controls} controls (total = ${n + controls}), this study has ${(parseFloat(power)*100).toFixed(0)}% power to detect an AUC of ${auc} against the null hypothesis of ${auc0} (random classification) at alpha = ${alpha}.</p>
+                <p style="margin-top: 0.5rem;">An AUC of ${auc} indicates <strong>${aucInterpretation}</strong> diagnostic accuracy.</p>
+                <p style="margin-top: 1rem;"><strong>Recommendations:</strong></p>
+                <p>1. Use a well-defined reference standard (gold standard) for disease classification.</p>
+                <p>2. Report the full ROC curve, not just the AUC.</p>
+                <p>3. Determine optimal cutoff points using methods like Youden's index.</p>
+                <p>4. Consider reporting sensitivity at fixed specificity levels (e.g., sensitivity at 90% specificity).</p>
+                <p>5. If comparing two tests, consider matched-pair design and DeLong's test.</p>
+            `;
+
+            document.getElementById('auc-results').classList.add('show');
+            document.getElementById('auc-export-btn').disabled = false;
+            });
+        }
+
+        function calcPPV(btn) {
+            withLoader(btn, function() {
+            const p = parseFloat(document.getElementById('ppv-val').value);
+            const d = parseFloat(document.getElementById('ppv-d').value);
+            const z = parseFloat(document.getElementById('ppv-conf').value);
+            const confLevel = document.getElementById('ppv-conf').options[document.getElementById('ppv-conf').selectedIndex].text;
+
+            // Step-by-step calculation
+            const zSquared = z * z;
+            const pTimesOneMinusP = p * (1 - p);
+            const dSquared = d * d;
+            const n = Math.ceil((zSquared * pTimesOneMinusP) / dSquared);
+
+            // Store calculation data
+            calculationData.ppv = {
+                studyType: 'Predictive Values (PPV/NPV) Estimation',
+                inputs: {
+                    expectedPPVNPV: p,
+                    precision: d,
+                    confidenceLevel: confLevel,
+                    zValue: z
+                },
+                intermediateValues: {
+                    zSquared: zSquared,
+                    pTimesOneMinusP: pTimesOneMinusP,
+                    dSquared: dSquared
+                },
+                results: {
+                    testPositivesNeeded: n
+                },
+                formula: 'Flahault Formula: n = Z^2 x PPV x (1 - PPV) / d^2',
+                reference: 'Flahault A, Cadilhac M, Thomas G. Sample size calculation should be performed for design accuracy in diagnostic test studies. J Clin Epidemiol. 2005;58(8):859-862.'
+            };
+
+            document.getElementById('ppv-n').textContent = n;
+
+            // Display step-by-step
+            document.getElementById('ppv-steps-content').innerHTML = `
+                <div class="step-item"><span class="step-label">Step 1:</span> Z value for ${confLevel} CI = ${z}</div>
+                <div class="step-item"><span class="step-label">Step 2:</span> Z^2 = ${z}^2 = ${zSquared.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 3:</span> PPV x (1 - PPV) = ${p} x ${(1-p).toFixed(2)} = ${pTimesOneMinusP.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 4:</span> d^2 = ${d}^2 = ${dSquared.toFixed(4)}</div>
+                <div class="step-item"><span class="step-label">Step 5:</span> n = ${zSquared.toFixed(4)} x ${pTimesOneMinusP.toFixed(4)} / ${dSquared.toFixed(4)} = ${(zSquared * pTimesOneMinusP / dSquared).toFixed(2)} -> ${n}</div>
+            `;
+
+            // Display interpretation
+            document.getElementById('ppv-interpretation-content').innerHTML = `
+                <p><strong>What this study will achieve:</strong></p>
+                <p>With ${n} test-positive subjects, this study will estimate the positive predictive value with a precision of +/-${(d*100).toFixed(1)}% around the expected value of ${(p*100).toFixed(1)}% at ${confLevel} confidence level.</p>
+                <p style="margin-top: 1rem;"><strong>Important considerations:</strong></p>
+                <p>1. PPV and NPV are highly dependent on disease prevalence in the study population.</p>
+                <p>2. Report the prevalence along with predictive values for proper interpretation.</p>
+                <p>3. Consider using likelihood ratios which are prevalence-independent.</p>
+                <p style="margin-top: 1rem;"><strong>Recommendations:</strong></p>
+                <p>1. Clearly define what constitutes a positive and negative test result.</p>
+                <p>2. Ensure the study population reflects the intended clinical setting.</p>
+                <p>3. Report both PPV and NPV along with their confidence intervals.</p>
+                <p>4. Consider sensitivity analysis across different prevalence scenarios.</p>
+            `;
+
+            document.getElementById('ppv-results').classList.add('show');
+            document.getElementById('ppv-export-btn').disabled = false;
+            });
+        }
+
+        // PDF Export Functions
+        function exportSensitivityPDF() {
+            if (!calculationData.sensitivity) {
+                alert('Please calculate sample size first.');
+                return;
+            }
+            const theme = document.getElementById('sens-pdf-theme').value;
+            generatePDF(calculationData.sensitivity, theme);
+        }
+
+        function exportAUCPDF() {
+            if (!calculationData.auc) {
+                alert('Please calculate sample size first.');
+                return;
+            }
+            const theme = document.getElementById('auc-pdf-theme').value;
+            generatePDF(calculationData.auc, theme);
+        }
+
+        function exportPPVPDF() {
+            if (!calculationData.ppv) {
+                alert('Please calculate sample size first.');
+                return;
+            }
+            const theme = document.getElementById('ppv-pdf-theme').value;
+            generatePDF(calculationData.ppv, theme);
+        }
+
+        function generatePDF(data, theme) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Theme colors
+            const colors = theme === 'dark' ? {
+                bg: [30, 41, 59],
+                headerBg: [236, 72, 153],
+                text: [241, 245, 249],
+                textSecondary: [148, 163, 184],
+                accent: [236, 72, 153],
+                cardBg: [51, 65, 85],
+                border: [71, 85, 105]
+            } : {
+                bg: [255, 255, 255],
+                headerBg: [236, 72, 153],
+                text: [30, 41, 59],
+                textSecondary: [71, 85, 105],
+                accent: [236, 72, 153],
+                cardBg: [253, 242, 248],
+                border: [226, 232, 240]
+            };
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            let yPos = 0;
+
+            // Background for dark theme
+            if (theme === 'dark') {
+                doc.setFillColor(...colors.bg);
+                doc.rect(0, 0, pageWidth, pageHeight, 'F');
+            }
+
+            // Header
+            doc.setFillColor(...colors.headerBg);
+            doc.rect(0, 0, pageWidth, 45, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.text('KARMASTAT', pageWidth / 2, 18, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Diagnostic Accuracy Studies Calculator', pageWidth / 2, 28, { align: 'center' });
+
+            doc.setFontSize(10);
+            doc.text(data.studyType, pageWidth / 2, 38, { align: 'center' });
+
+            yPos = 55;
+
+            // Study Type Section
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos, pageWidth - 30, 12, 2, 2, 'F');
+            doc.setTextColor(...colors.accent);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('STUDY TYPE: ' + data.studyType.toUpperCase(), 20, yPos + 8);
+            yPos += 20;
+
+            // Input Parameters Section
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos, pageWidth - 30, 8 + Object.keys(data.inputs).length * 7, 2, 2, 'F');
+            doc.setTextColor(...colors.accent);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('INPUT PARAMETERS', 20, yPos + 7);
+            yPos += 12;
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+
+            const inputLabels = {
+                expectedSensSpec: 'Expected Sensitivity/Specificity',
+                precision: 'Precision (Half-width of CI)',
+                prevalence: 'Disease Prevalence',
+                confidenceLevel: 'Confidence Level',
+                zValue: 'Z Critical Value',
+                expectedAUC: 'Expected AUC',
+                nullAUC: 'Null AUC (H0)',
+                caseControlRatio: 'Case:Control Ratio',
+                alpha: 'Alpha (Type I Error)',
+                power: 'Power (1 - Beta)',
+                zaValue: 'Za Critical Value',
+                zbValue: 'Zb Critical Value',
+                expectedPPVNPV: 'Expected PPV/NPV'
+            };
+
+            for (const [key, value] of Object.entries(data.inputs)) {
+                const label = inputLabels[key] || key;
+                doc.text(`${label}: ${value}`, 25, yPos);
+                yPos += 7;
+            }
+            yPos += 5;
+
+            // Formula Section
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos, pageWidth - 30, 20, 2, 2, 'F');
+            doc.setTextColor(...colors.accent);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('FORMULA USED', 20, yPos + 7);
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+            doc.setFont('courier', 'normal');
+            doc.text(data.formula, 25, yPos + 15);
+            yPos += 28;
+
+            // Step-by-Step Calculation Section
+            const stepCount = Object.keys(data.intermediateValues).length + 3;
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos, pageWidth - 30, 10 + stepCount * 7, 2, 2, 'F');
+            doc.setTextColor(...colors.accent);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('STEP-BY-STEP CALCULATION', 20, yPos + 7);
+            yPos += 14;
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+            doc.setFont('courier', 'normal');
+
+            let stepNum = 1;
+            for (const [key, value] of Object.entries(data.intermediateValues)) {
+                const formattedValue = typeof value === 'number' ? value.toFixed(6) : value;
+                doc.text(`Step ${stepNum}: ${key} = ${formattedValue}`, 25, yPos);
+                yPos += 7;
+                stepNum++;
+            }
+            yPos += 5;
+
+            // Check if we need a new page
+            if (yPos > pageHeight - 100) {
+                doc.addPage();
+                yPos = 20;
+                if (theme === 'dark') {
+                    doc.setFillColor(...colors.bg);
+                    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+                }
+            }
+
+            // Results Section
+            const resultsHeight = 10 + Object.keys(data.results).length * 10;
+            doc.setFillColor(...colors.accent);
+            doc.roundedRect(15, yPos, pageWidth - 30, resultsHeight, 2, 2, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('FINAL RESULTS', 20, yPos + 7);
+            yPos += 14;
+
+            doc.setFontSize(11);
+            const resultLabels = {
+                diseasedSubjects: 'Diseased Subjects (for Sensitivity)',
+                nonDiseasedSubjects: 'Non-Diseased Subjects (for Specificity)',
+                totalSample: 'Total Sample Size',
+                cases: 'Cases (Diseased)',
+                controls: 'Controls (Non-Diseased)',
+                testPositivesNeeded: 'Test Positives Needed'
+            };
+
+            for (const [key, value] of Object.entries(data.results)) {
+                const label = resultLabels[key] || key;
+                doc.text(`${label}: ${value}`, 25, yPos);
+                yPos += 10;
+            }
+            yPos += 10;
+
+            // Check if we need a new page
+            if (yPos > pageHeight - 80) {
+                doc.addPage();
+                yPos = 20;
+                if (theme === 'dark') {
+                    doc.setFillColor(...colors.bg);
+                    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+                }
+            }
+
+            // Interpretation Section
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos, pageWidth - 30, 45, 2, 2, 'F');
+            doc.setTextColor(...colors.accent);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('INTERPRETATION', 20, yPos + 7);
+            yPos += 14;
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+
+            let interpretation = '';
+            if (data.studyType.includes('Sensitivity')) {
+                interpretation = `This diagnostic accuracy study requires a total sample of ${data.results.totalSample} subjects ` +
+                    `(${data.results.diseasedSubjects} diseased and ${data.results.nonDiseasedSubjects} non-diseased) ` +
+                    `to estimate sensitivity/specificity with the specified precision at the given confidence level.`;
+            } else if (data.studyType.includes('ROC')) {
+                interpretation = `This ROC analysis study requires ${data.results.cases} cases and ${data.results.controls} controls ` +
+                    `(total = ${data.results.totalSample}) to detect the specified AUC with adequate statistical power.`;
+            } else {
+                interpretation = `This study requires ${data.results.testPositivesNeeded} test-positive subjects ` +
+                    `to estimate the predictive value with the specified precision at the given confidence level.`;
+            }
+
+            const splitInterpretation = doc.splitTextToSize(interpretation, pageWidth - 50);
+            doc.text(splitInterpretation, 25, yPos);
+            yPos += splitInterpretation.length * 5 + 10;
+
+            // Recommendations
+            doc.setTextColor(...colors.textSecondary);
+            doc.setFontSize(8);
+            const recommendations = [
+                '- Ensure proper sampling methodology (consecutive or random sampling)',
+                '- Apply both index test and reference standard to all participants',
+                '- Consider adding 10-15% for potential dropouts or inconclusive results',
+                '- Report results following STARD guidelines for diagnostic accuracy studies'
+            ];
+            recommendations.forEach(rec => {
+                doc.text(rec, 25, yPos);
+                yPos += 5;
+            });
+            yPos += 10;
+
+            // Check if we need a new page for reference
+            if (yPos > pageHeight - 50) {
+                doc.addPage();
+                yPos = 20;
+                if (theme === 'dark') {
+                    doc.setFillColor(...colors.bg);
+                    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+                }
+            }
+
+            // Reference Section
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos, pageWidth - 30, 25, 2, 2, 'F');
+            doc.setTextColor(...colors.accent);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('REFERENCE', 20, yPos + 7);
+            yPos += 12;
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'italic');
+            const splitRef = doc.splitTextToSize(data.reference, pageWidth - 50);
+            doc.text(splitRef, 25, yPos);
+            yPos += splitRef.length * 4 + 15;
+
+            // Footer
+            const footerY = pageHeight - 20;
+            doc.setDrawColor(...colors.border);
+            doc.line(15, footerY - 5, pageWidth - 15, footerY - 5);
+
+            doc.setTextColor(...colors.textSecondary);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+
+            const timestamp = new Date().toLocaleString();
+            doc.text(`Generated: ${timestamp}`, 20, footerY);
+            doc.text('Generated by KARMASTAT - Crafted by Karmayogi', pageWidth / 2, footerY, { align: 'center' });
+            doc.text('Jai Shri Ram', pageWidth - 20, footerY, { align: 'right' });
+
+            // Save the PDF
+            const filename = `KARMASTAT_Diagnostic_${data.studyType.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`;
+            doc.save(filename);
+        }
+    </script>
+</body>
+</html>

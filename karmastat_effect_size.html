@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT - Effect Size Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #14B8A6;
+            --primary-dark: #0D9488;
+            --primary-light: #5EEAD4;
+            --secondary: #0F766E;
+            --accent: #CCFBF1;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F0FDFA;
+            --bg-card: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow: 0 4px 12px rgba(20, 184, 166, 0.15);
+            --shadow-hover: 0 8px 25px rgba(20, 184, 166, 0.25);
+
+            --gradient-primary: linear-gradient(135deg, #14B8A6, #5EEAD4, #99F6E4);
+            --gradient-secondary: linear-gradient(135deg, #0F766E, #14B8A6, #2DD4BF);
+            --gradient-bg: linear-gradient(135deg, #F0FDFA, #CCFBF1, #99F6E4);
+            --gradient-card: linear-gradient(145deg, #FFFFFF, #F0FDFA);
+
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Courier New', 'Monaco', monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1A2F2D;
+            --bg-secondary: #234240;
+            --bg-card: #234240;
+            --text-primary: #F3F4F6;
+            --text-secondary: #D1D5DB;
+            --text-muted: #9CA3AF;
+            --border-color: #3D5856;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.4);
+            --gradient-bg: linear-gradient(135deg, #1A2F2D, #234240, #2D534F);
+            --gradient-card: linear-gradient(145deg, #234240, #2D534F);
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .karma-page-loader .loader-content {
+            text-align: center;
+        }
+
+        .karma-page-loader .loader-text {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes karmaFlow {
+            0% { stroke-dashoffset: 300; opacity: 0.4; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -300; opacity: 0.4; }
+        }
+
+        .karma-point {
+            animation: karmaPulse 1.2s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(3) { animation-delay: 0.2s; }
+        .karma-point:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes karmaPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1.5s linear infinite;
+        }
+
+        @keyframes spinnerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-path {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 15;
+            animation: spinnerDash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinnerDash {
+            0% { stroke-dashoffset: 60; }
+            50% { stroke-dashoffset: 15; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .results-loading .karma-infinity {
+            width: 80px;
+            height: 40px;
+        }
+
+        .results-loading .karma-path {
+            stroke: var(--primary);
+        }
+
+        .results-loading .karma-point {
+            fill: var(--primary-light);
+        }
+
+        .results-loading p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            min-height: 100vh;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+
+        .header {
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            font-weight: 800;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Calculator Tabs */
+        .calc-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--gradient-card);
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+
+        .calc-tab {
+            padding: 0.75rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .calc-tab:hover {
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .calc-tab.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            display: none;
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .calculator-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Formula Display */
+        .formula-box {
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            text-align: center;
+            border-radius: var(--radius);
+        }
+
+        /* Input Grid */
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .result-main {
+            background: var(--gradient-secondary);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .result-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .result-label {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .result-ci {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--radius);
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .result-card-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Interpretation */
+        .interpretation-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .interpretation-box h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .size-scale {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .size-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .size-small { background: #FEE2E2; color: #DC2626; }
+        .size-medium { background: #FEF3C7; color: #D97706; }
+        .size-large { background: #D1FAE5; color: #059669; }
+        .size-current { border: 3px solid var(--primary); }
+
+        /* Conversion Table */
+        .conversion-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .conversion-table th,
+        .conversion-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .conversion-table th {
+            background: var(--bg-secondary);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .conversion-table td {
+            color: var(--text-secondary);
+        }
+
+        .conversion-table tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        .export-btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .export-btn.dark-theme {
+            background: #374151;
+        }
+
+        .export-btn.dark-theme:hover {
+            background: #1F2937;
+        }
+
+        /* Step by Step Box */
+        .steps-box {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .steps-box h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        /* Reference Box */
+        .reference-box {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px dashed var(--border-color);
+        }
+
+        .reference-box h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .reference-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--primary-light);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gradient-secondary);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-top: 2rem;
+        }
+
+        .footer-love {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-blessing {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.8rem; }
+            .logo { flex-direction: column; gap: 1rem; }
+            .back-link, .theme-toggle {
+                position: static;
+                margin: 0.5rem;
+            }
+            .header { padding-top: 4rem; }
+            .calc-tabs { justify-content: center; }
+            .result-value { font-size: 2.5rem; }
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#ffffff"/>
+                            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path"
+                          d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30"
+                          fill="none" stroke="url(#loaderGrad)" stroke-width="5" stroke-linecap="round"/>
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <a href="karmastat_2_0_main.html" class="back-link">
+                <span>&#8592;</span> Back to Main
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeIcon">&#9790;</span> Theme
+            </button>
+            <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                          fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                    <circle cx="20" cy="20" r="3" fill="white"/>
+                    <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+                </svg>
+                <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+            </div>
+            <div class="logo">
+                <div>
+                    <h1>Effect Size Calculator</h1>
+                    <p class="subtitle">Calculate and convert between different effect size measures with confidence intervals</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Calculator Tabs -->
+        <div class="calc-tabs">
+            <button class="calc-tab active" data-calc="cohens-d" onclick="selectCalc('cohens-d')">Cohen's d</button>
+            <button class="calc-tab" data-calc="hedges-g" onclick="selectCalc('hedges-g')">Hedges' g</button>
+            <button class="calc-tab" data-calc="glass-delta" onclick="selectCalc('glass-delta')">Glass's &#916;</button>
+            <button class="calc-tab" data-calc="odds-ratio" onclick="selectCalc('odds-ratio')">Odds Ratio</button>
+            <button class="calc-tab" data-calc="risk-ratio" onclick="selectCalc('risk-ratio')">Risk Ratio</button>
+            <button class="calc-tab" data-calc="risk-diff" onclick="selectCalc('risk-diff')">Risk Difference</button>
+            <button class="calc-tab" data-calc="r-to-d" onclick="selectCalc('r-to-d')">Correlation to d</button>
+            <button class="calc-tab" data-calc="eta-squared" onclick="selectCalc('eta-squared')">Eta-squared</button>
+            <button class="calc-tab" data-calc="cohens-f" onclick="selectCalc('cohens-f')">Cohen's f</button>
+        </div>
+
+        <!-- Cohen's d Calculator -->
+        <section class="calculator-section active" id="cohens-d-calc">
+            <div class="section-header">
+                <div class="section-icon">d</div>
+                <h3>Cohen's d - Standardized Mean Difference</h3>
+            </div>
+
+            <div class="formula-box">
+                d = (M&#8321; - M&#8322;) / SD<sub>pooled</sub><br>
+                <small>SD<sub>pooled</sub> = &radic;[((n&#8321;-1)s&#8321;&sup2; + (n&#8322;-1)s&#8322;&sup2;) / (n&#8321;+n&#8322;-2)]</small>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Mean (Group 1)</label>
+                    <input type="number" id="d_m1" value="50" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Mean (Group 2)</label>
+                    <input type="number" id="d_m2" value="45" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>SD (Group 1)</label>
+                    <input type="number" id="d_sd1" value="10" step="0.01" min="0.01">
+                </div>
+                <div class="input-group">
+                    <label>SD (Group 2)</label>
+                    <input type="number" id="d_sd2" value="10" step="0.01" min="0.01">
+                </div>
+                <div class="input-group">
+                    <label>n (Group 1)</label>
+                    <input type="number" id="d_n1" value="30" min="2" step="1">
+                </div>
+                <div class="input-group">
+                    <label>n (Group 2)</label>
+                    <input type="number" id="d_n2" value="30" min="2" step="1">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateCohensD(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Cohen's d</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Hedges' g Calculator -->
+        <section class="calculator-section" id="hedges-g-calc">
+            <div class="section-header">
+                <div class="section-icon">g</div>
+                <h3>Hedges' g - Bias-Corrected Effect Size</h3>
+            </div>
+
+            <div class="formula-box">
+                g = d &times; (1 - 3/(4(n&#8321;+n&#8322;)-9))<br>
+                <small>Correction factor J = 1 - 3/(4df - 1)</small>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Cohen's d (or calculate from means)</label>
+                    <input type="number" id="g_d" value="0.5" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>n (Group 1)</label>
+                    <input type="number" id="g_n1" value="30" min="2" step="1">
+                </div>
+                <div class="input-group">
+                    <label>n (Group 2)</label>
+                    <input type="number" id="g_n2" value="30" min="2" step="1">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateHedgesG(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Hedges' g</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Glass's Delta Calculator -->
+        <section class="calculator-section" id="glass-delta-calc">
+            <div class="section-header">
+                <div class="section-icon">&#916;</div>
+                <h3>Glass's Delta - Control Group Standardization</h3>
+            </div>
+
+            <div class="formula-box">
+                &#916; = (M<sub>treatment</sub> - M<sub>control</sub>) / SD<sub>control</sub>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Mean (Treatment Group)</label>
+                    <input type="number" id="delta_mt" value="55" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Mean (Control Group)</label>
+                    <input type="number" id="delta_mc" value="50" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>SD (Control Group)</label>
+                    <input type="number" id="delta_sdc" value="10" step="0.01" min="0.01">
+                </div>
+                <div class="input-group">
+                    <label>n (Treatment)</label>
+                    <input type="number" id="delta_nt" value="30" min="2">
+                </div>
+                <div class="input-group">
+                    <label>n (Control)</label>
+                    <input type="number" id="delta_nc" value="30" min="2">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateGlassDelta(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Glass's Delta</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Odds Ratio Calculator -->
+        <section class="calculator-section" id="odds-ratio-calc">
+            <div class="section-header">
+                <div class="section-icon">OR</div>
+                <h3>Odds Ratio - 2x2 Table</h3>
+            </div>
+
+            <div class="formula-box">
+                OR = (a &times; d) / (b &times; c)<br>
+                <small>Cohen's d = ln(OR) &times; &radic;3/&pi;</small>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; text-align: center; color: var(--text-secondary);">
+                <table style="margin: 0 auto; border-collapse: collapse;">
+                    <tr><td></td><td style="padding: 0.5rem 1rem; font-weight: bold;">Outcome +</td><td style="padding: 0.5rem 1rem; font-weight: bold;">Outcome -</td></tr>
+                    <tr><td style="padding: 0.5rem 1rem; font-weight: bold;">Exposed</td><td style="padding: 0.5rem 1rem;">a</td><td style="padding: 0.5rem 1rem;">b</td></tr>
+                    <tr><td style="padding: 0.5rem 1rem; font-weight: bold;">Not Exposed</td><td style="padding: 0.5rem 1rem;">c</td><td style="padding: 0.5rem 1rem;">d</td></tr>
+                </table>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>a (Exposed, Outcome+)</label>
+                    <input type="number" id="or_a" value="40" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label>b (Exposed, Outcome-)</label>
+                    <input type="number" id="or_b" value="60" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label>c (Not Exposed, Outcome+)</label>
+                    <input type="number" id="or_c" value="20" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label>d (Not Exposed, Outcome-)</label>
+                    <input type="number" id="or_d" value="80" min="0" step="1">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateOddsRatio(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Odds Ratio</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Risk Ratio Calculator -->
+        <section class="calculator-section" id="risk-ratio-calc">
+            <div class="section-header">
+                <div class="section-icon">RR</div>
+                <h3>Risk Ratio (Relative Risk)</h3>
+            </div>
+
+            <div class="formula-box">
+                RR = [a/(a+b)] / [c/(c+d)]<br>
+                <small>RR = Risk in exposed / Risk in unexposed</small>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>a (Exposed, Event+)</label>
+                    <input type="number" id="rr_a" value="40" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label>b (Exposed, Event-)</label>
+                    <input type="number" id="rr_b" value="60" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label>c (Not Exposed, Event+)</label>
+                    <input type="number" id="rr_c" value="20" min="0" step="1">
+                </div>
+                <div class="input-group">
+                    <label>d (Not Exposed, Event-)</label>
+                    <input type="number" id="rr_d" value="80" min="0" step="1">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateRiskRatio(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Risk Ratio</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Risk Difference Calculator -->
+        <section class="calculator-section" id="risk-diff-calc">
+            <div class="section-header">
+                <div class="section-icon">RD</div>
+                <h3>Risk Difference (Absolute Risk Reduction)</h3>
+            </div>
+
+            <div class="formula-box">
+                RD = p&#8321; - p&#8322;<br>
+                <small>NNT = 1 / |RD|</small>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Proportion (Group 1)</label>
+                    <input type="number" id="rd_p1" value="0.40" min="0" max="1" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Proportion (Group 2)</label>
+                    <input type="number" id="rd_p2" value="0.20" min="0" max="1" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>n (Group 1)</label>
+                    <input type="number" id="rd_n1" value="100" min="1" step="1">
+                </div>
+                <div class="input-group">
+                    <label>n (Group 2)</label>
+                    <input type="number" id="rd_n2" value="100" min="1" step="1">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateRiskDiff(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Risk Difference</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Correlation to d Calculator -->
+        <section class="calculator-section" id="r-to-d-calc">
+            <div class="section-header">
+                <div class="section-icon">r&#8594;d</div>
+                <h3>Correlation to Cohen's d Conversion</h3>
+            </div>
+
+            <div class="formula-box">
+                d = 2r / &radic;(1-r&sup2;)<br>
+                <small>r = d / &radic;(d&sup2; + 4)</small>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Correlation Coefficient (r)</label>
+                    <input type="number" id="rtod_r" value="0.30" min="-1" max="1" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Sample Size (n)</label>
+                    <input type="number" id="rtod_n" value="100" min="4" step="1">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateRtoD(this)">
+                <span class="btn-text"><span>&#9889;</span> Convert r to d</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Eta-squared Calculator -->
+        <section class="calculator-section" id="eta-squared-calc">
+            <div class="section-header">
+                <div class="section-icon">&#951;&sup2;</div>
+                <h3>Eta-squared & Partial Eta-squared</h3>
+            </div>
+
+            <div class="formula-box">
+                &#951;&sup2; = SS<sub>between</sub> / SS<sub>total</sub><br>
+                &#951;&sup2;<sub>p</sub> = SS<sub>effect</sub> / (SS<sub>effect</sub> + SS<sub>error</sub>)
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>SS Between (Effect)</label>
+                    <input type="number" id="eta_ssb" value="100" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>SS Error (Within)</label>
+                    <input type="number" id="eta_sse" value="400" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>SS Total (optional)</label>
+                    <input type="number" id="eta_sst" value="" min="0" step="0.01" placeholder="Auto-calculated if blank">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateEtaSquared(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Eta-squared</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Cohen's f Calculator -->
+        <section class="calculator-section" id="cohens-f-calc">
+            <div class="section-header">
+                <div class="section-icon">f</div>
+                <h3>Cohen's f - ANOVA Effect Size</h3>
+            </div>
+
+            <div class="formula-box">
+                f = &radic;(&#951;&sup2; / (1 - &#951;&sup2;))<br>
+                <small>f&sup2; = &#951;&sup2; / (1 - &#951;&sup2;)</small>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Eta-squared (&#951;&sup2;)</label>
+                    <input type="number" id="f_eta" value="0.10" min="0" max="0.99" step="0.01">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateCohensF(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Cohen's f</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="results">
+            <div class="results-header">
+                <h3>Effect Size Results</h3>
+                <div class="export-btn-group">
+                    <button class="export-btn" onclick="exportToPDF('light')">
+                        <span>&#128196;</span> Export PDF (Light)
+                    </button>
+                    <button class="export-btn dark-theme" onclick="exportToPDF('dark')">
+                        <span>&#128196;</span> Export PDF (Dark)
+                    </button>
+                </div>
+            </div>
+
+            <div class="result-main" id="resultMain">
+                <div class="result-value" id="mainValue">--</div>
+                <div class="result-label" id="mainLabel">Effect Size</div>
+                <div class="result-ci" id="mainCI"></div>
+            </div>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Dynamic results -->
+            </div>
+
+            <!-- Step by Step Calculation -->
+            <div class="steps-box" id="stepsBox">
+                <h4>&#128221; Step-by-Step Calculation</h4>
+                <div id="calculationSteps">
+                    <!-- Dynamic steps -->
+                </div>
+            </div>
+
+            <div class="interpretation-box" id="interpretationBox">
+                <h4>Effect Size Interpretation</h4>
+                <p id="interpretationText"></p>
+                <div class="size-scale" id="sizeScale">
+                    <span class="size-badge size-small">Small</span>
+                    <span class="size-badge size-medium">Medium</span>
+                    <span class="size-badge size-large">Large</span>
+                </div>
+            </div>
+
+            <div id="conversionSection" style="display: none;">
+                <h4 style="margin: 1.5rem 0 1rem; color: var(--text-primary);">Effect Size Conversions</h4>
+                <table class="conversion-table" id="conversionTable">
+                    <thead>
+                        <tr>
+                            <th>Measure</th>
+                            <th>Value</th>
+                            <th>95% CI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="conversionBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Reference Citations -->
+            <div class="reference-box" id="referenceBox">
+                <h4>&#128218; References</h4>
+                <p id="reference1"></p>
+                <p id="reference2"></p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-love">Made with &#10084; by Karmayogi</div>
+            <div class="footer-blessing">&#128591; Jai Shri Ram &#128591;</div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Hide page loader when content is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button loading state functions
+        function showButtonLoader(btn) {
+            if (btn) btn.classList.add('loading');
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) btn.classList.remove('loading');
+        }
+
+        // Wrap calculation with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 600);
+        }
+
+        // Global calculation storage for PDF export
+        let globalCalculationData = {
+            conversionType: '',
+            inputs: {},
+            formula: '',
+            formulaLatex: '',
+            steps: [],
+            results: {
+                main: { label: '', value: 0, ci_lower: null, ci_upper: null },
+                details: {},
+                conversions: []
+            },
+            interpretation: {
+                text: '',
+                size: '',
+                thresholds: {}
+            },
+            references: []
+        };
+
+        function selectCalc(calcType) {
+            document.querySelectorAll('.calc-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`[data-calc="${calcType}"]`).classList.add('active');
+
+            document.querySelectorAll('.calculator-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`${calcType}-calc`).classList.add('active');
+
+            document.getElementById('results').classList.remove('active');
+        }
+
+        // Cohen's d calculation
+        function calculateCohensD() {
+            const m1 = parseFloat(document.getElementById('d_m1').value);
+            const m2 = parseFloat(document.getElementById('d_m2').value);
+            const sd1 = parseFloat(document.getElementById('d_sd1').value);
+            const sd2 = parseFloat(document.getElementById('d_sd2').value);
+            const n1 = parseFloat(document.getElementById('d_n1').value);
+            const n2 = parseFloat(document.getElementById('d_n2').value);
+
+            // Calculate intermediate values
+            const meanDiff = m1 - m2;
+            const df = n1 + n2 - 2;
+            const s1Squared = sd1 * sd1;
+            const s2Squared = sd2 * sd2;
+            const pooledVariance = ((n1 - 1) * s1Squared + (n2 - 1) * s2Squared) / df;
+            const pooledSD = Math.sqrt(pooledVariance);
+            const d = meanDiff / pooledSD;
+
+            // Standard error of d
+            const se = Math.sqrt((n1 + n2) / (n1 * n2) + (d * d) / (2 * (n1 + n2)));
+            const ci_lower = d - 1.96 * se;
+            const ci_upper = d + 1.96 * se;
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Cohen's d - Standardized Mean Difference",
+                inputs: {
+                    'Mean (Group 1)': m1,
+                    'Mean (Group 2)': m2,
+                    'SD (Group 1)': sd1,
+                    'SD (Group 2)': sd2,
+                    'n (Group 1)': n1,
+                    'n (Group 2)': n2
+                },
+                formula: "d = (M1 - M2) / SD_pooled\nSD_pooled = sqrt[((n1-1)*s1^2 + (n2-1)*s2^2) / (n1+n2-2)]",
+                formulaLatex: "d = \\frac{M_1 - M_2}{SD_{pooled}}",
+                steps: [
+                    `Step 1: Calculate mean difference = ${m1} - ${m2} = ${meanDiff.toFixed(4)}`,
+                    `Step 2: Calculate degrees of freedom = ${n1} + ${n2} - 2 = ${df}`,
+                    `Step 3: Calculate pooled variance = ((${n1}-1)*${s1Squared.toFixed(4)} + (${n2}-1)*${s2Squared.toFixed(4)}) / ${df} = ${pooledVariance.toFixed(4)}`,
+                    `Step 4: Calculate pooled SD = sqrt(${pooledVariance.toFixed(4)}) = ${pooledSD.toFixed(4)}`,
+                    `Step 5: Calculate Cohen's d = ${meanDiff.toFixed(4)} / ${pooledSD.toFixed(4)} = ${d.toFixed(4)}`,
+                    `Step 6: Calculate SE = sqrt((${n1}+${n2})/(${n1}*${n2}) + d^2/(2*(${n1}+${n2}))) = ${se.toFixed(4)}`,
+                    `Step 7: Calculate 95% CI = ${d.toFixed(4)} +/- 1.96 * ${se.toFixed(4)} = [${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]`
+                ],
+                results: {
+                    main: { label: "Cohen's d", value: d, ci_lower, ci_upper },
+                    details: {
+                        'Mean Difference': meanDiff.toFixed(4),
+                        'Pooled SD': pooledSD.toFixed(4),
+                        'Standard Error': se.toFixed(4),
+                        'Degrees of Freedom': df,
+                        'Total N': n1 + n2
+                    }
+                },
+                interpretation: getInterpretation('d', d),
+                references: [
+                    "Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd ed.). Lawrence Erlbaum Associates.",
+                    "Borenstein, M., Hedges, L. V., Higgins, J. P. T., & Rothstein, H. R. (2009). Introduction to Meta-Analysis. John Wiley & Sons."
+                ]
+            };
+
+            displayEffectSizeResult("Cohen's d", d, ci_lower, ci_upper, {
+                'Mean Difference': meanDiff.toFixed(3),
+                'Pooled SD': pooledSD.toFixed(3),
+                'Standard Error': se.toFixed(4),
+                'Total N': n1 + n2
+            }, 'd', n1 + n2);
+        }
+
+        // Hedges' g calculation
+        function calculateHedgesG() {
+            const d = parseFloat(document.getElementById('g_d').value);
+            const n1 = parseFloat(document.getElementById('g_n1').value);
+            const n2 = parseFloat(document.getElementById('g_n2').value);
+
+            const df = n1 + n2 - 2;
+            const J = 1 - (3 / (4 * df - 1));
+            const g = d * J;
+
+            const se = Math.sqrt((n1 + n2) / (n1 * n2) + (g * g) / (2 * (n1 + n2))) * J;
+            const ci_lower = g - 1.96 * se;
+            const ci_upper = g + 1.96 * se;
+
+            const biasReduction = (1 - J) * 100;
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Hedges' g - Bias-Corrected Effect Size",
+                inputs: {
+                    "Cohen's d": d,
+                    'n (Group 1)': n1,
+                    'n (Group 2)': n2
+                },
+                formula: "g = d * J\nJ = 1 - 3/(4*df - 1)\ndf = n1 + n2 - 2",
+                formulaLatex: "g = d \\times J, \\quad J = 1 - \\frac{3}{4df - 1}",
+                steps: [
+                    `Step 1: Calculate degrees of freedom = ${n1} + ${n2} - 2 = ${df}`,
+                    `Step 2: Calculate correction factor J = 1 - 3/(4*${df} - 1) = ${J.toFixed(6)}`,
+                    `Step 3: Calculate Hedges' g = ${d} * ${J.toFixed(6)} = ${g.toFixed(4)}`,
+                    `Step 4: Calculate SE = sqrt((n1+n2)/(n1*n2) + g^2/(2*(n1+n2))) * J = ${se.toFixed(4)}`,
+                    `Step 5: Calculate 95% CI = ${g.toFixed(4)} +/- 1.96 * ${se.toFixed(4)} = [${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]`,
+                    `Step 6: Bias reduction = (1 - ${J.toFixed(6)}) * 100 = ${biasReduction.toFixed(2)}%`
+                ],
+                results: {
+                    main: { label: "Hedges' g", value: g, ci_lower, ci_upper },
+                    details: {
+                        "Cohen's d": d.toFixed(4),
+                        'Correction Factor (J)': J.toFixed(4),
+                        'Degrees of Freedom': df,
+                        'Bias Reduction': biasReduction.toFixed(2) + '%'
+                    }
+                },
+                interpretation: getInterpretation('d', g),
+                references: [
+                    "Hedges, L. V. (1981). Distribution theory for Glass's estimator of effect size and related estimators. Journal of Educational Statistics, 6(2), 107-128.",
+                    "Borenstein, M., Hedges, L. V., Higgins, J. P. T., & Rothstein, H. R. (2009). Introduction to Meta-Analysis. John Wiley & Sons."
+                ]
+            };
+
+            displayEffectSizeResult("Hedges' g", g, ci_lower, ci_upper, {
+                "Cohen's d": d.toFixed(4),
+                'Correction Factor (J)': J.toFixed(4),
+                'Degrees of Freedom': df,
+                'Bias Reduction': biasReduction.toFixed(2) + '%'
+            }, 'd', n1 + n2);
+        }
+
+        // Glass's Delta calculation
+        function calculateGlassDelta() {
+            const mt = parseFloat(document.getElementById('delta_mt').value);
+            const mc = parseFloat(document.getElementById('delta_mc').value);
+            const sdc = parseFloat(document.getElementById('delta_sdc').value);
+            const nt = parseFloat(document.getElementById('delta_nt').value);
+            const nc = parseFloat(document.getElementById('delta_nc').value);
+
+            const meanDiff = mt - mc;
+            const delta = meanDiff / sdc;
+
+            const se = Math.sqrt((nt + nc) / (nt * nc) + (delta * delta) / (2 * nc));
+            const ci_lower = delta - 1.96 * se;
+            const ci_upper = delta + 1.96 * se;
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Glass's Delta - Control Group Standardization",
+                inputs: {
+                    'Mean (Treatment)': mt,
+                    'Mean (Control)': mc,
+                    'SD (Control)': sdc,
+                    'n (Treatment)': nt,
+                    'n (Control)': nc
+                },
+                formula: "Delta = (M_treatment - M_control) / SD_control",
+                formulaLatex: "\\Delta = \\frac{M_{treatment} - M_{control}}{SD_{control}}",
+                steps: [
+                    `Step 1: Calculate mean difference = ${mt} - ${mc} = ${meanDiff.toFixed(4)}`,
+                    `Step 2: Calculate Glass's Delta = ${meanDiff.toFixed(4)} / ${sdc} = ${delta.toFixed(4)}`,
+                    `Step 3: Calculate SE = sqrt((${nt}+${nc})/(${nt}*${nc}) + Delta^2/(2*${nc})) = ${se.toFixed(4)}`,
+                    `Step 4: Calculate 95% CI = ${delta.toFixed(4)} +/- 1.96 * ${se.toFixed(4)} = [${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]`
+                ],
+                results: {
+                    main: { label: "Glass's Delta", value: delta, ci_lower, ci_upper },
+                    details: {
+                        'Mean Difference': meanDiff.toFixed(3),
+                        'Control SD': sdc.toFixed(3),
+                        'Standard Error': se.toFixed(4)
+                    }
+                },
+                interpretation: getInterpretation('d', delta),
+                references: [
+                    "Glass, G. V. (1976). Primary, secondary, and meta-analysis of research. Educational Researcher, 5(10), 3-8.",
+                    "Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd ed.). Lawrence Erlbaum Associates."
+                ]
+            };
+
+            displayEffectSizeResult("Glass's Delta", delta, ci_lower, ci_upper, {
+                'Mean Difference': meanDiff.toFixed(3),
+                'Control SD': sdc.toFixed(3),
+                'Standard Error': se.toFixed(4)
+            }, 'd', nt + nc);
+        }
+
+        // Odds Ratio calculation
+        function calculateOddsRatio() {
+            const a = parseFloat(document.getElementById('or_a').value);
+            const b = parseFloat(document.getElementById('or_b').value);
+            const c = parseFloat(document.getElementById('or_c').value);
+            const d = parseFloat(document.getElementById('or_d').value);
+
+            const OR = (a * d) / (b * c);
+            const lnOR = Math.log(OR);
+            const se_lnOR = Math.sqrt(1/a + 1/b + 1/c + 1/d);
+
+            const ci_lower = Math.exp(lnOR - 1.96 * se_lnOR);
+            const ci_upper = Math.exp(lnOR + 1.96 * se_lnOR);
+
+            // Convert to Cohen's d
+            const cohensD = lnOR * Math.sqrt(3) / Math.PI;
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Odds Ratio - 2x2 Contingency Table",
+                inputs: {
+                    'a (Exposed, Outcome+)': a,
+                    'b (Exposed, Outcome-)': b,
+                    'c (Not Exposed, Outcome+)': c,
+                    'd (Not Exposed, Outcome-)': d
+                },
+                formula: "OR = (a * d) / (b * c)\nln(OR) SE = sqrt(1/a + 1/b + 1/c + 1/d)\nCohen's d = ln(OR) * sqrt(3) / pi",
+                formulaLatex: "OR = \\frac{a \\times d}{b \\times c}",
+                steps: [
+                    `Step 1: Calculate OR = (${a} * ${d}) / (${b} * ${c}) = ${OR.toFixed(4)}`,
+                    `Step 2: Calculate ln(OR) = ln(${OR.toFixed(4)}) = ${lnOR.toFixed(4)}`,
+                    `Step 3: Calculate SE(ln OR) = sqrt(1/${a} + 1/${b} + 1/${c} + 1/${d}) = ${se_lnOR.toFixed(4)}`,
+                    `Step 4: Calculate 95% CI = exp(${lnOR.toFixed(4)} +/- 1.96 * ${se_lnOR.toFixed(4)}) = [${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]`,
+                    `Step 5: Convert to Cohen's d = ${lnOR.toFixed(4)} * sqrt(3) / pi = ${cohensD.toFixed(4)}`
+                ],
+                results: {
+                    main: { label: "Odds Ratio", value: OR, ci_lower, ci_upper },
+                    details: {
+                        'ln(OR)': lnOR.toFixed(4),
+                        'SE(ln OR)': se_lnOR.toFixed(4),
+                        "Equivalent Cohen's d": cohensD.toFixed(4),
+                        'Total N': a + b + c + d
+                    }
+                },
+                interpretation: getInterpretation('or', OR),
+                references: [
+                    "Fleiss, J. L., Levin, B., & Paik, M. C. (2003). Statistical Methods for Rates and Proportions (3rd ed.). John Wiley & Sons.",
+                    "Borenstein, M., Hedges, L. V., Higgins, J. P. T., & Rothstein, H. R. (2009). Introduction to Meta-Analysis. John Wiley & Sons."
+                ]
+            };
+
+            displayEffectSizeResult("Odds Ratio", OR, ci_lower, ci_upper, {
+                'ln(OR)': lnOR.toFixed(4),
+                'SE(ln OR)': se_lnOR.toFixed(4),
+                "Equivalent Cohen's d": cohensD.toFixed(4),
+                'Total N': a + b + c + d
+            }, 'or', a + b + c + d);
+        }
+
+        // Risk Ratio calculation
+        function calculateRiskRatio() {
+            const a = parseFloat(document.getElementById('rr_a').value);
+            const b = parseFloat(document.getElementById('rr_b').value);
+            const c = parseFloat(document.getElementById('rr_c').value);
+            const d = parseFloat(document.getElementById('rr_d').value);
+
+            const p1 = a / (a + b);
+            const p2 = c / (c + d);
+            const RR = p1 / p2;
+            const lnRR = Math.log(RR);
+            const se_lnRR = Math.sqrt((1 - p1) / (a) + (1 - p2) / (c));
+
+            const ci_lower = Math.exp(lnRR - 1.96 * se_lnRR);
+            const ci_upper = Math.exp(lnRR + 1.96 * se_lnRR);
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Risk Ratio (Relative Risk)",
+                inputs: {
+                    'a (Exposed, Event+)': a,
+                    'b (Exposed, Event-)': b,
+                    'c (Not Exposed, Event+)': c,
+                    'd (Not Exposed, Event-)': d
+                },
+                formula: "RR = [a/(a+b)] / [c/(c+d)]\nln(RR) SE = sqrt((1-p1)/a + (1-p2)/c)",
+                formulaLatex: "RR = \\frac{a/(a+b)}{c/(c+d)}",
+                steps: [
+                    `Step 1: Calculate Risk (Exposed) = ${a} / (${a}+${b}) = ${p1.toFixed(4)} (${(p1*100).toFixed(2)}%)`,
+                    `Step 2: Calculate Risk (Unexposed) = ${c} / (${c}+${d}) = ${p2.toFixed(4)} (${(p2*100).toFixed(2)}%)`,
+                    `Step 3: Calculate RR = ${p1.toFixed(4)} / ${p2.toFixed(4)} = ${RR.toFixed(4)}`,
+                    `Step 4: Calculate ln(RR) = ln(${RR.toFixed(4)}) = ${lnRR.toFixed(4)}`,
+                    `Step 5: Calculate SE(ln RR) = sqrt((1-${p1.toFixed(4)})/${a} + (1-${p2.toFixed(4)})/${c}) = ${se_lnRR.toFixed(4)}`,
+                    `Step 6: Calculate 95% CI = exp(${lnRR.toFixed(4)} +/- 1.96 * ${se_lnRR.toFixed(4)}) = [${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]`
+                ],
+                results: {
+                    main: { label: "Risk Ratio", value: RR, ci_lower, ci_upper },
+                    details: {
+                        'Risk (Exposed)': (p1 * 100).toFixed(2) + '%',
+                        'Risk (Unexposed)': (p2 * 100).toFixed(2) + '%',
+                        'ln(RR)': lnRR.toFixed(4),
+                        'SE(ln RR)': se_lnRR.toFixed(4)
+                    }
+                },
+                interpretation: getInterpretation('rr', RR),
+                references: [
+                    "Rothman, K. J., Greenland, S., & Lash, T. L. (2008). Modern Epidemiology (3rd ed.). Lippincott Williams & Wilkins.",
+                    "Borenstein, M., Hedges, L. V., Higgins, J. P. T., & Rothstein, H. R. (2009). Introduction to Meta-Analysis. John Wiley & Sons."
+                ]
+            };
+
+            displayEffectSizeResult("Risk Ratio", RR, ci_lower, ci_upper, {
+                'Risk (Exposed)': (p1 * 100).toFixed(2) + '%',
+                'Risk (Unexposed)': (p2 * 100).toFixed(2) + '%',
+                'ln(RR)': lnRR.toFixed(4),
+                'SE(ln RR)': se_lnRR.toFixed(4)
+            }, 'rr', a + b + c + d);
+        }
+
+        // Risk Difference calculation
+        function calculateRiskDiff() {
+            const p1 = parseFloat(document.getElementById('rd_p1').value);
+            const p2 = parseFloat(document.getElementById('rd_p2').value);
+            const n1 = parseFloat(document.getElementById('rd_n1').value);
+            const n2 = parseFloat(document.getElementById('rd_n2').value);
+
+            const RD = p1 - p2;
+            const se = Math.sqrt((p1 * (1 - p1)) / n1 + (p2 * (1 - p2)) / n2);
+            const ci_lower = RD - 1.96 * se;
+            const ci_upper = RD + 1.96 * se;
+
+            const NNT = RD !== 0 ? Math.abs(1 / RD) : Infinity;
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Risk Difference (Absolute Risk Reduction)",
+                inputs: {
+                    'Proportion (Group 1)': p1,
+                    'Proportion (Group 2)': p2,
+                    'n (Group 1)': n1,
+                    'n (Group 2)': n2
+                },
+                formula: "RD = p1 - p2\nSE = sqrt(p1*(1-p1)/n1 + p2*(1-p2)/n2)\nNNT = 1 / |RD|",
+                formulaLatex: "RD = p_1 - p_2",
+                steps: [
+                    `Step 1: Calculate Risk Difference = ${p1} - ${p2} = ${RD.toFixed(4)}`,
+                    `Step 2: Calculate variance term 1 = ${p1} * (1-${p1}) / ${n1} = ${(p1*(1-p1)/n1).toFixed(6)}`,
+                    `Step 3: Calculate variance term 2 = ${p2} * (1-${p2}) / ${n2} = ${(p2*(1-p2)/n2).toFixed(6)}`,
+                    `Step 4: Calculate SE = sqrt(${(p1*(1-p1)/n1).toFixed(6)} + ${(p2*(1-p2)/n2).toFixed(6)}) = ${se.toFixed(4)}`,
+                    `Step 5: Calculate 95% CI = ${RD.toFixed(4)} +/- 1.96 * ${se.toFixed(4)} = [${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]`,
+                    `Step 6: Calculate NNT = 1 / |${RD.toFixed(4)}| = ${NNT === Infinity ? 'N/A (RD = 0)' : NNT.toFixed(1)}`
+                ],
+                results: {
+                    main: { label: "Risk Difference", value: RD, ci_lower, ci_upper },
+                    details: {
+                        'Proportion 1': (p1 * 100).toFixed(2) + '%',
+                        'Proportion 2': (p2 * 100).toFixed(2) + '%',
+                        'NNT': NNT === Infinity ? 'N/A' : NNT.toFixed(1),
+                        'Standard Error': se.toFixed(4)
+                    }
+                },
+                interpretation: getInterpretation('rd', RD),
+                references: [
+                    "Rothman, K. J., Greenland, S., & Lash, T. L. (2008). Modern Epidemiology (3rd ed.). Lippincott Williams & Wilkins.",
+                    "Laupacis, A., Sackett, D. L., & Roberts, R. S. (1988). An assessment of clinically useful measures of the consequences of treatment. NEJM, 318(26), 1728-1733."
+                ]
+            };
+
+            displayEffectSizeResult("Risk Difference", RD, ci_lower, ci_upper, {
+                'Proportion 1': (p1 * 100).toFixed(2) + '%',
+                'Proportion 2': (p2 * 100).toFixed(2) + '%',
+                'NNT': NNT === Infinity ? 'N/A' : NNT.toFixed(1),
+                'Standard Error': se.toFixed(4)
+            }, 'rd', n1 + n2);
+        }
+
+        // Correlation to d conversion
+        function calculateRtoD() {
+            const r = parseFloat(document.getElementById('rtod_r').value);
+            const n = parseFloat(document.getElementById('rtod_n').value);
+
+            const d = (2 * r) / Math.sqrt(1 - r * r);
+
+            // SE for r using Fisher's z
+            const fisherZ = 0.5 * Math.log((1 + r) / (1 - r));
+            const se_z = 1 / Math.sqrt(n - 3);
+            const z_lower = fisherZ - 1.96 * se_z;
+            const z_upper = fisherZ + 1.96 * se_z;
+            const r_lower = (Math.exp(2 * z_lower) - 1) / (Math.exp(2 * z_lower) + 1);
+            const r_upper = (Math.exp(2 * z_upper) - 1) / (Math.exp(2 * z_upper) + 1);
+
+            const d_lower = (2 * r_lower) / Math.sqrt(1 - r_lower * r_lower);
+            const d_upper = (2 * r_upper) / Math.sqrt(1 - r_upper * r_upper);
+
+            const rSquared = r * r;
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Correlation to Cohen's d Conversion",
+                inputs: {
+                    'Correlation (r)': r,
+                    'Sample Size (n)': n
+                },
+                formula: "d = 2r / sqrt(1 - r^2)\nFisher's z = 0.5 * ln((1+r)/(1-r))\nSE(z) = 1 / sqrt(n-3)",
+                formulaLatex: "d = \\frac{2r}{\\sqrt{1 - r^2}}",
+                steps: [
+                    `Step 1: Calculate 1 - r^2 = 1 - ${r}^2 = ${(1 - rSquared).toFixed(4)}`,
+                    `Step 2: Calculate Cohen's d = 2 * ${r} / sqrt(${(1 - rSquared).toFixed(4)}) = ${d.toFixed(4)}`,
+                    `Step 3: Calculate Fisher's z = 0.5 * ln((1+${r})/(1-${r})) = ${fisherZ.toFixed(4)}`,
+                    `Step 4: Calculate SE(z) = 1 / sqrt(${n}-3) = ${se_z.toFixed(4)}`,
+                    `Step 5: Calculate z 95% CI = ${fisherZ.toFixed(4)} +/- 1.96 * ${se_z.toFixed(4)} = [${z_lower.toFixed(4)}, ${z_upper.toFixed(4)}]`,
+                    `Step 6: Back-transform to r CI = [${r_lower.toFixed(4)}, ${r_upper.toFixed(4)}]`,
+                    `Step 7: Convert r CI to d CI = [${d_lower.toFixed(4)}, ${d_upper.toFixed(4)}]`
+                ],
+                results: {
+                    main: { label: "Cohen's d (from r)", value: d, ci_lower: d_lower, ci_upper: d_upper },
+                    details: {
+                        'Original r': r.toFixed(4),
+                        "Fisher's z": fisherZ.toFixed(4),
+                        'r 95% CI': `[${r_lower.toFixed(4)}, ${r_upper.toFixed(4)}]`,
+                        'r-squared': rSquared.toFixed(4)
+                    }
+                },
+                interpretation: getInterpretation('d', d),
+                references: [
+                    "Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd ed.). Lawrence Erlbaum Associates.",
+                    "Fisher, R. A. (1921). On the probable error of a coefficient of correlation deduced from a small sample. Metron, 1, 3-32."
+                ]
+            };
+
+            displayEffectSizeResult("Cohen's d (from r)", d, d_lower, d_upper, {
+                'Original r': r.toFixed(4),
+                "Fisher's z": fisherZ.toFixed(4),
+                'r 95% CI': `[${r_lower.toFixed(4)}, ${r_upper.toFixed(4)}]`,
+                'r-squared': rSquared.toFixed(4)
+            }, 'd', n);
+        }
+
+        // Eta-squared calculation
+        function calculateEtaSquared() {
+            const ssb = parseFloat(document.getElementById('eta_ssb').value);
+            const sse = parseFloat(document.getElementById('eta_sse').value);
+            const sstInput = document.getElementById('eta_sst').value;
+
+            const sst = sstInput ? parseFloat(sstInput) : ssb + sse;
+            const eta2 = ssb / sst;
+            const partialEta2 = ssb / (ssb + sse);
+
+            // Convert to Cohen's f
+            const f = Math.sqrt(eta2 / (1 - eta2));
+            const f_partial = Math.sqrt(partialEta2 / (1 - partialEta2));
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Eta-squared & Partial Eta-squared",
+                inputs: {
+                    'SS Between (Effect)': ssb,
+                    'SS Error (Within)': sse,
+                    'SS Total': sst
+                },
+                formula: "eta^2 = SS_between / SS_total\nPartial eta^2 = SS_effect / (SS_effect + SS_error)\nCohen's f = sqrt(eta^2 / (1 - eta^2))",
+                formulaLatex: "\\eta^2 = \\frac{SS_{between}}{SS_{total}}",
+                steps: [
+                    `Step 1: Calculate SS Total = ${ssb} + ${sse} = ${sst.toFixed(2)}`,
+                    `Step 2: Calculate Eta-squared = ${ssb} / ${sst.toFixed(2)} = ${eta2.toFixed(4)}`,
+                    `Step 3: Calculate Partial Eta-squared = ${ssb} / (${ssb} + ${sse}) = ${partialEta2.toFixed(4)}`,
+                    `Step 4: Calculate Cohen's f (from eta^2) = sqrt(${eta2.toFixed(4)} / (1 - ${eta2.toFixed(4)})) = ${f.toFixed(4)}`,
+                    `Step 5: Calculate Cohen's f (from partial eta^2) = sqrt(${partialEta2.toFixed(4)} / (1 - ${partialEta2.toFixed(4)})) = ${f_partial.toFixed(4)}`,
+                    `Step 6: Variance explained = ${(eta2 * 100).toFixed(2)}%`
+                ],
+                results: {
+                    main: { label: "Eta-squared", value: eta2, ci_lower: null, ci_upper: null },
+                    details: {
+                        'Partial Eta-squared': partialEta2.toFixed(4),
+                        'SS Between': ssb.toFixed(2),
+                        'SS Error': sse.toFixed(2),
+                        'SS Total': sst.toFixed(2),
+                        "Cohen's f (from eta2)": f.toFixed(4),
+                        "Cohen's f (from partial)": f_partial.toFixed(4)
+                    }
+                },
+                interpretation: getInterpretation('eta2', eta2),
+                references: [
+                    "Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd ed.). Lawrence Erlbaum Associates.",
+                    "Richardson, J. T. E. (2011). Eta squared and partial eta squared as measures of effect size in educational research. Educational Research Review, 6(2), 135-147."
+                ]
+            };
+
+            displayEffectSizeResult("Eta-squared", eta2, null, null, {
+                'Partial Eta-squared': partialEta2.toFixed(4),
+                'SS Between': ssb.toFixed(2),
+                'SS Error': sse.toFixed(2),
+                'SS Total': sst.toFixed(2),
+                "Cohen's f (from eta2)": f.toFixed(4),
+                "Cohen's f (from partial)": f_partial.toFixed(4)
+            }, 'eta2', null);
+        }
+
+        // Cohen's f calculation
+        function calculateCohensF() {
+            const eta2 = parseFloat(document.getElementById('f_eta').value);
+
+            const f = Math.sqrt(eta2 / (1 - eta2));
+            const f2 = eta2 / (1 - eta2);
+
+            // Store global data
+            globalCalculationData = {
+                conversionType: "Cohen's f - ANOVA Effect Size",
+                inputs: {
+                    'Eta-squared': eta2
+                },
+                formula: "f = sqrt(eta^2 / (1 - eta^2))\nf^2 = eta^2 / (1 - eta^2)",
+                formulaLatex: "f = \\sqrt{\\frac{\\eta^2}{1 - \\eta^2}}",
+                steps: [
+                    `Step 1: Calculate 1 - eta^2 = 1 - ${eta2} = ${(1 - eta2).toFixed(4)}`,
+                    `Step 2: Calculate f^2 = ${eta2} / ${(1 - eta2).toFixed(4)} = ${f2.toFixed(4)}`,
+                    `Step 3: Calculate Cohen's f = sqrt(${f2.toFixed(4)}) = ${f.toFixed(4)}`,
+                    `Step 4: Variance explained = ${(eta2 * 100).toFixed(2)}%`
+                ],
+                results: {
+                    main: { label: "Cohen's f", value: f, ci_lower: null, ci_upper: null },
+                    details: {
+                        'Eta-squared': eta2.toFixed(4),
+                        'f-squared': f2.toFixed(4),
+                        'Variance Explained': (eta2 * 100).toFixed(2) + '%'
+                    }
+                },
+                interpretation: getInterpretation('f', f),
+                references: [
+                    "Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd ed.). Lawrence Erlbaum Associates.",
+                    "Cohen, J. (1992). A power primer. Psychological Bulletin, 112(1), 155-159."
+                ]
+            };
+
+            displayEffectSizeResult("Cohen's f", f, null, null, {
+                'Eta-squared': eta2.toFixed(4),
+                'f-squared': f2.toFixed(4),
+                'Variance Explained': (eta2 * 100).toFixed(2) + '%'
+            }, 'f', null);
+        }
+
+        // Get interpretation helper
+        function getInterpretation(type, value) {
+            let text = '';
+            let size = '';
+            let thresholds = {};
+
+            if (type === 'd') {
+                const absD = Math.abs(value);
+                thresholds = { small: 0.2, medium: 0.5, large: 0.8 };
+                if (absD < 0.2) {
+                    text = 'Negligible effect size. The difference is trivially small.';
+                    size = 'negligible';
+                } else if (absD < 0.5) {
+                    text = 'Small effect size. The difference exists but may not be practically significant.';
+                    size = 'small';
+                } else if (absD < 0.8) {
+                    text = 'Medium effect size. The difference is noticeable and likely practically significant.';
+                    size = 'medium';
+                } else {
+                    text = 'Large effect size. The difference is substantial and clearly practically significant.';
+                    size = 'large';
+                }
+            } else if (type === 'or' || type === 'rr') {
+                thresholds = { small: 1.5, medium: 2.5, large: 4.0 };
+                if (value < 1.5 && value > 0.67) {
+                    text = 'Small effect. The association is weak.';
+                    size = 'small';
+                } else if (value < 2.5 && value > 0.4) {
+                    text = 'Medium effect. The association is moderate.';
+                    size = 'medium';
+                } else {
+                    text = 'Large effect. The association is strong.';
+                    size = 'large';
+                }
+            } else if (type === 'eta2') {
+                thresholds = { small: 0.01, medium: 0.06, large: 0.14 };
+                if (value < 0.01) {
+                    text = 'Negligible effect. Very little variance explained.';
+                    size = 'negligible';
+                } else if (value < 0.06) {
+                    text = 'Small effect. Modest amount of variance explained.';
+                    size = 'small';
+                } else if (value < 0.14) {
+                    text = 'Medium effect. Moderate amount of variance explained.';
+                    size = 'medium';
+                } else {
+                    text = 'Large effect. Substantial variance explained.';
+                    size = 'large';
+                }
+            } else if (type === 'f') {
+                thresholds = { small: 0.10, medium: 0.25, large: 0.40 };
+                if (value < 0.10) {
+                    text = 'Negligible effect size.';
+                    size = 'negligible';
+                } else if (value < 0.25) {
+                    text = 'Small effect size.';
+                    size = 'small';
+                } else if (value < 0.40) {
+                    text = 'Medium effect size.';
+                    size = 'medium';
+                } else {
+                    text = 'Large effect size.';
+                    size = 'large';
+                }
+            } else if (type === 'rd') {
+                const absRD = Math.abs(value);
+                thresholds = { small: 0.05, medium: 0.15, large: 0.25 };
+                if (absRD < 0.05) {
+                    text = 'Small risk difference.';
+                    size = 'small';
+                } else if (absRD < 0.15) {
+                    text = 'Medium risk difference.';
+                    size = 'medium';
+                } else {
+                    text = 'Large risk difference.';
+                    size = 'large';
+                }
+            }
+
+            return { text, size, thresholds };
+        }
+
+        // Display results
+        function displayEffectSizeResult(label, value, ci_lower, ci_upper, details, type, n) {
+            document.getElementById('results').classList.add('active');
+
+            document.getElementById('mainValue').textContent = value.toFixed(4);
+            document.getElementById('mainLabel').textContent = label;
+
+            if (ci_lower !== null && ci_upper !== null) {
+                document.getElementById('mainCI').textContent = `95% CI: [${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]`;
+                document.getElementById('mainCI').style.display = 'block';
+            } else {
+                document.getElementById('mainCI').style.display = 'none';
+            }
+
+            // Results grid
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = '';
+            for (const [key, val] of Object.entries(details)) {
+                grid.innerHTML += `
+                    <div class="result-card">
+                        <div class="result-card-label">${key}</div>
+                        <div class="result-card-value">${val}</div>
+                    </div>
+                `;
+            }
+
+            // Display calculation steps
+            const stepsDiv = document.getElementById('calculationSteps');
+            stepsDiv.innerHTML = '';
+            globalCalculationData.steps.forEach((step, index) => {
+                stepsDiv.innerHTML += `<div class="step-item"><span class="step-number">${index + 1}</span>${step.replace('Step ' + (index + 1) + ': ', '')}</div>`;
+            });
+
+            // Interpretation
+            const interpretation = globalCalculationData.interpretation;
+            document.getElementById('interpretationText').textContent = interpretation.text;
+
+            // Update size scale badges
+            if (type === 'd') {
+                document.getElementById('sizeScale').innerHTML = `
+                    <span class="size-badge size-small ${interpretation.size === 'small' ? 'size-current' : ''}">Small (0.2)</span>
+                    <span class="size-badge size-medium ${interpretation.size === 'medium' ? 'size-current' : ''}">Medium (0.5)</span>
+                    <span class="size-badge size-large ${interpretation.size === 'large' ? 'size-current' : ''}">Large (0.8)</span>
+                `;
+            } else if (type === 'or' || type === 'rr') {
+                document.getElementById('sizeScale').innerHTML = `
+                    <span class="size-badge size-small ${interpretation.size === 'small' ? 'size-current' : ''}">Small (1.5)</span>
+                    <span class="size-badge size-medium ${interpretation.size === 'medium' ? 'size-current' : ''}">Medium (2.5)</span>
+                    <span class="size-badge size-large ${interpretation.size === 'large' ? 'size-current' : ''}">Large (4.0+)</span>
+                `;
+            } else if (type === 'eta2') {
+                document.getElementById('sizeScale').innerHTML = `
+                    <span class="size-badge size-small ${interpretation.size === 'small' ? 'size-current' : ''}">Small (0.01)</span>
+                    <span class="size-badge size-medium ${interpretation.size === 'medium' ? 'size-current' : ''}">Medium (0.06)</span>
+                    <span class="size-badge size-large ${interpretation.size === 'large' ? 'size-current' : ''}">Large (0.14)</span>
+                `;
+            } else if (type === 'f') {
+                document.getElementById('sizeScale').innerHTML = `
+                    <span class="size-badge size-small ${interpretation.size === 'small' ? 'size-current' : ''}">Small (0.10)</span>
+                    <span class="size-badge size-medium ${interpretation.size === 'medium' ? 'size-current' : ''}">Medium (0.25)</span>
+                    <span class="size-badge size-large ${interpretation.size === 'large' ? 'size-current' : ''}">Large (0.40)</span>
+                `;
+            } else if (type === 'rd') {
+                document.getElementById('sizeScale').innerHTML = `
+                    <span class="size-badge size-small ${interpretation.size === 'small' ? 'size-current' : ''}">Small (5%)</span>
+                    <span class="size-badge size-medium ${interpretation.size === 'medium' ? 'size-current' : ''}">Medium (15%)</span>
+                    <span class="size-badge size-large ${interpretation.size === 'large' ? 'size-current' : ''}">Large (25%+)</span>
+                `;
+            }
+
+            // Show conversion table for d-type effect sizes
+            if (type === 'd') {
+                const d = value;
+                const r = d / Math.sqrt(d * d + 4);
+                const OR = Math.exp(d * Math.PI / Math.sqrt(3));
+
+                document.getElementById('conversionSection').style.display = 'block';
+                document.getElementById('conversionBody').innerHTML = `
+                    <tr><td>Cohen's d</td><td>${d.toFixed(4)}</td><td>${ci_lower ? `[${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]` : '-'}</td></tr>
+                    <tr><td>Correlation (r)</td><td>${r.toFixed(4)}</td><td>-</td></tr>
+                    <tr><td>Odds Ratio (approx)</td><td>${OR.toFixed(4)}</td><td>-</td></tr>
+                    <tr><td>r-squared</td><td>${(r * r).toFixed(4)}</td><td>-</td></tr>
+                `;
+
+                // Store conversions
+                globalCalculationData.results.conversions = [
+                    { measure: "Cohen's d", value: d.toFixed(4), ci: ci_lower ? `[${ci_lower.toFixed(4)}, ${ci_upper.toFixed(4)}]` : '-' },
+                    { measure: "Correlation (r)", value: r.toFixed(4), ci: '-' },
+                    { measure: "Odds Ratio (approx)", value: OR.toFixed(4), ci: '-' },
+                    { measure: "r-squared", value: (r * r).toFixed(4), ci: '-' }
+                ];
+            } else {
+                document.getElementById('conversionSection').style.display = 'none';
+            }
+
+            // Display references
+            document.getElementById('reference1').textContent = globalCalculationData.references[0];
+            document.getElementById('reference2').textContent = globalCalculationData.references[1];
+
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeIcon').innerHTML = isDark ? '&#9790;' : '&#9728;';
+            localStorage.setItem('karmastat-theme', isDark ? 'light' : 'dark');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('karmastat-theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                document.getElementById('themeIcon').innerHTML = savedTheme === 'dark' ? '&#9728;' : '&#9790;';
+            }
+        });
+
+        function exportToPDF(theme) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const data = globalCalculationData;
+            const isDark = theme === 'dark';
+
+            // Color schemes
+            const colors = {
+                primary: isDark ? [20, 184, 166] : [20, 184, 166],
+                secondary: isDark ? [15, 118, 110] : [15, 118, 110],
+                background: isDark ? [26, 47, 45] : [255, 255, 255],
+                cardBg: isDark ? [35, 66, 64] : [240, 253, 250],
+                text: isDark ? [243, 244, 246] : [31, 41, 55],
+                textMuted: isDark ? [156, 163, 175] : [107, 114, 128],
+                border: isDark ? [61, 88, 86] : [229, 231, 235],
+                success: isDark ? [16, 185, 129] : [16, 185, 129],
+                warning: isDark ? [245, 158, 11] : [245, 158, 11]
+            };
+
+            // Set background
+            doc.setFillColor(...colors.background);
+            doc.rect(0, 0, 210, 297, 'F');
+
+            // Header with gradient effect (simplified)
+            doc.setFillColor(...colors.primary);
+            doc.rect(0, 0, 210, 45, 'F');
+
+            // Logo circle
+            doc.setFillColor(255, 255, 255);
+            doc.circle(25, 22.5, 12, 'F');
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('K', 22, 27);
+
+            // Title
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.text('KARMASTAT', 45, 20);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Effect Size Calculator Report', 45, 28);
+
+            // Accent line
+            doc.setFillColor(...colors.secondary);
+            doc.rect(0, 45, 210, 3, 'F');
+
+            let yPos = 58;
+
+            // Conversion Type Section
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos - 5, 180, 18, 3, 3, 'F');
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Analysis Type:', 20, yPos + 4);
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(data.conversionType, 65, yPos + 4);
+            yPos += 25;
+
+            // Input Parameters Section
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('INPUT PARAMETERS', 20, yPos);
+            yPos += 3;
+            doc.setDrawColor(...colors.primary);
+            doc.setLineWidth(0.5);
+            doc.line(20, yPos, 190, yPos);
+            yPos += 8;
+
+            doc.setFillColor(...colors.cardBg);
+            const inputKeys = Object.keys(data.inputs);
+            const inputHeight = Math.ceil(inputKeys.length / 2) * 8 + 10;
+            doc.roundedRect(15, yPos - 5, 180, inputHeight, 3, 3, 'F');
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            let col = 0;
+            let row = 0;
+            for (const [key, val] of Object.entries(data.inputs)) {
+                const xOffset = col === 0 ? 20 : 110;
+                doc.setFont('helvetica', 'bold');
+                doc.text(key + ':', xOffset, yPos + row * 8);
+                doc.setFont('helvetica', 'normal');
+                doc.text(String(val), xOffset + 55, yPos + row * 8);
+                col++;
+                if (col > 1) {
+                    col = 0;
+                    row++;
+                }
+            }
+            yPos += inputHeight + 5;
+
+            // Formula Section
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('FORMULA', 20, yPos);
+            yPos += 3;
+            doc.line(20, yPos, 190, yPos);
+            yPos += 8;
+
+            doc.setFillColor(...colors.secondary);
+            const formulaLines = data.formula.split('\n');
+            const formulaHeight = formulaLines.length * 6 + 10;
+            doc.roundedRect(15, yPos - 5, 180, formulaHeight, 3, 3, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont('courier', 'normal');
+            formulaLines.forEach((line, index) => {
+                doc.text(line, 20, yPos + index * 6);
+            });
+            yPos += formulaHeight + 5;
+
+            // Check if we need a new page for steps
+            if (yPos > 170) {
+                doc.addPage();
+                doc.setFillColor(...colors.background);
+                doc.rect(0, 0, 210, 297, 'F');
+                yPos = 20;
+            }
+
+            // Step-by-Step Calculation
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('STEP-BY-STEP CALCULATION', 20, yPos);
+            yPos += 3;
+            doc.line(20, yPos, 190, yPos);
+            yPos += 8;
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+
+            data.steps.forEach((step, index) => {
+                if (yPos > 270) {
+                    doc.addPage();
+                    doc.setFillColor(...colors.background);
+                    doc.rect(0, 0, 210, 297, 'F');
+                    yPos = 20;
+                }
+
+                // Step number circle
+                doc.setFillColor(...colors.primary);
+                doc.circle(22, yPos - 2, 3, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(7);
+                doc.text(String(index + 1), 20.5, yPos - 0.5);
+
+                // Step text
+                doc.setTextColor(...colors.text);
+                doc.setFontSize(9);
+                const stepText = step.replace(/Step \d+: /, '');
+                const splitText = doc.splitTextToSize(stepText, 160);
+                doc.text(splitText, 28, yPos);
+                yPos += splitText.length * 5 + 3;
+            });
+            yPos += 5;
+
+            // Results Section
+            if (yPos > 200) {
+                doc.addPage();
+                doc.setFillColor(...colors.background);
+                doc.rect(0, 0, 210, 297, 'F');
+                yPos = 20;
+            }
+
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('RESULTS', 20, yPos);
+            yPos += 3;
+            doc.line(20, yPos, 190, yPos);
+            yPos += 8;
+
+            // Main result box
+            doc.setFillColor(...colors.secondary);
+            doc.roundedRect(15, yPos - 3, 180, 25, 3, 3, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.text(data.results.main.value.toFixed(4), 105, yPos + 10, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(data.results.main.label, 105, yPos + 17, { align: 'center' });
+
+            if (data.results.main.ci_lower !== null) {
+                doc.setFontSize(9);
+                doc.text(`95% CI: [${data.results.main.ci_lower.toFixed(4)}, ${data.results.main.ci_upper.toFixed(4)}]`, 105, yPos + 22, { align: 'center' });
+            }
+            yPos += 32;
+
+            // Additional results
+            doc.setFillColor(...colors.cardBg);
+            const detailKeys = Object.keys(data.results.details);
+            const detailHeight = Math.ceil(detailKeys.length / 2) * 10 + 8;
+            doc.roundedRect(15, yPos - 3, 180, detailHeight, 3, 3, 'F');
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+            col = 0;
+            row = 0;
+            for (const [key, val] of Object.entries(data.results.details)) {
+                const xOffset = col === 0 ? 20 : 110;
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...colors.textMuted);
+                doc.text(key + ':', xOffset, yPos + row * 10);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...colors.primary);
+                doc.text(String(val), xOffset + 50, yPos + row * 10);
+                col++;
+                if (col > 1) {
+                    col = 0;
+                    row++;
+                }
+            }
+            yPos += detailHeight + 8;
+
+            // Interpretation Section
+            if (yPos > 230) {
+                doc.addPage();
+                doc.setFillColor(...colors.background);
+                doc.rect(0, 0, 210, 297, 'F');
+                yPos = 20;
+            }
+
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('INTERPRETATION', 20, yPos);
+            yPos += 3;
+            doc.line(20, yPos, 190, yPos);
+            yPos += 8;
+
+            // Interpretation box with left border
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos - 3, 180, 20, 3, 3, 'F');
+            doc.setFillColor(...colors.primary);
+            doc.rect(15, yPos - 3, 3, 20, 'F');
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const interpText = doc.splitTextToSize(data.interpretation.text, 170);
+            doc.text(interpText, 22, yPos + 3);
+
+            // Effect size badge
+            let badgeColor = colors.warning;
+            if (data.interpretation.size === 'small') badgeColor = [220, 38, 38];
+            else if (data.interpretation.size === 'medium') badgeColor = [217, 119, 6];
+            else if (data.interpretation.size === 'large') badgeColor = [5, 150, 105];
+
+            doc.setFillColor(...badgeColor);
+            doc.roundedRect(22, yPos + 9, 30, 6, 2, 2, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.text(data.interpretation.size.toUpperCase() + ' EFFECT', 25, yPos + 13);
+            yPos += 28;
+
+            // Conversions Table (if available)
+            if (data.results.conversions && data.results.conversions.length > 0) {
+                if (yPos > 230) {
+                    doc.addPage();
+                    doc.setFillColor(...colors.background);
+                    doc.rect(0, 0, 210, 297, 'F');
+                    yPos = 20;
+                }
+
+                doc.setTextColor(...colors.primary);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('EFFECT SIZE CONVERSIONS', 20, yPos);
+                yPos += 3;
+                doc.line(20, yPos, 190, yPos);
+                yPos += 8;
+
+                // Table header
+                doc.setFillColor(...colors.secondary);
+                doc.rect(15, yPos - 3, 180, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Measure', 20, yPos + 2);
+                doc.text('Value', 90, yPos + 2);
+                doc.text('95% CI', 140, yPos + 2);
+                yPos += 8;
+
+                // Table rows
+                doc.setFont('helvetica', 'normal');
+                data.results.conversions.forEach((conv, index) => {
+                    const rowBg = index % 2 === 0 ? colors.cardBg : colors.background;
+                    doc.setFillColor(...rowBg);
+                    doc.rect(15, yPos - 3, 180, 7, 'F');
+                    doc.setTextColor(...colors.text);
+                    doc.text(conv.measure, 20, yPos + 1);
+                    doc.setTextColor(...colors.primary);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(conv.value, 90, yPos + 1);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(...colors.textMuted);
+                    doc.text(conv.ci, 140, yPos + 1);
+                    yPos += 7;
+                });
+                yPos += 8;
+            }
+
+            // References Section
+            if (yPos > 245) {
+                doc.addPage();
+                doc.setFillColor(...colors.background);
+                doc.rect(0, 0, 210, 297, 'F');
+                yPos = 20;
+            }
+
+            doc.setTextColor(...colors.primary);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('REFERENCES', 20, yPos);
+            yPos += 3;
+            doc.line(20, yPos, 190, yPos);
+            yPos += 8;
+
+            doc.setFillColor(...colors.cardBg);
+            doc.roundedRect(15, yPos - 3, 180, 22, 3, 3, 'F');
+            doc.setDrawColor(...colors.primary);
+            doc.setLineWidth(0.3);
+
+            doc.setTextColor(...colors.textMuted);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+
+            data.references.forEach((ref, index) => {
+                doc.line(18, yPos + index * 9, 18, yPos + index * 9 + 6);
+                const refText = doc.splitTextToSize(ref, 168);
+                doc.text(refText, 22, yPos + index * 9 + 3);
+            });
+            yPos += 30;
+
+            // Footer
+            const footerY = 280;
+
+            // Footer gradient bar
+            doc.setFillColor(...colors.secondary);
+            doc.rect(0, footerY - 5, 210, 22, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Generated by KARMASTAT - Crafted by Karmayogi', 105, footerY + 3, { align: 'center' });
+
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            const timestamp = new Date().toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            doc.text(timestamp, 105, footerY + 10, { align: 'center' });
+
+            // Save PDF
+            const filename = `KARMASTAT_EffectSize_${data.results.main.label.replace(/[^a-zA-Z0-9]/g, '_')}_${theme}.pdf`;
+            doc.save(filename);
+        }
+    </script>
+</body>
+</html>

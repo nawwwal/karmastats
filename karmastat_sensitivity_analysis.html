@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT - Sensitivity Analysis Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #F97316;
+            --primary-dark: #EA580C;
+            --primary-light: #FB923C;
+            --secondary: #C2410C;
+            --accent: #FFEDD5;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #FFF7ED;
+            --bg-card: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+            --shadow-hover: 0 8px 25px rgba(249, 115, 22, 0.25);
+
+            --gradient-primary: linear-gradient(135deg, #F97316, #FB923C, #FDBA74);
+            --gradient-secondary: linear-gradient(135deg, #C2410C, #EA580C, #F97316);
+            --gradient-bg: linear-gradient(135deg, #FFF7ED, #FFEDD5, #FED7AA);
+            --gradient-card: linear-gradient(145deg, #FFFFFF, #FFF7ED);
+
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #1f2937;
+            --text-primary: #F3F4F6;
+            --text-secondary: #D1D5DB;
+            --text-muted: #9CA3AF;
+            --border-color: #374151;
+            --gradient-bg: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            --gradient-card: linear-gradient(145deg, #1f2937, #374151);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 25px rgba(249, 115, 22, 0.3);
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .karma-page-loader .loader-content {
+            text-align: center;
+        }
+
+        .karma-page-loader .loader-text {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes karmaFlow {
+            0% { stroke-dashoffset: 300; opacity: 0.4; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -300; opacity: 0.4; }
+        }
+
+        .karma-point {
+            animation: karmaPulse 1.2s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(3) { animation-delay: 0.2s; }
+        .karma-point:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes karmaPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1.5s linear infinite;
+        }
+
+        @keyframes spinnerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-path {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 15;
+            animation: spinnerDash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinnerDash {
+            0% { stroke-dashoffset: 60; }
+            50% { stroke-dashoffset: 15; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .results-loading .karma-infinity {
+            width: 80px;
+            height: 40px;
+        }
+
+        .results-loading .karma-path {
+            stroke: var(--primary);
+        }
+
+        .results-loading .karma-point {
+            fill: var(--primary-light);
+        }
+
+        .results-loading p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            min-height: 100vh;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .container { max-width: 1500px; margin: 0 auto; padding: 1.5rem; }
+
+        .header {
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle { font-size: 1.1rem; color: var(--text-secondary); }
+
+        .theme-toggle, .back-link {
+            position: absolute;
+            top: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .theme-toggle { right: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .back-link { left: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+        .theme-toggle:hover, .back-link:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        .section {
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .section h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Sliders */
+        .slider-group {
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .slider-group:last-of-type {
+            border-bottom: none;
+            margin-bottom: 1rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-label span {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .slider-label .label-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .slider-value {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.35rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-width: 60px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);
+        }
+
+        .slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            margin: 0.5rem 0;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+            border: 3px solid white;
+            transition: var(--transition);
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid white;
+        }
+
+        .slider-range {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Dual Range Slider */
+        .dual-slider-container {
+            position: relative;
+            height: 10px;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .dual-slider-track {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+
+        .dual-slider-range {
+            position: absolute;
+            height: 10px;
+            background: var(--gradient-primary);
+            border-radius: 5px;
+        }
+
+        .dual-slider {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .dual-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+            border: 3px solid white;
+            pointer-events: all;
+        }
+
+        .dual-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid white;
+            pointer-events: all;
+        }
+
+        .dual-slider-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+
+        /* Result Display */
+        .result-display {
+            background: var(--gradient-secondary);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .result-display .value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .result-display .label {
+            color: rgba(255,255,255,0.9);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .result-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .result-breakdown .item {
+            text-align: center;
+        }
+
+        .result-breakdown .item-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .result-breakdown .item-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 320px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Scenarios Table */
+        .scenarios-table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .scenarios-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .scenarios-table th,
+        .scenarios-table td {
+            padding: 1rem 0.75rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .scenarios-table th {
+            background: var(--bg-secondary);
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .scenarios-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .scenarios-table tbody tr:hover {
+            background: var(--accent);
+        }
+
+        [data-theme="dark"] .scenarios-table tbody tr:hover {
+            background: rgba(249, 115, 22, 0.1);
+        }
+
+        .scenarios-table .sample-size {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.05rem;
+        }
+
+        .scenarios-table .scenario-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .info-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .info-card .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-option:hover {
+            border-color: var(--primary);
+        }
+
+        .modal-option.selected {
+            border-color: var(--primary);
+            background: var(--accent);
+        }
+
+        [data-theme="dark"] .modal-option.selected {
+            background: rgba(249, 115, 22, 0.1);
+        }
+
+        .modal-option input {
+            margin-right: 1rem;
+            transform: scale(1.2);
+            accent-color: var(--primary);
+        }
+
+        .modal-option-content h4 {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .modal-option-content p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        /* Interpretation Section */
+        .interpretation {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .interpretation h4 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .interpretation ul {
+            margin-left: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .interpretation li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Effect Size Legend */
+        .effect-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .effect-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .effect-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .effect-legend-dot.small { background: #10B981; }
+        .effect-legend-dot.medium { background: #F59E0B; }
+        .effect-legend-dot.large { background: #EF4444; }
+
+        /* Footer */
+        .footer {
+            background: var(--gradient-secondary);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-top: 2rem;
+        }
+
+        .footer-love { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .footer-blessing { color: var(--accent); font-size: 1.1rem; }
+
+        /* Loading */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.8rem; }
+            .logo { flex-direction: column; }
+            .back-link, .theme-toggle { position: static; margin: 0.5rem; }
+            .header { padding-top: 4rem; }
+            .header::before { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+            .result-display .value { font-size: 2.5rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .result-breakdown { flex-direction: column; gap: 1rem; }
+        }
+
+        /* Print Styles */
+        @media print {
+            .theme-toggle, .back-link, .btn { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#ffffff"/>
+                            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path"
+                          d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30"
+                          fill="none" stroke="url(#loaderGrad)" stroke-width="5" stroke-linecap="round"/>
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div>Generating PDF Report...</div>
+    </div>
+
+    <!-- PDF Theme Modal -->
+    <div class="modal-overlay" id="pdfModal">
+        <div class="modal">
+            <h3><span style="color: var(--primary);">&#128196;</span> Export PDF Report</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Choose the PDF theme for your report:</p>
+
+            <label class="modal-option selected" id="lightOption">
+                <input type="radio" name="pdfTheme" value="light" checked>
+                <div class="modal-option-content">
+                    <h4>Light Theme</h4>
+                    <p>Clean white background with dark text</p>
+                </div>
+            </label>
+
+            <label class="modal-option" id="darkOption">
+                <input type="radio" name="pdfTheme" value="dark">
+                <div class="modal-option-content">
+                    <h4>Dark Theme</h4>
+                    <p>Dark background with light text</p>
+                </div>
+            </label>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closePdfModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="generatePDF()">
+                    <span>&#128190;</span> Generate PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="karmastat_2_0_main.html" class="back-link">
+                <span>&#8592;</span> Back to Main
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+                <span id="themeIcon">&#9790;</span>
+                <span id="themeText">Dark</span>
+            </button>
+            <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                          fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                    <circle cx="20" cy="20" r="3" fill="white"/>
+                    <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+                </svg>
+                <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+            </div>
+            <div class="logo">
+                <div>
+                    <h1>Sensitivity Analysis Tool</h1>
+                    <p class="subtitle">Explore how parameter changes affect sample size requirements</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="section">
+                    <h2><span class="section-icon">&#9881;</span> Parameters</h2>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Effect Size (Cohen's d)<br><span class="label-hint">Standardized mean difference</span></span>
+                            <span class="slider-value" id="effectValue">0.50</span>
+                        </div>
+                        <input type="range" class="slider" id="effectSlider" min="0.1" max="1.5" step="0.01" value="0.5" oninput="updateAll()">
+                        <div class="slider-range"><span>0.10 (Very Small)</span><span>1.50 (Very Large)</span></div>
+                        <div class="effect-legend">
+                            <div class="effect-legend-item"><div class="effect-legend-dot small"></div>Small (&lt;0.5)</div>
+                            <div class="effect-legend-item"><div class="effect-legend-dot medium"></div>Medium (0.5-0.8)</div>
+                            <div class="effect-legend-item"><div class="effect-legend-dot large"></div>Large (&gt;0.8)</div>
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Statistical Power<br><span class="label-hint">Probability of detecting effect</span></span>
+                            <span class="slider-value" id="powerValue">80%</span>
+                        </div>
+                        <input type="range" class="slider" id="powerSlider" min="70" max="99" step="1" value="80" oninput="updateAll()">
+                        <div class="slider-range"><span>70% (Minimum)</span><span>99% (Maximum)</span></div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Significance Level (Alpha)<br><span class="label-hint">Type I error rate</span></span>
+                            <span class="slider-value" id="alphaValue">0.050</span>
+                        </div>
+                        <input type="range" class="slider" id="alphaSlider" min="0.001" max="0.10" step="0.001" value="0.05" oninput="updateAll()">
+                        <div class="slider-range"><span>0.001 (Strict)</span><span>0.10 (Lenient)</span></div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Sample Size Range<br><span class="label-hint">Min to Max for analysis</span></span>
+                            <span class="slider-value" id="sampleRangeValue">20 - 500</span>
+                        </div>
+                        <div class="dual-slider-container">
+                            <div class="dual-slider-track"></div>
+                            <div class="dual-slider-range" id="sampleRangeBar"></div>
+                            <input type="range" class="dual-slider" id="sampleMinSlider" min="10" max="1000" step="10" value="20" oninput="updateSampleRange()">
+                            <input type="range" class="dual-slider" id="sampleMaxSlider" min="10" max="1000" step="10" value="500" oninput="updateSampleRange()">
+                        </div>
+                        <div class="slider-range"><span>10</span><span>1000</span></div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Allocation Ratio (n2/n1)<br><span class="label-hint">Group size ratio</span></span>
+                            <span class="slider-value" id="ratioValue">1.0</span>
+                        </div>
+                        <input type="range" class="slider" id="ratioSlider" min="0.5" max="4" step="0.1" value="1" oninput="updateAll()">
+                        <div class="slider-range"><span>1:2 (Half)</span><span>4:1 (Quadruple)</span></div>
+                    </div>
+
+                    <div class="result-display">
+                        <div class="value" id="sampleSizeResult">--</div>
+                        <div class="label">Total Sample Size Required</div>
+                        <div class="result-breakdown">
+                            <div class="item">
+                                <div class="item-value" id="n1Result">--</div>
+                                <div class="item-label">Group 1 (n1)</div>
+                            </div>
+                            <div class="item">
+                                <div class="item-value" id="n2Result">--</div>
+                                <div class="item-label">Group 2 (n2)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveScenario()">
+                            <span>&#128190;</span> Save Scenario
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetSliders()">
+                            <span>&#8635;</span> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="section">
+                    <h2><span class="section-icon">&#128202;</span> Quick Statistics</h2>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="value" id="minSampleForPower">--</div>
+                            <div class="label">Min N for 80% Power</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="value" id="currentPower">--</div>
+                            <div class="label">Power at Current N</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="value" id="mde">--</div>
+                            <div class="label">Min Detectable Effect</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="value" id="scenarioCount">0</div>
+                            <div class="label">Saved Scenarios</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Panel -->
+            <div class="viz-panel">
+                <div class="section" id="chartsSection">
+                    <h2><span class="section-icon">&#128200;</span> Sensitivity Charts</h2>
+                    <div class="charts-grid">
+                        <div class="chart-container" id="powerChartContainer">
+                            <h3><span style="color: var(--primary);">&#128201;</span> Power Curve (Sample Size vs Power)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="powerChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="effectChartContainer">
+                            <h3><span style="color: var(--primary);">&#128202;</span> Sample Size vs Effect Size</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="effectChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interpretation" id="interpretation">
+                        <h4><span>&#128161;</span> Interpretation</h4>
+                        <ul id="interpretationList">
+                            <li>Adjust parameters to see how they affect sample size requirements.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section" id="scenariosSection">
+                    <h2><span class="section-icon">&#128203;</span> Scenario Comparison Table</h2>
+                    <div class="scenarios-table-wrapper">
+                        <table class="scenarios-table" id="scenariosTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Effect Size</th>
+                                    <th>Power</th>
+                                    <th>Alpha</th>
+                                    <th>Ratio</th>
+                                    <th>n1</th>
+                                    <th>n2</th>
+                                    <th>Total N</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scenariosBody">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                        No scenarios saved yet. Adjust parameters and click "Save Scenario" to compare different configurations.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 1.5rem;" class="btn-group">
+                        <button class="btn btn-secondary" onclick="clearScenarios()">
+                            <span>&#128465;</span> Clear All
+                        </button>
+                        <button class="btn btn-primary" onclick="openPdfModal()">
+                            <span>&#128196;</span> Export PDF Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-love">Made with &#10084; by Karmayogi</div>
+            <div class="footer-blessing">&#128591; Jai Shri Ram &#128591;</div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Hide page loader when content is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button loading state functions
+        function showButtonLoader(btn) {
+            if (btn) btn.classList.add('loading');
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) btn.classList.remove('loading');
+        }
+
+        // Wrap calculation with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 600);
+        }
+
+        // Global variables
+        let powerChart = null;
+        let effectChart = null;
+        let scenarios = [];
+
+        // ============== Statistical Functions ==============
+        function normalQuantile(p) {
+            const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+                       1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+            const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+                       6.680131188771972e+01, -1.328068155288572e+01];
+            const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+                       -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+            const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+            const pLow = 0.02425, pHigh = 1 - pLow;
+            let q, r;
+            if (p < pLow) {
+                q = Math.sqrt(-2 * Math.log(p));
+                return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+            } else if (p <= pHigh) {
+                q = p - 0.5; r = q * q;
+                return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+            } else {
+                q = Math.sqrt(-2 * Math.log(1 - p));
+                return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+            }
+        }
+
+        function normalCDF(x) {
+            const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+            const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+            const sign = x < 0 ? -1 : 1;
+            x = Math.abs(x) / Math.sqrt(2);
+            const t = 1 / (1 + p * x);
+            const y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1) * t * Math.exp(-x*x);
+            return 0.5 * (1 + sign * y);
+        }
+
+        function calculateSampleSize(d, power, alpha, ratio) {
+            const zAlpha = normalQuantile(1 - alpha / 2);
+            const zBeta = normalQuantile(power / 100);
+            const n1 = Math.ceil((Math.pow(zAlpha + zBeta, 2) * (1 + 1/ratio)) / (d * d));
+            const n2 = Math.ceil(n1 * ratio);
+            return { n1, n2, total: n1 + n2 };
+        }
+
+        function calculatePower(d, n, alpha) {
+            const zAlpha = normalQuantile(1 - alpha / 2);
+            const ncp = d * Math.sqrt(n / 2);
+            return normalCDF(ncp - zAlpha) * 100;
+        }
+
+        function calculateMDE(n, power, alpha) {
+            const zAlpha = normalQuantile(1 - alpha / 2);
+            const zBeta = normalQuantile(power / 100);
+            return (zAlpha + zBeta) * Math.sqrt(4 / n);
+        }
+
+        // ============== UI Update Functions ==============
+        function updateSampleRange() {
+            let minVal = parseInt(document.getElementById('sampleMinSlider').value);
+            let maxVal = parseInt(document.getElementById('sampleMaxSlider').value);
+
+            if (minVal >= maxVal) {
+                if (this && this.id === 'sampleMinSlider') {
+                    minVal = maxVal - 10;
+                    document.getElementById('sampleMinSlider').value = minVal;
+                } else {
+                    maxVal = minVal + 10;
+                    document.getElementById('sampleMaxSlider').value = maxVal;
+                }
+            }
+
+            document.getElementById('sampleRangeValue').textContent = `${minVal} - ${maxVal}`;
+
+            // Update range bar
+            const percent1 = ((minVal - 10) / 990) * 100;
+            const percent2 = ((maxVal - 10) / 990) * 100;
+            const rangeBar = document.getElementById('sampleRangeBar');
+            rangeBar.style.left = percent1 + '%';
+            rangeBar.style.width = (percent2 - percent1) + '%';
+
+            updateAll();
+        }
+
+        function updateAll() {
+            const d = parseFloat(document.getElementById('effectSlider').value);
+            const power = parseFloat(document.getElementById('powerSlider').value);
+            const alpha = parseFloat(document.getElementById('alphaSlider').value);
+            const ratio = parseFloat(document.getElementById('ratioSlider').value);
+
+            document.getElementById('effectValue').textContent = d.toFixed(2);
+            document.getElementById('powerValue').textContent = power.toFixed(0) + '%';
+            document.getElementById('alphaValue').textContent = alpha.toFixed(3);
+            document.getElementById('ratioValue').textContent = ratio.toFixed(1);
+
+            const result = calculateSampleSize(d, power, alpha, ratio);
+            document.getElementById('sampleSizeResult').textContent = result.total;
+            document.getElementById('n1Result').textContent = result.n1;
+            document.getElementById('n2Result').textContent = result.n2;
+
+            // Quick stats
+            const minFor80 = calculateSampleSize(d, 80, alpha, ratio).total;
+            document.getElementById('minSampleForPower').textContent = minFor80;
+
+            const currentPow = calculatePower(d, result.total, alpha);
+            document.getElementById('currentPower').textContent = currentPow.toFixed(1) + '%';
+
+            const mde = calculateMDE(result.total, power, alpha);
+            document.getElementById('mde').textContent = mde.toFixed(3);
+
+            updateCharts(d, power, alpha, ratio);
+            updateInterpretation(d, power, alpha, result.total);
+        }
+
+        function updateCharts(d, power, alpha, ratio) {
+            updatePowerChart(d, alpha);
+            updateEffectChart(power, alpha, ratio);
+        }
+
+        function updatePowerChart(effectSize, alpha) {
+            const ctx = document.getElementById('powerChart').getContext('2d');
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+
+            if (powerChart) powerChart.destroy();
+
+            const minN = parseInt(document.getElementById('sampleMinSlider').value);
+            const maxN = parseInt(document.getElementById('sampleMaxSlider').value);
+            const step = Math.max(10, Math.round((maxN - minN) / 20));
+
+            const labels = [];
+            const data = [];
+            const currentPower = parseFloat(document.getElementById('powerSlider').value);
+
+            for (let n = minN; n <= maxN; n += step) {
+                labels.push(n);
+                data.push(calculatePower(effectSize, n, alpha).toFixed(1));
+            }
+
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Power (%)',
+                        data: data,
+                        borderColor: '#F97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#F97316',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: `${currentPower}% Target`,
+                        data: labels.map(() => currentPower),
+                        borderColor: '#10B981',
+                        borderWidth: 2,
+                        borderDash: [8, 4],
+                        fill: false,
+                        pointRadius: 0
+                    }, {
+                        label: '80% Standard',
+                        data: labels.map(() => 80),
+                        borderColor: '#3B82F6',
+                        borderWidth: 2,
+                        borderDash: [4, 4],
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: isDark ? '#D1D5DB' : '#4B5563',
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#374151' : '#fff',
+                            titleColor: isDark ? '#F3F4F6' : '#1F2937',
+                            bodyColor: isDark ? '#D1D5DB' : '#4B5563',
+                            borderColor: '#F97316',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Total Sample Size',
+                                color: isDark ? '#D1D5DB' : '#4B5563'
+                            },
+                            ticks: { color: isDark ? '#9CA3AF' : '#6B7280' },
+                            grid: { color: isDark ? '#374151' : '#E5E7EB' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Statistical Power (%)',
+                                color: isDark ? '#D1D5DB' : '#4B5563'
+                            },
+                            min: 0,
+                            max: 100,
+                            ticks: { color: isDark ? '#9CA3AF' : '#6B7280' },
+                            grid: { color: isDark ? '#374151' : '#E5E7EB' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateEffectChart(power, alpha, ratio) {
+            const ctx = document.getElementById('effectChart').getContext('2d');
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+
+            if (effectChart) effectChart.destroy();
+
+            const labels = [];
+            const data = [];
+            const colors = [];
+
+            for (let d = 0.1; d <= 1.5; d += 0.1) {
+                labels.push(d.toFixed(1));
+                const n = calculateSampleSize(d, power, alpha, ratio).total;
+                data.push(n);
+
+                // Color coding based on effect size
+                if (d < 0.5) {
+                    colors.push('rgba(16, 185, 129, 0.8)'); // Green - small
+                } else if (d <= 0.8) {
+                    colors.push('rgba(245, 158, 11, 0.8)'); // Amber - medium
+                } else {
+                    colors.push('rgba(239, 68, 68, 0.8)'); // Red - large
+                }
+            }
+
+            effectChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Required Sample Size',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#374151' : '#fff',
+                            titleColor: isDark ? '#F3F4F6' : '#1F2937',
+                            bodyColor: isDark ? '#D1D5DB' : '#4B5563',
+                            borderColor: '#F97316',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Sample Size: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Effect Size (Cohen's d)",
+                                color: isDark ? '#D1D5DB' : '#4B5563'
+                            },
+                            ticks: { color: isDark ? '#9CA3AF' : '#6B7280' },
+                            grid: { color: isDark ? '#374151' : '#E5E7EB' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Sample Size Required',
+                                color: isDark ? '#D1D5DB' : '#4B5563'
+                            },
+                            min: 0,
+                            ticks: { color: isDark ? '#9CA3AF' : '#6B7280' },
+                            grid: { color: isDark ? '#374151' : '#E5E7EB' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateInterpretation(d, power, alpha, n) {
+            const list = document.getElementById('interpretationList');
+            let items = [];
+
+            // Effect size interpretation
+            let effectInterpretation = '';
+            if (d < 0.2) effectInterpretation = 'very small (may be clinically insignificant)';
+            else if (d < 0.5) effectInterpretation = 'small (subtle but potentially meaningful)';
+            else if (d < 0.8) effectInterpretation = 'medium (moderate and likely noticeable)';
+            else effectInterpretation = 'large (substantial and easily observable)';
+
+            items.push(`With an effect size of <strong>d = ${d.toFixed(2)}</strong> (${effectInterpretation}), you need <strong>${n} total participants</strong>.`);
+
+            // Power interpretation
+            if (power < 80) {
+                items.push(`<span style="color: var(--warning);">Warning:</span> Power of ${power}% is below the conventional 80% threshold. Consider increasing sample size.`);
+            } else if (power >= 90) {
+                items.push(`Excellent power of ${power}% provides high confidence in detecting the effect if it exists.`);
+            } else {
+                items.push(`Power of ${power}% meets standard requirements for detecting the expected effect.`);
+            }
+
+            // Alpha interpretation
+            if (alpha < 0.01) {
+                items.push(`Using a strict alpha of ${alpha.toFixed(3)} reduces false positives but requires more participants.`);
+            } else if (alpha > 0.05) {
+                items.push(`Note: Alpha of ${alpha.toFixed(3)} is more lenient than the standard 0.05 threshold.`);
+            }
+
+            // Sample size context
+            if (n > 500) {
+                items.push(`Large sample requirement (N=${n}) may need multi-site recruitment or phased enrollment.`);
+            } else if (n < 50) {
+                items.push(`Small sample requirement (N=${n}) is feasible for pilot studies or rare populations.`);
+            }
+
+            list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+        }
+
+        // ============== Scenario Management ==============
+        function saveScenario() {
+            const d = parseFloat(document.getElementById('effectSlider').value);
+            const power = parseFloat(document.getElementById('powerSlider').value);
+            const alpha = parseFloat(document.getElementById('alphaSlider').value);
+            const ratio = parseFloat(document.getElementById('ratioSlider').value);
+            const result = calculateSampleSize(d, power, alpha, ratio);
+
+            scenarios.push({
+                id: Date.now(),
+                effect: d,
+                power: power,
+                alpha: alpha,
+                ratio: ratio,
+                n1: result.n1,
+                n2: result.n2,
+                n: result.total
+            });
+
+            updateScenariosTable();
+            document.getElementById('scenarioCount').textContent = scenarios.length;
+
+            // Visual feedback
+            const btn = event.target.closest('.btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>&#10003;</span> Saved!';
+            btn.style.background = 'var(--success)';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 1500);
+        }
+
+        function updateScenariosTable() {
+            const tbody = document.getElementById('scenariosBody');
+
+            if (scenarios.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            No scenarios saved yet. Adjust parameters and click "Save Scenario" to compare different configurations.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Find min and max sample sizes for highlighting
+            const sampleSizes = scenarios.map(s => s.n);
+            const minN = Math.min(...sampleSizes);
+            const maxN = Math.max(...sampleSizes);
+
+            tbody.innerHTML = scenarios.map((s, i) => {
+                let badge = '';
+                if (s.n === minN && scenarios.length > 1) {
+                    badge = '<span class="scenario-badge" style="background: var(--success);">Min</span>';
+                } else if (s.n === maxN && scenarios.length > 1) {
+                    badge = '<span class="scenario-badge" style="background: var(--danger);">Max</span>';
+                }
+
+                return `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${s.effect.toFixed(2)}</td>
+                    <td>${s.power.toFixed(0)}%</td>
+                    <td>${s.alpha.toFixed(3)}</td>
+                    <td>${s.ratio.toFixed(1)}</td>
+                    <td>${s.n1}</td>
+                    <td>${s.n2}</td>
+                    <td class="sample-size">${s.n} ${badge}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="loadScenario(${i})" title="Load">&#8634;</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteScenario(${i})" title="Delete">&#10005;</button>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function loadScenario(index) {
+            const s = scenarios[index];
+            document.getElementById('effectSlider').value = s.effect;
+            document.getElementById('powerSlider').value = s.power;
+            document.getElementById('alphaSlider').value = s.alpha;
+            document.getElementById('ratioSlider').value = s.ratio;
+            updateAll();
+
+            // Scroll to top of controls
+            document.querySelector('.controls-panel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteScenario(index) {
+            scenarios.splice(index, 1);
+            updateScenariosTable();
+            document.getElementById('scenarioCount').textContent = scenarios.length;
+        }
+
+        function clearScenarios() {
+            if (scenarios.length === 0) return;
+            if (confirm('Are you sure you want to clear all saved scenarios?')) {
+                scenarios = [];
+                updateScenariosTable();
+                document.getElementById('scenarioCount').textContent = 0;
+            }
+        }
+
+        function resetSliders() {
+            document.getElementById('effectSlider').value = 0.5;
+            document.getElementById('powerSlider').value = 80;
+            document.getElementById('alphaSlider').value = 0.05;
+            document.getElementById('ratioSlider').value = 1;
+            document.getElementById('sampleMinSlider').value = 20;
+            document.getElementById('sampleMaxSlider').value = 500;
+            updateSampleRange();
+            updateAll();
+        }
+
+        // ============== Theme Management ==============
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            updateThemeButton(newTheme);
+            localStorage.setItem('karmastat-theme', newTheme);
+
+            // Update charts with new theme colors
+            setTimeout(() => updateAll(), 100);
+        }
+
+        function updateThemeButton(theme) {
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (theme === 'dark') {
+                icon.innerHTML = '&#9788;';
+                text.textContent = 'Light';
+            } else {
+                icon.innerHTML = '&#9790;';
+                text.textContent = 'Dark';
+            }
+        }
+
+        // ============== PDF Export ==============
+        function openPdfModal() {
+            document.getElementById('pdfModal').classList.add('active');
+        }
+
+        function closePdfModal() {
+            document.getElementById('pdfModal').classList.remove('active');
+        }
+
+        // Handle modal option selection
+        document.querySelectorAll('.modal-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.modal-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        async function generatePDF() {
+            closePdfModal();
+            document.getElementById('loading').classList.add('active');
+
+            const pdfTheme = document.querySelector('input[name="pdfTheme"]:checked').value;
+            const isDarkPdf = pdfTheme === 'dark';
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = 210;
+                const pageHeight = 297;
+                const margin = 15;
+                const contentWidth = pageWidth - (margin * 2);
+
+                // Colors based on theme
+                const colors = isDarkPdf ? {
+                    bg: [26, 26, 46],
+                    headerBg: [249, 115, 22],
+                    text: [243, 244, 246],
+                    textMuted: [156, 163, 175],
+                    accent: [249, 115, 22],
+                    cardBg: [31, 41, 55],
+                    border: [55, 65, 81]
+                } : {
+                    bg: [255, 255, 255],
+                    headerBg: [249, 115, 22],
+                    text: [31, 41, 55],
+                    textMuted: [107, 114, 128],
+                    accent: [249, 115, 22],
+                    cardBg: [255, 247, 237],
+                    border: [229, 231, 235]
+                };
+
+                // Background
+                doc.setFillColor(...colors.bg);
+                doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+                // Header
+                doc.setFillColor(...colors.headerBg);
+                doc.rect(0, 0, pageWidth, 45, 'F');
+
+                // Logo circle
+                doc.setFillColor(255, 255, 255);
+                doc.circle(margin + 12, 22, 10, 'F');
+                doc.setTextColor(...colors.headerBg);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text('K', margin + 8, 27);
+
+                // Title
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont('helvetica', 'bold');
+                doc.text('KARMASTAT', margin + 30, 20);
+
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Sensitivity Analysis Report', margin + 30, 30);
+
+                // Date
+                doc.setFontSize(10);
+                doc.text(`Generated: ${new Date().toLocaleString()}`, margin + 30, 38);
+
+                let yPos = 55;
+
+                // Current Parameters Section
+                doc.setFillColor(...colors.cardBg);
+                doc.roundedRect(margin, yPos, contentWidth, 45, 3, 3, 'F');
+
+                doc.setTextColor(...colors.accent);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Current Parameter Settings', margin + 5, yPos + 10);
+
+                doc.setTextColor(...colors.text);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+
+                const params = [
+                    ['Effect Size (d)', document.getElementById('effectValue').textContent],
+                    ['Power', document.getElementById('powerValue').textContent],
+                    ['Alpha', document.getElementById('alphaValue').textContent],
+                    ['Allocation Ratio', document.getElementById('ratioValue').textContent],
+                    ['Sample Size (n1)', document.getElementById('n1Result').textContent],
+                    ['Sample Size (n2)', document.getElementById('n2Result').textContent],
+                    ['Total Sample Size', document.getElementById('sampleSizeResult').textContent]
+                ];
+
+                const col1X = margin + 5;
+                const col2X = margin + 65;
+                const col3X = margin + 125;
+                let paramY = yPos + 20;
+
+                params.forEach((param, i) => {
+                    const x = i < 3 ? col1X : (i < 5 ? col2X : col3X);
+                    const y = paramY + (i % 3) * 8;
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`${param[0]}:`, x, y);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(param[1], x + 35, y);
+                });
+
+                yPos += 55;
+
+                // Charts Section
+                doc.setTextColor(...colors.accent);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Sensitivity Charts', margin, yPos);
+                yPos += 8;
+
+                // Capture charts as images
+                try {
+                    const powerCanvas = document.getElementById('powerChart');
+                    const effectCanvas = document.getElementById('effectChart');
+
+                    const powerImg = powerCanvas.toDataURL('image/png', 1.0);
+                    const effectImg = effectCanvas.toDataURL('image/png', 1.0);
+
+                    // Power Chart
+                    doc.setFillColor(...colors.cardBg);
+                    doc.roundedRect(margin, yPos, contentWidth / 2 - 2, 55, 3, 3, 'F');
+                    doc.addImage(powerImg, 'PNG', margin + 2, yPos + 2, contentWidth / 2 - 6, 51);
+
+                    // Effect Chart
+                    doc.setFillColor(...colors.cardBg);
+                    doc.roundedRect(margin + contentWidth / 2 + 2, yPos, contentWidth / 2 - 2, 55, 3, 3, 'F');
+                    doc.addImage(effectImg, 'PNG', margin + contentWidth / 2 + 4, yPos + 2, contentWidth / 2 - 6, 51);
+
+                    yPos += 60;
+                } catch (chartError) {
+                    // Fallback: show data tables if charts can't be captured
+                    doc.setTextColor(...colors.textMuted);
+                    doc.setFontSize(10);
+                    doc.text('(Charts available in interactive version)', margin + 5, yPos + 10);
+                    yPos += 20;
+                }
+
+                // Scenario Comparison Table
+                if (scenarios.length > 0) {
+                    doc.setTextColor(...colors.accent);
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Scenario Comparison Table', margin, yPos);
+                    yPos += 8;
+
+                    // Table header
+                    doc.setFillColor(...colors.headerBg);
+                    doc.rect(margin, yPos, contentWidth, 8, 'F');
+
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'bold');
+
+                    const headers = ['#', 'Effect', 'Power', 'Alpha', 'Ratio', 'n1', 'n2', 'Total N'];
+                    const colWidths = [12, 20, 20, 22, 20, 25, 25, 36];
+                    let xPos = margin + 2;
+
+                    headers.forEach((header, i) => {
+                        doc.text(header, xPos, yPos + 5.5);
+                        xPos += colWidths[i];
+                    });
+
+                    yPos += 8;
+
+                    // Table rows
+                    doc.setFont('helvetica', 'normal');
+                    scenarios.forEach((s, i) => {
+                        if (yPos > pageHeight - 40) {
+                            // Add new page
+                            doc.addPage();
+                            doc.setFillColor(...colors.bg);
+                            doc.rect(0, 0, pageWidth, pageHeight, 'F');
+                            yPos = margin;
+                        }
+
+                        doc.setFillColor(i % 2 === 0 ? colors.cardBg : colors.bg);
+                        doc.rect(margin, yPos, contentWidth, 7, 'F');
+
+                        doc.setTextColor(...colors.text);
+                        doc.setFontSize(8);
+
+                        xPos = margin + 2;
+                        const rowData = [
+                            (i + 1).toString(),
+                            s.effect.toFixed(2),
+                            s.power.toFixed(0) + '%',
+                            s.alpha.toFixed(3),
+                            s.ratio.toFixed(1),
+                            s.n1.toString(),
+                            s.n2.toString(),
+                            s.n.toString()
+                        ];
+
+                        rowData.forEach((data, j) => {
+                            if (j === 7) {
+                                doc.setFont('helvetica', 'bold');
+                                doc.setTextColor(...colors.accent);
+                            }
+                            doc.text(data, xPos, yPos + 5);
+                            xPos += colWidths[j];
+                        });
+
+                        doc.setFont('helvetica', 'normal');
+                        yPos += 7;
+                    });
+
+                    yPos += 5;
+                }
+
+                // Interpretation Section
+                doc.setTextColor(...colors.accent);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Interpretation of Findings', margin, yPos);
+                yPos += 8;
+
+                doc.setFillColor(...colors.cardBg);
+                doc.roundedRect(margin, yPos, contentWidth, 40, 3, 3, 'F');
+
+                doc.setTextColor(...colors.text);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+
+                const d = parseFloat(document.getElementById('effectSlider').value);
+                const power = parseFloat(document.getElementById('powerSlider').value);
+                const n = parseInt(document.getElementById('sampleSizeResult').textContent);
+
+                let interpretation = [];
+                if (d < 0.5) {
+                    interpretation.push('- Small effect size requires larger samples for adequate detection power.');
+                } else if (d >= 0.8) {
+                    interpretation.push('- Large effect size allows for smaller sample requirements.');
+                } else {
+                    interpretation.push('- Medium effect size represents a balanced trade-off between sample size and detection capability.');
+                }
+
+                if (power >= 80) {
+                    interpretation.push(`- Power of ${power}% meets or exceeds the conventional 80% standard.`);
+                } else {
+                    interpretation.push(`- Power of ${power}% is below the 80% standard; consider increasing sample size.`);
+                }
+
+                interpretation.push(`- Total sample of ${n} participants should be distributed across groups as specified.`);
+                interpretation.push('- Consider practical constraints like recruitment feasibility and budget when planning.');
+
+                interpretation.forEach((line, i) => {
+                    doc.text(line, margin + 5, yPos + 8 + (i * 8));
+                });
+
+                // Footer
+                const footerY = pageHeight - 15;
+                doc.setDrawColor(...colors.border);
+                doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+
+                doc.setTextColor(...colors.textMuted);
+                doc.setFontSize(9);
+                doc.text('Generated by KARMASTAT - Crafted by Karmayogi', margin, footerY);
+                doc.text(`Report Date: ${new Date().toLocaleDateString()}`, pageWidth - margin - 45, footerY);
+
+                // Save the PDF
+                doc.save('KARMASTAT_Sensitivity_Analysis_Report.pdf');
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
+
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        // ============== Initialization ==============
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('karmastat-theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                updateThemeButton(savedTheme);
+            }
+
+            // Initialize sample range bar
+            updateSampleRange();
+
+            // Initial calculations
+            updateAll();
+
+            // Load saved scenarios from localStorage
+            const savedScenarios = localStorage.getItem('karmastat-scenarios');
+            if (savedScenarios) {
+                try {
+                    scenarios = JSON.parse(savedScenarios);
+                    updateScenariosTable();
+                    document.getElementById('scenarioCount').textContent = scenarios.length;
+                } catch (e) {
+                    console.error('Error loading saved scenarios:', e);
+                }
+            }
+        });
+
+        // Save scenarios to localStorage on changes
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('karmastat-scenarios', JSON.stringify(scenarios));
+        });
+
+        // Close modal on outside click
+        document.getElementById('pdfModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePdfModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePdfModal();
+            }
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveScenario();
+            }
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                openPdfModal();
+            }
+        });
+    </script>
+</body>
+</html>

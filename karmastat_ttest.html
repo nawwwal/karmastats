@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-Test & Mean Comparisons - KARMASTAT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --primary-light: #60A5FA;
+            --secondary: #1E40AF;
+            --accent: #DBEAFE;
+            --bg-gradient-start: #EFF6FF;
+            --bg-gradient-end: #DBEAFE;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent: #1e3a5f;
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+            margin: 0 auto 1rem;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            fill: none;
+            stroke: url(#loaderGrad);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 200;
+            stroke-dashoffset: 0;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        .karma-point {
+            animation: karmaPulse 1s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .karma-point:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes karmaFlow {
+            0%, 100% {
+                stroke-dashoffset: 0;
+            }
+            50% {
+                stroke-dashoffset: 200;
+            }
+        }
+
+        @keyframes karmaPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+        }
+
+        .loader-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light, #60a5fa));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .btn.loading .btn-text {
+            opacity: 0;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1s linear infinite;
+        }
+
+        .karma-spinner circle {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 60;
+            stroke-dashoffset: 20;
+            animation: spinnerDash 1.5s ease-in-out infinite;
+        }
+
+        @keyframes spinnerRotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spinnerDash {
+            0% {
+                stroke-dashoffset: 60;
+            }
+            50% {
+                stroke-dashoffset: 15;
+            }
+            100% {
+                stroke-dashoffset: 60;
+            }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            position: relative;
+            min-height: 200px;
+        }
+
+        .results-loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--card-bg);
+            opacity: 0.8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ============================================
+           END KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .tab:hover { border-color: var(--primary); }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: var(--accent);
+        }
+
+        .results {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--accent);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .results.show { display: block; }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .result-value { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+        .result-label { font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+        .formula-box {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .formula-box h4 { color: var(--primary); margin-bottom: 0.75rem; }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            overflow-x: auto;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover { transform: scale(1.1); }
+
+        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); }
+        .footer a { color: var(--primary); text-decoration: none; }
+
+        .help-text { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .container { padding: 1rem; }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 1.5rem 1rem;
+            border: 3px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background: var(--card-bg);
+        }
+
+        .theme-option:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .theme-option.selected {
+            border-color: var(--primary);
+            background: var(--accent);
+        }
+
+        .theme-option-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-option-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .interpretation-box {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .interpretation-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .interpretation-box p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .recommendations-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border: 1px solid #86efac;
+        }
+
+        [data-theme="dark"] .recommendations-box {
+            background: linear-gradient(135deg, #14532d, #166534);
+            border-color: #22c55e;
+        }
+
+        .recommendations-box h4 {
+            color: #16a34a;
+            margin-bottom: 0.75rem;
+        }
+
+        [data-theme="dark"] .recommendations-box h4 {
+            color: #4ade80;
+        }
+
+        .recommendations-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations-box li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .recommendations-box li::before {
+            content: "\2713";
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .step-calculation {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-calculation h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .step {
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+
+        .step-content {
+            display: inline;
+            color: var(--text-secondary);
+        }
+
+        .step-content code {
+            background: var(--accent);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#3B82F6"/>
+                            <stop offset="50%" style="stop-color:#60a5fa"/>
+                            <stop offset="100%" style="stop-color:#3B82F6"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path" d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30" />
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                      fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                <circle cx="20" cy="20" r="3" fill="white"/>
+                <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+            </svg>
+            <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+        </div>
+        <h1>T-Test & Mean Comparisons</h1>
+        <p>Sample size for comparing means between groups</p>
+        <div class="nav-buttons">
+            <a href="karmastat_2_0_main.html" class="nav-btn">Back to Main</a>
+            <a href="karmastat_power_analysis.html" class="nav-btn">Power Analysis</a>
+            <a href="karmastat_effect_size.html" class="nav-btn">Effect Size</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="onesample">One-Sample T-Test</button>
+            <button class="tab" data-tab="twosample">Two-Sample T-Test</button>
+            <button class="tab" data-tab="paired">Paired T-Test</button>
+        </div>
+
+        <!-- One-Sample T-Test -->
+        <div class="card tab-content" id="onesample-content">
+            <h2>One-Sample T-Test</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Compare sample mean to a known population value.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expected Mean Difference (delta)</label>
+                    <input type="number" id="one-delta" value="5" step="0.1">
+                    <p class="help-text">Difference from population value to detect</p>
+                </div>
+                <div class="form-group">
+                    <label>Standard Deviation (sigma)</label>
+                    <input type="number" id="one-sd" value="10" min="0.1" step="0.1">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Alpha (significance level)</label>
+                    <select id="one-alpha">
+                        <option value="0.05">0.05 (5%)</option>
+                        <option value="0.01">0.01 (1%)</option>
+                        <option value="0.10">0.10 (10%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Power (1-beta)</label>
+                    <select id="one-power">
+                        <option value="0.80">80%</option>
+                        <option value="0.90">90%</option>
+                        <option value="0.95">95%</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Test Type</label>
+                    <select id="one-sided">
+                        <option value="2">Two-sided</option>
+                        <option value="1">One-sided</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcOneSample(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+
+            <div class="results" id="one-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="one-n">-</div>
+                        <div class="result-label">Required Sample Size</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="one-effect">-</div>
+                        <div class="result-label">Effect Size (Cohen's d)</div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <h4>Formula Used</h4>
+                    <div class="formula">
+                        n = ((z_alpha + z_beta)^2 x sigma^2) / delta^2<br><br>
+                        Effect size d = delta / sigma
+                    </div>
+                </div>
+                <div class="step-calculation" id="one-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="one-steps-content"></div>
+                </div>
+                <div class="interpretation-box" id="one-interpretation">
+                    <h4>Interpretation</h4>
+                    <p id="one-interpretation-text"></p>
+                </div>
+                <div class="recommendations-box" id="one-recommendations">
+                    <h4>Recommendations</h4>
+                    <ul id="one-recommendations-list"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two-Sample T-Test -->
+        <div class="card tab-content hidden" id="twosample-content">
+            <h2>Two-Sample T-Test</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Compare means between two independent groups.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mean Difference to Detect (delta)</label>
+                    <input type="number" id="two-delta" value="5" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Pooled Standard Deviation (sigma)</label>
+                    <input type="number" id="two-sd" value="10" min="0.1" step="0.1">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Allocation Ratio (n2/n1)</label>
+                    <select id="two-ratio">
+                        <option value="1">1:1 (Equal)</option>
+                        <option value="2">1:2</option>
+                        <option value="3">1:3</option>
+                        <option value="0.5">2:1</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alpha (significance level)</label>
+                    <select id="two-alpha">
+                        <option value="0.05">0.05</option>
+                        <option value="0.01">0.01</option>
+                        <option value="0.10">0.10</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Power (1-beta)</label>
+                    <select id="two-power">
+                        <option value="0.80">80%</option>
+                        <option value="0.90">90%</option>
+                        <option value="0.95">95%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcTwoSample(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+
+            <div class="results" id="two-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="two-n1">-</div>
+                        <div class="result-label">Group 1 (n1)</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="two-n2">-</div>
+                        <div class="result-label">Group 2 (n2)</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="two-total">-</div>
+                        <div class="result-label">Total Sample</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="two-effect">-</div>
+                        <div class="result-label">Effect Size (d)</div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <h4>Formula Used</h4>
+                    <div class="formula">
+                        n1 = (1 + 1/k) x ((z_alpha + z_beta)^2 x sigma^2) / delta^2<br>
+                        n2 = k x n1<br><br>
+                        Where k = allocation ratio
+                    </div>
+                </div>
+                <div class="step-calculation" id="two-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="two-steps-content"></div>
+                </div>
+                <div class="interpretation-box" id="two-interpretation">
+                    <h4>Interpretation</h4>
+                    <p id="two-interpretation-text"></p>
+                </div>
+                <div class="recommendations-box" id="two-recommendations">
+                    <h4>Recommendations</h4>
+                    <ul id="two-recommendations-list"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paired T-Test -->
+        <div class="card tab-content hidden" id="paired-content">
+            <h2>Paired T-Test</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Compare means from matched pairs (before/after, crossover).</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mean Difference to Detect (delta)</label>
+                    <input type="number" id="pair-delta" value="3" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>SD of Differences (sigma_d)</label>
+                    <input type="number" id="pair-sd" value="5" min="0.1" step="0.1">
+                    <p class="help-text">Standard deviation of paired differences</p>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Alpha (significance level)</label>
+                    <select id="pair-alpha">
+                        <option value="0.05">0.05</option>
+                        <option value="0.01">0.01</option>
+                        <option value="0.10">0.10</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Power (1-beta)</label>
+                    <select id="pair-power">
+                        <option value="0.80">80%</option>
+                        <option value="0.90">90%</option>
+                        <option value="0.95">95%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcPaired(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+
+            <div class="results" id="pair-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="pair-n">-</div>
+                        <div class="result-label">Number of Pairs</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="pair-effect">-</div>
+                        <div class="result-label">Effect Size (d)</div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <h4>Formula Used</h4>
+                    <div class="formula">
+                        n = ((z_alpha + z_beta)^2 x sigma_d^2) / delta^2<br><br>
+                        Effect size d = delta / sigma_d
+                    </div>
+                </div>
+                <div class="step-calculation" id="pair-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="pair-steps-content"></div>
+                </div>
+                <div class="interpretation-box" id="pair-interpretation">
+                    <h4>Interpretation</h4>
+                    <p id="pair-interpretation-text"></p>
+                </div>
+                <div class="recommendations-box" id="pair-recommendations">
+                    <h4>Recommendations</h4>
+                    <ul id="pair-recommendations-list"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Export Results</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="showPdfModal()">Export as PDF</button>
+                <button class="btn btn-secondary" onclick="copyResults()">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Theme Selection Modal -->
+    <div class="modal-overlay" id="pdfModal">
+        <div class="modal">
+            <h3>Export PDF Report</h3>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Choose your preferred PDF theme
+            </p>
+            <div class="theme-options">
+                <div class="theme-option selected" data-pdf-theme="light" onclick="selectPdfTheme('light')">
+                    <div class="theme-option-icon">&#9728;</div>
+                    <div class="theme-option-label">Light Theme</div>
+                </div>
+                <div class="theme-option" data-pdf-theme="dark" onclick="selectPdfTheme('dark')">
+                    <div class="theme-option-icon">&#9790;</div>
+                    <div class="theme-option-label">Dark Theme</div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closePdfModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="generatePDF()">Generate PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Made with love by Karmayogi | <a href="karmastat_references.html">References</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Jai Shri Ram</p>
+    </footer>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">&#127769;</button>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Page Loader - Hide after page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button Loader Functions
+        function showButtonLoader(btn) {
+            if (btn) {
+                btn.classList.add('loading');
+            }
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) {
+                btn.classList.remove('loading');
+            }
+        }
+
+        // Wrapper function for calculations with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            // Small delay to show loader, then run calculation
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } catch (error) {
+                    console.error('Calculation error:', error);
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 300);
+        }
+
+        // ============================================
+        // END KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Global storage for calculation results
+        let currentCalculation = null;
+        let selectedPdfTheme = 'light';
+
+        // Z-values lookup
+        function getZ(alpha, sided) {
+            const z = {
+                '0.05': sided === 2 ? 1.96 : 1.645,
+                '0.01': sided === 2 ? 2.576 : 2.326,
+                '0.10': sided === 2 ? 1.645 : 1.282
+            };
+            return z[alpha] || 1.96;
+        }
+
+        function getZBeta(power) {
+            const z = { '0.80': 0.842, '0.90': 1.282, '0.95': 1.645 };
+            return z[power] || 0.842;
+        }
+
+        function getEffectSizeInterpretation(d) {
+            const absD = Math.abs(parseFloat(d));
+            if (absD < 0.2) return { level: 'negligible', text: 'negligible (< 0.2)' };
+            if (absD < 0.5) return { level: 'small', text: 'small (0.2 - 0.5)' };
+            if (absD < 0.8) return { level: 'medium', text: 'medium (0.5 - 0.8)' };
+            return { level: 'large', text: 'large (> 0.8)' };
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? '' : 'dark');
+            document.querySelector('.theme-toggle').innerHTML = isDark ? '&#127769;' : '&#9728;';
+            localStorage.setItem('karmastat-theme', isDark ? 'light' : 'dark');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('karmastat-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.querySelector('.theme-toggle').innerHTML = '&#9728;';
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                document.getElementById(this.dataset.tab + '-content').classList.remove('hidden');
+            });
+        });
+
+        // One-sample calculation
+        function calcOneSample(btn) {
+            withLoader(btn, function() {
+            const delta = parseFloat(document.getElementById('one-delta').value);
+            const sd = parseFloat(document.getElementById('one-sd').value);
+            const alpha = document.getElementById('one-alpha').value;
+            const power = document.getElementById('one-power').value;
+            const sided = parseInt(document.getElementById('one-sided').value);
+
+            const za = getZ(alpha, sided);
+            const zb = getZBeta(power);
+
+            const n = Math.ceil(Math.pow((za + zb) * sd / delta, 2));
+            const effect = (delta / sd).toFixed(2);
+            const effectInterp = getEffectSizeInterpretation(effect);
+
+            document.getElementById('one-n').textContent = n;
+            document.getElementById('one-effect').textContent = effect;
+            document.getElementById('one-results').classList.add('show');
+
+            // Step-by-step calculation
+            const stepsHtml = `
+                <div class="step"><span class="step-number">1</span><span class="step-content">Identify Z-value for alpha (${alpha}, ${sided === 2 ? 'two-sided' : 'one-sided'}): <code>z_alpha = ${za}</code></span></div>
+                <div class="step"><span class="step-number">2</span><span class="step-content">Identify Z-value for power (${(parseFloat(power) * 100).toFixed(0)}%): <code>z_beta = ${zb}</code></span></div>
+                <div class="step"><span class="step-number">3</span><span class="step-content">Calculate effect size: <code>d = delta / sigma = ${delta} / ${sd} = ${effect}</code></span></div>
+                <div class="step"><span class="step-number">4</span><span class="step-content">Calculate (z_alpha + z_beta): <code>${za} + ${zb} = ${(za + zb).toFixed(3)}</code></span></div>
+                <div class="step"><span class="step-number">5</span><span class="step-content">Apply formula: <code>n = ((${za} + ${zb})^2 x ${sd}^2) / ${delta}^2</code></span></div>
+                <div class="step"><span class="step-number">6</span><span class="step-content">Calculate: <code>n = ${((za + zb) * sd / delta).toFixed(4)}^2 = ${Math.pow((za + zb) * sd / delta, 2).toFixed(2)}</code></span></div>
+                <div class="step"><span class="step-number">7</span><span class="step-content">Round up to nearest integer: <code>n = ${n}</code></span></div>
+            `;
+            document.getElementById('one-steps-content').innerHTML = stepsHtml;
+
+            // Interpretation
+            document.getElementById('one-interpretation-text').innerHTML = `
+                To detect a mean difference of <strong>${delta}</strong> units from the population value with a standard deviation of <strong>${sd}</strong>,
+                you need a sample size of <strong>${n}</strong> participants. This corresponds to a <strong>${effectInterp.text}</strong> effect size
+                (Cohen's d = ${effect}). With alpha = ${alpha} and ${(parseFloat(power) * 100).toFixed(0)}% power, this design has a
+                ${(parseFloat(power) * 100).toFixed(0)}% probability of detecting the true effect if it exists.
+            `;
+
+            // Recommendations
+            const recommendations = [];
+            recommendations.push(`Plan for approximately ${Math.ceil(n * 1.1)} participants to account for ~10% dropout rate.`);
+            if (effectInterp.level === 'small' || effectInterp.level === 'negligible') {
+                recommendations.push(`Consider whether detecting such a small effect is clinically meaningful.`);
+            }
+            if (n > 100) {
+                recommendations.push(`Large sample size required. Consider multi-site recruitment strategies.`);
+            }
+            recommendations.push(`Verify the assumed standard deviation (${sd}) is based on prior research or pilot data.`);
+            recommendations.push(`Document all assumptions for the sample size calculation in your protocol.`);
+
+            document.getElementById('one-recommendations-list').innerHTML = recommendations.map(r => `<li>${r}</li>`).join('');
+
+            // Store for PDF export
+            currentCalculation = {
+                type: 'One-Sample T-Test',
+                inputs: {
+                    'Mean Difference (delta)': delta,
+                    'Standard Deviation (sigma)': sd,
+                    'Alpha Level': alpha,
+                    'Power': (parseFloat(power) * 100).toFixed(0) + '%',
+                    'Test Type': sided === 2 ? 'Two-sided' : 'One-sided'
+                },
+                zValues: { za, zb },
+                results: {
+                    'Sample Size (n)': n,
+                    'Effect Size (Cohen\'s d)': effect
+                },
+                effectInterpretation: effectInterp,
+                formula: 'n = ((z_alpha + z_beta)^2 x sigma^2) / delta^2',
+                steps: [
+                    `Z-value for alpha (${alpha}, ${sided === 2 ? 'two-sided' : 'one-sided'}): z_alpha = ${za}`,
+                    `Z-value for power (${(parseFloat(power) * 100).toFixed(0)}%): z_beta = ${zb}`,
+                    `Effect size: d = delta / sigma = ${delta} / ${sd} = ${effect}`,
+                    `Calculate (z_alpha + z_beta): ${za} + ${zb} = ${(za + zb).toFixed(3)}`,
+                    `Apply formula: n = ((${za} + ${zb})^2 x ${sd}^2) / ${delta}^2`,
+                    `Calculate: n = ${((za + zb) * sd / delta).toFixed(4)}^2 = ${Math.pow((za + zb) * sd / delta, 2).toFixed(2)}`,
+                    `Round up to nearest integer: n = ${n}`
+                ],
+                interpretation: `To detect a mean difference of ${delta} units from the population value with a standard deviation of ${sd}, you need a sample size of ${n} participants. This corresponds to a ${effectInterp.text} effect size (Cohen's d = ${effect}). With alpha = ${alpha} and ${(parseFloat(power) * 100).toFixed(0)}% power, this design has a ${(parseFloat(power) * 100).toFixed(0)}% probability of detecting the true effect if it exists.`,
+                recommendations: recommendations
+            };
+            });
+        }
+
+        // Two-sample calculation
+        function calcTwoSample(btn) {
+            withLoader(btn, function() {
+            const delta = parseFloat(document.getElementById('two-delta').value);
+            const sd = parseFloat(document.getElementById('two-sd').value);
+            const k = parseFloat(document.getElementById('two-ratio').value);
+            const alpha = document.getElementById('two-alpha').value;
+            const power = document.getElementById('two-power').value;
+
+            const za = getZ(alpha, 2);
+            const zb = getZBeta(power);
+
+            const n1 = Math.ceil((1 + 1/k) * Math.pow((za + zb) * sd / delta, 2));
+            const n2 = Math.ceil(k * n1);
+            const total = n1 + n2;
+            const effect = (delta / sd).toFixed(2);
+            const effectInterp = getEffectSizeInterpretation(effect);
+
+            document.getElementById('two-n1').textContent = n1;
+            document.getElementById('two-n2').textContent = n2;
+            document.getElementById('two-total').textContent = total;
+            document.getElementById('two-effect').textContent = effect;
+            document.getElementById('two-results').classList.add('show');
+
+            // Get ratio display text
+            const ratioText = k === 1 ? '1:1 (Equal)' : k === 2 ? '1:2' : k === 3 ? '1:3' : '2:1';
+
+            // Step-by-step calculation
+            const stepsHtml = `
+                <div class="step"><span class="step-number">1</span><span class="step-content">Identify Z-value for alpha (${alpha}, two-sided): <code>z_alpha = ${za}</code></span></div>
+                <div class="step"><span class="step-number">2</span><span class="step-content">Identify Z-value for power (${(parseFloat(power) * 100).toFixed(0)}%): <code>z_beta = ${zb}</code></span></div>
+                <div class="step"><span class="step-number">3</span><span class="step-content">Set allocation ratio: <code>k = ${k}</code></span></div>
+                <div class="step"><span class="step-number">4</span><span class="step-content">Calculate effect size: <code>d = delta / sigma = ${delta} / ${sd} = ${effect}</code></span></div>
+                <div class="step"><span class="step-number">5</span><span class="step-content">Calculate (1 + 1/k): <code>1 + 1/${k} = ${(1 + 1/k).toFixed(4)}</code></span></div>
+                <div class="step"><span class="step-number">6</span><span class="step-content">Apply formula for n1: <code>n1 = ${(1 + 1/k).toFixed(4)} x ((${za} + ${zb})^2 x ${sd}^2) / ${delta}^2</code></span></div>
+                <div class="step"><span class="step-number">7</span><span class="step-content">Calculate n1: <code>n1 = ${((1 + 1/k) * Math.pow((za + zb) * sd / delta, 2)).toFixed(2)} -> ${n1}</code></span></div>
+                <div class="step"><span class="step-number">8</span><span class="step-content">Calculate n2: <code>n2 = k x n1 = ${k} x ${n1} = ${n2}</code></span></div>
+                <div class="step"><span class="step-number">9</span><span class="step-content">Total sample size: <code>N = n1 + n2 = ${n1} + ${n2} = ${total}</code></span></div>
+            `;
+            document.getElementById('two-steps-content').innerHTML = stepsHtml;
+
+            // Interpretation
+            document.getElementById('two-interpretation-text').innerHTML = `
+                To detect a mean difference of <strong>${delta}</strong> units between two independent groups with a pooled standard deviation of <strong>${sd}</strong>,
+                you need <strong>${n1}</strong> participants in Group 1 and <strong>${n2}</strong> participants in Group 2
+                (total N = <strong>${total}</strong>). The allocation ratio is ${ratioText}. This corresponds to a <strong>${effectInterp.text}</strong> effect size
+                (Cohen's d = ${effect}). With alpha = ${alpha} and ${(parseFloat(power) * 100).toFixed(0)}% power, this design has a
+                ${(parseFloat(power) * 100).toFixed(0)}% probability of detecting the true effect if it exists.
+            `;
+
+            // Recommendations
+            const recommendations = [];
+            recommendations.push(`Plan for approximately ${Math.ceil(total * 1.15)} total participants to account for ~15% dropout rate.`);
+            if (k !== 1) {
+                recommendations.push(`Unequal allocation (${ratioText}) may require careful randomization procedures.`);
+            }
+            if (effectInterp.level === 'small' || effectInterp.level === 'negligible') {
+                recommendations.push(`Consider whether detecting such a small effect is clinically meaningful.`);
+            }
+            if (total > 200) {
+                recommendations.push(`Large sample size required. Consider multi-site recruitment strategies.`);
+            }
+            recommendations.push(`Verify the pooled standard deviation (${sd}) assumption is based on prior research.`);
+            recommendations.push(`Use appropriate randomization to ensure group comparability.`);
+
+            document.getElementById('two-recommendations-list').innerHTML = recommendations.map(r => `<li>${r}</li>`).join('');
+
+            // Store for PDF export
+            currentCalculation = {
+                type: 'Two-Sample T-Test',
+                inputs: {
+                    'Mean Difference (delta)': delta,
+                    'Pooled Standard Deviation (sigma)': sd,
+                    'Allocation Ratio': ratioText,
+                    'Alpha Level': alpha,
+                    'Power': (parseFloat(power) * 100).toFixed(0) + '%',
+                    'Test Type': 'Two-sided'
+                },
+                zValues: { za, zb },
+                results: {
+                    'Group 1 Sample Size (n1)': n1,
+                    'Group 2 Sample Size (n2)': n2,
+                    'Total Sample Size (N)': total,
+                    'Effect Size (Cohen\'s d)': effect
+                },
+                effectInterpretation: effectInterp,
+                formula: 'n1 = (1 + 1/k) x ((z_alpha + z_beta)^2 x sigma^2) / delta^2\nn2 = k x n1',
+                steps: [
+                    `Z-value for alpha (${alpha}, two-sided): z_alpha = ${za}`,
+                    `Z-value for power (${(parseFloat(power) * 100).toFixed(0)}%): z_beta = ${zb}`,
+                    `Allocation ratio: k = ${k}`,
+                    `Effect size: d = delta / sigma = ${delta} / ${sd} = ${effect}`,
+                    `Calculate (1 + 1/k): 1 + 1/${k} = ${(1 + 1/k).toFixed(4)}`,
+                    `Apply formula for n1: n1 = ${(1 + 1/k).toFixed(4)} x ((${za} + ${zb})^2 x ${sd}^2) / ${delta}^2`,
+                    `Calculate n1: n1 = ${((1 + 1/k) * Math.pow((za + zb) * sd / delta, 2)).toFixed(2)} -> ${n1}`,
+                    `Calculate n2: n2 = k x n1 = ${k} x ${n1} = ${n2}`,
+                    `Total sample size: N = n1 + n2 = ${n1} + ${n2} = ${total}`
+                ],
+                interpretation: `To detect a mean difference of ${delta} units between two independent groups with a pooled standard deviation of ${sd}, you need ${n1} participants in Group 1 and ${n2} participants in Group 2 (total N = ${total}). The allocation ratio is ${ratioText}. This corresponds to a ${effectInterp.text} effect size (Cohen's d = ${effect}). With alpha = ${alpha} and ${(parseFloat(power) * 100).toFixed(0)}% power, this design has a ${(parseFloat(power) * 100).toFixed(0)}% probability of detecting the true effect if it exists.`,
+                recommendations: recommendations
+            };
+            });
+        }
+
+        // Paired calculation
+        function calcPaired(btn) {
+            withLoader(btn, function() {
+            const delta = parseFloat(document.getElementById('pair-delta').value);
+            const sd = parseFloat(document.getElementById('pair-sd').value);
+            const alpha = document.getElementById('pair-alpha').value;
+            const power = document.getElementById('pair-power').value;
+
+            const za = getZ(alpha, 2);
+            const zb = getZBeta(power);
+
+            const n = Math.ceil(Math.pow((za + zb) * sd / delta, 2));
+            const effect = (delta / sd).toFixed(2);
+            const effectInterp = getEffectSizeInterpretation(effect);
+
+            document.getElementById('pair-n').textContent = n;
+            document.getElementById('pair-effect').textContent = effect;
+            document.getElementById('pair-results').classList.add('show');
+
+            // Step-by-step calculation
+            const stepsHtml = `
+                <div class="step"><span class="step-number">1</span><span class="step-content">Identify Z-value for alpha (${alpha}, two-sided): <code>z_alpha = ${za}</code></span></div>
+                <div class="step"><span class="step-number">2</span><span class="step-content">Identify Z-value for power (${(parseFloat(power) * 100).toFixed(0)}%): <code>z_beta = ${zb}</code></span></div>
+                <div class="step"><span class="step-number">3</span><span class="step-content">Calculate effect size: <code>d = delta / sigma_d = ${delta} / ${sd} = ${effect}</code></span></div>
+                <div class="step"><span class="step-number">4</span><span class="step-content">Calculate (z_alpha + z_beta): <code>${za} + ${zb} = ${(za + zb).toFixed(3)}</code></span></div>
+                <div class="step"><span class="step-number">5</span><span class="step-content">Apply formula: <code>n = ((${za} + ${zb})^2 x ${sd}^2) / ${delta}^2</code></span></div>
+                <div class="step"><span class="step-number">6</span><span class="step-content">Calculate: <code>n = ${((za + zb) * sd / delta).toFixed(4)}^2 = ${Math.pow((za + zb) * sd / delta, 2).toFixed(2)}</code></span></div>
+                <div class="step"><span class="step-number">7</span><span class="step-content">Round up to nearest integer: <code>n = ${n} pairs</code></span></div>
+            `;
+            document.getElementById('pair-steps-content').innerHTML = stepsHtml;
+
+            // Interpretation
+            document.getElementById('pair-interpretation-text').innerHTML = `
+                To detect a mean difference of <strong>${delta}</strong> units between paired observations with a standard deviation of differences of <strong>${sd}</strong>,
+                you need <strong>${n}</strong> pairs of observations. This corresponds to a <strong>${effectInterp.text}</strong> effect size
+                (Cohen's d = ${effect}). With alpha = ${alpha} and ${(parseFloat(power) * 100).toFixed(0)}% power, this design has a
+                ${(parseFloat(power) * 100).toFixed(0)}% probability of detecting the true effect if it exists.
+                Paired designs are typically more efficient than independent samples when correlation between measurements is high.
+            `;
+
+            // Recommendations
+            const recommendations = [];
+            recommendations.push(`Plan for approximately ${Math.ceil(n * 1.1)} pairs to account for ~10% dropout or incomplete pairs.`);
+            recommendations.push(`Ensure consistent measurement conditions across paired observations.`);
+            if (effectInterp.level === 'small' || effectInterp.level === 'negligible') {
+                recommendations.push(`Consider whether detecting such a small effect is clinically meaningful.`);
+            }
+            recommendations.push(`Verify the SD of differences (${sd}) is based on prior research or pilot data.`);
+            recommendations.push(`Consider counterbalancing or randomizing the order of conditions to minimize order effects.`);
+
+            document.getElementById('pair-recommendations-list').innerHTML = recommendations.map(r => `<li>${r}</li>`).join('');
+
+            // Store for PDF export
+            currentCalculation = {
+                type: 'Paired T-Test',
+                inputs: {
+                    'Mean Difference (delta)': delta,
+                    'SD of Differences (sigma_d)': sd,
+                    'Alpha Level': alpha,
+                    'Power': (parseFloat(power) * 100).toFixed(0) + '%',
+                    'Test Type': 'Two-sided'
+                },
+                zValues: { za, zb },
+                results: {
+                    'Number of Pairs (n)': n,
+                    'Effect Size (Cohen\'s d)': effect
+                },
+                effectInterpretation: effectInterp,
+                formula: 'n = ((z_alpha + z_beta)^2 x sigma_d^2) / delta^2',
+                steps: [
+                    `Z-value for alpha (${alpha}, two-sided): z_alpha = ${za}`,
+                    `Z-value for power (${(parseFloat(power) * 100).toFixed(0)}%): z_beta = ${zb}`,
+                    `Effect size: d = delta / sigma_d = ${delta} / ${sd} = ${effect}`,
+                    `Calculate (z_alpha + z_beta): ${za} + ${zb} = ${(za + zb).toFixed(3)}`,
+                    `Apply formula: n = ((${za} + ${zb})^2 x ${sd}^2) / ${delta}^2`,
+                    `Calculate: n = ${((za + zb) * sd / delta).toFixed(4)}^2 = ${Math.pow((za + zb) * sd / delta, 2).toFixed(2)}`,
+                    `Round up to nearest integer: n = ${n} pairs`
+                ],
+                interpretation: `To detect a mean difference of ${delta} units between paired observations with a standard deviation of differences of ${sd}, you need ${n} pairs of observations. This corresponds to a ${effectInterp.text} effect size (Cohen's d = ${effect}). With alpha = ${alpha} and ${(parseFloat(power) * 100).toFixed(0)}% power, this design has a ${(parseFloat(power) * 100).toFixed(0)}% probability of detecting the true effect if it exists. Paired designs are typically more efficient than independent samples when correlation between measurements is high.`,
+                recommendations: recommendations
+            };
+            });
+        }
+
+        // PDF Modal Functions
+        function showPdfModal() {
+            if (!currentCalculation) {
+                alert('Please perform a calculation first before exporting.');
+                return;
+            }
+            document.getElementById('pdfModal').classList.add('show');
+        }
+
+        function closePdfModal() {
+            document.getElementById('pdfModal').classList.remove('show');
+        }
+
+        function selectPdfTheme(theme) {
+            selectedPdfTheme = theme;
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector(`[data-pdf-theme="${theme}"]`).classList.add('selected');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('pdfModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePdfModal();
+            }
+        });
+
+        // Generate PDF Function
+        function generatePDF() {
+            if (!currentCalculation) {
+                alert('Please perform a calculation first before exporting.');
+                return;
+            }
+
+            closePdfModal();
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Theme colors
+            const isDark = selectedPdfTheme === 'dark';
+            const colors = {
+                primary: [59, 130, 246],      // #3B82F6
+                primaryDark: [37, 99, 235],   // #2563EB
+                secondary: [30, 64, 175],     // #1E40AF
+                background: isDark ? [15, 23, 42] : [255, 255, 255],
+                cardBg: isDark ? [30, 41, 59] : [248, 250, 252],
+                text: isDark ? [241, 245, 249] : [30, 41, 59],
+                textSecondary: isDark ? [148, 163, 184] : [71, 85, 105],
+                accent: isDark ? [30, 58, 95] : [219, 234, 254],
+                success: [22, 163, 74],
+                border: isDark ? [51, 65, 85] : [226, 232, 240]
+            };
+
+            let yPos = 0;
+
+            // Helper functions
+            function setColor(colorArray) {
+                doc.setTextColor(colorArray[0], colorArray[1], colorArray[2]);
+            }
+
+            function setFillColor(colorArray) {
+                doc.setFillColor(colorArray[0], colorArray[1], colorArray[2]);
+            }
+
+            function setDrawColor(colorArray) {
+                doc.setDrawColor(colorArray[0], colorArray[1], colorArray[2]);
+            }
+
+            function addPage() {
+                doc.addPage();
+                // Background for new page
+                if (isDark) {
+                    setFillColor(colors.background);
+                    doc.rect(0, 0, 210, 297, 'F');
+                }
+                yPos = 20;
+            }
+
+            function checkPageBreak(neededSpace) {
+                if (yPos + neededSpace > 270) {
+                    addPage();
+                    return true;
+                }
+                return false;
+            }
+
+            // Background
+            if (isDark) {
+                setFillColor(colors.background);
+                doc.rect(0, 0, 210, 297, 'F');
+            }
+
+            // Header with gradient effect
+            setFillColor(colors.primary);
+            doc.rect(0, 0, 210, 45, 'F');
+
+            // Header decoration
+            setFillColor(colors.primaryDark);
+            doc.rect(0, 40, 210, 5, 'F');
+
+            // KARMASTAT Logo/Title
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(28);
+            doc.setTextColor(255, 255, 255);
+            doc.text('KARMASTAT', 105, 20, { align: 'center' });
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Statistical Sample Size Calculator', 105, 30, { align: 'center' });
+
+            doc.setFontSize(10);
+            doc.text('T-Test & Mean Comparisons', 105, 38, { align: 'center' });
+
+            yPos = 55;
+
+            // Study Type Title
+            setFillColor(colors.cardBg);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, 15, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            setColor(colors.primary);
+            doc.text(currentCalculation.type, 105, yPos + 10, { align: 'center' });
+
+            yPos += 25;
+
+            // Input Parameters Section
+            setFillColor(colors.cardBg);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, 8 + Object.keys(currentCalculation.inputs).length * 8, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            setColor(colors.primary);
+            doc.text('INPUT PARAMETERS', 20, yPos + 6);
+
+            yPos += 12;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+
+            Object.entries(currentCalculation.inputs).forEach(([key, value]) => {
+                setColor(colors.textSecondary);
+                doc.text(key + ':', 25, yPos);
+                setColor(colors.text);
+                doc.setFont('helvetica', 'bold');
+                doc.text(String(value), 120, yPos);
+                doc.setFont('helvetica', 'normal');
+                yPos += 8;
+            });
+
+            yPos += 5;
+
+            // Z-Values Used
+            checkPageBreak(25);
+            setFillColor(colors.accent);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, 20, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            setColor(colors.primary);
+            doc.text('Z-VALUES USED', 20, yPos + 6);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            setColor(colors.text);
+            doc.text(`Z-alpha (z_a): ${currentCalculation.zValues.za}`, 25, yPos + 14);
+            doc.text(`Z-beta (z_b): ${currentCalculation.zValues.zb}`, 110, yPos + 14);
+
+            yPos += 28;
+
+            // Formula Section
+            checkPageBreak(30);
+            setFillColor(colors.cardBg);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, 25, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            setColor(colors.primary);
+            doc.text('FORMULA USED', 20, yPos + 6);
+
+            doc.setFont('courier', 'normal');
+            doc.setFontSize(10);
+            setColor(colors.text);
+            const formulaLines = currentCalculation.formula.split('\n');
+            let formulaY = yPos + 14;
+            formulaLines.forEach(line => {
+                doc.text(line, 25, formulaY);
+                formulaY += 6;
+            });
+
+            yPos += 32;
+
+            // Step-by-Step Calculation
+            checkPageBreak(20 + currentCalculation.steps.length * 8);
+            const stepsHeight = 12 + currentCalculation.steps.length * 8;
+            setFillColor(colors.cardBg);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, stepsHeight, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            setColor(colors.primary);
+            doc.text('STEP-BY-STEP CALCULATION', 20, yPos + 6);
+
+            yPos += 12;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+
+            currentCalculation.steps.forEach((step, index) => {
+                checkPageBreak(10);
+                // Step number circle
+                setFillColor(colors.primary);
+                doc.circle(22, yPos - 1.5, 3, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(7);
+                doc.text(String(index + 1), 22, yPos, { align: 'center' });
+
+                setColor(colors.text);
+                doc.setFontSize(9);
+                const stepText = doc.splitTextToSize(step, 160);
+                doc.text(stepText, 28, yPos);
+                yPos += stepText.length * 5 + 3;
+            });
+
+            yPos += 5;
+
+            // Results Section (Prominent)
+            checkPageBreak(40);
+            setFillColor(colors.primary);
+            doc.roundedRect(15, yPos, 180, 35, 3, 3, 'F');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(255, 255, 255);
+            doc.text('RESULTS', 105, yPos + 8, { align: 'center' });
+
+            yPos += 14;
+            doc.setFontSize(10);
+            const resultEntries = Object.entries(currentCalculation.results);
+            const colWidth = 180 / resultEntries.length;
+
+            resultEntries.forEach(([key, value], index) => {
+                const xPos = 15 + (index * colWidth) + (colWidth / 2);
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text(String(value), xPos, yPos + 6, { align: 'center' });
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.text(key, xPos, yPos + 14, { align: 'center' });
+            });
+
+            yPos += 30;
+
+            // Effect Size Interpretation
+            checkPageBreak(20);
+            setFillColor(colors.accent);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, 15, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            setColor(colors.primary);
+            doc.text('Effect Size Interpretation:', 20, yPos + 6);
+
+            doc.setFont('helvetica', 'normal');
+            setColor(colors.text);
+            doc.text(`Cohen's d = ${currentCalculation.results["Effect Size (Cohen's d)"]} - ${currentCalculation.effectInterpretation.text}`, 20, yPos + 12);
+
+            yPos += 22;
+
+            // Interpretation Section
+            checkPageBreak(40);
+            const interpLines = doc.splitTextToSize(currentCalculation.interpretation, 170);
+            const interpHeight = 12 + interpLines.length * 5;
+
+            setFillColor(colors.cardBg);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, interpHeight, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            setColor(colors.primary);
+            doc.text('INTERPRETATION', 20, yPos + 6);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            setColor(colors.text);
+            doc.text(interpLines, 20, yPos + 14);
+
+            yPos += interpHeight + 8;
+
+            // Recommendations Section
+            checkPageBreak(30);
+            const recsHeight = 12 + currentCalculation.recommendations.length * 10;
+
+            // Green tinted background for recommendations
+            if (isDark) {
+                doc.setFillColor(20, 83, 45);
+            } else {
+                doc.setFillColor(240, 253, 244);
+            }
+            doc.setDrawColor(134, 239, 172);
+            doc.roundedRect(15, yPos, 180, recsHeight, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+            doc.text('RECOMMENDATIONS', 20, yPos + 6);
+
+            yPos += 12;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            setColor(colors.text);
+
+            currentCalculation.recommendations.forEach(rec => {
+                checkPageBreak(12);
+                // Checkmark
+                doc.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+                doc.text('\u2713', 22, yPos);
+                setColor(colors.text);
+                const recLines = doc.splitTextToSize(rec, 160);
+                doc.text(recLines, 28, yPos);
+                yPos += recLines.length * 5 + 3;
+            });
+
+            yPos += 8;
+
+            // Reference Citation
+            checkPageBreak(25);
+            setFillColor(colors.cardBg);
+            setDrawColor(colors.border);
+            doc.roundedRect(15, yPos, 180, 20, 3, 3, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            setColor(colors.primary);
+            doc.text('REFERENCE', 20, yPos + 6);
+
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(8);
+            setColor(colors.textSecondary);
+            doc.text('Cohen, J. (1988). Statistical Power Analysis for the Behavioral Sciences (2nd ed.).', 20, yPos + 12);
+            doc.text('Lawrence Erlbaum Associates. ISBN: 0-8058-0283-5', 20, yPos + 17);
+
+            // Footer
+            const footerY = 285;
+
+            // Footer line
+            setDrawColor(colors.primary);
+            doc.setLineWidth(0.5);
+            doc.line(15, footerY - 10, 195, footerY - 10);
+
+            // Timestamp
+            const now = new Date();
+            const timestamp = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            setColor(colors.textSecondary);
+            doc.text(`Generated: ${timestamp}`, 15, footerY - 3);
+
+            // Branding
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            setColor(colors.primary);
+            doc.text('Generated by KARMASTAT', 105, footerY - 3, { align: 'center' });
+
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(8);
+            setColor(colors.textSecondary);
+            doc.text('Crafted by Karmayogi', 195, footerY - 3, { align: 'right' });
+
+            // Save the PDF
+            const filename = `KARMASTAT_${currentCalculation.type.replace(/\s+/g, '_')}_${now.toISOString().split('T')[0]}.pdf`;
+            doc.save(filename);
+        }
+
+        // Copy Results Function
+        function copyResults() {
+            if (!currentCalculation) {
+                alert('Please perform a calculation first.');
+                return;
+            }
+
+            let text = `KARMASTAT - ${currentCalculation.type}\n`;
+            text += `${'='.repeat(50)}\n\n`;
+
+            text += `INPUT PARAMETERS:\n`;
+            Object.entries(currentCalculation.inputs).forEach(([key, value]) => {
+                text += `  ${key}: ${value}\n`;
+            });
+
+            text += `\nZ-VALUES USED:\n`;
+            text += `  Z-alpha: ${currentCalculation.zValues.za}\n`;
+            text += `  Z-beta: ${currentCalculation.zValues.zb}\n`;
+
+            text += `\nFORMULA:\n  ${currentCalculation.formula.replace(/\n/g, '\n  ')}\n`;
+
+            text += `\nSTEP-BY-STEP CALCULATION:\n`;
+            currentCalculation.steps.forEach((step, i) => {
+                text += `  ${i + 1}. ${step}\n`;
+            });
+
+            text += `\nRESULTS:\n`;
+            Object.entries(currentCalculation.results).forEach(([key, value]) => {
+                text += `  ${key}: ${value}\n`;
+            });
+
+            text += `\nEFFECT SIZE INTERPRETATION:\n`;
+            text += `  ${currentCalculation.effectInterpretation.text}\n`;
+
+            text += `\nINTERPRETATION:\n  ${currentCalculation.interpretation}\n`;
+
+            text += `\nRECOMMENDATIONS:\n`;
+            currentCalculation.recommendations.forEach(rec => {
+                text += `  - ${rec}\n`;
+            });
+
+            text += `\n${'='.repeat(50)}\n`;
+            text += `Generated by KARMASTAT - Crafted by Karmayogi\n`;
+            text += `Date: ${new Date().toLocaleString()}\n`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Results copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>

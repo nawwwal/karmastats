@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparative Studies - KARMASTAT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --primary-light: #A78BFA;
+            --secondary: #5B21B6;
+            --accent: #EDE9FE;
+            --bg-gradient-start: #F5F3FF;
+            --bg-gradient-end: #EDE9FE;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent: #3b2f5c;
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .karma-page-loader .loader-content {
+            text-align: center;
+        }
+
+        .karma-page-loader .loader-text {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes karmaFlow {
+            0% { stroke-dashoffset: 300; opacity: 0.4; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -300; opacity: 0.4; }
+        }
+
+        .karma-point {
+            animation: karmaPulse 1.2s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(3) { animation-delay: 0.2s; }
+        .karma-point:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes karmaPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1.5s linear infinite;
+        }
+
+        @keyframes spinnerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-path {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 15;
+            animation: spinnerDash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinnerDash {
+            0% { stroke-dashoffset: 60; }
+            50% { stroke-dashoffset: 15; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .results-loading .karma-infinity {
+            width: 80px;
+            height: 40px;
+        }
+
+        .results-loading .karma-path {
+            stroke: var(--primary);
+        }
+
+        .results-loading .karma-point {
+            fill: var(--primary-light);
+        }
+
+        .results-loading p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 { color: var(--primary); margin-bottom: 1.5rem; }
+
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .tab:hover { border-color: var(--primary); }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary); }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-secondary:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover { background: var(--primary); color: white; }
+
+        .results {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--accent);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .results.show { display: block; animation: slideIn 0.3s ease; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .result-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .result-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+        .formula-box {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .formula-box h4 { color: var(--primary); margin-bottom: 0.75rem; }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .interpretation-box {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid #10b981;
+        }
+
+        .interpretation-box h4 { color: #10b981; margin-bottom: 0.75rem; }
+
+        .calculation-steps {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .calculation-steps h4 { color: var(--primary); margin-bottom: 0.75rem; }
+
+        .step {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .step:last-child { border-bottom: none; }
+
+        .step-label { color: var(--primary); font-weight: 600; }
+
+        .export-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .export-section h4 { color: var(--primary); margin-bottom: 1rem; }
+
+        .export-options {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .export-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .export-options input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+        }
+
+        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); }
+        .footer a { color: var(--primary); text-decoration: none; }
+        .help-text { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; }
+        .hidden { display: none !important; }
+
+        .design-considerations {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .design-considerations h4 { color: #f59e0b; margin-bottom: 0.75rem; }
+
+        .design-considerations ul {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .design-considerations li { margin-bottom: 0.5rem; }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .container { padding: 1rem; }
+            .card { padding: 1.5rem; }
+            .result-value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#ffffff"/>
+                            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path"
+                          d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30"
+                          fill="none" stroke="url(#loaderGrad)" stroke-width="5" stroke-linecap="round"/>
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                      fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                <circle cx="20" cy="20" r="3" fill="white"/>
+                <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+            </svg>
+            <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+        </div>
+        <h1>Comparative Studies Calculator</h1>
+        <p>Case-control and cohort study sample size calculations</p>
+        <div class="nav-buttons">
+            <a href="karmastat_2_0_main.html" class="nav-btn">Back to Main</a>
+            <a href="karmastat_effect_size.html" class="nav-btn">Effect Size</a>
+            <a href="karmastat_checklists.html" class="nav-btn">STROBE Checklist</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="casecontrol">Case-Control Study</button>
+            <button class="tab" data-tab="cohort">Cohort Study</button>
+            <button class="tab" data-tab="proportion">Two Proportions</button>
+        </div>
+
+        <!-- Case-Control -->
+        <div class="card tab-content" id="casecontrol-content">
+            <h2>Case-Control Study</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Calculate sample size for case-control studies based on odds ratio.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expected Odds Ratio (OR)</label>
+                    <input type="number" id="cc-or" value="2" min="0.1" step="0.1">
+                    <p class="help-text">The anticipated odds ratio to detect</p>
+                </div>
+                <div class="form-group">
+                    <label>Proportion Exposed in Controls (P0)</label>
+                    <input type="number" id="cc-p0" value="0.3" min="0.01" max="0.99" step="0.01">
+                    <p class="help-text">Expected exposure prevalence in control group</p>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Case:Control Ratio</label>
+                    <select id="cc-ratio">
+                        <option value="1">1:1</option>
+                        <option value="2">1:2</option>
+                        <option value="3">1:3</option>
+                        <option value="4">1:4</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alpha (Significance Level)</label>
+                    <select id="cc-alpha">
+                        <option value="0.05">0.05 (two-tailed)</option>
+                        <option value="0.01">0.01 (two-tailed)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Power (1 - Beta)</label>
+                    <select id="cc-power">
+                        <option value="0.80">80%</option>
+                        <option value="0.90">90%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcCaseControl(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+
+            <div class="results" id="cc-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="cc-cases">-</div>
+                        <div class="result-label">Number of Cases</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="cc-controls">-</div>
+                        <div class="result-label">Number of Controls</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="cc-total">-</div>
+                        <div class="result-label">Total Sample</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="cc-p1">-</div>
+                        <div class="result-label">P1 (Exposed in Cases)</div>
+                    </div>
+                </div>
+
+                <div class="calculation-steps" id="cc-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="cc-steps-content"></div>
+                </div>
+
+                <div class="formula-box">
+                    <h4>Formula (Fleiss Method for Case-Control Studies)</h4>
+                    <div class="formula">
+                        P1 = (OR x P0) / (1 + P0(OR - 1))<br><br>
+                        P_bar = (P1 + r x P0) / (1 + r)<br><br>
+                        n = [(Z_alpha x sqrt((1 + 1/r) x P_bar x Q_bar) + Z_beta x sqrt(P1 x Q1 + P0 x Q0/r))^2] / (P1 - P0)^2
+                    </div>
+                </div>
+
+                <div class="interpretation-box" id="cc-interpretation">
+                    <h4>Interpretation</h4>
+                    <p id="cc-interpretation-text"></p>
+                </div>
+
+                <div class="design-considerations">
+                    <h4>Design Considerations</h4>
+                    <ul>
+                        <li>Consider adding 10-20% to account for non-response or incomplete data</li>
+                        <li>Matching cases and controls can increase efficiency but complicates analysis</li>
+                        <li>Multiple controls per case (up to 4:1) can increase power when cases are limited</li>
+                        <li>Ensure clear case definitions and appropriate control selection</li>
+                        <li>Consider potential confounders and plan for stratified analysis</li>
+                    </ul>
+                </div>
+
+                <div class="export-section">
+                    <h4>Export Results</h4>
+                    <div class="export-options">
+                        <label>
+                            <input type="radio" name="cc-pdf-theme" value="light" checked> Light Theme
+                        </label>
+                        <label>
+                            <input type="radio" name="cc-pdf-theme" value="dark"> Dark Theme
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="exportPDF('casecontrol')">Export to PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cohort Study -->
+        <div class="card tab-content hidden" id="cohort-content">
+            <h2>Cohort Study</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Sample size for cohort studies based on relative risk.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Incidence in Unexposed (P0)</label>
+                    <input type="number" id="coh-p0" value="0.1" min="0.01" max="0.99" step="0.01">
+                    <p class="help-text">Expected outcome incidence in unexposed group</p>
+                </div>
+                <div class="form-group">
+                    <label>Expected Relative Risk (RR)</label>
+                    <input type="number" id="coh-rr" value="2" min="0.1" step="0.1">
+                    <p class="help-text">The anticipated relative risk to detect</p>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Exposed:Unexposed Ratio</label>
+                    <select id="coh-ratio">
+                        <option value="1">1:1</option>
+                        <option value="2">1:2</option>
+                        <option value="3">1:3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alpha (Significance Level)</label>
+                    <select id="coh-alpha">
+                        <option value="0.05">0.05 (two-tailed)</option>
+                        <option value="0.01">0.01 (two-tailed)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Power (1 - Beta)</label>
+                    <select id="coh-power">
+                        <option value="0.80">80%</option>
+                        <option value="0.90">90%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcCohort(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+
+            <div class="results" id="coh-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="coh-exposed">-</div>
+                        <div class="result-label">Exposed Group</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="coh-unexposed">-</div>
+                        <div class="result-label">Unexposed Group</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="coh-total">-</div>
+                        <div class="result-label">Total Sample</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="coh-p1">-</div>
+                        <div class="result-label">P1 (Incidence in Exposed)</div>
+                    </div>
+                </div>
+
+                <div class="calculation-steps" id="coh-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="coh-steps-content"></div>
+                </div>
+
+                <div class="formula-box">
+                    <h4>Formula (Cohort Study Sample Size)</h4>
+                    <div class="formula">
+                        P1 = P0 x RR (Incidence in exposed group)<br><br>
+                        P_bar = (P1 + r x P0) / (1 + r)<br><br>
+                        n = [(Z_alpha x sqrt((1 + 1/r) x P_bar x Q_bar) + Z_beta x sqrt(P1 x Q1 + P0 x Q0/r))^2] / (P1 - P0)^2
+                    </div>
+                </div>
+
+                <div class="interpretation-box" id="coh-interpretation">
+                    <h4>Interpretation</h4>
+                    <p id="coh-interpretation-text"></p>
+                </div>
+
+                <div class="design-considerations">
+                    <h4>Design Considerations</h4>
+                    <ul>
+                        <li>Account for anticipated loss to follow-up (typically 10-30% depending on study duration)</li>
+                        <li>Consider the feasibility of the required follow-up period</li>
+                        <li>Plan for interim analyses if study duration is long</li>
+                        <li>Ensure comparable baseline characteristics between exposed and unexposed groups</li>
+                        <li>Define clear exposure criteria and outcome ascertainment methods</li>
+                    </ul>
+                </div>
+
+                <div class="export-section">
+                    <h4>Export Results</h4>
+                    <div class="export-options">
+                        <label>
+                            <input type="radio" name="coh-pdf-theme" value="light" checked> Light Theme
+                        </label>
+                        <label>
+                            <input type="radio" name="coh-pdf-theme" value="dark"> Dark Theme
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="exportPDF('cohort')">Export to PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Proportions -->
+        <div class="card tab-content hidden" id="proportion-content">
+            <h2>Two Proportions Comparison</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Compare two independent proportions.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Proportion in Group 1 (P1)</label>
+                    <input type="number" id="prop-p1" value="0.3" min="0.01" max="0.99" step="0.01">
+                    <p class="help-text">Expected proportion in group 1</p>
+                </div>
+                <div class="form-group">
+                    <label>Proportion in Group 2 (P2)</label>
+                    <input type="number" id="prop-p2" value="0.5" min="0.01" max="0.99" step="0.01">
+                    <p class="help-text">Expected proportion in group 2</p>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Allocation Ratio (Group 1:Group 2)</label>
+                    <select id="prop-ratio">
+                        <option value="1">1:1</option>
+                        <option value="2">1:2</option>
+                        <option value="3">1:3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alpha (Significance Level)</label>
+                    <select id="prop-alpha">
+                        <option value="0.05">0.05 (two-tailed)</option>
+                        <option value="0.01">0.01 (two-tailed)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Power (1 - Beta)</label>
+                    <select id="prop-power">
+                        <option value="0.80">80%</option>
+                        <option value="0.90">90%</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calcProportion(this)">
+    <span class="btn-text">Calculate Sample Size</span>
+    <span class="karma-spinner">
+        <svg viewBox="0 0 24 24">
+            <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </span>
+</button>
+
+            <div class="results" id="prop-results">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Results</h3>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="prop-n1">-</div>
+                        <div class="result-label">Group 1 Sample</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="prop-n2">-</div>
+                        <div class="result-label">Group 2 Sample</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="prop-total">-</div>
+                        <div class="result-label">Total Sample</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="prop-diff">-</div>
+                        <div class="result-label">Proportion Difference</div>
+                    </div>
+                </div>
+
+                <div class="calculation-steps" id="prop-steps">
+                    <h4>Step-by-Step Calculation</h4>
+                    <div id="prop-steps-content"></div>
+                </div>
+
+                <div class="formula-box">
+                    <h4>Formula (Two Proportions Z-test)</h4>
+                    <div class="formula">
+                        P_bar = (P1 + r x P2) / (1 + r) (Pooled proportion)<br><br>
+                        n1 = [(Z_alpha x sqrt((1 + 1/r) x P_bar x Q_bar) + Z_beta x sqrt(P1 x Q1 + P2 x Q2/r))^2] / (P1 - P2)^2<br><br>
+                        n2 = r x n1
+                    </div>
+                </div>
+
+                <div class="interpretation-box" id="prop-interpretation">
+                    <h4>Interpretation</h4>
+                    <p id="prop-interpretation-text"></p>
+                </div>
+
+                <div class="design-considerations">
+                    <h4>Design Considerations</h4>
+                    <ul>
+                        <li>Consider using continuity correction for small sample sizes</li>
+                        <li>Account for potential dropouts and non-compliance</li>
+                        <li>Ensure independent samples between groups</li>
+                        <li>Plan for stratified analysis if there are known confounders</li>
+                        <li>Consider adaptive designs for uncertain effect sizes</li>
+                    </ul>
+                </div>
+
+                <div class="export-section">
+                    <h4>Export Results</h4>
+                    <div class="export-options">
+                        <label>
+                            <input type="radio" name="prop-pdf-theme" value="light" checked> Light Theme
+                        </label>
+                        <label>
+                            <input type="radio" name="prop-pdf-theme" value="dark"> Dark Theme
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="exportPDF('proportion')">Export to PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Made with love by Karmayogi | <a href="karmastat_references.html">References</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Jai Shri Ram</p>
+    </footer>
+
+    <button class="theme-toggle" onclick="toggleTheme()">Moon</button>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Hide page loader when content is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button loading state functions
+        function showButtonLoader(btn) {
+            if (btn) btn.classList.add('loading');
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) btn.classList.remove('loading');
+        }
+
+        // Wrap calculation with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 600);
+        }
+
+        // Global calculation storage
+        let calculationResults = {
+            casecontrol: null,
+            cohort: null,
+            proportion: null
+        };
+
+        function getZ(alpha) {
+            return alpha === '0.05' ? 1.96 : 2.576;
+        }
+
+        function getZBeta(power) {
+            return power === '0.80' ? 0.842 : 1.282;
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? '' : 'dark');
+            document.querySelector('.theme-toggle').textContent = isDark ? 'Moon' : 'Sun';
+            localStorage.setItem('karmastat-theme', isDark ? 'light' : 'dark');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('karmastat-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.querySelector('.theme-toggle').textContent = 'Sun';
+            }
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                document.getElementById(this.dataset.tab + '-content').classList.remove('hidden');
+            });
+        });
+
+        function calcCaseControl(btn) {
+            withLoader(btn, function() {
+            const or = parseFloat(document.getElementById('cc-or').value);
+            const p0 = parseFloat(document.getElementById('cc-p0').value);
+            const r = parseFloat(document.getElementById('cc-ratio').value);
+            const alphaVal = document.getElementById('cc-alpha').value;
+            const powerVal = document.getElementById('cc-power').value;
+            const za = getZ(alphaVal);
+            const zb = getZBeta(powerVal);
+
+            const p1 = (or * p0) / (1 + p0 * (or - 1));
+            const q1 = 1 - p1;
+            const q0 = 1 - p0;
+            const pbar = (p1 + r * p0) / (1 + r);
+            const qbar = 1 - pbar;
+
+            const term1 = za * Math.sqrt((1 + 1/r) * pbar * qbar);
+            const term2 = zb * Math.sqrt(p1 * q1 + p0 * q0 / r);
+            const num = Math.pow(term1 + term2, 2);
+            const denom = Math.pow(p1 - p0, 2);
+            const cases = Math.ceil(num / denom);
+            const controls = Math.ceil(cases * r);
+
+            // Store calculation results globally
+            calculationResults.casecontrol = {
+                studyType: 'Case-Control Study',
+                inputs: {
+                    oddsRatio: or,
+                    p0: p0,
+                    ratio: r,
+                    alpha: parseFloat(alphaVal),
+                    power: parseFloat(powerVal),
+                    za: za,
+                    zb: zb
+                },
+                intermediates: {
+                    p1: p1,
+                    q1: q1,
+                    q0: q0,
+                    pbar: pbar,
+                    qbar: qbar,
+                    term1: term1,
+                    term2: term2,
+                    numerator: num,
+                    denominator: denom
+                },
+                results: {
+                    cases: cases,
+                    controls: controls,
+                    total: cases + controls
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            // Update display
+            document.getElementById('cc-cases').textContent = cases;
+            document.getElementById('cc-controls').textContent = controls;
+            document.getElementById('cc-total').textContent = cases + controls;
+            document.getElementById('cc-p1').textContent = p1.toFixed(4);
+
+            // Display calculation steps
+            const stepsHtml = `
+                <div class="step"><span class="step-label">Step 1:</span> Calculate P1 (exposure in cases)</div>
+                <div class="step">P1 = (OR x P0) / (1 + P0 x (OR - 1))</div>
+                <div class="step">P1 = (${or} x ${p0}) / (1 + ${p0} x (${or} - 1)) = ${p1.toFixed(4)}</div>
+                <div class="step"><span class="step-label">Step 2:</span> Calculate pooled proportion</div>
+                <div class="step">P_bar = (P1 + r x P0) / (1 + r) = (${p1.toFixed(4)} + ${r} x ${p0}) / (1 + ${r}) = ${pbar.toFixed(4)}</div>
+                <div class="step">Q_bar = 1 - P_bar = ${qbar.toFixed(4)}</div>
+                <div class="step"><span class="step-label">Step 3:</span> Calculate Z-values</div>
+                <div class="step">Z_alpha (${alphaVal}) = ${za}, Z_beta (power ${powerVal}) = ${zb}</div>
+                <div class="step"><span class="step-label">Step 4:</span> Calculate sample size</div>
+                <div class="step">Term 1 = ${za} x sqrt((1 + 1/${r}) x ${pbar.toFixed(4)} x ${qbar.toFixed(4)}) = ${term1.toFixed(4)}</div>
+                <div class="step">Term 2 = ${zb} x sqrt(${p1.toFixed(4)} x ${q1.toFixed(4)} + ${p0} x ${q0.toFixed(4)} / ${r}) = ${term2.toFixed(4)}</div>
+                <div class="step">n_cases = (${term1.toFixed(4)} + ${term2.toFixed(4)})^2 / (${p1.toFixed(4)} - ${p0})^2 = ${cases}</div>
+                <div class="step">n_controls = ${cases} x ${r} = ${controls}</div>
+            `;
+            document.getElementById('cc-steps-content').innerHTML = stepsHtml;
+
+            // Interpretation
+            const interpretation = `To detect an odds ratio of ${or} with ${(parseFloat(powerVal)*100).toFixed(0)}% power at a significance level of ${alphaVal},
+            assuming ${(p0*100).toFixed(0)}% exposure prevalence in controls with a ${r}:1 control-to-case ratio,
+            you need ${cases} cases and ${controls} controls (total N = ${cases + controls}).
+            The expected exposure proportion in cases is ${(p1*100).toFixed(1)}%.`;
+            document.getElementById('cc-interpretation-text').textContent = interpretation;
+
+            document.getElementById('cc-results').classList.add('show');
+            });
+        }
+
+        function calcCohort(btn) {
+            withLoader(btn, function() {
+            const p0 = parseFloat(document.getElementById('coh-p0').value);
+            const rr = parseFloat(document.getElementById('coh-rr').value);
+            const r = parseFloat(document.getElementById('coh-ratio').value);
+            const alphaVal = document.getElementById('coh-alpha').value;
+            const powerVal = document.getElementById('coh-power').value;
+            const za = getZ(alphaVal);
+            const zb = getZBeta(powerVal);
+
+            const p1 = p0 * rr;
+            const q1 = 1 - p1;
+            const q0 = 1 - p0;
+            const pbar = (p1 + r * p0) / (1 + r);
+            const qbar = 1 - pbar;
+
+            const term1 = za * Math.sqrt((1 + 1/r) * pbar * qbar);
+            const term2 = zb * Math.sqrt(p1 * q1 + p0 * q0 / r);
+            const num = Math.pow(term1 + term2, 2);
+            const denom = Math.pow(p1 - p0, 2);
+            const exposed = Math.ceil(num / denom);
+            const unexposed = Math.ceil(exposed * r);
+
+            // Store calculation results globally
+            calculationResults.cohort = {
+                studyType: 'Cohort Study',
+                inputs: {
+                    relativeRisk: rr,
+                    p0: p0,
+                    ratio: r,
+                    alpha: parseFloat(alphaVal),
+                    power: parseFloat(powerVal),
+                    za: za,
+                    zb: zb
+                },
+                intermediates: {
+                    p1: p1,
+                    q1: q1,
+                    q0: q0,
+                    pbar: pbar,
+                    qbar: qbar,
+                    term1: term1,
+                    term2: term2,
+                    numerator: num,
+                    denominator: denom
+                },
+                results: {
+                    exposed: exposed,
+                    unexposed: unexposed,
+                    total: exposed + unexposed
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            // Update display
+            document.getElementById('coh-exposed').textContent = exposed;
+            document.getElementById('coh-unexposed').textContent = unexposed;
+            document.getElementById('coh-total').textContent = exposed + unexposed;
+            document.getElementById('coh-p1').textContent = p1.toFixed(4);
+
+            // Display calculation steps
+            const stepsHtml = `
+                <div class="step"><span class="step-label">Step 1:</span> Calculate P1 (incidence in exposed)</div>
+                <div class="step">P1 = P0 x RR = ${p0} x ${rr} = ${p1.toFixed(4)}</div>
+                <div class="step"><span class="step-label">Step 2:</span> Calculate pooled proportion</div>
+                <div class="step">P_bar = (P1 + r x P0) / (1 + r) = (${p1.toFixed(4)} + ${r} x ${p0}) / (1 + ${r}) = ${pbar.toFixed(4)}</div>
+                <div class="step">Q_bar = 1 - P_bar = ${qbar.toFixed(4)}</div>
+                <div class="step"><span class="step-label">Step 3:</span> Calculate Z-values</div>
+                <div class="step">Z_alpha (${alphaVal}) = ${za}, Z_beta (power ${powerVal}) = ${zb}</div>
+                <div class="step"><span class="step-label">Step 4:</span> Calculate sample size</div>
+                <div class="step">Term 1 = ${za} x sqrt((1 + 1/${r}) x ${pbar.toFixed(4)} x ${qbar.toFixed(4)}) = ${term1.toFixed(4)}</div>
+                <div class="step">Term 2 = ${zb} x sqrt(${p1.toFixed(4)} x ${q1.toFixed(4)} + ${p0} x ${q0.toFixed(4)} / ${r}) = ${term2.toFixed(4)}</div>
+                <div class="step">n_exposed = (${term1.toFixed(4)} + ${term2.toFixed(4)})^2 / (${p1.toFixed(4)} - ${p0})^2 = ${exposed}</div>
+                <div class="step">n_unexposed = ${exposed} x ${r} = ${unexposed}</div>
+            `;
+            document.getElementById('coh-steps-content').innerHTML = stepsHtml;
+
+            // Interpretation
+            const interpretation = `To detect a relative risk of ${rr} with ${(parseFloat(powerVal)*100).toFixed(0)}% power at a significance level of ${alphaVal},
+            assuming ${(p0*100).toFixed(0)}% baseline incidence in the unexposed group with a ${r}:1 unexposed-to-exposed ratio,
+            you need ${exposed} exposed and ${unexposed} unexposed participants (total N = ${exposed + unexposed}).
+            The expected incidence in the exposed group is ${(p1*100).toFixed(1)}%.`;
+            document.getElementById('coh-interpretation-text').textContent = interpretation;
+
+            document.getElementById('coh-results').classList.add('show');
+            });
+        }
+
+        function calcProportion(btn) {
+            withLoader(btn, function() {
+            const p1 = parseFloat(document.getElementById('prop-p1').value);
+            const p2 = parseFloat(document.getElementById('prop-p2').value);
+            const r = parseFloat(document.getElementById('prop-ratio').value);
+            const alphaVal = document.getElementById('prop-alpha').value;
+            const powerVal = document.getElementById('prop-power').value;
+            const za = getZ(alphaVal);
+            const zb = getZBeta(powerVal);
+
+            const q1 = 1 - p1;
+            const q2 = 1 - p2;
+            const pbar = (p1 + r * p2) / (1 + r);
+            const qbar = 1 - pbar;
+
+            const term1 = za * Math.sqrt((1 + 1/r) * pbar * qbar);
+            const term2 = zb * Math.sqrt(p1 * q1 + p2 * q2 / r);
+            const num = Math.pow(term1 + term2, 2);
+            const denom = Math.pow(p1 - p2, 2);
+            const n1 = Math.ceil(num / denom);
+            const n2 = Math.ceil(n1 * r);
+
+            // Store calculation results globally
+            calculationResults.proportion = {
+                studyType: 'Two Proportions Comparison',
+                inputs: {
+                    p1: p1,
+                    p2: p2,
+                    ratio: r,
+                    alpha: parseFloat(alphaVal),
+                    power: parseFloat(powerVal),
+                    za: za,
+                    zb: zb
+                },
+                intermediates: {
+                    q1: q1,
+                    q2: q2,
+                    pbar: pbar,
+                    qbar: qbar,
+                    term1: term1,
+                    term2: term2,
+                    numerator: num,
+                    denominator: denom,
+                    difference: Math.abs(p1 - p2)
+                },
+                results: {
+                    n1: n1,
+                    n2: n2,
+                    total: n1 + n2
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            // Update display
+            document.getElementById('prop-n1').textContent = n1;
+            document.getElementById('prop-n2').textContent = n2;
+            document.getElementById('prop-total').textContent = n1 + n2;
+            document.getElementById('prop-diff').textContent = Math.abs(p1 - p2).toFixed(3);
+
+            // Display calculation steps
+            const stepsHtml = `
+                <div class="step"><span class="step-label">Step 1:</span> Define proportions</div>
+                <div class="step">P1 = ${p1}, Q1 = ${q1.toFixed(4)}</div>
+                <div class="step">P2 = ${p2}, Q2 = ${q2.toFixed(4)}</div>
+                <div class="step">Difference = |P1 - P2| = ${Math.abs(p1 - p2).toFixed(4)}</div>
+                <div class="step"><span class="step-label">Step 2:</span> Calculate pooled proportion</div>
+                <div class="step">P_bar = (P1 + r x P2) / (1 + r) = (${p1} + ${r} x ${p2}) / (1 + ${r}) = ${pbar.toFixed(4)}</div>
+                <div class="step">Q_bar = 1 - P_bar = ${qbar.toFixed(4)}</div>
+                <div class="step"><span class="step-label">Step 3:</span> Calculate Z-values</div>
+                <div class="step">Z_alpha (${alphaVal}) = ${za}, Z_beta (power ${powerVal}) = ${zb}</div>
+                <div class="step"><span class="step-label">Step 4:</span> Calculate sample size</div>
+                <div class="step">Term 1 = ${za} x sqrt((1 + 1/${r}) x ${pbar.toFixed(4)} x ${qbar.toFixed(4)}) = ${term1.toFixed(4)}</div>
+                <div class="step">Term 2 = ${zb} x sqrt(${p1} x ${q1.toFixed(4)} + ${p2} x ${q2.toFixed(4)} / ${r}) = ${term2.toFixed(4)}</div>
+                <div class="step">n1 = (${term1.toFixed(4)} + ${term2.toFixed(4)})^2 / (${p1} - ${p2})^2 = ${n1}</div>
+                <div class="step">n2 = ${n1} x ${r} = ${n2}</div>
+            `;
+            document.getElementById('prop-steps-content').innerHTML = stepsHtml;
+
+            // Interpretation
+            const interpretation = `To detect a difference of ${(Math.abs(p1-p2)*100).toFixed(1)}% between two proportions (${(p1*100).toFixed(0)}% vs ${(p2*100).toFixed(0)}%)
+            with ${(parseFloat(powerVal)*100).toFixed(0)}% power at a significance level of ${alphaVal} using a ${r}:1 allocation ratio,
+            you need ${n1} participants in Group 1 and ${n2} in Group 2 (total N = ${n1 + n2}).`;
+            document.getElementById('prop-interpretation-text').textContent = interpretation;
+
+            document.getElementById('prop-results').classList.add('show');
+            });
+        }
+
+        function exportPDF(studyType) {
+            const data = calculationResults[studyType];
+            if (!data) {
+                alert('Please perform a calculation first before exporting.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Get selected theme
+            const themeSelector = document.querySelector(`input[name="${studyType === 'casecontrol' ? 'cc' : studyType === 'cohort' ? 'coh' : 'prop'}-pdf-theme"]:checked`);
+            const isDarkTheme = themeSelector ? themeSelector.value === 'dark' : false;
+
+            // Theme colors
+            const colors = isDarkTheme ? {
+                bg: [30, 41, 59],
+                headerBg: [139, 92, 246],
+                text: [241, 245, 249],
+                textSecondary: [148, 163, 184],
+                accent: [139, 92, 246],
+                sectionBg: [51, 65, 85],
+                border: [71, 85, 105]
+            } : {
+                bg: [255, 255, 255],
+                headerBg: [139, 92, 246],
+                text: [30, 41, 59],
+                textSecondary: [71, 85, 105],
+                accent: [139, 92, 246],
+                sectionBg: [245, 243, 255],
+                border: [226, 232, 240]
+            };
+
+            let yPos = 0;
+
+            // Background
+            if (isDarkTheme) {
+                doc.setFillColor(...colors.bg);
+                doc.rect(0, 0, 210, 297, 'F');
+            }
+
+            // Header with gradient effect
+            doc.setFillColor(...colors.headerBg);
+            doc.rect(0, 0, 210, 45, 'F');
+
+            // Header text
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.text('KARMASTAT', 105, 18, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Observational Studies Sample Size Calculator', 105, 28, { align: 'center' });
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text(data.studyType, 105, 40, { align: 'center' });
+
+            yPos = 55;
+
+            // Helper function to add section
+            function addSection(title, yStart) {
+                doc.setFillColor(...colors.sectionBg);
+                doc.roundedRect(15, yStart, 180, 8, 2, 2, 'F');
+                doc.setTextColor(...colors.accent);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text(title, 20, yStart + 6);
+                return yStart + 12;
+            }
+
+            // Helper function to add key-value pair
+            function addKeyValue(key, value, y) {
+                doc.setTextColor(...colors.textSecondary);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(key + ':', 20, y);
+                doc.setTextColor(...colors.text);
+                doc.setFont('helvetica', 'bold');
+                doc.text(String(value), 90, y);
+                return y + 6;
+            }
+
+            // INPUT PARAMETERS SECTION
+            yPos = addSection('INPUT PARAMETERS', yPos);
+
+            if (studyType === 'casecontrol') {
+                yPos = addKeyValue('Odds Ratio (OR)', data.inputs.oddsRatio, yPos);
+                yPos = addKeyValue('Exposure in Controls (P0)', (data.inputs.p0 * 100).toFixed(1) + '%', yPos);
+                yPos = addKeyValue('Case:Control Ratio', '1:' + data.inputs.ratio, yPos);
+            } else if (studyType === 'cohort') {
+                yPos = addKeyValue('Relative Risk (RR)', data.inputs.relativeRisk, yPos);
+                yPos = addKeyValue('Incidence in Unexposed (P0)', (data.inputs.p0 * 100).toFixed(1) + '%', yPos);
+                yPos = addKeyValue('Exposed:Unexposed Ratio', '1:' + data.inputs.ratio, yPos);
+            } else {
+                yPos = addKeyValue('Proportion Group 1 (P1)', (data.inputs.p1 * 100).toFixed(1) + '%', yPos);
+                yPos = addKeyValue('Proportion Group 2 (P2)', (data.inputs.p2 * 100).toFixed(1) + '%', yPos);
+                yPos = addKeyValue('Allocation Ratio', '1:' + data.inputs.ratio, yPos);
+            }
+            yPos = addKeyValue('Significance Level (Alpha)', data.inputs.alpha, yPos);
+            yPos = addKeyValue('Statistical Power', (data.inputs.power * 100).toFixed(0) + '%', yPos);
+            yPos = addKeyValue('Z-alpha (two-tailed)', data.inputs.za.toFixed(3), yPos);
+            yPos = addKeyValue('Z-beta', data.inputs.zb.toFixed(3), yPos);
+
+            yPos += 5;
+
+            // FORMULA SECTION
+            yPos = addSection('FORMULA USED', yPos);
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+            doc.setFont('courier', 'normal');
+
+            if (studyType === 'casecontrol') {
+                doc.text('Fleiss Method for Case-Control Studies:', 20, yPos);
+                yPos += 5;
+                doc.text('P1 = (OR x P0) / (1 + P0 x (OR - 1))', 20, yPos);
+                yPos += 5;
+                doc.text('P_bar = (P1 + r x P0) / (1 + r)', 20, yPos);
+                yPos += 5;
+                doc.text('n = [(Za x sqrt((1+1/r) x Pbar x Qbar) + Zb x sqrt(P1Q1 + P0Q0/r))^2]', 20, yPos);
+                yPos += 5;
+                doc.text('    / (P1 - P0)^2', 20, yPos);
+            } else if (studyType === 'cohort') {
+                doc.text('Cohort Study Sample Size Formula:', 20, yPos);
+                yPos += 5;
+                doc.text('P1 = P0 x RR (Incidence in exposed)', 20, yPos);
+                yPos += 5;
+                doc.text('P_bar = (P1 + r x P0) / (1 + r)', 20, yPos);
+                yPos += 5;
+                doc.text('n = [(Za x sqrt((1+1/r) x Pbar x Qbar) + Zb x sqrt(P1Q1 + P0Q0/r))^2]', 20, yPos);
+                yPos += 5;
+                doc.text('    / (P1 - P0)^2', 20, yPos);
+            } else {
+                doc.text('Two Proportions Z-test:', 20, yPos);
+                yPos += 5;
+                doc.text('P_bar = (P1 + r x P2) / (1 + r)', 20, yPos);
+                yPos += 5;
+                doc.text('n1 = [(Za x sqrt((1+1/r) x Pbar x Qbar) + Zb x sqrt(P1Q1 + P2Q2/r))^2]', 20, yPos);
+                yPos += 5;
+                doc.text('     / (P1 - P2)^2', 20, yPos);
+                yPos += 5;
+                doc.text('n2 = r x n1', 20, yPos);
+            }
+
+            yPos += 8;
+
+            // STEP-BY-STEP CALCULATION
+            yPos = addSection('STEP-BY-STEP CALCULATION', yPos);
+
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+
+            if (studyType === 'casecontrol') {
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 1: Calculate P1 (exposure in cases)', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`P1 = (${data.inputs.oddsRatio} x ${data.inputs.p0}) / (1 + ${data.inputs.p0} x (${data.inputs.oddsRatio} - 1)) = ${data.intermediates.p1.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 2: Calculate pooled proportion', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`P_bar = ${data.intermediates.pbar.toFixed(4)}, Q_bar = ${data.intermediates.qbar.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 3: Calculate terms', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`Term 1 = ${data.intermediates.term1.toFixed(4)}, Term 2 = ${data.intermediates.term2.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 4: Final calculation', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`n_cases = ${data.results.cases}, n_controls = ${data.results.controls}`, 25, yPos);
+
+            } else if (studyType === 'cohort') {
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 1: Calculate P1 (incidence in exposed)', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`P1 = ${data.inputs.p0} x ${data.inputs.relativeRisk} = ${data.intermediates.p1.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 2: Calculate pooled proportion', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`P_bar = ${data.intermediates.pbar.toFixed(4)}, Q_bar = ${data.intermediates.qbar.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 3: Calculate terms', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`Term 1 = ${data.intermediates.term1.toFixed(4)}, Term 2 = ${data.intermediates.term2.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 4: Final calculation', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`n_exposed = ${data.results.exposed}, n_unexposed = ${data.results.unexposed}`, 25, yPos);
+
+            } else {
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 1: Define proportions', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`P1 = ${data.inputs.p1}, P2 = ${data.inputs.p2}, Difference = ${data.intermediates.difference.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 2: Calculate pooled proportion', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`P_bar = ${data.intermediates.pbar.toFixed(4)}, Q_bar = ${data.intermediates.qbar.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 3: Calculate terms', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`Term 1 = ${data.intermediates.term1.toFixed(4)}, Term 2 = ${data.intermediates.term2.toFixed(4)}`, 25, yPos);
+                yPos += 6;
+
+                doc.setTextColor(...colors.accent);
+                doc.text('Step 4: Final calculation', 20, yPos);
+                yPos += 5;
+                doc.setTextColor(...colors.text);
+                doc.text(`n1 = ${data.results.n1}, n2 = ${data.results.n2}`, 25, yPos);
+            }
+
+            yPos += 8;
+
+            // RESULTS SECTION
+            yPos = addSection('FINAL RESULTS', yPos);
+
+            // Results box
+            doc.setFillColor(...(isDarkTheme ? [71, 85, 105] : [237, 233, 254]));
+            doc.roundedRect(20, yPos, 170, 25, 3, 3, 'F');
+
+            doc.setTextColor(...colors.accent);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+
+            if (studyType === 'casecontrol') {
+                doc.text(`Cases: ${data.results.cases}`, 35, yPos + 10);
+                doc.text(`Controls: ${data.results.controls}`, 95, yPos + 10);
+                doc.text(`Total: ${data.results.total}`, 155, yPos + 10);
+            } else if (studyType === 'cohort') {
+                doc.text(`Exposed: ${data.results.exposed}`, 35, yPos + 10);
+                doc.text(`Unexposed: ${data.results.unexposed}`, 95, yPos + 10);
+                doc.text(`Total: ${data.results.total}`, 155, yPos + 10);
+            } else {
+                doc.text(`Group 1: ${data.results.n1}`, 35, yPos + 10);
+                doc.text(`Group 2: ${data.results.n2}`, 95, yPos + 10);
+                doc.text(`Total: ${data.results.total}`, 155, yPos + 10);
+            }
+
+            yPos += 33;
+
+            // INTERPRETATION SECTION
+            yPos = addSection('INTERPRETATION', yPos);
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+
+            let interpretationText = '';
+            if (studyType === 'casecontrol') {
+                interpretationText = `To detect an odds ratio of ${data.inputs.oddsRatio} with ${(data.inputs.power*100).toFixed(0)}% power at alpha = ${data.inputs.alpha}, assuming ${(data.inputs.p0*100).toFixed(0)}% exposure in controls with a 1:${data.inputs.ratio} case-to-control ratio, you need ${data.results.cases} cases and ${data.results.controls} controls (total N = ${data.results.total}). The expected exposure in cases is ${(data.intermediates.p1*100).toFixed(1)}%.`;
+            } else if (studyType === 'cohort') {
+                interpretationText = `To detect a relative risk of ${data.inputs.relativeRisk} with ${(data.inputs.power*100).toFixed(0)}% power at alpha = ${data.inputs.alpha}, assuming ${(data.inputs.p0*100).toFixed(0)}% baseline incidence with a 1:${data.inputs.ratio} exposed-to-unexposed ratio, you need ${data.results.exposed} exposed and ${data.results.unexposed} unexposed participants (total N = ${data.results.total}). Expected incidence in exposed is ${(data.intermediates.p1*100).toFixed(1)}%.`;
+            } else {
+                interpretationText = `To detect a difference of ${(data.intermediates.difference*100).toFixed(1)}% between proportions (${(data.inputs.p1*100).toFixed(0)}% vs ${(data.inputs.p2*100).toFixed(0)}%) with ${(data.inputs.power*100).toFixed(0)}% power at alpha = ${data.inputs.alpha} using 1:${data.inputs.ratio} allocation, you need ${data.results.n1} in Group 1 and ${data.results.n2} in Group 2 (total N = ${data.results.total}).`;
+            }
+
+            const splitInterpretation = doc.splitTextToSize(interpretationText, 170);
+            doc.text(splitInterpretation, 20, yPos);
+            yPos += splitInterpretation.length * 4 + 8;
+
+            // DESIGN CONSIDERATIONS
+            yPos = addSection('DESIGN CONSIDERATIONS', yPos);
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(9);
+
+            let considerations = [];
+            if (studyType === 'casecontrol') {
+                considerations = [
+                    '- Consider adding 10-20% for non-response/incomplete data',
+                    '- Matching can increase efficiency but complicates analysis',
+                    '- Multiple controls per case (up to 4:1) increases power',
+                    '- Ensure clear case definitions and control selection'
+                ];
+            } else if (studyType === 'cohort') {
+                considerations = [
+                    '- Account for anticipated loss to follow-up (10-30%)',
+                    '- Consider feasibility of required follow-up period',
+                    '- Plan for interim analyses for long studies',
+                    '- Ensure comparable baseline characteristics'
+                ];
+            } else {
+                considerations = [
+                    '- Consider continuity correction for small samples',
+                    '- Account for dropouts and non-compliance',
+                    '- Ensure independent samples between groups',
+                    '- Plan for stratified analysis if needed'
+                ];
+            }
+
+            considerations.forEach(item => {
+                doc.text(item, 20, yPos);
+                yPos += 5;
+            });
+
+            yPos += 5;
+
+            // REFERENCE
+            yPos = addSection('REFERENCE', yPos);
+
+            doc.setTextColor(...colors.text);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'italic');
+
+            if (studyType === 'casecontrol') {
+                doc.text('Fleiss JL, Levin B, Paik MC. Statistical Methods for Rates and Proportions.', 20, yPos);
+                yPos += 4;
+                doc.text('3rd ed. Hoboken, NJ: John Wiley & Sons; 2003. Chapter 6.', 20, yPos);
+            } else if (studyType === 'cohort') {
+                doc.text('Kelsey JL, Whittemore AS, Evans AS, Thompson WD. Methods in Observational', 20, yPos);
+                yPos += 4;
+                doc.text('Epidemiology. 2nd ed. New York: Oxford University Press; 1996.', 20, yPos);
+            } else {
+                doc.text('Fleiss JL, Levin B, Paik MC. Statistical Methods for Rates and Proportions.', 20, yPos);
+                yPos += 4;
+                doc.text('3rd ed. Hoboken, NJ: John Wiley & Sons; 2003. Chapter 4.', 20, yPos);
+            }
+
+            // Footer
+            doc.setFillColor(...colors.headerBg);
+            doc.rect(0, 280, 210, 17, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+
+            const timestamp = new Date().toLocaleString();
+            doc.text(`Generated: ${timestamp}`, 15, 288);
+
+            doc.setFont('helvetica', 'bold');
+            doc.text('Generated by KARMASTAT - Crafted by Karmayogi', 195, 288, { align: 'right' });
+
+            // Save PDF
+            const filename = `KARMASTAT_${data.studyType.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+            doc.save(filename);
+        }
+    </script>
+</body>
+</html>

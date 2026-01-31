@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT - Power Analysis Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --primary-light: #A78BFA;
+            --secondary: #6D28D9;
+            --accent: #DDD6FE;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F5F3FF;
+            --bg-card: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+            --shadow-hover: 0 8px 25px rgba(139, 92, 246, 0.25);
+
+            --gradient-primary: linear-gradient(135deg, #8B5CF6, #A78BFA, #C4B5FD);
+            --gradient-secondary: linear-gradient(135deg, #6D28D9, #7C3AED, #8B5CF6);
+            --gradient-bg: linear-gradient(135deg, #F5F3FF, #EDE9FE, #DDD6FE);
+            --gradient-card: linear-gradient(145deg, #FFFFFF, #F5F3FF);
+
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Courier New', 'Monaco', monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1F1B2E;
+            --bg-secondary: #2D2640;
+            --bg-card: #2D2640;
+            --text-primary: #F3F4F6;
+            --text-secondary: #D1D5DB;
+            --text-muted: #9CA3AF;
+            --border-color: #4C4270;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.4);
+            --gradient-bg: linear-gradient(135deg, #1F1B2E, #2D2640, #3D3560);
+            --gradient-card: linear-gradient(145deg, #2D2640, #3D3560);
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .karma-page-loader .loader-content {
+            text-align: center;
+        }
+
+        .karma-page-loader .loader-text {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes karmaFlow {
+            0% { stroke-dashoffset: 300; opacity: 0.4; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -300; opacity: 0.4; }
+        }
+
+        .karma-point {
+            animation: karmaPulse 1.2s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(3) { animation-delay: 0.2s; }
+        .karma-point:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes karmaPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1.5s linear infinite;
+        }
+
+        @keyframes spinnerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-path {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 15;
+            animation: spinnerDash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinnerDash {
+            0% { stroke-dashoffset: 60; }
+            50% { stroke-dashoffset: 15; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .results-loading .karma-infinity {
+            width: 80px;
+            height: 40px;
+        }
+
+        .results-loading .karma-path {
+            stroke: var(--primary);
+        }
+
+        .results-loading .karma-point {
+            fill: var(--primary-light);
+        }
+
+        .results-loading p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            min-height: 100vh;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            font-weight: 800;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Test Type Selection */
+        .test-selection {
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .test-selection h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .test-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .test-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .test-card.active {
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .test-card.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+        }
+
+        .test-card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .test-card-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .test-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            display: none;
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .calculator-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Formula Display */
+        .formula-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .formula-toggle {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .formula-toggle:hover {
+            background: var(--bg-secondary);
+        }
+
+        .formula-toggle-icon {
+            margin-right: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--primary);
+        }
+
+        .formula-toggle.active .formula-toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .formula-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .formula-content.active {
+            max-height: 800px;
+        }
+
+        .formula-display {
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 1.5rem;
+            margin: 1rem;
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            text-align: center;
+            border-radius: var(--radius);
+        }
+
+        .formula-explanation {
+            padding: 1rem 1.5rem;
+        }
+
+        .formula-explanation ul {
+            list-style: none;
+        }
+
+        .formula-explanation li {
+            padding: 0.5rem 0;
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .formula-explanation li:last-child {
+            border-bottom: none;
+        }
+
+        .formula-var {
+            font-family: var(--font-mono);
+            font-weight: bold;
+            color: var(--primary);
+            min-width: 100px;
+        }
+
+        /* Input Grid */
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group label .help-icon {
+            cursor: help;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .results-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .results-title h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .export-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .pdf-theme-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pdf-theme-selector label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .pdf-theme-selector select {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .export-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .power-display {
+            background: var(--gradient-secondary);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .power-value {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .power-label {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .power-interpretation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--radius);
+            color: white;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+        }
+
+        /* Interpretation Guide */
+        .interpretation-guide {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .interpretation-guide h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .interpretation-list {
+            list-style: none;
+        }
+
+        .interpretation-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .interpretation-list .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-low { background: #FEE2E2; color: #DC2626; }
+        .badge-medium { background: #FEF3C7; color: #D97706; }
+        .badge-good { background: #D1FAE5; color: #059669; }
+        .badge-excellent { background: #DBEAFE; color: #2563EB; }
+
+        /* Recommendations Section */
+        .recommendations-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendations-section h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recommendations-list {
+            list-style: none;
+        }
+
+        .recommendations-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .recommendations-list li:last-child {
+            border-bottom: none;
+        }
+
+        .recommendations-list .rec-icon {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gradient-secondary);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-top: 2rem;
+        }
+
+        .footer-love {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-blessing {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.8rem; }
+            .logo { flex-direction: column; gap: 1rem; }
+            .back-link, .theme-toggle {
+                position: static;
+                margin: 0.5rem;
+            }
+            .header { padding-top: 4rem; }
+            .test-grid { grid-template-columns: 1fr; }
+            .power-value { font-size: 3rem; }
+            .export-controls { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#ffffff"/>
+                            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path"
+                          d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30"
+                          fill="none" stroke="url(#loaderGrad)" stroke-width="5" stroke-linecap="round"/>
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <a href="karmastat_2_0_main.html" class="back-link">
+                <span>&#8592;</span> Back to Main
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeIcon">&#9790;</span> Theme
+            </button>
+            <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                          fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                    <circle cx="20" cy="20" r="3" fill="white"/>
+                    <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+                </svg>
+                <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+            </div>
+            <div class="logo">
+                <div>
+                    <h1>Power Analysis Calculator</h1>
+                    <p class="subtitle">Calculate statistical power given your sample size and study parameters</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Test Type Selection -->
+        <section class="test-selection">
+            <h2>Select Statistical Test Type</h2>
+            <div class="test-grid">
+                <div class="test-card active" data-test="two-sample-t" onclick="selectTest('two-sample-t')">
+                    <div class="test-card-icon">&#128200;</div>
+                    <div class="test-card-title">Two-Sample T-Test</div>
+                    <div class="test-card-desc">Compare means between two independent groups</div>
+                </div>
+                <div class="test-card" data-test="paired-t" onclick="selectTest('paired-t')">
+                    <div class="test-card-icon">&#128195;</div>
+                    <div class="test-card-title">Paired T-Test</div>
+                    <div class="test-card-desc">Compare means in matched pairs or repeated measures</div>
+                </div>
+                <div class="test-card" data-test="one-prop" onclick="selectTest('one-prop')">
+                    <div class="test-card-icon">&#128202;</div>
+                    <div class="test-card-title">One-Sample Proportion</div>
+                    <div class="test-card-desc">Test a proportion against a hypothesized value</div>
+                </div>
+                <div class="test-card" data-test="two-prop" onclick="selectTest('two-prop')">
+                    <div class="test-card-icon">&#9878;</div>
+                    <div class="test-card-title">Two-Sample Proportion</div>
+                    <div class="test-card-desc">Compare proportions between two groups (Chi-Square)</div>
+                </div>
+                <div class="test-card" data-test="anova" onclick="selectTest('anova')">
+                    <div class="test-card-icon">&#128201;</div>
+                    <div class="test-card-title">ANOVA (F-Test)</div>
+                    <div class="test-card-desc">Compare means across multiple groups</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Two-Sample T-Test Calculator -->
+        <section class="calculator-section active" id="two-sample-t-calc">
+            <div class="section-header">
+                <div class="section-icon">&#128200;</div>
+                <h3>Two-Sample T-Test Power Analysis</h3>
+            </div>
+
+            <div class="formula-container">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-toggle-icon">&#9654;</span>
+                    View Statistical Formula & Explanation
+                </div>
+                <div class="formula-content">
+                    <div class="formula-display">
+                        Power = P(|T| > t_crit | delta) where delta = d * sqrt(n1*n2/(n1+n2))
+                    </div>
+                    <div class="formula-explanation">
+                        <ul>
+                            <li><span class="formula-var">T</span><span>T-test statistic under non-central t-distribution</span></li>
+                            <li><span class="formula-var">delta</span><span>Non-centrality parameter</span></li>
+                            <li><span class="formula-var">d</span><span>Effect size (Cohen's d) = (mu1 - mu2) / sigma</span></li>
+                            <li><span class="formula-var">n1, n2</span><span>Sample sizes in each group</span></li>
+                            <li><span class="formula-var">t_crit</span><span>Critical t-value for chosen alpha level</span></li>
+                            <li><span class="formula-var">alpha</span><span>Type I error rate (significance level)</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Sample Size (Group 1) <span class="help-icon" title="Number of participants in first group">&#9432;</span></label>
+                    <input type="number" id="twoT_n1" value="50" min="2" step="1">
+                    <span class="input-hint">Minimum 2 participants</span>
+                </div>
+                <div class="input-group">
+                    <label>Sample Size (Group 2) <span class="help-icon" title="Number of participants in second group">&#9432;</span></label>
+                    <input type="number" id="twoT_n2" value="50" min="2" step="1">
+                    <span class="input-hint">Minimum 2 participants</span>
+                </div>
+                <div class="input-group">
+                    <label>Effect Size (Cohen's d) <span class="help-icon" title="Standardized mean difference">&#9432;</span></label>
+                    <input type="number" id="twoT_d" value="0.5" min="0.01" max="3" step="0.01">
+                    <span class="input-hint">Small: 0.2, Medium: 0.5, Large: 0.8</span>
+                </div>
+                <div class="input-group">
+                    <label>Alpha Level <span class="help-icon" title="Significance level (Type I error rate)">&#9432;</span></label>
+                    <select id="twoT_alpha">
+                        <option value="0.01">0.01 (1%)</option>
+                        <option value="0.05" selected>0.05 (5%)</option>
+                        <option value="0.10">0.10 (10%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateTwoSampleT(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Power</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Paired T-Test Calculator -->
+        <section class="calculator-section" id="paired-t-calc">
+            <div class="section-header">
+                <div class="section-icon">&#128195;</div>
+                <h3>Paired T-Test Power Analysis</h3>
+            </div>
+
+            <div class="formula-container">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-toggle-icon">&#9654;</span>
+                    View Statistical Formula & Explanation
+                </div>
+                <div class="formula-content">
+                    <div class="formula-display">
+                        Power = P(|T| > t_crit | delta) where delta = d * sqrt(n)
+                    </div>
+                    <div class="formula-explanation">
+                        <ul>
+                            <li><span class="formula-var">T</span><span>Paired t-test statistic</span></li>
+                            <li><span class="formula-var">delta</span><span>Non-centrality parameter</span></li>
+                            <li><span class="formula-var">d</span><span>Effect size = mean difference / SD of differences</span></li>
+                            <li><span class="formula-var">n</span><span>Number of pairs</span></li>
+                            <li><span class="formula-var">t_crit</span><span>Critical t-value for chosen alpha level</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Number of Pairs <span class="help-icon" title="Number of matched pairs or repeated measures">&#9432;</span></label>
+                    <input type="number" id="pairedT_n" value="30" min="2" step="1">
+                    <span class="input-hint">Minimum 2 pairs</span>
+                </div>
+                <div class="input-group">
+                    <label>Effect Size (Cohen's d) <span class="help-icon" title="Standardized mean difference">&#9432;</span></label>
+                    <input type="number" id="pairedT_d" value="0.5" min="0.01" max="3" step="0.01">
+                    <span class="input-hint">Small: 0.2, Medium: 0.5, Large: 0.8</span>
+                </div>
+                <div class="input-group">
+                    <label>Alpha Level</label>
+                    <select id="pairedT_alpha">
+                        <option value="0.01">0.01 (1%)</option>
+                        <option value="0.05" selected>0.05 (5%)</option>
+                        <option value="0.10">0.10 (10%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculatePairedT(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Power</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- One-Sample Proportion Calculator -->
+        <section class="calculator-section" id="one-prop-calc">
+            <div class="section-header">
+                <div class="section-icon">&#128202;</div>
+                <h3>One-Sample Proportion Power Analysis</h3>
+            </div>
+
+            <div class="formula-container">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-toggle-icon">&#9654;</span>
+                    View Statistical Formula & Explanation
+                </div>
+                <div class="formula-content">
+                    <div class="formula-display">
+                        Power = P(Z > z_crit | effect) where effect = (p - p0) * sqrt(n)
+                    </div>
+                    <div class="formula-explanation">
+                        <ul>
+                            <li><span class="formula-var">p</span><span>Expected (alternative) proportion</span></li>
+                            <li><span class="formula-var">p0</span><span>Null hypothesis proportion</span></li>
+                            <li><span class="formula-var">q</span><span>1 - p (complement of proportion)</span></li>
+                            <li><span class="formula-var">n</span><span>Sample size</span></li>
+                            <li><span class="formula-var">z_crit</span><span>Critical z-value for chosen alpha</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Sample Size <span class="help-icon" title="Total number of participants">&#9432;</span></label>
+                    <input type="number" id="oneProp_n" value="100" min="10" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Null Proportion (p0) <span class="help-icon" title="Hypothesized proportion under null">&#9432;</span></label>
+                    <input type="number" id="oneProp_p0" value="0.5" min="0.01" max="0.99" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Alternative Proportion (p) <span class="help-icon" title="Expected true proportion">&#9432;</span></label>
+                    <input type="number" id="oneProp_p1" value="0.65" min="0.01" max="0.99" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Alpha Level</label>
+                    <select id="oneProp_alpha">
+                        <option value="0.01">0.01 (1%)</option>
+                        <option value="0.05" selected>0.05 (5%)</option>
+                        <option value="0.10">0.10 (10%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateOneProp(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Power</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Two-Sample Proportion Calculator -->
+        <section class="calculator-section" id="two-prop-calc">
+            <div class="section-header">
+                <div class="section-icon">&#9878;</div>
+                <h3>Two-Sample Proportion (Chi-Square) Power Analysis</h3>
+            </div>
+
+            <div class="formula-container">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-toggle-icon">&#9654;</span>
+                    View Statistical Formula & Explanation
+                </div>
+                <div class="formula-content">
+                    <div class="formula-display">
+                        Power = P(Chi2 > chi2_crit | lambda) where lambda = n * h^2
+                    </div>
+                    <div class="formula-explanation">
+                        <ul>
+                            <li><span class="formula-var">p1, p2</span><span>Proportions in each group</span></li>
+                            <li><span class="formula-var">h</span><span>Cohen's h = 2*arcsin(sqrt(p1)) - 2*arcsin(sqrt(p2))</span></li>
+                            <li><span class="formula-var">p_bar</span><span>Pooled proportion = (n1*p1 + n2*p2)/(n1+n2)</span></li>
+                            <li><span class="formula-var">lambda</span><span>Non-centrality parameter</span></li>
+                            <li><span class="formula-var">n</span><span>Total sample size</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Sample Size (Group 1)</label>
+                    <input type="number" id="twoProp_n1" value="100" min="10" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Sample Size (Group 2)</label>
+                    <input type="number" id="twoProp_n2" value="100" min="10" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Proportion (Group 1)</label>
+                    <input type="number" id="twoProp_p1" value="0.3" min="0.01" max="0.99" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Proportion (Group 2)</label>
+                    <input type="number" id="twoProp_p2" value="0.5" min="0.01" max="0.99" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Alpha Level</label>
+                    <select id="twoProp_alpha">
+                        <option value="0.01">0.01 (1%)</option>
+                        <option value="0.05" selected>0.05 (5%)</option>
+                        <option value="0.10">0.10 (10%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateTwoProp(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Power</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- ANOVA Calculator -->
+        <section class="calculator-section" id="anova-calc">
+            <div class="section-header">
+                <div class="section-icon">&#128201;</div>
+                <h3>ANOVA (F-Test) Power Analysis</h3>
+            </div>
+
+            <div class="formula-container">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-toggle-icon">&#9654;</span>
+                    View Statistical Formula & Explanation
+                </div>
+                <div class="formula-content">
+                    <div class="formula-display">
+                        Power = P(F > F_crit | lambda) where lambda = n * k * f^2
+                    </div>
+                    <div class="formula-explanation">
+                        <ul>
+                            <li><span class="formula-var">F_crit</span><span>Critical F-value for given alpha and df</span></li>
+                            <li><span class="formula-var">lambda</span><span>Non-centrality parameter</span></li>
+                            <li><span class="formula-var">f</span><span>Cohen's f effect size = sqrt(eta^2 / (1 - eta^2))</span></li>
+                            <li><span class="formula-var">k</span><span>Number of groups</span></li>
+                            <li><span class="formula-var">n</span><span>Sample size per group</span></li>
+                            <li><span class="formula-var">df1</span><span>Between-groups df = k - 1</span></li>
+                            <li><span class="formula-var">df2</span><span>Within-groups df = k(n - 1)</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Sample Size per Group</label>
+                    <input type="number" id="anova_n" value="20" min="3" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Number of Groups</label>
+                    <input type="number" id="anova_k" value="3" min="2" max="10" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Effect Size (Cohen's f) <span class="help-icon" title="f = sqrt(eta^2 / (1-eta^2))">&#9432;</span></label>
+                    <input type="number" id="anova_f" value="0.25" min="0.01" max="2" step="0.01">
+                    <span class="input-hint">Small: 0.10, Medium: 0.25, Large: 0.40</span>
+                </div>
+                <div class="input-group">
+                    <label>Alpha Level</label>
+                    <select id="anova_alpha">
+                        <option value="0.01">0.01 (1%)</option>
+                        <option value="0.05" selected>0.05 (5%)</option>
+                        <option value="0.10">0.10 (10%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateAnova(this)">
+                <span class="btn-text"><span>&#9889;</span> Calculate Power</span>
+                <span class="karma-spinner">
+                    <svg viewBox="0 0 24 24">
+                        <path class="spinner-path" d="M4 12 C4 7, 8 7, 12 12 C16 17, 20 17, 20 12 C20 7, 16 7, 12 12 C8 17, 4 17, 4 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="results">
+            <div class="results-header">
+                <div class="results-title">
+                    <div class="section-icon">&#9989;</div>
+                    <h3>Power Analysis Results</h3>
+                </div>
+                <div class="export-controls">
+                    <div class="pdf-theme-selector">
+                        <label for="pdfTheme">PDF Theme:</label>
+                        <select id="pdfTheme">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
+                    <button class="export-btn" onclick="exportToPDF()">
+                        <span>&#128196;</span> Export Comprehensive PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="power-display">
+                <div class="power-value" id="powerValue">--</div>
+                <div class="power-label">Statistical Power</div>
+                <div class="power-interpretation" id="powerInterpretation"></div>
+            </div>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Dynamic results will be inserted here -->
+            </div>
+
+            <div class="recommendations-section" id="recommendationsSection">
+                <h4><span>&#128161;</span> Study Recommendations</h4>
+                <ul class="recommendations-list" id="recommendationsList">
+                    <!-- Dynamic recommendations will be inserted here -->
+                </ul>
+            </div>
+
+            <div class="chart-container">
+                <h4>Power Curve</h4>
+                <div class="chart-wrapper">
+                    <canvas id="powerChart"></canvas>
+                </div>
+            </div>
+
+            <div class="interpretation-guide">
+                <h4>Power Interpretation Guide</h4>
+                <ul class="interpretation-list">
+                    <li><span class="badge badge-low">&lt; 50%</span> Very low power - high risk of Type II error</li>
+                    <li><span class="badge badge-medium">50-70%</span> Low power - consider increasing sample size</li>
+                    <li><span class="badge badge-good">70-80%</span> Acceptable power for exploratory studies</li>
+                    <li><span class="badge badge-good">80-90%</span> Standard power level for confirmatory research</li>
+                    <li><span class="badge badge-excellent">&gt; 90%</span> High power - robust study design</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-love">Made with &#10084; by Karmayogi</div>
+            <div class="footer-blessing">&#128591; Jai Shri Ram &#128591;</div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Hide page loader when content is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button loading state functions
+        function showButtonLoader(btn) {
+            if (btn) btn.classList.add('loading');
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) btn.classList.remove('loading');
+        }
+
+        // Wrap calculation with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 600);
+        }
+
+        // Global calculation storage for PDF export
+        let currentCalculation = {
+            testType: '',
+            testName: '',
+            inputs: {},
+            formula: '',
+            steps: [],
+            power: 0,
+            powerPercent: '',
+            interpretation: '',
+            interpretationLevel: '',
+            recommendations: [],
+            details: {},
+            params: {}
+        };
+
+        // Statistical Functions
+        function normalCDF(x) {
+            const a1 =  0.254829592;
+            const a2 = -0.284496736;
+            const a3 =  1.421413741;
+            const a4 = -1.453152027;
+            const a5 =  1.061405429;
+            const p  =  0.3275911;
+
+            const sign = x < 0 ? -1 : 1;
+            x = Math.abs(x) / Math.sqrt(2);
+
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+            return 0.5 * (1.0 + sign * y);
+        }
+
+        function normalQuantile(p) {
+            if (p <= 0 || p >= 1) return NaN;
+
+            const a = [
+                -3.969683028665376e+01,  2.209460984245205e+02,
+                -2.759285104469687e+02,  1.383577518672690e+02,
+                -3.066479806614716e+01,  2.506628277459239e+00
+            ];
+            const b = [
+                -5.447609879822406e+01,  1.615858368580409e+02,
+                -1.556989798598866e+02,  6.680131188771972e+01,
+                -1.328068155288572e+01
+            ];
+            const c = [
+                -7.784894002430293e-03, -3.223964580411365e-01,
+                -2.400758277161838e+00, -2.549732539343734e+00,
+                 4.374664141464968e+00,  2.938163982698783e+00
+            ];
+            const d = [
+                 7.784695709041462e-03,  3.224671290700398e-01,
+                 2.445134137142996e+00,  3.754408661907416e+00
+            ];
+
+            const pLow = 0.02425;
+            const pHigh = 1 - pLow;
+
+            let q, r;
+
+            if (p < pLow) {
+                q = Math.sqrt(-2 * Math.log(p));
+                return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+                       ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+            } else if (p <= pHigh) {
+                q = p - 0.5;
+                r = q * q;
+                return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
+                       (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+            } else {
+                q = Math.sqrt(-2 * Math.log(1 - p));
+                return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+                        ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+            }
+        }
+
+        // F-distribution CDF approximation using normal approximation for non-central F
+        function fCDF(x, df1, df2, ncp = 0) {
+            if (x <= 0) return 0;
+
+            // Wilson-Hilferty approximation for central F
+            if (ncp === 0) {
+                const h = 2 / (9 * df1);
+                const k = 2 / (9 * df2);
+                const y = Math.pow(x, 1/3);
+                const z = (y * (1 - k) - (1 - h)) / Math.sqrt(h + k * y * y);
+                return normalCDF(z);
+            }
+
+            // For non-central F, use approximation
+            const lambda = ncp;
+            const mean = df2 * (df1 + lambda) / (df1 * (df2 - 2));
+            const variance = 2 * Math.pow(df2, 2) * ((df1 + lambda) * (df1 + lambda) + (df1 + 2 * lambda) * (df2 - 2)) /
+                            (Math.pow(df1, 2) * (df2 - 2) * (df2 - 2) * (df2 - 4));
+
+            const z = (x - mean) / Math.sqrt(variance);
+            return normalCDF(z);
+        }
+
+        function fQuantile(p, df1, df2) {
+            // Newton-Raphson iteration
+            let x = 1;
+            for (let i = 0; i < 100; i++) {
+                const fx = fCDF(x, df1, df2) - p;
+                if (Math.abs(fx) < 1e-10) break;
+                const h = 0.0001;
+                const fpx = (fCDF(x + h, df1, df2) - fCDF(x - h, df1, df2)) / (2 * h);
+                if (fpx === 0) break;
+                x = x - fx / fpx;
+                if (x < 0) x = 0.001;
+            }
+            return x;
+        }
+
+        // Chart instance
+        let powerChart = null;
+
+        // Test Selection
+        function selectTest(testType) {
+            document.querySelectorAll('.test-card').forEach(card => card.classList.remove('active'));
+            document.querySelector(`[data-test="${testType}"]`).classList.add('active');
+
+            document.querySelectorAll('.calculator-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`${testType}-calc`).classList.add('active');
+
+            document.getElementById('results').classList.remove('active');
+        }
+
+        // Generate recommendations based on power
+        function generateRecommendations(power, testType, params) {
+            const recommendations = [];
+
+            if (power < 0.5) {
+                recommendations.push('CRITICAL: The current design has very low power. Consider substantially increasing sample size.');
+                recommendations.push('Consider increasing the effect size by improving the intervention or measurement precision.');
+                recommendations.push('Review whether the chosen alpha level is appropriate for your research context.');
+                recommendations.push('Consider using a more sensitive statistical test if available.');
+            } else if (power < 0.7) {
+                recommendations.push('The study is underpowered for confirmatory research purposes.');
+                recommendations.push('Consider increasing sample size by 30-50% to achieve adequate power.');
+                recommendations.push('This power level may be acceptable only for exploratory or pilot studies.');
+            } else if (power < 0.8) {
+                recommendations.push('Power is marginally acceptable for exploratory studies.');
+                recommendations.push('For confirmatory research, consider a modest increase in sample size.');
+                recommendations.push('Document the power analysis in your research protocol.');
+            } else if (power < 0.9) {
+                recommendations.push('Good statistical power achieved - suitable for confirmatory research.');
+                recommendations.push('The study design meets conventional standards (Cohen, 1988).');
+                recommendations.push('Ensure data collection and analysis procedures maintain this power level.');
+            } else {
+                recommendations.push('Excellent statistical power - robust study design.');
+                recommendations.push('Consider whether resources could be reallocated to other aspects of the study.');
+                recommendations.push('High power provides strong protection against Type II errors.');
+            }
+
+            // Test-specific recommendations
+            if (testType === 'twoSampleT' || testType === 'pairedT') {
+                if (params.d < 0.3) {
+                    recommendations.push('Small effect size detected - ensure adequate sample size for detection.');
+                }
+            }
+
+            if (testType === 'anova') {
+                recommendations.push(`With ${params.k} groups, ensure balanced design for optimal power.`);
+            }
+
+            return recommendations;
+        }
+
+        // Get interpretation level
+        function getInterpretationLevel(power) {
+            if (power < 0.5) return 'Very Low';
+            if (power < 0.7) return 'Low';
+            if (power < 0.8) return 'Acceptable';
+            if (power < 0.9) return 'Good';
+            return 'Excellent';
+        }
+
+        // Two-Sample T-Test Power
+        function calculateTwoSampleT() {
+            const n1 = parseFloat(document.getElementById('twoT_n1').value);
+            const n2 = parseFloat(document.getElementById('twoT_n2').value);
+            const d = parseFloat(document.getElementById('twoT_d').value);
+            const alpha = parseFloat(document.getElementById('twoT_alpha').value);
+
+            const zAlpha = normalQuantile(1 - alpha / 2);
+            const nEff = (n1 * n2) / (n1 + n2);
+            const ncp = d * Math.sqrt(nEff);
+
+            const power = normalCDF(ncp - zAlpha) + normalCDF(-ncp - zAlpha);
+
+            // Store calculation details
+            currentCalculation = {
+                testType: 'twoSampleT',
+                testName: 'Two-Sample T-Test',
+                inputs: {
+                    'Sample Size (Group 1)': n1,
+                    'Sample Size (Group 2)': n2,
+                    'Effect Size (Cohen\'s d)': d,
+                    'Alpha Level': alpha
+                },
+                formula: 'Power = P(|T| > t_crit | delta)\nwhere delta = d * sqrt(n1*n2/(n1+n2))',
+                steps: [
+                    `Step 1: Calculate effective sample size`,
+                    `  n_eff = (n1 * n2) / (n1 + n2)`,
+                    `  n_eff = (${n1} * ${n2}) / (${n1} + ${n2})`,
+                    `  n_eff = ${nEff.toFixed(4)}`,
+                    ``,
+                    `Step 2: Calculate critical z-value for alpha = ${alpha}`,
+                    `  z_crit = Z(1 - alpha/2) = Z(${1 - alpha/2})`,
+                    `  z_crit = ${zAlpha.toFixed(4)}`,
+                    ``,
+                    `Step 3: Calculate non-centrality parameter`,
+                    `  delta = d * sqrt(n_eff)`,
+                    `  delta = ${d} * sqrt(${nEff.toFixed(4)})`,
+                    `  delta = ${ncp.toFixed(4)}`,
+                    ``,
+                    `Step 4: Calculate power using normal approximation`,
+                    `  Power = Phi(delta - z_crit) + Phi(-delta - z_crit)`,
+                    `  Power = Phi(${ncp.toFixed(4)} - ${zAlpha.toFixed(4)}) + Phi(${(-ncp).toFixed(4)} - ${zAlpha.toFixed(4)})`,
+                    `  Power = Phi(${(ncp - zAlpha).toFixed(4)}) + Phi(${(-ncp - zAlpha).toFixed(4)})`,
+                    `  Power = ${normalCDF(ncp - zAlpha).toFixed(4)} + ${normalCDF(-ncp - zAlpha).toFixed(4)}`,
+                    `  Power = ${power.toFixed(4)}`
+                ],
+                power: power,
+                powerPercent: (power * 100).toFixed(1) + '%',
+                params: { n1, n2, d, alpha }
+            };
+
+            displayResults(power, {
+                'Test Type': 'Two-Sample T-Test',
+                'Group 1 Sample Size': n1,
+                'Group 2 Sample Size': n2,
+                'Total Sample Size': n1 + n2,
+                'Effect Size (Cohen\'s d)': d.toFixed(3),
+                'Alpha Level': alpha,
+                'Critical z-value': zAlpha.toFixed(4),
+                'Non-centrality Parameter': ncp.toFixed(4)
+            }, 'twoSampleT', { n1, n2, d, alpha });
+        }
+
+        // Paired T-Test Power
+        function calculatePairedT() {
+            const n = parseFloat(document.getElementById('pairedT_n').value);
+            const d = parseFloat(document.getElementById('pairedT_d').value);
+            const alpha = parseFloat(document.getElementById('pairedT_alpha').value);
+
+            const zAlpha = normalQuantile(1 - alpha / 2);
+            const ncp = d * Math.sqrt(n);
+
+            const power = normalCDF(ncp - zAlpha);
+
+            // Store calculation details
+            currentCalculation = {
+                testType: 'pairedT',
+                testName: 'Paired T-Test',
+                inputs: {
+                    'Number of Pairs': n,
+                    'Effect Size (Cohen\'s d)': d,
+                    'Alpha Level': alpha
+                },
+                formula: 'Power = P(|T| > t_crit | delta)\nwhere delta = d * sqrt(n)',
+                steps: [
+                    `Step 1: Calculate critical z-value for alpha = ${alpha}`,
+                    `  z_crit = Z(1 - alpha/2) = Z(${1 - alpha/2})`,
+                    `  z_crit = ${zAlpha.toFixed(4)}`,
+                    ``,
+                    `Step 2: Calculate non-centrality parameter`,
+                    `  delta = d * sqrt(n)`,
+                    `  delta = ${d} * sqrt(${n})`,
+                    `  delta = ${d} * ${Math.sqrt(n).toFixed(4)}`,
+                    `  delta = ${ncp.toFixed(4)}`,
+                    ``,
+                    `Step 3: Calculate power using normal approximation`,
+                    `  Power = Phi(delta - z_crit)`,
+                    `  Power = Phi(${ncp.toFixed(4)} - ${zAlpha.toFixed(4)})`,
+                    `  Power = Phi(${(ncp - zAlpha).toFixed(4)})`,
+                    `  Power = ${power.toFixed(4)}`
+                ],
+                power: power,
+                powerPercent: (power * 100).toFixed(1) + '%',
+                params: { n, d, alpha }
+            };
+
+            displayResults(power, {
+                'Test Type': 'Paired T-Test',
+                'Number of Pairs': n,
+                'Effect Size (Cohen\'s d)': d.toFixed(3),
+                'Alpha Level': alpha,
+                'Critical z-value': zAlpha.toFixed(4),
+                'Non-centrality Parameter': ncp.toFixed(4)
+            }, 'pairedT', { n, d, alpha });
+        }
+
+        // One-Sample Proportion Power
+        function calculateOneProp() {
+            const n = parseFloat(document.getElementById('oneProp_n').value);
+            const p0 = parseFloat(document.getElementById('oneProp_p0').value);
+            const p1 = parseFloat(document.getElementById('oneProp_p1').value);
+            const alpha = parseFloat(document.getElementById('oneProp_alpha').value);
+
+            const zAlpha = normalQuantile(1 - alpha / 2);
+            const q0 = 1 - p0;
+            const q1 = 1 - p1;
+
+            const numerator = Math.abs(p1 - p0) * Math.sqrt(n) - zAlpha * Math.sqrt(p0 * q0);
+            const denominator = Math.sqrt(p1 * q1);
+            const z = numerator / denominator;
+
+            const power = normalCDF(z);
+
+            // Store calculation details
+            currentCalculation = {
+                testType: 'oneProp',
+                testName: 'One-Sample Proportion Test',
+                inputs: {
+                    'Sample Size': n,
+                    'Null Proportion (p0)': p0,
+                    'Alternative Proportion (p1)': p1,
+                    'Alpha Level': alpha
+                },
+                formula: 'Power = Phi((|p1 - p0| * sqrt(n) - z_crit * sqrt(p0*q0)) / sqrt(p1*q1))',
+                steps: [
+                    `Step 1: Calculate critical z-value for alpha = ${alpha}`,
+                    `  z_crit = Z(1 - alpha/2) = Z(${1 - alpha/2})`,
+                    `  z_crit = ${zAlpha.toFixed(4)}`,
+                    ``,
+                    `Step 2: Calculate complement proportions`,
+                    `  q0 = 1 - p0 = 1 - ${p0} = ${q0.toFixed(4)}`,
+                    `  q1 = 1 - p1 = 1 - ${p1} = ${q1.toFixed(4)}`,
+                    ``,
+                    `Step 3: Calculate the numerator`,
+                    `  numerator = |p1 - p0| * sqrt(n) - z_crit * sqrt(p0 * q0)`,
+                    `  numerator = |${p1} - ${p0}| * sqrt(${n}) - ${zAlpha.toFixed(4)} * sqrt(${p0} * ${q0})`,
+                    `  numerator = ${Math.abs(p1 - p0).toFixed(4)} * ${Math.sqrt(n).toFixed(4)} - ${zAlpha.toFixed(4)} * ${Math.sqrt(p0 * q0).toFixed(4)}`,
+                    `  numerator = ${numerator.toFixed(4)}`,
+                    ``,
+                    `Step 4: Calculate the denominator`,
+                    `  denominator = sqrt(p1 * q1) = sqrt(${p1} * ${q1})`,
+                    `  denominator = ${denominator.toFixed(4)}`,
+                    ``,
+                    `Step 5: Calculate z-score and power`,
+                    `  z = numerator / denominator = ${numerator.toFixed(4)} / ${denominator.toFixed(4)}`,
+                    `  z = ${z.toFixed(4)}`,
+                    `  Power = Phi(z) = Phi(${z.toFixed(4)})`,
+                    `  Power = ${power.toFixed(4)}`
+                ],
+                power: power,
+                powerPercent: (power * 100).toFixed(1) + '%',
+                params: { n, p0, p1, alpha }
+            };
+
+            displayResults(power, {
+                'Test Type': 'One-Sample Proportion',
+                'Sample Size': n,
+                'Null Proportion': p0.toFixed(3),
+                'Alternative Proportion': p1.toFixed(3),
+                'Difference': Math.abs(p1 - p0).toFixed(3),
+                'Alpha Level': alpha,
+                'Critical z-value': zAlpha.toFixed(4)
+            }, 'oneProp', { n, p0, p1, alpha });
+        }
+
+        // Two-Sample Proportion Power
+        function calculateTwoProp() {
+            const n1 = parseFloat(document.getElementById('twoProp_n1').value);
+            const n2 = parseFloat(document.getElementById('twoProp_n2').value);
+            const p1 = parseFloat(document.getElementById('twoProp_p1').value);
+            const p2 = parseFloat(document.getElementById('twoProp_p2').value);
+            const alpha = parseFloat(document.getElementById('twoProp_alpha').value);
+
+            const q1 = 1 - p1;
+            const q2 = 1 - p2;
+            const pBar = (p1 + p2) / 2;
+            const qBar = 1 - pBar;
+
+            const zAlpha = normalQuantile(1 - alpha / 2);
+            const nHarmonic = 2 / (1/n1 + 1/n2);
+
+            const numerator = Math.abs(p1 - p2) * Math.sqrt(nHarmonic / 2) - zAlpha * Math.sqrt(2 * pBar * qBar);
+            const denominator = Math.sqrt(p1 * q1 + p2 * q2);
+            const z = numerator / denominator;
+
+            const power = normalCDF(z);
+
+            // Cohen's h effect size
+            const h = 2 * Math.asin(Math.sqrt(p1)) - 2 * Math.asin(Math.sqrt(p2));
+
+            // Store calculation details
+            currentCalculation = {
+                testType: 'twoProp',
+                testName: 'Two-Sample Proportion Test (Chi-Square)',
+                inputs: {
+                    'Sample Size (Group 1)': n1,
+                    'Sample Size (Group 2)': n2,
+                    'Proportion (Group 1)': p1,
+                    'Proportion (Group 2)': p2,
+                    'Alpha Level': alpha
+                },
+                formula: 'Power = Phi((|p1-p2| * sqrt(n_h/2) - z_crit * sqrt(2*p_bar*q_bar)) / sqrt(p1*q1 + p2*q2))',
+                steps: [
+                    `Step 1: Calculate critical z-value for alpha = ${alpha}`,
+                    `  z_crit = Z(1 - alpha/2) = Z(${1 - alpha/2})`,
+                    `  z_crit = ${zAlpha.toFixed(4)}`,
+                    ``,
+                    `Step 2: Calculate complement proportions`,
+                    `  q1 = 1 - p1 = 1 - ${p1} = ${q1.toFixed(4)}`,
+                    `  q2 = 1 - p2 = 1 - ${p2} = ${q2.toFixed(4)}`,
+                    ``,
+                    `Step 3: Calculate pooled proportion`,
+                    `  p_bar = (p1 + p2) / 2 = (${p1} + ${p2}) / 2 = ${pBar.toFixed(4)}`,
+                    `  q_bar = 1 - p_bar = ${qBar.toFixed(4)}`,
+                    ``,
+                    `Step 4: Calculate harmonic mean of sample sizes`,
+                    `  n_h = 2 / (1/n1 + 1/n2) = 2 / (1/${n1} + 1/${n2})`,
+                    `  n_h = ${nHarmonic.toFixed(4)}`,
+                    ``,
+                    `Step 5: Calculate Cohen's h effect size`,
+                    `  h = 2*arcsin(sqrt(p1)) - 2*arcsin(sqrt(p2))`,
+                    `  h = 2*arcsin(${Math.sqrt(p1).toFixed(4)}) - 2*arcsin(${Math.sqrt(p2).toFixed(4)})`,
+                    `  h = ${Math.abs(h).toFixed(4)}`,
+                    ``,
+                    `Step 6: Calculate numerator and denominator`,
+                    `  numerator = |p1 - p2| * sqrt(n_h/2) - z_crit * sqrt(2 * p_bar * q_bar)`,
+                    `  numerator = ${Math.abs(p1 - p2).toFixed(4)} * ${Math.sqrt(nHarmonic / 2).toFixed(4)} - ${zAlpha.toFixed(4)} * ${Math.sqrt(2 * pBar * qBar).toFixed(4)}`,
+                    `  numerator = ${numerator.toFixed(4)}`,
+                    `  denominator = sqrt(p1*q1 + p2*q2) = ${denominator.toFixed(4)}`,
+                    ``,
+                    `Step 7: Calculate z-score and power`,
+                    `  z = numerator / denominator = ${z.toFixed(4)}`,
+                    `  Power = Phi(z) = ${power.toFixed(4)}`
+                ],
+                power: power,
+                powerPercent: (power * 100).toFixed(1) + '%',
+                params: { n1, n2, p1, p2, alpha }
+            };
+
+            displayResults(power, {
+                'Test Type': 'Two-Sample Proportion (Chi-Square)',
+                'Group 1 Sample Size': n1,
+                'Group 2 Sample Size': n2,
+                'Group 1 Proportion': p1.toFixed(3),
+                'Group 2 Proportion': p2.toFixed(3),
+                'Difference': Math.abs(p1 - p2).toFixed(3),
+                'Cohen\'s h': Math.abs(h).toFixed(4),
+                'Alpha Level': alpha
+            }, 'twoProp', { n1, n2, p1, p2, alpha });
+        }
+
+        // ANOVA Power
+        function calculateAnova() {
+            const n = parseFloat(document.getElementById('anova_n').value);
+            const k = parseFloat(document.getElementById('anova_k').value);
+            const f = parseFloat(document.getElementById('anova_f').value);
+            const alpha = parseFloat(document.getElementById('anova_alpha').value);
+
+            const df1 = k - 1;
+            const df2 = k * (n - 1);
+            const lambda = n * k * f * f;  // Non-centrality parameter
+
+            const fCrit = fQuantile(1 - alpha, df1, df2);
+
+            // Power = P(F > Fcrit | lambda)
+            const power = 1 - fCDF(fCrit, df1, df2, lambda);
+
+            // Convert f to eta-squared
+            const etaSquared = (f * f) / (1 + f * f);
+
+            // Store calculation details
+            currentCalculation = {
+                testType: 'anova',
+                testName: 'One-Way ANOVA (F-Test)',
+                inputs: {
+                    'Sample Size per Group': n,
+                    'Number of Groups': k,
+                    'Effect Size (Cohen\'s f)': f,
+                    'Alpha Level': alpha
+                },
+                formula: 'Power = P(F > F_crit | lambda)\nwhere lambda = n * k * f^2',
+                steps: [
+                    `Step 1: Calculate degrees of freedom`,
+                    `  df1 (between groups) = k - 1 = ${k} - 1 = ${df1}`,
+                    `  df2 (within groups) = k * (n - 1) = ${k} * (${n} - 1) = ${df2}`,
+                    ``,
+                    `Step 2: Calculate non-centrality parameter (lambda)`,
+                    `  lambda = n * k * f^2`,
+                    `  lambda = ${n} * ${k} * ${f}^2`,
+                    `  lambda = ${n} * ${k} * ${(f * f).toFixed(4)}`,
+                    `  lambda = ${lambda.toFixed(4)}`,
+                    ``,
+                    `Step 3: Calculate critical F-value for alpha = ${alpha}`,
+                    `  F_crit = F(${1 - alpha}; df1=${df1}, df2=${df2})`,
+                    `  F_crit = ${fCrit.toFixed(4)}`,
+                    ``,
+                    `Step 4: Convert Cohen's f to eta-squared`,
+                    `  eta^2 = f^2 / (1 + f^2) = ${(f*f).toFixed(4)} / ${(1 + f*f).toFixed(4)}`,
+                    `  eta^2 = ${etaSquared.toFixed(4)} (${(etaSquared * 100).toFixed(1)}% variance explained)`,
+                    ``,
+                    `Step 5: Calculate power using non-central F distribution`,
+                    `  Power = P(F > F_crit | lambda = ${lambda.toFixed(4)})`,
+                    `  Power = 1 - P(F <= ${fCrit.toFixed(4)} | lambda = ${lambda.toFixed(4)})`,
+                    `  Power = ${power.toFixed(4)}`
+                ],
+                power: power,
+                powerPercent: (power * 100).toFixed(1) + '%',
+                params: { n, k, f, alpha }
+            };
+
+            displayResults(power, {
+                'Test Type': 'ANOVA (F-Test)',
+                'Sample Size per Group': n,
+                'Number of Groups': k,
+                'Total Sample Size': n * k,
+                'Effect Size (Cohen\'s f)': f.toFixed(3),
+                'Eta-squared': etaSquared.toFixed(4),
+                'Alpha Level': alpha,
+                'df1 (between)': df1,
+                'df2 (within)': df2,
+                'Critical F-value': fCrit.toFixed(4),
+                'Non-centrality (lambda)': lambda.toFixed(4)
+            }, 'anova', { n, k, f, alpha });
+        }
+
+        // Display Results
+        function displayResults(power, details, testType, params) {
+            document.getElementById('results').classList.add('active');
+
+            // Update power value
+            const powerPercent = (power * 100).toFixed(1);
+            document.getElementById('powerValue').textContent = powerPercent + '%';
+
+            // Interpretation
+            let interpretation = '';
+            let interpretationLevel = getInterpretationLevel(power);
+
+            if (power < 0.5) {
+                interpretation = 'Very low statistical power. The study has a high risk of failing to detect a true effect (Type II error). Consider increasing sample size or accepting a larger effect size.';
+            } else if (power < 0.7) {
+                interpretation = 'Low statistical power. The study may miss true effects. Consider increasing sample size for more reliable results.';
+            } else if (power < 0.8) {
+                interpretation = 'Acceptable power for exploratory studies. For confirmatory research, consider increasing to 80% or higher.';
+            } else if (power < 0.9) {
+                interpretation = 'Good statistical power. This meets the standard threshold for well-powered confirmatory studies.';
+            } else {
+                interpretation = 'Excellent statistical power. The study is well-powered to detect the specified effect size.';
+            }
+            document.getElementById('powerInterpretation').textContent = interpretation;
+
+            // Update current calculation storage
+            currentCalculation.interpretation = interpretation;
+            currentCalculation.interpretationLevel = interpretationLevel;
+            currentCalculation.details = details;
+            currentCalculation.recommendations = generateRecommendations(power, testType, params);
+
+            // Results grid
+            const resultsGrid = document.getElementById('resultsGrid');
+            resultsGrid.innerHTML = '';
+
+            for (const [label, value] of Object.entries(details)) {
+                resultsGrid.innerHTML += `
+                    <div class="result-card">
+                        <div class="result-label">${label}</div>
+                        <div class="result-value">${value}</div>
+                    </div>
+                `;
+            }
+
+            // Display recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            currentCalculation.recommendations.forEach(rec => {
+                recommendationsList.innerHTML += `
+                    <li>
+                        <span class="rec-icon">></span>
+                        <span>${rec}</span>
+                    </li>
+                `;
+            });
+
+            // Draw power curve
+            drawPowerCurve(testType, params);
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Draw Power Curve
+        function drawPowerCurve(testType, params) {
+            const ctx = document.getElementById('powerChart').getContext('2d');
+
+            if (powerChart) {
+                powerChart.destroy();
+            }
+
+            let labels = [];
+            let data = [];
+            let xLabel = '';
+
+            if (testType === 'twoSampleT') {
+                xLabel = 'Sample Size per Group';
+                for (let n = 10; n <= 200; n += 10) {
+                    const nEff = (n * n) / (n + n);
+                    const zAlpha = normalQuantile(1 - params.alpha / 2);
+                    const ncp = params.d * Math.sqrt(nEff);
+                    const power = normalCDF(ncp - zAlpha) + normalCDF(-ncp - zAlpha);
+                    labels.push(n);
+                    data.push((power * 100).toFixed(1));
+                }
+            } else if (testType === 'pairedT') {
+                xLabel = 'Number of Pairs';
+                for (let n = 5; n <= 100; n += 5) {
+                    const zAlpha = normalQuantile(1 - params.alpha / 2);
+                    const ncp = params.d * Math.sqrt(n);
+                    const power = normalCDF(ncp - zAlpha);
+                    labels.push(n);
+                    data.push((power * 100).toFixed(1));
+                }
+            } else if (testType === 'oneProp') {
+                xLabel = 'Sample Size';
+                for (let n = 20; n <= 300; n += 20) {
+                    const zAlpha = normalQuantile(1 - params.alpha / 2);
+                    const q0 = 1 - params.p0;
+                    const q1 = 1 - params.p1;
+                    const numerator = Math.abs(params.p1 - params.p0) * Math.sqrt(n) - zAlpha * Math.sqrt(params.p0 * q0);
+                    const denominator = Math.sqrt(params.p1 * q1);
+                    const power = normalCDF(numerator / denominator);
+                    labels.push(n);
+                    data.push((power * 100).toFixed(1));
+                }
+            } else if (testType === 'twoProp') {
+                xLabel = 'Sample Size per Group';
+                for (let n = 20; n <= 300; n += 20) {
+                    const q1 = 1 - params.p1;
+                    const q2 = 1 - params.p2;
+                    const pBar = (params.p1 + params.p2) / 2;
+                    const qBar = 1 - pBar;
+                    const zAlpha = normalQuantile(1 - params.alpha / 2);
+                    const numerator = Math.abs(params.p1 - params.p2) * Math.sqrt(n) - zAlpha * Math.sqrt(2 * pBar * qBar);
+                    const denominator = Math.sqrt(q1 * params.p1 + q2 * params.p2);
+                    const power = normalCDF(numerator / denominator);
+                    labels.push(n);
+                    data.push((power * 100).toFixed(1));
+                }
+            } else if (testType === 'anova') {
+                xLabel = 'Sample Size per Group';
+                for (let n = 5; n <= 50; n += 5) {
+                    const df1 = params.k - 1;
+                    const df2 = params.k * (n - 1);
+                    const lambda = n * params.k * params.f * params.f;
+                    const fCrit = fQuantile(1 - params.alpha, df1, df2);
+                    const power = 1 - fCDF(fCrit, df1, df2, lambda);
+                    labels.push(n);
+                    data.push((power * 100).toFixed(1));
+                }
+            }
+
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Statistical Power (%)',
+                        data: data,
+                        borderColor: '#8B5CF6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#8B5CF6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }, {
+                        label: '80% Power Threshold',
+                        data: labels.map(() => 80),
+                        borderColor: '#10B981',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: xLabel,
+                                font: { weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Power (%)',
+                                font: { weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Toggle Formula
+        function toggleFormula(element) {
+            element.classList.toggle('active');
+            element.nextElementSibling.classList.toggle('active');
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeIcon').innerHTML = isDark ? '&#9790;' : '&#9728;';
+            localStorage.setItem('karmastat-theme', isDark ? 'light' : 'dark');
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('karmastat-theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                document.getElementById('themeIcon').innerHTML = savedTheme === 'dark' ? '&#9728;' : '&#9790;';
+            }
+        });
+
+        // Comprehensive PDF Export
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const pdfTheme = document.getElementById('pdfTheme').value;
+            const isDarkTheme = pdfTheme === 'dark';
+
+            // Theme colors
+            const colors = {
+                primary: [139, 92, 246],        // Purple #8B5CF6
+                primaryDark: [109, 40, 217],    // Darker purple
+                white: [255, 255, 255],
+                black: [0, 0, 0],
+                gray: [107, 114, 128],
+                lightGray: [229, 231, 235],
+                bgLight: [245, 243, 255],
+                bgDark: [31, 27, 46],
+                textDark: [31, 41, 55],
+                textLight: [243, 244, 246],
+                success: [16, 185, 129],
+                warning: [245, 158, 11],
+                danger: [239, 68, 68]
+            };
+
+            const bgColor = isDarkTheme ? colors.bgDark : colors.white;
+            const textColor = isDarkTheme ? colors.textLight : colors.textDark;
+            const mutedColor = isDarkTheme ? [156, 163, 175] : colors.gray;
+
+            let yPos = 10;
+            const leftMargin = 15;
+            const rightMargin = 195;
+            const pageWidth = 210;
+            const contentWidth = pageWidth - 30;
+
+            // Helper function to add new page if needed
+            function checkNewPage(requiredSpace = 30) {
+                if (yPos + requiredSpace > 280) {
+                    doc.addPage();
+                    yPos = 15;
+                    // Add page background for dark theme
+                    if (isDarkTheme) {
+                        doc.setFillColor(...bgColor);
+                        doc.rect(0, 0, 210, 297, 'F');
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            // Page background for dark theme
+            if (isDarkTheme) {
+                doc.setFillColor(...bgColor);
+                doc.rect(0, 0, 210, 297, 'F');
+            }
+
+            // === HEADER SECTION ===
+            // Header background
+            doc.setFillColor(...colors.primary);
+            doc.rect(0, 0, 210, 45, 'F');
+
+            // Gradient effect (simulated with rectangles)
+            doc.setFillColor(167, 139, 250); // Lighter purple
+            doc.rect(0, 0, 210, 3, 'F');
+
+            // Logo circle
+            doc.setFillColor(...colors.white);
+            doc.circle(25, 22, 10, 'F');
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.primary);
+            doc.text('K', 22, 26);
+
+            // Title
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.white);
+            doc.text('KARMASTAT', 40, 20);
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Power Analysis Report', 40, 28);
+
+            // Analysis Type Badge
+            doc.setFillColor(...colors.white);
+            doc.roundedRect(40, 32, 80, 8, 2, 2, 'F');
+            doc.setFontSize(9);
+            doc.setTextColor(...colors.primary);
+            doc.text(currentCalculation.testName, 44, 38);
+
+            // Date on right
+            doc.setFontSize(9);
+            doc.setTextColor(...colors.white);
+            const dateStr = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            doc.text(dateStr, rightMargin, 40, { align: 'right' });
+
+            yPos = 55;
+
+            // === POWER RESULT SECTION ===
+            // Power display box
+            doc.setFillColor(...colors.primary);
+            doc.roundedRect(leftMargin, yPos, contentWidth, 35, 3, 3, 'F');
+
+            // Power value
+            doc.setFontSize(36);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.white);
+            doc.text(currentCalculation.powerPercent, pageWidth / 2, yPos + 22, { align: 'center' });
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Statistical Power', pageWidth / 2, yPos + 30, { align: 'center' });
+
+            yPos += 42;
+
+            // Power interpretation badge
+            let badgeColor = colors.success;
+            if (currentCalculation.power < 0.5) badgeColor = colors.danger;
+            else if (currentCalculation.power < 0.7) badgeColor = colors.warning;
+            else if (currentCalculation.power < 0.8) badgeColor = [59, 130, 246]; // Blue
+
+            doc.setFillColor(...badgeColor);
+            const badgeText = `Power Level: ${currentCalculation.interpretationLevel}`;
+            const badgeWidth = doc.getTextWidth(badgeText) + 16;
+            doc.roundedRect((pageWidth - badgeWidth) / 2, yPos, badgeWidth, 8, 2, 2, 'F');
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.white);
+            doc.text(badgeText, pageWidth / 2, yPos + 5.5, { align: 'center' });
+
+            yPos += 15;
+
+            // Interpretation text
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(...textColor);
+            const interpretLines = doc.splitTextToSize(currentCalculation.interpretation, contentWidth);
+            doc.text(interpretLines, leftMargin, yPos);
+            yPos += interpretLines.length * 5 + 8;
+
+            // === INPUT PARAMETERS SECTION ===
+            checkNewPage(50);
+
+            // Section header
+            doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : colors.bgLight));
+            doc.roundedRect(leftMargin, yPos, contentWidth, 8, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.primary);
+            doc.text('INPUT PARAMETERS', leftMargin + 5, yPos + 5.5);
+            yPos += 12;
+
+            // Parameters table
+            doc.setFontSize(9);
+            let col = 0;
+            const colWidth = contentWidth / 2;
+            const startY = yPos;
+
+            Object.entries(currentCalculation.inputs).forEach(([key, value], index) => {
+                if (col === 0 && index > 0 && index % 2 === 0) {
+                    yPos += 8;
+                    checkNewPage(20);
+                }
+
+                const xPos = leftMargin + (col * colWidth);
+
+                // Parameter box
+                doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : [249, 250, 251]));
+                doc.roundedRect(xPos, yPos, colWidth - 3, 7, 1, 1, 'F');
+
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...mutedColor);
+                doc.text(key + ':', xPos + 3, yPos + 5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...colors.primary);
+                doc.text(String(value), xPos + colWidth - 6, yPos + 5, { align: 'right' });
+
+                col = (col + 1) % 2;
+            });
+
+            yPos += 15;
+
+            // === FORMULA SECTION ===
+            checkNewPage(40);
+
+            // Section header
+            doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : colors.bgLight));
+            doc.roundedRect(leftMargin, yPos, contentWidth, 8, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.primary);
+            doc.text('FORMULA', leftMargin + 5, yPos + 5.5);
+            yPos += 12;
+
+            // Formula box
+            doc.setFillColor(...colors.primaryDark);
+            const formulaLines = currentCalculation.formula.split('\n');
+            const formulaHeight = formulaLines.length * 6 + 10;
+            doc.roundedRect(leftMargin, yPos, contentWidth, formulaHeight, 2, 2, 'F');
+
+            doc.setFontSize(10);
+            doc.setFont('courier', 'normal');
+            doc.setTextColor(...colors.white);
+            formulaLines.forEach((line, index) => {
+                doc.text(line, pageWidth / 2, yPos + 8 + (index * 6), { align: 'center' });
+            });
+
+            yPos += formulaHeight + 8;
+
+            // === STEP-BY-STEP CALCULATION ===
+            checkNewPage(50);
+
+            // Section header
+            doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : colors.bgLight));
+            doc.roundedRect(leftMargin, yPos, contentWidth, 8, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.primary);
+            doc.text('STEP-BY-STEP CALCULATION', leftMargin + 5, yPos + 5.5);
+            yPos += 12;
+
+            // Calculation steps
+            doc.setFontSize(8);
+            doc.setFont('courier', 'normal');
+
+            currentCalculation.steps.forEach(step => {
+                checkNewPage(8);
+
+                if (step === '') {
+                    yPos += 3;
+                    return;
+                }
+
+                if (step.startsWith('Step')) {
+                    doc.setFont('courier', 'bold');
+                    doc.setTextColor(...colors.primary);
+                } else {
+                    doc.setFont('courier', 'normal');
+                    doc.setTextColor(...textColor);
+                }
+
+                const stepLines = doc.splitTextToSize(step, contentWidth - 5);
+                stepLines.forEach(line => {
+                    doc.text(line, leftMargin + 3, yPos);
+                    yPos += 4;
+                });
+            });
+
+            yPos += 8;
+
+            // === DETAILED RESULTS ===
+            checkNewPage(50);
+
+            // Section header
+            doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : colors.bgLight));
+            doc.roundedRect(leftMargin, yPos, contentWidth, 8, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.primary);
+            doc.text('DETAILED RESULTS', leftMargin + 5, yPos + 5.5);
+            yPos += 12;
+
+            // Results in two columns
+            doc.setFontSize(9);
+            col = 0;
+
+            Object.entries(currentCalculation.details).forEach(([key, value], index) => {
+                if (col === 0 && index > 0 && index % 2 === 0) {
+                    yPos += 8;
+                    checkNewPage(20);
+                }
+
+                const xPos = leftMargin + (col * colWidth);
+
+                doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : [249, 250, 251]));
+                doc.roundedRect(xPos, yPos, colWidth - 3, 7, 1, 1, 'F');
+
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...mutedColor);
+                doc.text(key + ':', xPos + 3, yPos + 5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...colors.primary);
+                doc.text(String(value), xPos + colWidth - 6, yPos + 5, { align: 'right' });
+
+                col = (col + 1) % 2;
+            });
+
+            yPos += 15;
+
+            // === RECOMMENDATIONS ===
+            checkNewPage(50);
+
+            // Section header
+            doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : colors.bgLight));
+            doc.roundedRect(leftMargin, yPos, contentWidth, 8, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.primary);
+            doc.text('RECOMMENDATIONS', leftMargin + 5, yPos + 5.5);
+            yPos += 12;
+
+            // Recommendation items
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+
+            currentCalculation.recommendations.forEach((rec, index) => {
+                checkNewPage(15);
+
+                // Bullet point
+                doc.setFillColor(...colors.primary);
+                doc.circle(leftMargin + 3, yPos + 2, 1.5, 'F');
+
+                doc.setTextColor(...textColor);
+                const recLines = doc.splitTextToSize(rec, contentWidth - 12);
+                recLines.forEach((line, lineIndex) => {
+                    doc.text(line, leftMargin + 8, yPos + (lineIndex * 4) + 3);
+                });
+                yPos += recLines.length * 4 + 4;
+            });
+
+            yPos += 5;
+
+            // === REFERENCE CITATION ===
+            checkNewPage(30);
+
+            // Section header
+            doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : colors.bgLight));
+            doc.roundedRect(leftMargin, yPos, contentWidth, 8, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.primary);
+            doc.text('REFERENCE', leftMargin + 5, yPos + 5.5);
+            yPos += 12;
+
+            // Citation box
+            doc.setFillColor(...(isDarkTheme ? [45, 38, 64] : [249, 250, 251]));
+            doc.roundedRect(leftMargin, yPos, contentWidth, 18, 2, 2, 'F');
+
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'italic');
+            doc.setTextColor(...textColor);
+            doc.text('Cohen, J. (1988). Statistical Power Analysis for the Behavioral Sciences', leftMargin + 5, yPos + 6);
+            doc.text('(2nd ed.). Lawrence Erlbaum Associates.', leftMargin + 5, yPos + 11);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(...mutedColor);
+            doc.text('Effect size conventions: Small (d=0.2, f=0.10), Medium (d=0.5, f=0.25), Large (d=0.8, f=0.40)', leftMargin + 5, yPos + 16);
+
+            // === FOOTER ===
+            // Add footer on all pages
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+
+                // Footer line
+                doc.setDrawColor(...colors.primary);
+                doc.setLineWidth(0.5);
+                doc.line(leftMargin, 285, rightMargin, 285);
+
+                // Footer text
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...mutedColor);
+                doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, 290, { align: 'center' });
+
+                doc.setTextColor(...colors.primary);
+                doc.text('Generated by KARMASTAT', leftMargin, 290);
+
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(...mutedColor);
+                doc.text('Crafted by Karmayogi', rightMargin, 290, { align: 'right' });
+            }
+
+            // Save the PDF
+            const fileName = `KARMASTAT_Power_Analysis_${currentCalculation.testType}_${new Date().toISOString().slice(0,10)}.pdf`;
+            doc.save(fileName);
+        }
+    </script>
+</body>
+</html>

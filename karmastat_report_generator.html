@@ -1,0 +1,2598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARMASTAT - Report Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --primary-light: #34D399;
+            --primary-lighter: #6EE7B7;
+            --secondary: #047857;
+            --accent: #D1FAE5;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #ECFDF5;
+            --bg-tertiary: #F9FAFB;
+            --bg-card: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+            --shadow-hover: 0 8px 25px rgba(16, 185, 129, 0.25);
+            --shadow-lg: 0 10px 40px rgba(16, 185, 129, 0.2);
+
+            --gradient-primary: linear-gradient(135deg, #10B981, #34D399, #6EE7B7);
+            --gradient-secondary: linear-gradient(135deg, #047857, #059669, #10B981);
+            --gradient-bg: linear-gradient(135deg, #ECFDF5, #D1FAE5, #A7F3D0);
+            --gradient-card: linear-gradient(145deg, #FFFFFF, #ECFDF5);
+
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'Courier New', 'Monaco', monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-tertiary: #334155;
+            --bg-card: #1E293B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
+            --text-muted: #94A3B8;
+            --border-color: #334155;
+            --accent: #064E3B;
+            --gradient-bg: linear-gradient(135deg, #0F172A, #1E293B, #334155);
+            --gradient-card: linear-gradient(145deg, #1E293B, #334155);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 25px rgba(16, 185, 129, 0.2);
+        }
+
+        /* ============================================
+           KARMASTAT LOADER SYSTEM
+           ============================================ */
+
+        /* Page Loader Overlay */
+        .karma-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .karma-page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .karma-page-loader .loader-content {
+            text-align: center;
+        }
+
+        .karma-page-loader .loader-text {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Karma Infinity Animation */
+        .karma-infinity {
+            width: 120px;
+            height: 60px;
+        }
+
+        .karma-infinity svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .karma-path {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: karmaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes karmaFlow {
+            0% { stroke-dashoffset: 300; opacity: 0.4; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -300; opacity: 0.4; }
+        }
+
+        .karma-point {
+            animation: karmaPulse 1.2s ease-in-out infinite;
+        }
+
+        .karma-point:nth-child(3) { animation-delay: 0.2s; }
+        .karma-point:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes karmaPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Button Loading State */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading .karma-spinner {
+            display: block;
+        }
+
+        .karma-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .karma-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinnerRotate 1.5s linear infinite;
+        }
+
+        @keyframes spinnerRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-path {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 15;
+            animation: spinnerDash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinnerDash {
+            0% { stroke-dashoffset: 60; }
+            50% { stroke-dashoffset: 15; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        /* Results Loading State */
+        .results-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .results-loading .karma-infinity {
+            width: 80px;
+            height: 40px;
+        }
+
+        .results-loading .karma-path {
+            stroke: var(--primary);
+        }
+
+        .results-loading .karma-point {
+            fill: var(--primary-light);
+        }
+
+        .results-loading p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            min-height: 100vh;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+
+        /* Header Styles */
+        .header {
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: var(--gradient-primary);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 75px;
+            height: 75px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .theme-toggle, .back-link {
+            position: absolute;
+            top: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .theme-toggle { right: 1.5rem; }
+        .back-link { left: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+        .theme-toggle:hover, .back-link:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Section Styles */
+        .section {
+            background: var(--gradient-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .section h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* Import Section */
+        .import-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .import-card {
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .import-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .import-card.active {
+            border-color: var(--primary);
+            background: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .import-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .import-card-title { font-weight: 700; color: var(--text-primary); font-size: 1rem; }
+        .import-card-desc { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        /* Import Content Panels */
+        .import-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .import-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: var(--transition);
+            font-family: var(--font-main);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-row-3 {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: var(--accent);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #DC2626;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Saved Calculations List */
+        .saved-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .saved-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .saved-list::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+
+        .saved-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .saved-item {
+            padding: 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            transition: var(--transition);
+        }
+
+        .saved-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .saved-item-info h4 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .saved-item-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .saved-item-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--accent);
+            color: var(--primary-dark);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .saved-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Preview Box */
+        .preview-box {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .preview-box h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preview-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .preview-content em {
+            color: var(--text-muted);
+        }
+
+        /* Parameters Table Preview */
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .params-table th,
+        .params-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .params-table th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .params-table td {
+            color: var(--text-secondary);
+        }
+
+        .params-table tr:hover td {
+            background: var(--bg-tertiary);
+        }
+
+        /* Citation Section */
+        .citation-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .citation-tab {
+            padding: 0.6rem 1.25rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: var(--radius) var(--radius) 0 0;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .citation-tab:hover {
+            color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .citation-tab.active {
+            color: var(--primary);
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: -2px;
+        }
+
+        .citation-content {
+            background: var(--bg-secondary);
+            padding: 1.25rem;
+            border-radius: var(--radius);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Export Options */
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .export-btn {
+            padding: 1.5rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .export-btn:hover {
+            border-color: var(--primary);
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .export-btn-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .export-btn-label {
+            font-size: 0.9rem;
+        }
+
+        .export-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        .export-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* PDF Theme Selector */
+        .pdf-theme-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+        }
+
+        .pdf-theme-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            background: var(--bg-card);
+        }
+
+        .pdf-theme-option:hover {
+            border-color: var(--primary);
+        }
+
+        .pdf-theme-option.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .pdf-theme-preview {
+            width: 60px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            margin: 0 auto 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .pdf-theme-preview.light {
+            background: linear-gradient(135deg, #ffffff, #f3f4f6);
+        }
+
+        .pdf-theme-preview.dark {
+            background: linear-gradient(135deg, #1f2937, #374151);
+        }
+
+        .pdf-theme-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        /* Collapsible Sections */
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+
+        .collapsible-header .toggle-icon {
+            transition: var(--transition);
+        }
+
+        .collapsible-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0 !important;
+        }
+
+        /* Formula Display */
+        .formula-box {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .formula-box .formula {
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .formula-box .formula-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-family: var(--font-main);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gradient-secondary);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-top: 2rem;
+        }
+
+        .footer-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-tagline {
+            color: var(--primary-lighter);
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.8rem; }
+            .logo { flex-direction: column; }
+            .back-link, .theme-toggle {
+                position: static;
+                margin: 0.5rem;
+            }
+            .header {
+                padding-top: 1rem;
+                padding-bottom: 1.5rem;
+            }
+            .header .controls-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+            }
+            .section { padding: 1.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .export-grid { grid-template-columns: repeat(2, 1fr); }
+            .pdf-theme-selector { flex-direction: column; }
+            .saved-item { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        /* JSON Textarea */
+        .json-input {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            min-height: 200px;
+        }
+
+        /* Manual Entry Grid */
+        .manual-params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Assumptions List */
+        .assumptions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .assumptions-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .assumptions-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.9rem;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        /* Report Preview Sections */
+        .report-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .report-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .report-section-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- KARMASTAT Page Loader -->
+    <div class="karma-page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="karma-infinity">
+                <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#ffffff"/>
+                            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="karma-path"
+                          d="M20 30 C20 12, 40 12, 60 30 C80 48, 100 48, 100 30 C100 12, 80 12, 60 30 C40 48, 20 48, 20 30"
+                          fill="none" stroke="url(#loaderGrad)" stroke-width="5" stroke-linecap="round"/>
+                    <circle class="karma-point" cx="20" cy="30" r="5" fill="#FCD34D"/>
+                    <circle class="karma-point" cx="60" cy="30" r="6" fill="white"/>
+                    <circle class="karma-point" cx="100" cy="30" r="5" fill="#FCD34D"/>
+                </svg>
+            </div>
+            <div class="loader-text">KARMASTAT</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <a href="karmastat_2_0_main.html" class="back-link">
+                <span>&#8592;</span> Back to Main
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                <span id="themeIcon">&#9790;</span>
+            </button>
+            <div class="brand" style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
+                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 20 C6 11, 13 11, 20 20 C27 29, 34 29, 34 20 C34 11, 27 11, 20 20 C13 29, 6 29, 6 20"
+                          fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="6" cy="20" r="2.5" fill="#FCD34D"/>
+                    <circle cx="20" cy="20" r="3" fill="white"/>
+                    <circle cx="34" cy="20" r="2.5" fill="#FCD34D"/>
+                </svg>
+                <span style="font-weight: 600; letter-spacing: 1px;">KARMASTAT</span>
+            </div>
+            <div class="logo">
+                <div>
+                    <h1>Report Generator</h1>
+                    <p class="subtitle">Generate professional sample size justification reports for research publications</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Import Calculations Section -->
+        <section class="section">
+            <h2><span class="section-icon">&#128229;</span> Import Calculation Data</h2>
+
+            <div class="import-options">
+                <div class="import-card active" onclick="selectImportMode('saved')" data-mode="saved">
+                    <div class="import-card-icon">&#128190;</div>
+                    <div class="import-card-title">Saved Calculations</div>
+                    <div class="import-card-desc">Load from localStorage</div>
+                </div>
+                <div class="import-card" onclick="selectImportMode('manual')" data-mode="manual">
+                    <div class="import-card-icon">&#9997;</div>
+                    <div class="import-card-title">Manual Entry</div>
+                    <div class="import-card-desc">Enter parameters manually</div>
+                </div>
+                <div class="import-card" onclick="selectImportMode('json')" data-mode="json">
+                    <div class="import-card-icon">&#128203;</div>
+                    <div class="import-card-title">Paste JSON</div>
+                    <div class="import-card-desc">Import JSON data</div>
+                </div>
+            </div>
+
+            <!-- Saved Calculations Panel -->
+            <div id="savedPanel" class="import-content active">
+                <div class="saved-list" id="savedList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#128451;</div>
+                        <p>No saved calculations found. Complete a calculation in any KARMASTAT calculator to save results here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual Entry Panel -->
+            <div id="manualPanel" class="import-content">
+                <div class="manual-params-grid">
+                    <div class="form-group">
+                        <label>Calculator Type</label>
+                        <select id="manualCalcType" onchange="updateManualFields()">
+                            <option value="">Select calculator...</option>
+                            <option value="two-means">Comparison of Two Means</option>
+                            <option value="two-proportions">Comparison of Two Proportions</option>
+                            <option value="paired">Paired Samples</option>
+                            <option value="one-sample-mean">One Sample Mean</option>
+                            <option value="one-sample-proportion">One Sample Proportion</option>
+                            <option value="correlation">Correlation</option>
+                            <option value="anova">ANOVA</option>
+                            <option value="chi-square">Chi-Square</option>
+                            <option value="survival">Survival Analysis</option>
+                            <option value="diagnostic">Diagnostic Study</option>
+                            <option value="agreement">Agreement (Kappa)</option>
+                            <option value="regression">Regression</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sample Size (n)</label>
+                        <input type="number" id="manualSampleSize" placeholder="e.g., 64">
+                    </div>
+                    <div class="form-group">
+                        <label>Sample Size per Group</label>
+                        <input type="number" id="manualPerGroup" placeholder="e.g., 32">
+                    </div>
+                    <div class="form-group">
+                        <label>Effect Size</label>
+                        <input type="text" id="manualEffectSize" placeholder="e.g., 0.5 (Cohen's d)">
+                    </div>
+                    <div class="form-group">
+                        <label>Power (%)</label>
+                        <input type="number" id="manualPower" value="80" min="50" max="99">
+                    </div>
+                    <div class="form-group">
+                        <label>Alpha Level</label>
+                        <input type="number" id="manualAlpha" value="0.05" step="0.01" min="0.001" max="0.2">
+                    </div>
+                </div>
+                <div id="additionalManualFields"></div>
+                <button class="btn btn-primary btn-block" onclick="loadManualData()" style="margin-top: 1rem;">
+                    &#10004; Load Manual Parameters
+                </button>
+            </div>
+
+            <!-- JSON Import Panel -->
+            <div id="jsonPanel" class="import-content">
+                <div class="form-group">
+                    <label>Paste JSON Data</label>
+                    <textarea id="jsonInput" class="json-input" placeholder='{
+  "type": "Two Means Comparison",
+  "sampleSize": 128,
+  "perGroup": 64,
+  "effectSize": "0.5",
+  "power": 80,
+  "alpha": 0.05,
+  "parameters": {
+    "mean1": 50,
+    "mean2": 55,
+    "sd": 10
+  }
+}'></textarea>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="loadJSONData()">
+                    &#10004; Parse and Load JSON
+                </button>
+            </div>
+        </section>
+
+        <!-- Study Information Section -->
+        <section class="section">
+            <h2><span class="section-icon">&#128221;</span> Study Information</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Study Title <span class="required">*</span></label>
+                    <input type="text" id="studyTitle" placeholder="e.g., Efficacy of Treatment A vs Placebo in Patients with Condition X" onchange="updateAllPreviews()">
+                </div>
+                <div class="form-group">
+                    <label>Study Design <span class="required">*</span></label>
+                    <select id="studyDesign" onchange="updateAllPreviews()">
+                        <option value="">Select study design...</option>
+                        <option value="rct-parallel">Randomized Controlled Trial (Parallel)</option>
+                        <option value="rct-crossover">Randomized Controlled Trial (Crossover)</option>
+                        <option value="rct-cluster">Cluster Randomized Trial</option>
+                        <option value="cohort-prospective">Prospective Cohort Study</option>
+                        <option value="cohort-retrospective">Retrospective Cohort Study</option>
+                        <option value="case-control">Case-Control Study</option>
+                        <option value="cross-sectional">Cross-Sectional Study</option>
+                        <option value="diagnostic">Diagnostic Accuracy Study</option>
+                        <option value="agreement">Agreement/Reliability Study</option>
+                        <option value="equivalence">Equivalence Trial</option>
+                        <option value="non-inferiority">Non-Inferiority Trial</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Study Description</label>
+                <textarea id="studyDesc" placeholder="Provide a brief description of the study objectives, primary outcome, and methodology..." onchange="updateAllPreviews()"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Primary Outcome</label>
+                    <input type="text" id="primaryOutcome" placeholder="e.g., Change in blood pressure at 12 weeks" onchange="updateAllPreviews()">
+                </div>
+                <div class="form-group">
+                    <label>Target Population</label>
+                    <input type="text" id="targetPopulation" placeholder="e.g., Adults aged 18-65 with hypertension" onchange="updateAllPreviews()">
+                </div>
+            </div>
+        </section>
+
+        <!-- Sample Size Parameters Section -->
+        <section class="section">
+            <h2><span class="section-icon">&#128202;</span> Sample Size Parameters</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Statistical Test <span class="required">*</span></label>
+                    <select id="statTest" onchange="updateAllPreviews()">
+                        <option value="">Select test...</option>
+                        <optgroup label="Comparison Tests">
+                            <option value="two-sample-t">Two-Sample T-Test (Independent)</option>
+                            <option value="paired-t">Paired T-Test</option>
+                            <option value="welch-t">Welch's T-Test</option>
+                            <option value="mann-whitney">Mann-Whitney U Test</option>
+                            <option value="wilcoxon">Wilcoxon Signed-Rank Test</option>
+                        </optgroup>
+                        <optgroup label="Proportion Tests">
+                            <option value="chi-square">Chi-Square Test</option>
+                            <option value="fisher">Fisher's Exact Test</option>
+                            <option value="mcnemar">McNemar's Test</option>
+                            <option value="z-proportions">Z-Test for Proportions</option>
+                        </optgroup>
+                        <optgroup label="ANOVA">
+                            <option value="one-way-anova">One-Way ANOVA</option>
+                            <option value="two-way-anova">Two-Way ANOVA</option>
+                            <option value="repeated-anova">Repeated Measures ANOVA</option>
+                            <option value="ancova">ANCOVA</option>
+                        </optgroup>
+                        <optgroup label="Correlation & Regression">
+                            <option value="pearson">Pearson Correlation</option>
+                            <option value="spearman">Spearman Correlation</option>
+                            <option value="linear-regression">Linear Regression</option>
+                            <option value="multiple-regression">Multiple Regression</option>
+                            <option value="logistic-regression">Logistic Regression</option>
+                        </optgroup>
+                        <optgroup label="Survival Analysis">
+                            <option value="log-rank">Log-Rank Test</option>
+                            <option value="cox-ph">Cox Proportional Hazards</option>
+                        </optgroup>
+                        <optgroup label="Diagnostic & Agreement">
+                            <option value="sensitivity-specificity">Sensitivity/Specificity</option>
+                            <option value="auc-roc">AUC-ROC Analysis</option>
+                            <option value="kappa">Cohen's Kappa</option>
+                            <option value="icc">Intraclass Correlation (ICC)</option>
+                            <option value="bland-altman">Bland-Altman Analysis</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Calculated Sample Size <span class="required">*</span></label>
+                    <input type="number" id="sampleSize" placeholder="Total sample size" onchange="updateAllPreviews()">
+                </div>
+            </div>
+
+            <div class="form-row form-row-3">
+                <div class="form-group">
+                    <label>Sample Size per Group</label>
+                    <input type="number" id="perGroup" placeholder="n per group" onchange="updateAllPreviews()">
+                </div>
+                <div class="form-group">
+                    <label>Number of Groups</label>
+                    <input type="number" id="numGroups" value="2" min="2" max="20" onchange="updateAllPreviews()">
+                </div>
+                <div class="form-group">
+                    <label>Allocation Ratio</label>
+                    <input type="text" id="allocationRatio" placeholder="e.g., 1:1" value="1:1" onchange="updateAllPreviews()">
+                </div>
+            </div>
+
+            <div class="form-row form-row-3">
+                <div class="form-group">
+                    <label>Effect Size</label>
+                    <input type="text" id="effectSize" placeholder="e.g., Cohen's d = 0.5" onchange="updateAllPreviews()">
+                </div>
+                <div class="form-group">
+                    <label>Power (%)</label>
+                    <select id="power" onchange="updateAllPreviews()">
+                        <option value="80">80%</option>
+                        <option value="85">85%</option>
+                        <option value="90">90%</option>
+                        <option value="95">95%</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alpha Level (Type I Error)</label>
+                    <select id="alpha" onchange="updateAllPreviews()">
+                        <option value="0.05">0.05 (two-sided)</option>
+                        <option value="0.01">0.01 (two-sided)</option>
+                        <option value="0.10">0.10 (two-sided)</option>
+                        <option value="0.025">0.025 (one-sided)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Anticipated Dropout Rate (%)</label>
+                    <input type="number" id="dropout" value="10" min="0" max="50" onchange="updateAllPreviews()">
+                </div>
+                <div class="form-group">
+                    <label>Final Sample Size (with dropout)</label>
+                    <input type="number" id="finalSampleSize" placeholder="Auto-calculated" readonly style="background: var(--bg-tertiary);">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Additional Study Parameters</label>
+                <textarea id="additionalParams" rows="3" placeholder="e.g., Expected mean difference: 5 units, Standard deviation: 10, Clinically meaningful difference: 3 units..." onchange="updateAllPreviews()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Assumptions</label>
+                <textarea id="assumptions" rows="3" placeholder="e.g., Normal distribution of data, Equal variance between groups, Independent observations..." onchange="updateAllPreviews()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Limitations</label>
+                <textarea id="limitations" rows="3" placeholder="e.g., Effect size based on pilot study data, Single-center study may limit generalizability..." onchange="updateAllPreviews()"></textarea>
+            </div>
+        </section>
+
+        <!-- Methodology Text Section -->
+        <section class="section">
+            <h2><span class="section-icon">&#128196;</span> Generated Methodology Text</h2>
+
+            <div class="preview-box">
+                <h4>&#128209; Sample Size Justification Paragraph</h4>
+                <div class="preview-content" id="methodologyPreview">
+                    <em>Complete the parameters above to generate methodology text...</em>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="copyMethodology()">
+                    &#128203; Copy Methodology Text
+                </button>
+                <button class="btn btn-secondary" onclick="regenerateMethodology()">
+                    &#8635; Regenerate
+                </button>
+            </div>
+
+            <!-- Parameters Table Preview -->
+            <div class="preview-box" style="margin-top: 1.5rem;">
+                <h4>&#128200; Statistical Parameters Table</h4>
+                <table class="params-table" id="paramsTable">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paramsTableBody">
+                        <tr><td colspan="2" style="text-align: center; color: var(--text-muted);"><em>Parameters will appear here...</em></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Formula Display -->
+            <div class="preview-box" style="margin-top: 1.5rem;">
+                <h4>&#128290; Formula Used</h4>
+                <div class="formula-box" id="formulaBox">
+                    <div class="formula">Select a statistical test to display the formula</div>
+                    <div class="formula-desc"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sample Size Justification Template -->
+        <section class="section">
+            <h2><span class="section-icon">&#128220;</span> Sample Size Justification Template</h2>
+
+            <div class="preview-box">
+                <div id="justificationTemplate" class="preview-content">
+                    <div class="report-section">
+                        <div class="report-section-title">1. Study Objective</div>
+                        <p id="templateObjective"><em>Enter study information to populate this template...</em></p>
+                    </div>
+                    <div class="report-section">
+                        <div class="report-section-title">2. Primary Outcome</div>
+                        <p id="templateOutcome"><em>Specify the primary outcome measure...</em></p>
+                    </div>
+                    <div class="report-section">
+                        <div class="report-section-title">3. Statistical Analysis Plan</div>
+                        <p id="templateAnalysis"><em>Select a statistical test to populate...</em></p>
+                    </div>
+                    <div class="report-section">
+                        <div class="report-section-title">4. Sample Size Calculation</div>
+                        <p id="templateCalculation"><em>Enter sample size parameters...</em></p>
+                    </div>
+                    <div class="report-section">
+                        <div class="report-section-title">5. Assumptions</div>
+                        <ul class="assumptions-list" id="templateAssumptions">
+                            <li><em>List your assumptions...</em></li>
+                        </ul>
+                    </div>
+                    <div class="report-section">
+                        <div class="report-section-title">6. Limitations</div>
+                        <p id="templateLimitations"><em>Acknowledge limitations of sample size estimation...</em></p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="copyJustificationTemplate()" style="margin-top: 1rem;">
+                &#128203; Copy Complete Template
+            </button>
+        </section>
+
+        <!-- Citation Section -->
+        <section class="section">
+            <h2><span class="section-icon">&#128218;</span> Software Citation</h2>
+
+            <div class="citation-tabs">
+                <button class="citation-tab active" onclick="switchCitation('apa')">APA 7th</button>
+                <button class="citation-tab" onclick="switchCitation('vancouver')">Vancouver</button>
+                <button class="citation-tab" onclick="switchCitation('harvard')">Harvard</button>
+                <button class="citation-tab" onclick="switchCitation('chicago')">Chicago</button>
+                <button class="citation-tab" onclick="switchCitation('bibtex')">BibTeX</button>
+            </div>
+
+            <div class="citation-content" id="citationContent">
+                KARMASTAT. (2024). <em>Sample Size Calculator for Medical Research</em> (Version 2.0) [Computer software]. https://karmastat.app
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="copyCitation()">
+                    &#128203; Copy Citation
+                </button>
+            </div>
+        </section>
+
+        <!-- Export Options Section -->
+        <section class="section">
+            <h2><span class="section-icon">&#128230;</span> Export Report</h2>
+
+            <!-- PDF Theme Selection -->
+            <div class="form-group">
+                <label>PDF Theme</label>
+                <div class="pdf-theme-selector">
+                    <div class="pdf-theme-option active" onclick="selectPDFTheme('light')" data-theme="light">
+                        <div class="pdf-theme-preview light"></div>
+                        <div class="pdf-theme-label">Light Theme</div>
+                    </div>
+                    <div class="pdf-theme-option" onclick="selectPDFTheme('dark')" data-theme="dark">
+                        <div class="pdf-theme-preview dark"></div>
+                        <div class="pdf-theme-label">Dark Theme</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="export-grid">
+                <button class="export-btn primary" onclick="exportPDF()">
+                    <div class="export-btn-icon">&#128196;</div>
+                    <div class="export-btn-label">PDF Report</div>
+                </button>
+                <button class="export-btn" onclick="exportWord()">
+                    <div class="export-btn-icon">&#128462;</div>
+                    <div class="export-btn-label">Word (.doc)</div>
+                </button>
+                <button class="export-btn" onclick="exportLaTeX()">
+                    <div class="export-btn-icon">&#128209;</div>
+                    <div class="export-btn-label">LaTeX Snippet</div>
+                </button>
+                <button class="export-btn" onclick="exportText()">
+                    <div class="export-btn-icon">&#128221;</div>
+                    <div class="export-btn-label">Plain Text</div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-brand">Generated by KARMASTAT</div>
+            <div class="footer-tagline">Crafted by Karmayogi</div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // KARMASTAT LOADER SYSTEM
+        // ============================================
+
+        // Hide page loader when content is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('pageLoader');
+                if (pageLoader) {
+                    pageLoader.classList.add('hidden');
+                }
+            }, 800);
+        });
+
+        // Button loading state functions
+        function showButtonLoader(btn) {
+            if (btn) btn.classList.add('loading');
+        }
+
+        function hideButtonLoader(btn) {
+            if (btn) btn.classList.remove('loading');
+        }
+
+        // Wrap calculation with loader
+        function withLoader(btn, calculationFn) {
+            showButtonLoader(btn);
+            setTimeout(function() {
+                try {
+                    calculationFn();
+                } finally {
+                    hideButtonLoader(btn);
+                }
+            }, 600);
+        }
+
+        // ============================================
+        // Global State
+        // ============================================
+        let currentImportMode = 'saved';
+        let currentCitationFormat = 'apa';
+        let pdfTheme = 'light';
+        let loadedData = null;
+
+        // ============================================
+        // Theme Management
+        // ============================================
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            document.getElementById('themeIcon').innerHTML = isDark ? '&#9790;' : '&#9788;';
+            localStorage.setItem('karmastat-theme', newTheme);
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('karmastat-theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                document.getElementById('themeIcon').innerHTML = savedTheme === 'dark' ? '&#9788;' : '&#9790;';
+            }
+        }
+
+        // ============================================
+        // Import Mode Management
+        // ============================================
+        function selectImportMode(mode) {
+            currentImportMode = mode;
+
+            // Update card states
+            document.querySelectorAll('.import-card').forEach(card => {
+                card.classList.toggle('active', card.dataset.mode === mode);
+            });
+
+            // Update panel visibility
+            document.querySelectorAll('.import-content').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(mode + 'Panel').classList.add('active');
+
+            if (mode === 'saved') {
+                loadSavedCalculations();
+            }
+        }
+
+        // ============================================
+        // Saved Calculations Management
+        // ============================================
+        function loadSavedCalculations() {
+            const savedList = document.getElementById('savedList');
+
+            // Try multiple localStorage keys used by different calculators
+            const storageKeys = [
+                'karmastat_calculations',
+                'karmastat_results',
+                'karmastat_saved',
+                'karmastat-calculations',
+                'karmastat-history'
+            ];
+
+            let allSaved = [];
+
+            storageKeys.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key) || '[]');
+                    if (Array.isArray(data)) {
+                        allSaved = allSaved.concat(data.map(item => ({...item, storageKey: key})));
+                    }
+                } catch (e) {
+                    console.log(`Could not parse ${key}`);
+                }
+            });
+
+            // Also check for individual calculator results
+            const calculatorKeys = Object.keys(localStorage).filter(key =>
+                key.startsWith('karmastat_') || key.startsWith('karmastat-')
+            );
+
+            calculatorKeys.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && typeof data === 'object' && !Array.isArray(data) && data.sampleSize) {
+                        allSaved.push({...data, storageKey: key, type: data.type || key.replace('karmastat_', '').replace('karmastat-', '')});
+                    }
+                } catch (e) {}
+            });
+
+            if (allSaved.length === 0) {
+                savedList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#128451;</div>
+                        <p>No saved calculations found. Complete a calculation in any KARMASTAT calculator to save results here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            savedList.innerHTML = allSaved.map((calc, i) => `
+                <div class="saved-item">
+                    <div class="saved-item-info">
+                        <h4>${calc.type || calc.calculator || 'Calculation'}
+                            <span class="saved-item-badge">N = ${calc.sampleSize || calc.n || 'N/A'}</span>
+                        </h4>
+                        <p>${calc.date || calc.timestamp || 'Unknown date'} | Power: ${calc.power || 80}% | Alpha: ${calc.alpha || 0.05}</p>
+                    </div>
+                    <div class="saved-item-actions">
+                        <button class="btn btn-primary btn-sm" onclick='loadCalculation(${JSON.stringify(calc).replace(/'/g, "\\'")})'>Load</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadCalculation(calc) {
+            loadedData = calc;
+
+            // Populate form fields
+            document.getElementById('sampleSize').value = calc.sampleSize || calc.n || '';
+            document.getElementById('perGroup').value = calc.perGroup || calc.nPerGroup || '';
+            document.getElementById('effectSize').value = calc.effectSize || '';
+            document.getElementById('power').value = calc.power || '80';
+            document.getElementById('alpha').value = calc.alpha || '0.05';
+            document.getElementById('dropout').value = calc.dropout || '10';
+
+            // Try to match statistical test
+            if (calc.test || calc.statTest || calc.type) {
+                const testValue = calc.test || calc.statTest || calc.type;
+                const testSelect = document.getElementById('statTest');
+                for (let option of testSelect.options) {
+                    if (option.value.toLowerCase().includes(testValue.toLowerCase()) ||
+                        option.text.toLowerCase().includes(testValue.toLowerCase())) {
+                        testSelect.value = option.value;
+                        break;
+                    }
+                }
+            }
+
+            // Update additional params if available
+            if (calc.parameters || calc.params) {
+                const params = calc.parameters || calc.params;
+                const paramText = Object.entries(params).map(([k, v]) => `${k}: ${v}`).join(', ');
+                document.getElementById('additionalParams').value = paramText;
+            }
+
+            updateAllPreviews();
+            showToast('Calculation loaded successfully!');
+        }
+
+        // ============================================
+        // Manual Entry
+        // ============================================
+        function updateManualFields() {
+            const calcType = document.getElementById('manualCalcType').value;
+            const container = document.getElementById('additionalManualFields');
+
+            let html = '';
+
+            switch(calcType) {
+                case 'two-means':
+                    html = `
+                        <div class="form-row" style="margin-top: 1rem;">
+                            <div class="form-group">
+                                <label>Mean Group 1</label>
+                                <input type="number" id="manualMean1" placeholder="e.g., 50">
+                            </div>
+                            <div class="form-group">
+                                <label>Mean Group 2</label>
+                                <input type="number" id="manualMean2" placeholder="e.g., 55">
+                            </div>
+                            <div class="form-group">
+                                <label>Standard Deviation</label>
+                                <input type="number" id="manualSD" placeholder="e.g., 10">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'two-proportions':
+                    html = `
+                        <div class="form-row" style="margin-top: 1rem;">
+                            <div class="form-group">
+                                <label>Proportion Group 1</label>
+                                <input type="number" id="manualP1" step="0.01" placeholder="e.g., 0.30">
+                            </div>
+                            <div class="form-group">
+                                <label>Proportion Group 2</label>
+                                <input type="number" id="manualP2" step="0.01" placeholder="e.g., 0.50">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'correlation':
+                    html = `
+                        <div class="form-row" style="margin-top: 1rem;">
+                            <div class="form-group">
+                                <label>Expected Correlation (r)</label>
+                                <input type="number" id="manualCorr" step="0.01" placeholder="e.g., 0.30">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'anova':
+                    html = `
+                        <div class="form-row" style="margin-top: 1rem;">
+                            <div class="form-group">
+                                <label>Number of Groups</label>
+                                <input type="number" id="manualGroups" placeholder="e.g., 3">
+                            </div>
+                            <div class="form-group">
+                                <label>Effect Size (f)</label>
+                                <input type="number" id="manualF" step="0.01" placeholder="e.g., 0.25">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'diagnostic':
+                    html = `
+                        <div class="form-row" style="margin-top: 1rem;">
+                            <div class="form-group">
+                                <label>Expected Sensitivity</label>
+                                <input type="number" id="manualSens" step="0.01" placeholder="e.g., 0.85">
+                            </div>
+                            <div class="form-group">
+                                <label>Expected Specificity</label>
+                                <input type="number" id="manualSpec" step="0.01" placeholder="e.g., 0.90">
+                            </div>
+                            <div class="form-group">
+                                <label>Disease Prevalence</label>
+                                <input type="number" id="manualPrev" step="0.01" placeholder="e.g., 0.20">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'survival':
+                    html = `
+                        <div class="form-row" style="margin-top: 1rem;">
+                            <div class="form-group">
+                                <label>Hazard Ratio</label>
+                                <input type="number" id="manualHR" step="0.01" placeholder="e.g., 0.70">
+                            </div>
+                            <div class="form-group">
+                                <label>Median Survival (Control)</label>
+                                <input type="number" id="manualMedian" placeholder="e.g., 12 months">
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function loadManualData() {
+            const data = {
+                type: document.getElementById('manualCalcType').options[document.getElementById('manualCalcType').selectedIndex]?.text || 'Manual Entry',
+                sampleSize: document.getElementById('manualSampleSize').value,
+                perGroup: document.getElementById('manualPerGroup').value,
+                effectSize: document.getElementById('manualEffectSize').value,
+                power: document.getElementById('manualPower').value,
+                alpha: document.getElementById('manualAlpha').value,
+                parameters: {}
+            };
+
+            // Collect additional parameters
+            const additionalInputs = document.querySelectorAll('#additionalManualFields input');
+            additionalInputs.forEach(input => {
+                if (input.value) {
+                    const label = input.previousElementSibling?.textContent || input.id;
+                    data.parameters[label] = input.value;
+                }
+            });
+
+            loadedData = data;
+
+            // Populate main form
+            document.getElementById('sampleSize').value = data.sampleSize;
+            document.getElementById('perGroup').value = data.perGroup;
+            document.getElementById('effectSize').value = data.effectSize;
+            document.getElementById('power').value = data.power;
+
+            // Try to find matching alpha
+            const alphaSelect = document.getElementById('alpha');
+            for (let option of alphaSelect.options) {
+                if (option.value === data.alpha) {
+                    alphaSelect.value = option.value;
+                    break;
+                }
+            }
+
+            if (Object.keys(data.parameters).length > 0) {
+                document.getElementById('additionalParams').value = Object.entries(data.parameters)
+                    .map(([k, v]) => `${k}: ${v}`).join(', ');
+            }
+
+            updateAllPreviews();
+            showToast('Manual parameters loaded!');
+        }
+
+        // ============================================
+        // JSON Import
+        // ============================================
+        function loadJSONData() {
+            const jsonInput = document.getElementById('jsonInput').value.trim();
+
+            if (!jsonInput) {
+                showToast('Please paste JSON data first', 'error');
+                return;
+            }
+
+            try {
+                const data = JSON.parse(jsonInput);
+                loadedData = data;
+
+                // Populate form fields
+                document.getElementById('sampleSize').value = data.sampleSize || data.n || '';
+                document.getElementById('perGroup').value = data.perGroup || data.nPerGroup || '';
+                document.getElementById('effectSize').value = data.effectSize || '';
+                document.getElementById('power').value = data.power || '80';
+
+                if (data.studyTitle) document.getElementById('studyTitle').value = data.studyTitle;
+                if (data.studyDesign) document.getElementById('studyDesign').value = data.studyDesign;
+                if (data.studyDesc) document.getElementById('studyDesc').value = data.studyDesc;
+
+                if (data.parameters) {
+                    document.getElementById('additionalParams').value = Object.entries(data.parameters)
+                        .map(([k, v]) => `${k}: ${v}`).join(', ');
+                }
+
+                updateAllPreviews();
+                showToast('JSON data loaded successfully!');
+            } catch (e) {
+                showToast('Invalid JSON format. Please check your input.', 'error');
+            }
+        }
+
+        // ============================================
+        // Update All Previews
+        // ============================================
+        function updateAllPreviews() {
+            updateMethodology();
+            updateParametersTable();
+            updateFormula();
+            updateJustificationTemplate();
+            calculateFinalSampleSize();
+        }
+
+        function calculateFinalSampleSize() {
+            const n = parseFloat(document.getElementById('sampleSize').value) || 0;
+            const dropout = parseFloat(document.getElementById('dropout').value) || 0;
+
+            if (n > 0) {
+                const finalN = Math.ceil(n / (1 - dropout / 100));
+                document.getElementById('finalSampleSize').value = finalN;
+            }
+        }
+
+        // ============================================
+        // Methodology Text Generation
+        // ============================================
+        function updateMethodology() {
+            const test = document.getElementById('statTest').value;
+            const testText = document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text || '';
+            const n = document.getElementById('sampleSize').value;
+            const perGroup = document.getElementById('perGroup').value;
+            const effect = document.getElementById('effectSize').value;
+            const power = document.getElementById('power').value;
+            const alpha = document.getElementById('alpha').value;
+            const dropout = document.getElementById('dropout').value;
+            const design = document.getElementById('studyDesign').value;
+            const designText = document.getElementById('studyDesign').options[document.getElementById('studyDesign').selectedIndex]?.text || '';
+            const numGroups = document.getElementById('numGroups').value;
+            const allocation = document.getElementById('allocationRatio').value;
+            const outcome = document.getElementById('primaryOutcome').value;
+            const additionalParams = document.getElementById('additionalParams').value;
+
+            if (!test || !n) {
+                document.getElementById('methodologyPreview').innerHTML = '<em>Complete the parameters above to generate methodology text...</em>';
+                return;
+            }
+
+            const adjustedN = Math.ceil(n / (1 - dropout / 100));
+            const alphaText = alpha.includes('one-sided') ? alpha : `${alpha} (two-sided)`;
+
+            let methodology = '';
+
+            // Opening sentence based on study design
+            if (design && designText) {
+                methodology += `This ${designText.toLowerCase()} `;
+            } else {
+                methodology += 'This study ';
+            }
+
+            methodology += `was designed to detect `;
+
+            // Effect size description
+            if (effect) {
+                methodology += `an effect size of ${effect} `;
+            } else {
+                methodology += `a clinically meaningful difference `;
+            }
+
+            if (outcome) {
+                methodology += `in ${outcome.toLowerCase()} `;
+            }
+
+            methodology += `using a ${testText.toLowerCase()}. `;
+
+            // Sample size calculation details
+            methodology += `Sample size was calculated with a Type I error rate (alpha) of ${alphaText} and ${power}% statistical power`;
+
+            if (numGroups > 2) {
+                methodology += ` for ${numGroups} groups`;
+            }
+
+            methodology += `. `;
+
+            // Results
+            if (perGroup && numGroups >= 2) {
+                methodology += `A minimum of ${perGroup} participants per group (${n} total) is required. `;
+            } else {
+                methodology += `A minimum of ${n} participants is required. `;
+            }
+
+            if (allocation && allocation !== '1:1') {
+                methodology += `Participants will be allocated in a ${allocation} ratio. `;
+            }
+
+            // Dropout adjustment
+            if (dropout > 0) {
+                methodology += `Accounting for an anticipated ${dropout}% dropout rate, the target enrollment is ${adjustedN} participants. `;
+            }
+
+            // Additional parameters
+            if (additionalParams) {
+                methodology += `The calculation was based on the following assumptions: ${additionalParams}. `;
+            }
+
+            // Citation
+            methodology += `Sample size calculations were performed using KARMASTAT v2.0.`;
+
+            document.getElementById('methodologyPreview').innerHTML = methodology;
+        }
+
+        function regenerateMethodology() {
+            updateMethodology();
+            showToast('Methodology text regenerated!');
+        }
+
+        function copyMethodology() {
+            const text = document.getElementById('methodologyPreview').innerText;
+            if (text.includes('Complete the parameters')) {
+                showToast('Please complete the parameters first', 'error');
+                return;
+            }
+            navigator.clipboard.writeText(text);
+            showToast('Methodology text copied!');
+        }
+
+        // ============================================
+        // Parameters Table
+        // ============================================
+        function updateParametersTable() {
+            const tbody = document.getElementById('paramsTableBody');
+            const params = [];
+
+            const test = document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text;
+            const n = document.getElementById('sampleSize').value;
+            const perGroup = document.getElementById('perGroup').value;
+            const numGroups = document.getElementById('numGroups').value;
+            const effect = document.getElementById('effectSize').value;
+            const power = document.getElementById('power').value;
+            const alpha = document.getElementById('alpha').value;
+            const dropout = document.getElementById('dropout').value;
+            const finalN = document.getElementById('finalSampleSize').value;
+            const allocation = document.getElementById('allocationRatio').value;
+
+            if (test && test !== 'Select test...') params.push(['Statistical Test', test]);
+            if (n) params.push(['Calculated Sample Size', n]);
+            if (perGroup) params.push(['Sample Size per Group', perGroup]);
+            if (numGroups && numGroups > 2) params.push(['Number of Groups', numGroups]);
+            if (allocation && allocation !== '1:1') params.push(['Allocation Ratio', allocation]);
+            if (effect) params.push(['Effect Size', effect]);
+            if (power) params.push(['Statistical Power', power + '%']);
+            if (alpha) params.push(['Alpha Level', alpha]);
+            if (dropout && dropout !== '0') params.push(['Anticipated Dropout', dropout + '%']);
+            if (finalN && dropout && dropout !== '0') params.push(['Final Sample Size (with dropout)', finalN]);
+
+            if (params.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: var(--text-muted);"><em>Parameters will appear here...</em></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = params.map(([param, value]) => `
+                <tr>
+                    <td><strong>${param}</strong></td>
+                    <td>${value}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ============================================
+        // Formula Display
+        // ============================================
+        function updateFormula() {
+            const test = document.getElementById('statTest').value;
+            const formulaBox = document.getElementById('formulaBox');
+
+            const formulas = {
+                'two-sample-t': {
+                    formula: 'n = 2 * ((Z_alpha/2 + Z_beta)^2 * sigma^2) / delta^2',
+                    desc: 'Where sigma is the pooled standard deviation and delta is the minimum detectable difference'
+                },
+                'paired-t': {
+                    formula: 'n = ((Z_alpha/2 + Z_beta)^2 * sigma_d^2) / delta^2',
+                    desc: 'Where sigma_d is the standard deviation of differences'
+                },
+                'chi-square': {
+                    formula: 'n = (Z_alpha/2 * sqrt(2*p_bar*q_bar) + Z_beta * sqrt(p1*q1 + p2*q2))^2 / (p1 - p2)^2',
+                    desc: 'For comparison of two proportions'
+                },
+                'one-way-anova': {
+                    formula: 'n = (k * (Z_alpha/2 + Z_beta)^2 * sigma^2) / (sum(delta_i^2))',
+                    desc: 'Where k is the number of groups'
+                },
+                'pearson': {
+                    formula: 'n = ((Z_alpha/2 + Z_beta) / C(r))^2 + 3',
+                    desc: 'Where C(r) = 0.5 * ln((1+r)/(1-r)) is the Fisher transformation'
+                },
+                'log-rank': {
+                    formula: 'n = (Z_alpha/2 + Z_beta)^2 / (p1 * p2 * (ln(HR))^2)',
+                    desc: 'Where HR is the hazard ratio and p1, p2 are event probabilities'
+                },
+                'sensitivity-specificity': {
+                    formula: 'n = Z_alpha/2^2 * Se * (1-Se) / d^2',
+                    desc: 'Where Se is sensitivity and d is the precision (half-width of CI)'
+                },
+                'kappa': {
+                    formula: 'n = (Z_alpha/2 + Z_beta)^2 * (p_o(1-p_o)) / (kappa * (1-p_e))^2',
+                    desc: 'Where p_o is observed agreement and p_e is expected agreement'
+                },
+                'multiple-regression': {
+                    formula: 'n = ((Z_alpha/2 + Z_beta)^2 * (1 - rho^2)) / (f^2) + k + 1',
+                    desc: 'Where k is the number of predictors and f^2 is the effect size'
+                }
+            };
+
+            if (formulas[test]) {
+                formulaBox.innerHTML = `
+                    <div class="formula">${formulas[test].formula}</div>
+                    <div class="formula-desc">${formulas[test].desc}</div>
+                `;
+            } else if (test) {
+                formulaBox.innerHTML = `
+                    <div class="formula">Standard sample size formula for ${document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text}</div>
+                    <div class="formula-desc">Consult statistical references for the specific formula used</div>
+                `;
+            } else {
+                formulaBox.innerHTML = `
+                    <div class="formula">Select a statistical test to display the formula</div>
+                    <div class="formula-desc"></div>
+                `;
+            }
+        }
+
+        // ============================================
+        // Justification Template
+        // ============================================
+        function updateJustificationTemplate() {
+            const studyTitle = document.getElementById('studyTitle').value;
+            const studyDesc = document.getElementById('studyDesc').value;
+            const studyDesign = document.getElementById('studyDesign').options[document.getElementById('studyDesign').selectedIndex]?.text;
+            const primaryOutcome = document.getElementById('primaryOutcome').value;
+            const targetPop = document.getElementById('targetPopulation').value;
+            const statTest = document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text;
+            const sampleSize = document.getElementById('sampleSize').value;
+            const perGroup = document.getElementById('perGroup').value;
+            const power = document.getElementById('power').value;
+            const alpha = document.getElementById('alpha').value;
+            const effectSize = document.getElementById('effectSize').value;
+            const dropout = document.getElementById('dropout').value;
+            const finalN = document.getElementById('finalSampleSize').value;
+            const assumptions = document.getElementById('assumptions').value;
+            const limitations = document.getElementById('limitations').value;
+
+            // Objective
+            let objectiveText = '';
+            if (studyTitle || studyDesc) {
+                objectiveText = studyDesc || `The objective of this study "${studyTitle}" is to evaluate the primary outcome in the target population.`;
+                if (targetPop) objectiveText += ` The study will be conducted in ${targetPop}.`;
+                if (studyDesign && studyDesign !== 'Select study design...') objectiveText += ` This is a ${studyDesign.toLowerCase()}.`;
+            } else {
+                objectiveText = '<em>Enter study information to populate this section...</em>';
+            }
+            document.getElementById('templateObjective').innerHTML = objectiveText;
+
+            // Outcome
+            let outcomeText = primaryOutcome ?
+                `The primary outcome measure is ${primaryOutcome}.` :
+                '<em>Specify the primary outcome measure...</em>';
+            document.getElementById('templateOutcome').innerHTML = outcomeText;
+
+            // Analysis
+            let analysisText = statTest && statTest !== 'Select test...' ?
+                `The primary analysis will use ${statTest} to compare groups. Statistical significance will be determined at alpha = ${alpha}.` :
+                '<em>Select a statistical test to populate this section...</em>';
+            document.getElementById('templateAnalysis').innerHTML = analysisText;
+
+            // Calculation
+            let calcText = '';
+            if (sampleSize) {
+                calcText = `Based on `;
+                if (effectSize) calcText += `an anticipated effect size of ${effectSize}, `;
+                calcText += `a Type I error rate of ${alpha} (two-sided), and ${power}% statistical power, `;
+                if (perGroup) {
+                    calcText += `a minimum of ${perGroup} participants per group (${sampleSize} total) is required. `;
+                } else {
+                    calcText += `a minimum of ${sampleSize} participants is required. `;
+                }
+                if (dropout > 0 && finalN) {
+                    calcText += `Accounting for ${dropout}% dropout, the target enrollment is ${finalN} participants.`;
+                }
+            } else {
+                calcText = '<em>Enter sample size parameters to populate this section...</em>';
+            }
+            document.getElementById('templateCalculation').innerHTML = calcText;
+
+            // Assumptions
+            const assumptionsList = document.getElementById('templateAssumptions');
+            if (assumptions) {
+                const items = assumptions.split(/[,\n]/).filter(a => a.trim());
+                assumptionsList.innerHTML = items.map(a => `<li>${a.trim()}</li>`).join('');
+            } else {
+                assumptionsList.innerHTML = '<li><em>Normal distribution of data</em></li><li><em>Equal variance between groups</em></li><li><em>Independent observations</em></li>';
+            }
+
+            // Limitations
+            let limitText = limitations || '<em>Effect size estimates are based on published literature and may not reflect the true effect in this population. Single-center study may limit generalizability.</em>';
+            document.getElementById('templateLimitations').innerHTML = limitText;
+        }
+
+        function copyJustificationTemplate() {
+            const template = document.getElementById('justificationTemplate');
+            const text = template.innerText;
+            navigator.clipboard.writeText(text);
+            showToast('Justification template copied!');
+        }
+
+        // ============================================
+        // Citation Management
+        // ============================================
+        function switchCitation(format) {
+            currentCitationFormat = format;
+
+            document.querySelectorAll('.citation-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.textContent.toLowerCase().includes(format));
+            });
+
+            const year = new Date().getFullYear();
+            const accessDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const citations = {
+                'apa': `KARMASTAT. (${year}). <em>Sample Size Calculator for Medical Research</em> (Version 2.0) [Computer software]. https://karmastat.app`,
+                'vancouver': `KARMASTAT. Sample Size Calculator for Medical Research [Internet]. Version 2.0. ${year} [cited ${accessDate}]. Available from: https://karmastat.app`,
+                'harvard': `KARMASTAT ${year}, <em>Sample Size Calculator for Medical Research</em>, version 2.0, computer software, viewed ${accessDate}, &lt;https://karmastat.app&gt;.`,
+                'chicago': `KARMASTAT. "Sample Size Calculator for Medical Research." Version 2.0. ${year}. https://karmastat.app.`,
+                'bibtex': `@software{karmastat${year},
+  author = {{KARMASTAT}},
+  title = {Sample Size Calculator for Medical Research},
+  version = {2.0},
+  year = {${year}},
+  url = {https://karmastat.app}
+}`
+            };
+
+            document.getElementById('citationContent').innerHTML = citations[format];
+        }
+
+        function copyCitation() {
+            const content = document.getElementById('citationContent');
+            const text = content.innerText || content.textContent;
+            navigator.clipboard.writeText(text);
+            showToast('Citation copied!');
+        }
+
+        // ============================================
+        // PDF Theme Selection
+        // ============================================
+        function selectPDFTheme(theme) {
+            pdfTheme = theme;
+            document.querySelectorAll('.pdf-theme-option').forEach(option => {
+                option.classList.toggle('active', option.dataset.theme === theme);
+            });
+        }
+
+        // ============================================
+        // Export Functions
+        // ============================================
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const title = document.getElementById('studyTitle').value || 'Sample Size Calculation Report';
+            const design = document.getElementById('studyDesign').options[document.getElementById('studyDesign').selectedIndex]?.text || '';
+            const methodology = document.getElementById('methodologyPreview').innerText;
+            const primaryOutcome = document.getElementById('primaryOutcome').value;
+            const assumptions = document.getElementById('assumptions').value;
+            const limitations = document.getElementById('limitations').value;
+
+            // Theme colors
+            const colors = pdfTheme === 'dark' ? {
+                bg: [31, 41, 55],
+                text: [241, 245, 249],
+                primary: [16, 185, 129],
+                secondary: [148, 163, 184],
+                tableBg: [55, 65, 81]
+            } : {
+                bg: [255, 255, 255],
+                text: [31, 41, 55],
+                primary: [16, 185, 129],
+                secondary: [107, 114, 128],
+                tableBg: [243, 244, 246]
+            };
+
+            // Background for dark theme
+            if (pdfTheme === 'dark') {
+                doc.setFillColor(...colors.bg);
+                doc.rect(0, 0, 210, 297, 'F');
+            }
+
+            // Header
+            doc.setFillColor(...colors.primary);
+            doc.rect(0, 0, 210, 25, 'F');
+
+            doc.setFontSize(18);
+            doc.setTextColor(255, 255, 255);
+            doc.text('KARMASTAT Sample Size Report', 15, 16);
+
+            // Title
+            let yPos = 40;
+            doc.setFontSize(14);
+            doc.setTextColor(...colors.text);
+            doc.setFont(undefined, 'bold');
+            doc.text(title, 15, yPos);
+
+            yPos += 10;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...colors.secondary);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 15, yPos);
+
+            if (design && design !== 'Select study design...') {
+                yPos += 6;
+                doc.text(`Study Design: ${design}`, 15, yPos);
+            }
+
+            // Methodology Section
+            yPos += 15;
+            doc.setFontSize(12);
+            doc.setTextColor(...colors.primary);
+            doc.setFont(undefined, 'bold');
+            doc.text('Sample Size Justification', 15, yPos);
+
+            yPos += 8;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...colors.text);
+            const splitMethodology = doc.splitTextToSize(methodology, 180);
+            doc.text(splitMethodology, 15, yPos);
+            yPos += splitMethodology.length * 5 + 10;
+
+            // Parameters Table
+            doc.setFontSize(12);
+            doc.setTextColor(...colors.primary);
+            doc.setFont(undefined, 'bold');
+            doc.text('Statistical Parameters', 15, yPos);
+            yPos += 5;
+
+            const tableData = [];
+            const sampleSize = document.getElementById('sampleSize').value;
+            const perGroup = document.getElementById('perGroup').value;
+            const effectSize = document.getElementById('effectSize').value;
+            const power = document.getElementById('power').value;
+            const alpha = document.getElementById('alpha').value;
+            const dropout = document.getElementById('dropout').value;
+            const finalN = document.getElementById('finalSampleSize').value;
+            const statTest = document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text;
+
+            if (statTest && statTest !== 'Select test...') tableData.push(['Statistical Test', statTest]);
+            if (sampleSize) tableData.push(['Calculated Sample Size', sampleSize]);
+            if (perGroup) tableData.push(['Sample Size per Group', perGroup]);
+            if (effectSize) tableData.push(['Effect Size', effectSize]);
+            if (power) tableData.push(['Statistical Power', power + '%']);
+            if (alpha) tableData.push(['Alpha Level', alpha]);
+            if (dropout && dropout !== '0') tableData.push(['Anticipated Dropout', dropout + '%']);
+            if (finalN && dropout && dropout !== '0') tableData.push(['Final Sample Size', finalN]);
+
+            if (tableData.length > 0) {
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Parameter', 'Value']],
+                    body: tableData,
+                    theme: 'striped',
+                    headStyles: {
+                        fillColor: colors.primary,
+                        textColor: [255, 255, 255]
+                    },
+                    bodyStyles: {
+                        textColor: colors.text
+                    },
+                    alternateRowStyles: {
+                        fillColor: pdfTheme === 'dark' ? colors.tableBg : colors.tableBg
+                    },
+                    margin: { left: 15, right: 15 }
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+            }
+
+            // Assumptions
+            if (assumptions) {
+                doc.setFontSize(12);
+                doc.setTextColor(...colors.primary);
+                doc.setFont(undefined, 'bold');
+                doc.text('Assumptions', 15, yPos);
+                yPos += 7;
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(...colors.text);
+                const splitAssumptions = doc.splitTextToSize(assumptions, 180);
+                doc.text(splitAssumptions, 15, yPos);
+                yPos += splitAssumptions.length * 5 + 10;
+            }
+
+            // Limitations
+            if (limitations) {
+                doc.setFontSize(12);
+                doc.setTextColor(...colors.primary);
+                doc.setFont(undefined, 'bold');
+                doc.text('Limitations', 15, yPos);
+                yPos += 7;
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(...colors.text);
+                const splitLimitations = doc.splitTextToSize(limitations, 180);
+                doc.text(splitLimitations, 15, yPos);
+                yPos += splitLimitations.length * 5 + 10;
+            }
+
+            // Citation
+            doc.setFontSize(12);
+            doc.setTextColor(...colors.primary);
+            doc.setFont(undefined, 'bold');
+            doc.text('Software Citation', 15, yPos);
+            yPos += 7;
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...colors.secondary);
+            const citation = document.getElementById('citationContent').innerText;
+            const splitCitation = doc.splitTextToSize(citation, 180);
+            doc.text(splitCitation, 15, yPos);
+
+            // Footer
+            doc.setFontSize(9);
+            doc.setTextColor(...colors.secondary);
+            doc.text('Generated by KARMASTAT - Crafted by Karmayogi', 15, 285);
+            doc.text(`Page 1`, 190, 285, { align: 'right' });
+
+            doc.save('karmastat_sample_size_report.pdf');
+            showToast('PDF report downloaded!');
+        }
+
+        function exportWord() {
+            const title = document.getElementById('studyTitle').value || 'Sample Size Calculation Report';
+            const design = document.getElementById('studyDesign').options[document.getElementById('studyDesign').selectedIndex]?.text || '';
+            const methodology = document.getElementById('methodologyPreview').innerText;
+            const assumptions = document.getElementById('assumptions').value;
+            const limitations = document.getElementById('limitations').value;
+            const citation = document.getElementById('citationContent').innerText;
+
+            const html = `
+<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+<head>
+    <meta charset="utf-8">
+    <title>${title}</title>
+    <style>
+        body { font-family: 'Calibri', sans-serif; line-height: 1.6; color: #1F2937; }
+        h1 { color: #10B981; border-bottom: 2px solid #10B981; padding-bottom: 10px; }
+        h2 { color: #10B981; margin-top: 20px; }
+        h3 { color: #059669; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+        th, td { border: 1px solid #E5E7EB; padding: 10px; text-align: left; }
+        th { background-color: #10B981; color: white; }
+        tr:nth-child(even) { background-color: #F3F4F6; }
+        .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #E5E7EB; color: #6B7280; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>KARMASTAT Sample Size Report</h1>
+    <h2>${title}</h2>
+    <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+    ${design && design !== 'Select study design...' ? `<p><strong>Study Design:</strong> ${design}</p>` : ''}
+
+    <h3>Sample Size Justification</h3>
+    <p>${methodology}</p>
+
+    <h3>Statistical Parameters</h3>
+    <table>
+        <tr><th>Parameter</th><th>Value</th></tr>
+        <tr><td>Statistical Test</td><td>${document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text || 'N/A'}</td></tr>
+        <tr><td>Sample Size</td><td>${document.getElementById('sampleSize').value || 'N/A'}</td></tr>
+        <tr><td>Per Group</td><td>${document.getElementById('perGroup').value || 'N/A'}</td></tr>
+        <tr><td>Effect Size</td><td>${document.getElementById('effectSize').value || 'N/A'}</td></tr>
+        <tr><td>Power</td><td>${document.getElementById('power').value}%</td></tr>
+        <tr><td>Alpha</td><td>${document.getElementById('alpha').value}</td></tr>
+        <tr><td>Dropout</td><td>${document.getElementById('dropout').value}%</td></tr>
+        <tr><td>Final Sample Size</td><td>${document.getElementById('finalSampleSize').value || 'N/A'}</td></tr>
+    </table>
+
+    ${assumptions ? `<h3>Assumptions</h3><p>${assumptions}</p>` : ''}
+    ${limitations ? `<h3>Limitations</h3><p>${limitations}</p>` : ''}
+
+    <h3>Software Citation</h3>
+    <p><em>${citation}</em></p>
+
+    <div class="footer">
+        <p>Generated by KARMASTAT - Crafted by Karmayogi</p>
+    </div>
+</body>
+</html>`;
+
+            const blob = new Blob([html], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'karmastat_sample_size_report.doc';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Word document downloaded!');
+        }
+
+        function exportLaTeX() {
+            const title = document.getElementById('studyTitle').value || 'Sample Size Calculation';
+            const methodology = document.getElementById('methodologyPreview').innerText;
+            const assumptions = document.getElementById('assumptions').value;
+            const limitations = document.getElementById('limitations').value;
+            const citation = document.getElementById('citationContent').innerText;
+
+            const escapeLatex = (str) => str
+                .replace(/\\/g, '\\textbackslash{}')
+                .replace(/%/g, '\\%')
+                .replace(/&/g, '\\&')
+                .replace(/#/g, '\\#')
+                .replace(/_/g, '\\_')
+                .replace(/\$/g, '\\$')
+                .replace(/{/g, '\\{')
+                .replace(/}/g, '\\}')
+                .replace(/~/g, '\\textasciitilde{}')
+                .replace(/\^/g, '\\textasciicircum{}');
+
+            const latex = `% KARMASTAT Sample Size Report
+% Generated: ${new Date().toLocaleString()}
+% Title: ${escapeLatex(title)}
+
+\\subsection{Sample Size Calculation}
+
+${escapeLatex(methodology)}
+
+\\subsubsection{Statistical Parameters}
+\\begin{table}[h]
+\\centering
+\\begin{tabular}{|l|l|}
+\\hline
+\\textbf{Parameter} & \\textbf{Value} \\\\
+\\hline
+Statistical Test & ${escapeLatex(document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text || 'N/A')} \\\\
+Sample Size & ${document.getElementById('sampleSize').value || 'N/A'} \\\\
+Per Group & ${document.getElementById('perGroup').value || 'N/A'} \\\\
+Effect Size & ${escapeLatex(document.getElementById('effectSize').value || 'N/A')} \\\\
+Power & ${document.getElementById('power').value}\\% \\\\
+Alpha & ${document.getElementById('alpha').value} \\\\
+Dropout & ${document.getElementById('dropout').value}\\% \\\\
+Final Sample Size & ${document.getElementById('finalSampleSize').value || 'N/A'} \\\\
+\\hline
+\\end{tabular}
+\\caption{Sample Size Parameters}
+\\end{table}
+
+${assumptions ? `\\subsubsection{Assumptions}\n${escapeLatex(assumptions)}` : ''}
+
+${limitations ? `\\subsubsection{Limitations}\n${escapeLatex(limitations)}` : ''}
+
+% Software Citation (for bibliography):
+% ${escapeLatex(citation)}
+
+% Footer: Generated by KARMASTAT - Crafted by Karmayogi
+`;
+
+            const blob = new Blob([latex], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'karmastat_sample_size_report.tex';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('LaTeX snippet downloaded!');
+        }
+
+        function exportText() {
+            const title = document.getElementById('studyTitle').value || 'Sample Size Calculation Report';
+            const design = document.getElementById('studyDesign').options[document.getElementById('studyDesign').selectedIndex]?.text || '';
+            const methodology = document.getElementById('methodologyPreview').innerText;
+            const assumptions = document.getElementById('assumptions').value;
+            const limitations = document.getElementById('limitations').value;
+            const citation = document.getElementById('citationContent').innerText;
+
+            const text = `KARMASTAT SAMPLE SIZE REPORT
+${'='.repeat(50)}
+
+${title}
+Generated: ${new Date().toLocaleString()}
+${design && design !== 'Select study design...' ? `Study Design: ${design}` : ''}
+
+SAMPLE SIZE JUSTIFICATION
+${'-'.repeat(50)}
+${methodology}
+
+STATISTICAL PARAMETERS
+${'-'.repeat(50)}
+Statistical Test: ${document.getElementById('statTest').options[document.getElementById('statTest').selectedIndex]?.text || 'N/A'}
+Sample Size: ${document.getElementById('sampleSize').value || 'N/A'}
+Per Group: ${document.getElementById('perGroup').value || 'N/A'}
+Effect Size: ${document.getElementById('effectSize').value || 'N/A'}
+Power: ${document.getElementById('power').value}%
+Alpha: ${document.getElementById('alpha').value}
+Dropout: ${document.getElementById('dropout').value}%
+Final Sample Size: ${document.getElementById('finalSampleSize').value || 'N/A'}
+
+${assumptions ? `ASSUMPTIONS\n${'-'.repeat(50)}\n${assumptions}\n` : ''}
+${limitations ? `LIMITATIONS\n${'-'.repeat(50)}\n${limitations}\n` : ''}
+SOFTWARE CITATION
+${'-'.repeat(50)}
+${citation}
+
+${'='.repeat(50)}
+Generated by KARMASTAT - Crafted by Karmayogi
+`;
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'karmastat_sample_size_report.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Plain text file downloaded!');
+        }
+
+        // ============================================
+        // Toast Notification
+        // ============================================
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.background = type === 'error' ? 'var(--danger)' : 'var(--primary)';
+            toast.innerHTML = `<span>${type === 'error' ? '&#9888;' : '&#10004;'}</span> ${message}`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ============================================
+        // Initialization
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            loadSavedCalculations();
+
+            // Add input listeners for real-time updates
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (!input.hasAttribute('onchange')) {
+                    input.addEventListener('input', updateAllPreviews);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
