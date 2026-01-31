@@ -9,7 +9,7 @@ import { EnhancedInput } from '@/components/ui/enhanced-input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { DiseaseModel, DiseaseModelParams, InterventionParams } from '@/lib/infectious';
+import { DiseaseModel, DiseaseModelParams, InterventionParams } from '@/backend/disease-math.seir';
 import { FieldPopover } from '@/components/ui/field-popover';
 import { getFieldExplanation } from '@/lib/field-explanations';
 
@@ -108,7 +108,7 @@ export function StandardModel({ onResultsChange }: StandardModelProps) {
   }, [form, onSubmit]);
 
   return (
-    <Form {...form}>
+    <Form {...(form as any)}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
           <CardHeader>

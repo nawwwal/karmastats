@@ -4,11 +4,9 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { useFormedible } from '@/hooks/use-formedible';
 import type { FieldConfig } from '@/lib/formedible/types';
-import {
-  CrossSectionalSchema,
-  calculateCrossSectionalSampleSize,
-  CrossSectionalOutput,
-} from '@/lib/crossSectional';
+import { computeCrossSectional } from '@/lib/tools/crossSectional/manager';
+import type { RawValues } from '@/lib/tools/crossSectional/types';
+import type { CrossSectionalOutput } from '@/backend/sample-size.cross-sectional';
 
 interface CrossSectionalFormFormedibleProps {
   onResults: (
@@ -82,10 +80,7 @@ export default function CrossSectionalFormFormedible({
       min: 1,
       step: 1,
       validation: z.number().positive().optional(),
-      conditional: {
-        field: 'showAdvanced',
-        value: true,
-      },
+      conditional: () => showAdvanced,
     },
     {
       name: 'designEffect',
@@ -94,10 +89,7 @@ export default function CrossSectionalFormFormedible({
       min: 1,
       step: 0.1,
       validation: z.number().min(1),
-      conditional: {
-        field: 'showAdvanced',
-        value: true,
-      },
+      conditional: () => showAdvanced,
     },
     {
       name: 'nonResponseRate',
@@ -107,10 +99,7 @@ export default function CrossSectionalFormFormedible({
       max: 99,
       step: 0.1,
       validation: z.number().min(0).max(99.9),
-      conditional: {
-        field: 'showAdvanced',
-        value: true,
-      },
+      conditional: () => showAdvanced,
     },
     {
       name: 'clusteringEffect',
@@ -120,19 +109,12 @@ export default function CrossSectionalFormFormedible({
       max: 1,
       step: 0.01,
       validation: z.number().min(0).max(1),
-      conditional: {
-        field: 'showAdvanced',
-        value: true,
-      },
+      conditional: () => showAdvanced,
     },
   ];
 
   const { Form } = useFormedible({
-    fields: fields.map((field) =>
-      field.conditional
-        ? { ...field, conditional: { ...field.conditional, value: showAdvanced } }
-        : field
-    ),
+    fields,
     layout: { type: 'grid', columns: 2, gap: '6', responsive: true },
     formOptions: {
       defaultValues: {
@@ -144,31 +126,24 @@ export default function CrossSectionalFormFormedible({
         nonResponseRate: 15,
         clusteringEffect: 0,
       },
-      onChange: ({ value }) => {
-        try {
-          const coerced = coerceValues(value as Record<string, unknown>);
-          const parsed = CrossSectionalSchema.safeParse(coerced);
-          if (!parsed.success) throw parsed.error;
-          const result = calculateCrossSectionalSampleSize(parsed.data);
+      onChange: async ({ value }) => {
+        const computed = await computeCrossSectional(value as RawValues);
+        if (computed.ok) {
           onError(null);
-          onResults(result, coerced);
-        } catch (err: unknown) {
-          if (err && typeof err === 'object' && 'issues' in (err as any)) {
-            const zodErr = err as any;
-            const msg =
-              zodErr.issues?.map((i: any) => i.message).join(', ') ||
-              'Invalid input';
-            onError?.(msg);
-          }
+          onResults(computed.result, computed.values);
+        } else {
+          onError(computed.message);
         }
       },
-      onSubmit: ({ value }) => {
+      onSubmit: async ({ value }) => {
         try {
-          const coerced = coerceValues(value as Record<string, unknown>);
-          const validated = CrossSectionalSchema.parse(coerced);
-          const result = calculateCrossSectionalSampleSize(validated);
-          onResults(result, value as Record<string, unknown>);
-          onError(null);
+          const computed = await computeCrossSectional(value as RawValues);
+          if (computed.ok) {
+            onError(null);
+            onResults(computed.result, computed.values);
+          } else {
+            throw new Error(computed.message);
+          }
         } catch (err) {
           if (err instanceof z.ZodError) {
             onError(err.issues.map((i) => i.message).join(', '));

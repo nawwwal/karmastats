@@ -4,19 +4,11 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { useFormedible } from '@/hooks/use-formedible';
 import type { FieldConfig } from '@/lib/formedible/types';
-import {
-  calculateLogRank,
-  calculateCox,
-  calculateOneArm,
-  type LogRankOutput,
-  type CoxOutput,
-  type OneArmOutput,
-  LogRankParamsSchema,
-  CoxParamsSchema,
-  OneArmParamsSchema,
-} from '@/lib/survivalAnalysis';
+import type { SurvivalAnalysisResults } from '@/backend/sample-size.survival';
+import { computeSurvival } from '@/lib/tools/survivalAnalysis/manager';
+import type { SurvivalTab } from '@/lib/tools/survivalAnalysis/types';
 
-type Results = LogRankOutput | CoxOutput | OneArmOutput;
+type Results = SurvivalAnalysisResults;
 
 interface SurvivalAnalysisFormFormedibleProps {
   onResults: (results: Results, values: Record<string, unknown>) => void;
@@ -102,28 +94,29 @@ export default function SurvivalAnalysisFormFormedible({
         targetMedianSurvival: 18,
         analysisTimePoint: 24,
       },
-      onChange: ({ value }) => {
-        try {
-          const coerced = coerceValues(value as Record<string, unknown>);
-          let result: Results | null = null;
-          if (activeTab === 'log-rank') {
-            const parsed = LogRankParamsSchema.safeParse(coerced);
-            if (!parsed.success) throw parsed.error;
-            result = calculateLogRank(parsed.data);
-          } else if (activeTab === 'cox') {
-            const parsed = CoxParamsSchema.safeParse(coerced);
-            if (!parsed.success) throw parsed.error;
-            result = calculateCox(parsed.data);
-          } else if (activeTab === 'one-arm') {
-            const parsed = OneArmParamsSchema.safeParse(coerced);
-            if (!parsed.success) throw parsed.error;
-            result = calculateOneArm(parsed.data);
-          }
+      onChange: async ({ value }) => {
+        const computed = await computeSurvival(activeTab as SurvivalTab, value as Record<string, unknown>);
+        if (computed.ok) {
           onError(null);
-          if (result) onResults(result, coerced);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            onError(error.issues.map((i) => i.message).join(', '));
+          onResults(computed.result as Results, computed.values);
+        } else {
+          onError(computed.message);
+        }
+      },
+      onSubmit: async ({ value }) => {
+        try {
+          const computed = await computeSurvival(activeTab as SurvivalTab, value as Record<string, unknown>);
+          if (computed.ok) {
+            onError(null);
+            onResults(computed.result as Results, computed.values);
+          } else {
+            throw new Error(computed.message);
+          }
+        } catch (err) {
+          if (err instanceof z.ZodError) {
+            onError(err.issues.map((i) => i.message).join(', '));
+          } else {
+            onError((err as Error).message);
           }
         }
       },

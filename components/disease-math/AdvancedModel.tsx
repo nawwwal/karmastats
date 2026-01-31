@@ -16,7 +16,7 @@ import {
   DiseaseModel,
   DiseaseModelParams,
   InterventionParams,
-} from "@/lib/infectious";
+} from "@/backend/disease-math.seir";
 
 const FormSchema = z.object({
   // Disease Parameters
@@ -129,7 +129,7 @@ export function AdvancedModel({ onResultsChange }: AdvancedModelProps) {
   }, [form, onSubmit]);
 
   return (
-    <Form {...form}>
+    <Form {...(form as any)}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       {/* Disease Parameters */}
         <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">

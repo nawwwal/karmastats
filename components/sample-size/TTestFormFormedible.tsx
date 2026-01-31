@@ -11,7 +11,7 @@ import type {
   IndependentSampleSizeOutput,
   PairedSampleSizeOutput,
   OneSampleSampleSizeOutput,
-} from '@/lib/math/sample-size/tTest';
+} from '@/backend/sample-size.t-test';
 
 type Results =
   | IndependentSampleSizeOutput
@@ -121,5 +121,4 @@ export default function TTestFormFormedible(props: {
 
   return <Form />;
 }
-
 

@@ -8,7 +8,7 @@ import {
   SuperiorityContinuousOutput,
   NonInferiorityOutput,
   EquivalenceOutput,
-} from '@/lib/clinicalTrial';
+} from '@/backend/sample-size.clinical-trials';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -28,15 +28,7 @@ import {
   EnhancedTabsTrigger,
   EnhancedTabsContent,
 } from '@/components/ui/enhanced-tabs';
-import {
-  Activity,
-  Target,
-  TrendingUp,
-  Shield,
-  Download,
-  AlertCircle,
-  Calculator,
-} from 'lucide-react';
+import { Activity, Target, TrendingUp, Shield, AlertCircle, Calculator } from 'lucide-react';
 import ClinicalTrialsFormFormedible from '@/components/sample-size/ClinicalTrialsFormFormedible';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -69,97 +61,8 @@ export default function ClinicalTrialsPage() {
   const generatePdf = async () => {
     if (!results || !lastValues) return;
 
-    try {
-      const { generateModernPDF } = await import('@/lib/pdf-utils');
-      const formData = lastValues;
-
-      let config: any = {
-        calculatorType: `Clinical Trial ${
-          activeTab.charAt(0).toUpperCase() + activeTab.slice(1)
-        }`,
-        inputs: [],
-        results: [],
-        interpretation: {
-          recommendations: [],
-          assumptions: [],
-        },
-      };
-
-      if ('nnt' in results) {
-        // Superiority Binary
-        config.title = 'Superiority Clinical Trial Design';
-        config.subtitle = 'Binary Outcome Analysis';
-        config.inputs = [
-          {
-            label: 'Control Group Event Rate',
-            value: formData.controlRate,
-            unit: '%',
-          },
-          {
-            label: 'Treatment Group Event Rate',
-            value: formData.treatmentRate,
-            unit: '%',
-          },
-          { label: 'Allocation Ratio', value: formData.allocationRatio },
-          {
-            label: 'Significance Level',
-            value: Number(formData.alpha) || 0,
-            unit: '%',
-          },
-          {
-            label: 'Statistical Power',
-            value: Number(formData.power) || 0,
-            unit: '%',
-          },
-          { label: 'Dropout Rate', value: formData.dropoutRate, unit: '%' },
-        ];
-        config.results = [
-          {
-            label: 'Total Required Sample Size',
-            value: results.totalSize,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-          {
-            label: 'Number Needed to Treat (NNT)',
-            value: results.nnt,
-            highlight: true,
-            category: 'primary',
-            format: 'decimal',
-            precision: 1,
-          },
-          {
-            label: 'Treatment Group Size',
-            value: results.treatmentSize,
-            category: 'secondary',
-            format: 'integer',
-          },
-          {
-            label: 'Control Group Size',
-            value: results.controlSize,
-            category: 'secondary',
-            format: 'integer',
-          },
-        ];
-        config.interpretation.summary = `This superiority trial requires ${
-          results.totalSize
-        } participants total to detect a difference between ${
-          formData.controlRate
-        }% and ${
-          formData.treatmentRate
-        }% event rates. The Number Needed to Treat (NNT = ${results.nnt.toFixed(
-          1,
-        )}) indicates you need to treat ${Math.round(
-          results.nnt,
-        )} patients to prevent one additional adverse event.`;
-      }
-
-      await generateModernPDF(config);
-    } catch (err: any) {
-      setError(`Failed to generate PDF: ${err.message}`);
-    }
-  };
+    // PDF export removed for MVP
+    };
 
   const renderResults = () => {
     if (!results || !lastValues) return null;
@@ -352,28 +255,7 @@ export default function ClinicalTrialsPage() {
           }
         />
 
-        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-          <CardContent className="py-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-2 text-center sm:text-left">
-                <h3 className="font-semibold text-lg">Export Your Results</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Download a comprehensive PDF report with all calculations and
-                  interpretations
-                </p>
-              </div>
-              <Button
-                type="button"
-                onClick={generatePdf}
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-3 text-base font-semibold shrink-0"
-              >
-                <Download className="h-5 w-5 mr-3" />
-                Download PDF Report
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* PDF export removed */}
       </div>
     );
   };

@@ -5,7 +5,7 @@ import type {
   IndependentSampleSizeOutput,
   PairedSampleSizeOutput,
   OneSampleSampleSizeOutput
-} from '@/lib/math/sample-size/tTest';
+} from '@/backend/sample-size.t-test';
 
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -13,7 +13,7 @@ import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calculator, AlertCircle, Download } from 'lucide-react';
+import { Calculator, AlertCircle } from 'lucide-react';
 import TTestFormFormedible from '@/components/sample-size/TTestFormFormedible';
 import { EnhancedTabs, EnhancedTabsList, EnhancedTabsTrigger } from '@/components/ui/enhanced-tabs';
 
@@ -31,89 +31,7 @@ export default function TTestPage() {
     setLastValues(null);
   };
 
-  const generatePdf = async () => {
-    if (!results) return;
-
-    try {
-      const { generateModernPDF } = await import('@/lib/pdf-utils');
-      const formData = (lastValues || {}) as any;
-
-      let config: any = {
-        calculatorType: `T-Test`,
-        inputs: [],
-        results: [],
-        interpretation: {
-          recommendations: [
-            'Ensure data meets normality assumptions or consider non-parametric alternatives',
-            'For independent tests, verify homogeneity of variances (Levene test)',
-            'Report the effect size (Cohen\'s d) and its confidence interval alongside p-values',
-            'Consider increasing sample size by 10-20% to account for potential data quality issues'
-          ],
-          assumptions: [
-            'Data follows a normal distribution',
-            'Independent observations',
-            'Equal variances between groups (for independent t-test)',
-            'Continuous outcome variable'
-          ]
-        }
-      };
-
-      if ('totalSize' in results) {
-        config.title = "Independent Samples T-Test Analysis";
-        config.subtitle = "Two-Group Comparison Sample Size Calculation";
-        config.inputs = [
-          { label: "Group 1 Mean", value: formData.group1Mean },
-          { label: "Group 2 Mean", value: formData.group2Mean },
-          { label: "Pooled Standard Deviation", value: formData.pooledSD },
-          { label: "Allocation Ratio", value: formData.allocationRatio },
-          { label: "Significance Level", value: Number(formData.significanceLevel ?? 5), unit: "%" },
-          { label: "Statistical Power", value: Number(formData.power ?? 80), unit: "%" }
-        ];
-        config.results = [
-          { label: "Total Sample Size", value: results.totalSize, highlight: true, category: "primary", format: "integer" },
-          { label: "Group 1 Sample Size", value: results.group1Size, category: "secondary", format: "integer" },
-          { label: "Group 2 Sample Size", value: results.group2Size, category: "secondary", format: "integer" },
-          { label: "Cohen's d (Effect Size)", value: results.cohensD, category: "statistical", format: "decimal", precision: 3 }
-        ];
-        config.interpretation.summary = `This independent samples t-test requires ${results.totalSize} participants total (${results.group1Size} in Group 1 and ${results.group2Size} in Group 2) to detect a difference between means of ${formData.group1Mean} and ${formData.group2Mean} with Cohen's d = ${results.cohensD.toFixed(3)} (${results.effectSizeInterpretation.toLowerCase()} effect size).`;
-      } else if ('pairsSize' in results) {
-        config.title = "Paired Samples T-Test Analysis";
-        config.subtitle = "Matched Pairs Comparison Sample Size Calculation";
-        config.inputs = [
-          { label: "Expected Mean Difference", value: formData.meanDifference },
-          { label: "Standard Deviation of Differences", value: formData.sdDifference },
-          { label: "Correlation between Pairs", value: formData.correlation },
-          { label: "Significance Level", value: Number(formData.significanceLevel ?? 5), unit: "%" },
-          { label: "Statistical Power", value: Number(formData.power ?? 80), unit: "%" }
-        ];
-        config.results = [
-          { label: "Required Number of Pairs", value: results.pairsSize, highlight: true, category: "primary", format: "integer" },
-          { label: "Total Observations", value: results.totalObservations, category: "secondary", format: "integer" },
-          { label: "Cohen's d (Effect Size)", value: results.cohensD, category: "statistical", format: "decimal", precision: 3 }
-        ];
-        config.interpretation.summary = `This paired samples t-test requires ${results.pairsSize} matched pairs (${results.totalObservations} total observations) to detect a mean difference of ${formData.meanDifference} with Cohen's d = ${results.cohensD.toFixed(3)} (${results.effectSizeInterpretation.toLowerCase()} effect size).`;
-      } else if ('sampleSize' in results) {
-        config.title = "One-Sample T-Test Analysis";
-        config.subtitle = "Single Group vs Population Comparison Sample Size Calculation";
-        config.inputs = [
-          { label: "Expected Sample Mean", value: formData.sampleMean },
-          { label: "Population Mean (H₀)", value: formData.populationMean },
-          { label: "Population Standard Deviation", value: formData.populationSD },
-          { label: "Significance Level", value: Number(formData.significanceLevel ?? 5), unit: "%" },
-          { label: "Statistical Power", value: Number(formData.power ?? 80), unit: "%" }
-        ];
-        config.results = [
-          { label: "Required Sample Size", value: results.sampleSize, highlight: true, category: "primary", format: "integer" },
-          { label: "Cohen's d (Effect Size)", value: results.cohensD, category: "statistical", format: "decimal", precision: 3 }
-        ];
-        config.interpretation.summary = `This one-sample t-test requires ${results.sampleSize} participants to detect a difference between the sample mean of ${formData.sampleMean} and population mean of ${formData.populationMean} with Cohen's d = ${results.cohensD.toFixed(3)} (${results.effectSizeInterpretation.toLowerCase()} effect size).`;
-      }
-
-      await generateModernPDF(config);
-    } catch (err: any) {
-      setError(`Failed to generate PDF: ${err.message}`);
-    }
-  };
+  // PDF export removed for MVP
 
   const renderResults = () => {
     if (!results) return null;
@@ -291,26 +209,7 @@ export default function TTestPage() {
           }
         />
 
-        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-          <CardContent className="py-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-2 text-center sm:text-left">
-                <h3 className="font-semibold text-lg">Export Your Results</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Download comprehensive PDF report with calculations and interpretations
-                </p>
-              </div>
-              <Button
-                onClick={generatePdf}
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
-              >
-                <Download className="h-5 w-5 mr-3" />
-                Download PDF Report
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* PDF export removed */}
       </div>
     );
   };

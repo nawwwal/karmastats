@@ -1,4 +1,4 @@
-import { DiseaseModelResult } from "@/lib/infectious";
+import { DiseaseModelResult } from "@/backend/disease-math.seir";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedGradient } from "@/components/ui/animated-gradient";
 import { StatisticalSummary } from "@/components/ui/statistical-summary";

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { multipleRegression, MultipleRegressionResult } from "@/lib/regression";
+import { multipleRegression, MultipleRegressionResult } from "@/backend/regression.multiple";
 import dynamic from "next/dynamic";
 
 // Dynamically import Chart.js to prevent SSR issues

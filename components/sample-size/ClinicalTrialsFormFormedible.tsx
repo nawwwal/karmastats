@@ -4,20 +4,14 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { useFormedible } from '@/hooks/use-formedible';
 import type { FieldConfig } from '@/lib/formedible/types';
-import {
-  SuperiorityBinarySchema,
-  calculateSuperiorityBinary,
+import type {
   SuperiorityBinaryOutput,
-  SuperiorityContinuousSchema,
-  calculateSuperiorityContinuous,
   SuperiorityContinuousOutput,
-  NonInferioritySchema,
-  calculateNonInferiority,
   NonInferiorityOutput,
-  EquivalenceSchema,
-  calculateEquivalence,
   EquivalenceOutput,
-} from '@/lib/clinicalTrial';
+} from '@/backend/sample-size.clinical-trials';
+import { computeClinical } from '@/lib/tools/clinicalTrial/manager';
+import type { TrialTab } from '@/lib/tools/clinicalTrial/types';
 import { Calculator } from 'lucide-react';
 
 type Results =
@@ -215,36 +209,24 @@ export default function ClinicalTrialsFormFormedible({
         referenceRate: 20,
         testRate: 18,
       } as any,
-      onSubmit: ({ value }) => {
-        try {
-          let result: Results;
-          const values = { ...value, superiorityOutcome };
-
-          switch (activeTab) {
-            case 'superiority':
-              if (superiorityOutcome === 'binary') {
-                result = calculateSuperiorityBinary(
-                  SuperiorityBinarySchema.parse(values),
-                );
-              } else {
-                result = calculateSuperiorityContinuous(
-                  SuperiorityContinuousSchema.parse(values),
-                );
-              }
-              break;
-            case 'non-inferiority':
-              result = calculateNonInferiority(
-                NonInferioritySchema.parse(values),
-              );
-              break;
-            case 'equivalence':
-              result = calculateEquivalence(EquivalenceSchema.parse(values));
-              break;
-            default:
-              throw new Error('Invalid tab');
-          }
-          onResults(result, value as Record<string, unknown>);
+      onChange: async ({ value }) => {
+        const computed = await computeClinical(activeTab as TrialTab, value as Record<string, unknown>, { superiorityOutcome });
+        if (computed.ok) {
           onError(null);
+          onResults(computed.result as Results, computed.values);
+        } else {
+          onError(computed.message);
+        }
+      },
+      onSubmit: async ({ value }) => {
+        try {
+          const computed = await computeClinical(activeTab as TrialTab, value as Record<string, unknown>, { superiorityOutcome });
+          if (computed.ok) {
+            onError(null);
+            onResults(computed.result as Results, computed.values);
+          } else {
+            throw new Error(computed.message);
+          }
         } catch (err) {
           if (err instanceof z.ZodError) {
             onError(err.issues.map((i) => i.message).join(', '));
@@ -254,17 +236,10 @@ export default function ClinicalTrialsFormFormedible({
         }
       },
     },
-    showSubmitButton: true,
-    submitButton: (props) => (
-      <Button
-        {...props}
-        size="lg"
-        className="px-12 py-4 text-lg font-semibold h-14"
-      >
-        <Calculator className="h-5 w-5 mr-3" />
-        Calculate Sample Size
-      </Button>
-    ),
+    showSubmitButton: false,
+    autoSubmitOnChange: true,
+    autoSubmitDebounceMs: 400,
+    persistence: { key: 'clinical-trials-form', storage: 'localStorage', debounceMs: 800, restoreOnMount: true },
   });
 
   return <Form />;

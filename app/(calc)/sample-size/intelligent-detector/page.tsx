@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { StudyDetectorForm } from '@/components/sample-size/StudyDetectorForm';
 import { StudyResults } from '@/components/sample-size/StudyResults';
-import { StudyRecommendation } from '@/lib/studyDetector';
+import { StudyRecommendation } from '@/backend/sample-size.intelligent-detector';
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { Brain } from 'lucide-react';
 

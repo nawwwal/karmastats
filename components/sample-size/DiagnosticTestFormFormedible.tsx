@@ -4,17 +4,9 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { useFormedible } from '@/hooks/use-formedible';
 import type { FieldConfig } from '@/lib/formedible/types';
-import {
-  SingleTestSchema,
-  calculateSingleTestSampleSize,
-  SingleTestOutput,
-  ComparativeTestSchema,
-  calculateComparativeTestSampleSize,
-  ComparativeTestOutput,
-  ROCAnalysisSchema,
-  calculateROCAnalysisSampleSize,
-  ROCAnalysisOutput,
-} from '@/lib/diagnosticTest';
+import { computeDiagnostic } from '@/lib/tools/diagnosticTest/manager';
+import type { SingleTestOutput, ComparativeTestOutput, ROCAnalysisOutput } from '@/backend/sample-size.diagnostic';
+import type { DiagnosticTab } from '@/lib/tools/diagnosticTest/types';
 
 type Results = SingleTestOutput | ComparativeTestOutput | ROCAnalysisOutput;
 
@@ -151,10 +143,7 @@ export default function DiagnosticTestFormFormedible({
       max: 1,
       step: 0.01,
       validation: z.number().min(0).max(1),
-      conditional: {
-        field: 'studyDesign',
-        value: 'paired',
-      },
+      conditional: (values) => values['studyDesign'] === 'paired',
       group: 'parameters',
     },
     {
@@ -296,45 +285,24 @@ export default function DiagnosticTestFormFormedible({
         nullAUC: 0.5,
         negativePositiveRatio: 1,
       } as any,
-      onSubmit: ({ value }) => {
-        try {
-          let result: Results;
-          const values = value as any;
-
-          switch (activeTab) {
-            case 'single':
-              const singleData = {
-                ...values,
-                confidenceLevel: Number(values.confidenceLevel),
-              };
-              result = calculateSingleTestSampleSize(
-                SingleTestSchema.parse(singleData),
-              );
-              break;
-            case 'comparative':
-              const comparativeData = {
-                ...values,
-                significanceLevel: Number(values.significanceLevel),
-                power: Number(values.power),
-                testCorrelation: values.testCorrelation || 0,
-              };
-              result = calculateComparativeTestSampleSize(
-                ComparativeTestSchema.parse(comparativeData),
-              );
-              break;
-            case 'roc':
-              const rocData = {
-                ...values,
-                significanceLevel: Number(values.significanceLevel),
-                power: Number(values.power),
-              };
-              result = calculateROCAnalysisSampleSize(
-                ROCAnalysisSchema.parse(rocData),
-              );
-              break;
-          }
-          onResults(result, value as Record<string, unknown>, activeTab);
+      onChange: async ({ value }) => {
+        const computed = await computeDiagnostic(activeTab as DiagnosticTab, value as Record<string, unknown>);
+        if (computed.ok) {
           onError(null);
+          onResults(computed.result as Results, computed.values, activeTab);
+        } else {
+          onError(computed.message || null);
+        }
+      },
+      onSubmit: async ({ value }) => {
+        try {
+          const computed = await computeDiagnostic(activeTab as DiagnosticTab, value as Record<string, unknown>);
+          if (computed.ok) {
+            onError(null);
+            onResults(computed.result as Results, computed.values, activeTab);
+          } else {
+            throw new Error(computed.message);
+          }
         } catch (err) {
           if (err instanceof z.ZodError) {
             onError(err.issues.map((i) => i.message).join(', '));
@@ -344,12 +312,15 @@ export default function DiagnosticTestFormFormedible({
         }
       },
     },
-    showSubmitButton: true,
+    showSubmitButton: false,
     submitButton: (props) => (
       <Button {...props} className="w-full" size="lg">
         Calculate Sample Size
       </Button>
     ),
+    autoSubmitOnChange: true,
+    autoSubmitDebounceMs: 400,
+    persistence: { key: 'diagnostic-test-form', storage: 'localStorage', debounceMs: 800, restoreOnMount: true },
   });
 
   return <Form />;

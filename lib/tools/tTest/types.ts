@@ -1,20 +1,15 @@
+import type {
+  RawValues,
+  CoercedValues,
+  ComputeOk as SharedComputeOk,
+  ComputeErr as SharedComputeErr,
+  ComputeResult as SharedComputeResult,
+} from '@/lib/tools/shared/types';
+
 export type TTestTab = 'independent' | 'paired' | 'one-sample';
 
-export type RawValues = Record<string, unknown>;
-export type CoercedValues = Record<string, unknown>;
+export type ComputeOk<Result> = SharedComputeOk<Result, TTestTab>;
+export type ComputeErr = SharedComputeErr<TTestTab>;
+export type ComputeResult<Result> = SharedComputeResult<Result, TTestTab>;
 
-export interface ComputeOk<Result> {
-  ok: true;
-  tab: TTestTab;
-  result: Result;
-  values: CoercedValues;
-}
-
-export interface ComputeErr {
-  ok: false;
-  tab: TTestTab;
-  message: string;
-  values: CoercedValues;
-}
-
-export type ComputeResult<Result> = ComputeOk<Result> | ComputeErr;
+export type { RawValues, CoercedValues };

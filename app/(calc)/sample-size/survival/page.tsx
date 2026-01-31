@@ -12,8 +12,7 @@ import {
   EnhancedTabsContent,
 } from '@/components/ui/enhanced-tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Clock, Target, Activity, Download } from 'lucide-react';
+import { Clock, Target, Activity } from 'lucide-react';
 
 export default function SurvivalAnalysisPage() {
   const [activeTab, setActiveTab] = useState<"log-rank" | "cox" | "one-arm">("log-rank");
@@ -26,88 +25,7 @@ export default function SurvivalAnalysisPage() {
     setActiveTab("log-rank");
   };
 
-  const generatePdf = async () => {
-    if (!results) return;
-
-    try {
-      const { generateModernPDF } = await import('@/lib/pdf-utils');
-
-      let config: any = {
-        calculatorType: `Survival Analysis - ${activeTab.replace('-', ' ')}`,
-        inputs: [
-          { label: "Analysis Type", value: activeTab.replace('-', ' ') }
-        ],
-        results: [
-          {
-            label: "Total Sample Size",
-            value: results.totalSampleSize,
-            highlight: true,
-            category: "primary",
-            format: "integer"
-          },
-          {
-            label: "Total Events Required",
-            value: results.totalEvents,
-            category: "secondary",
-            format: "integer"
-          }
-        ],
-        interpretation: {
-          summary: `This ${activeTab.replace('-', ' ')} analysis requires ${results.totalSampleSize} participants to observe ${results.totalEvents} events with adequate statistical power.`,
-          recommendations: [
-            'Ensure adequate follow-up time to observe required events',
-            'Consider interim analyses for early stopping if appropriate',
-            'Plan for potential loss to follow-up in the study design',
-            'Validate assumptions about event rates and hazard ratios'
-          ],
-          assumptions: [
-            'Proportional hazards assumption holds throughout study',
-            'Event rates are consistent with historical data',
-            'Censoring is non-informative and independent',
-            'Study population is representative of target population'
-          ]
-        }
-      };
-
-      if (activeTab === "log-rank") {
-        config.title = "Log-Rank Test Sample Size Analysis";
-        config.subtitle = "Survival Distribution Comparison";
-        config.results.push(
-          {
-            label: "Group 1 Sample Size",
-            value: results.group1SampleSize,
-            category: "secondary",
-            format: "integer"
-          },
-          {
-            label: "Group 2 Sample Size",
-            value: results.group2SampleSize,
-            category: "secondary",
-            format: "integer"
-          }
-        );
-      } else if (activeTab === "cox") {
-        config.title = "Cox Regression Sample Size Analysis";
-        config.subtitle = "Proportional Hazards Model";
-      } else if (activeTab === "one-arm") {
-        config.title = "One-Arm Survival Study Analysis";
-        config.subtitle = "Single-Arm vs Historical Control";
-        config.results.push(
-          {
-            label: "Study Duration",
-            value: results.studyDuration,
-            category: "secondary",
-            format: "integer",
-            unit: "months"
-          }
-        );
-      }
-
-      await generateModernPDF(config);
-    } catch (err: any) {
-      setError(`Failed to generate PDF: ${err.message}`);
-    }
-  };
+  // PDF export removed for MVP
 
   const tabs = [
     {
@@ -160,7 +78,12 @@ export default function SurvivalAnalysisPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SurvivalAnalysisFormFormedible onResultsChange={setResults} analysisType="log-rank" />
+              <SurvivalAnalysisFormFormedible
+                onResults={(res) => setResults(res)}
+                onError={setError}
+                activeTab={activeTab}
+                onActiveTabChange={(tab) => setActiveTab(tab as any)}
+              />
             </CardContent>
           </Card>
         </EnhancedTabsContent>
@@ -174,7 +97,12 @@ export default function SurvivalAnalysisPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SurvivalAnalysisFormFormedible onResultsChange={setResults} analysisType="cox" />
+              <SurvivalAnalysisFormFormedible
+                onResults={(res) => setResults(res)}
+                onError={setError}
+                activeTab={activeTab}
+                onActiveTabChange={(tab) => setActiveTab(tab as any)}
+              />
             </CardContent>
           </Card>
         </EnhancedTabsContent>
@@ -188,7 +116,12 @@ export default function SurvivalAnalysisPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SurvivalAnalysisFormFormedible onResultsChange={setResults} analysisType="one-arm" />
+              <SurvivalAnalysisFormFormedible
+                onResults={(res) => setResults(res)}
+                onError={setError}
+                activeTab={activeTab}
+                onActiveTabChange={(tab) => setActiveTab(tab as any)}
+              />
             </CardContent>
           </Card>
         </EnhancedTabsContent>
@@ -332,26 +265,7 @@ export default function SurvivalAnalysisPage() {
           />
         </div>
 
-        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-          <CardContent className="py-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-2 text-center sm:text-left">
-                <h3 className="font-semibold text-lg">Export Your Results</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Download comprehensive PDF report with survival analysis calculations
-                </p>
-              </div>
-              <Button
-                onClick={generatePdf}
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
-              >
-                <Download className="h-5 w-5 mr-3" />
-                Download PDF Report
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* PDF export removed */}
       </div>
     );
   };

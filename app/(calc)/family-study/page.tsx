@@ -12,8 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Circle, AlertCircle, Download, Save, Printer, Users, FileText } from "lucide-react";
-import { consumptionUnits, sesClassifications } from "@/lib/family-study";
+import { CheckCircle, Circle, AlertCircle, Save, Printer, Users, FileText } from "lucide-react";
+import { consumptionUnits, sesClassifications } from "@/backend/family-study";
 import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
@@ -198,117 +198,7 @@ export default function FamilyStudyPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const generatePdf = async () => {
-    if (!showReport) {
-      setShowReport(true);
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    try {
-      const { generateModernPDF } = await import('@/lib/pdf-utils');
-
-      // Calculate stats
-      const totalMembers = familyMembers.length;
-      const maleCount = familyMembers.filter(m => m.sex === 'male').length;
-      const femaleCount = familyMembers.filter(m => m.sex === 'female').length;
-      const childrenCount = familyMembers.filter(m => m.age < 18).length;
-      const elderlyCount = familyMembers.filter(m => m.age >= 60).length;
-
-      const config = {
-        calculatorType: "Family Health Study Assessment",
-        title: "Comprehensive Family Health Assessment Report",
-        subtitle: `Family ID: ${formData.familyId} | Assessment Date: ${formData.studyDate}`,
-        inputs: [
-          { label: "Family Head", value: formData.familyHead },
-          { label: "Address", value: formData.address },
-          { label: "Area Type", value: formData.area },
-          { label: "Family Type", value: formData.familyType },
-          { label: "Religion", value: formData.religion },
-          { label: "Caste Category", value: formData.caste },
-          { label: "Total Income (Monthly)", value: `₹${formData.totalIncome}` },
-          { label: "Per Capita Income", value: `₹${formData.perCapitaIncome}` },
-          { label: "House Type", value: formData.houseType },
-          { label: "House Ownership", value: formData.houseOwnership },
-          { label: "Water Supply", value: formData.waterSupply },
-          { label: "Toilet Facility", value: formData.toiletFacility },
-          { label: "Cooking Fuel", value: formData.cookingFuel }
-        ],
-        results: [
-          {
-            label: "Total Family Members",
-            value: totalMembers,
-            highlight: true,
-            category: "primary" as const,
-            format: "integer" as const
-          },
-          {
-            label: "Male Members",
-            value: maleCount,
-            category: "secondary" as const,
-            format: "integer" as const
-          },
-          {
-            label: "Female Members",
-            value: femaleCount,
-            category: "secondary" as const,
-            format: "integer" as const
-          },
-          {
-            label: "Children (<18 years)",
-            value: childrenCount,
-            category: "secondary" as const,
-            format: "integer" as const
-          },
-          {
-            label: "Elderly (≥60 years)",
-            value: elderlyCount,
-            category: "secondary" as const,
-            format: "integer" as const
-          },
-          {
-            label: "Socio-Economic Status",
-            value: formData.sesClass.split(' ')[0] || 'Not Classified',
-            category: "statistical" as const
-          },
-          {
-            label: "Per Capita Monthly Income",
-            value: parseFloat(formData.perCapitaIncome),
-            category: "primary" as const,
-            format: "decimal" as const,
-            precision: 2
-          },
-          {
-            label: "Chronic Diseases Count",
-            value: formData.chronicDiseases.length,
-            category: "secondary" as const,
-            format: "integer" as const
-          }
-        ],
-        interpretation: {
-          summary: `This family assessment covers ${familyMembers.length} members with a per capita income of ₹${formData.perCapitaIncome} per month. The family is classified as ${formData.sesClass.split(' ')[0] || 'unclassified'} socio-economic status living in a ${formData.area} area.`,
-          recommendations: [
-            'Regular health check-ups for all family members, especially elderly and children',
-            'Maintain proper hygiene and sanitation practices',
-            'Ensure balanced nutrition based on ICMR-NIN guidelines',
-            'Monitor and manage chronic diseases if present',
-            'Participate in government health and nutrition programs',
-            'Maintain proper immunization schedules for children'
-          ],
-          assumptions: [
-            'Income data provided is accurate and current',
-            'Health information is self-reported and may require clinical verification',
-            'Socio-economic classification based on standard guidelines',
-            'Environmental conditions assessment is observational',
-            'Nutritional assessment requires detailed dietary recall for precision'
-          ]
-        }
-      };
-
-      await generateModernPDF(config);
-    } catch (error) {
-      console.error('Failed to generate PDF:', error);
-    }
-  };
+  // PDF export removed for MVP
 
   const handleReset = () => {
     setFormData({
@@ -623,7 +513,7 @@ export default function FamilyStudyPage() {
                   </CardContent>
                 </Card>
 
-        {/* PDF Export Card */}
+        {/* PDF export removed; print still available */}
         <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
           <CardContent className="py-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -633,18 +523,10 @@ export default function FamilyStudyPage() {
                   Export Assessment Report
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Download comprehensive family health assessment report with all collected data and analysis
+                  Print the family health assessment with all collected data
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  onClick={generatePdf}
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold"
-                >
-                  <Download className="h-5 w-5 mr-3" />
-                  Download PDF Report
-            </Button>
                 <Button
                   variant="outline"
                   size="lg"
@@ -652,12 +534,12 @@ export default function FamilyStudyPage() {
                   onClick={() => window.print()}
                 >
                   <Printer className="h-5 w-5 mr-3" />
-              Print Report
-            </Button>
+                  Print Report
+                </Button>
               </div>
-              </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };

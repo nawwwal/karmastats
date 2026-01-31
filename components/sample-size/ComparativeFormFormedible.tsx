@@ -4,10 +4,8 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { useFormedible } from '@/hooks/use-formedible';
 import type { FieldConfig } from '@/lib/formedible/types';
-import {
-  calculateCaseControlSampleSize,
-  calculateCohortSampleSize,
-} from '@/lib/math/sample-size/comparativeStudy';
+import { computeComparative } from '@/lib/tools/comparativeStudy/manager';
+import type { ComputeResult, RawValues } from '@/lib/tools/comparativeStudy/types';
 
 const caseControlSchema = z.object({
   alpha: z.number().min(1, 'Alpha level is required'),
@@ -44,7 +42,7 @@ const cohortSchema = z.object({
 });
 
 interface ComparativeFormFormedibleProps {
-  onResults: (results: any, values: Record<string, unknown>) => void;
+  onResults: (results: ComputeResult<any>) => void;
   onError: (message: string | null) => void;
 }
 
@@ -162,62 +160,9 @@ export default function ComparativeFormFormedible({
         p1: 40,
         p2: 10,
       },
-      onChange: ({ value }) => {
-        try {
-          const coerced = coerceValues(value as Record<string, unknown>);
-          let results;
-          if (tab === 'case-control') {
-            const parsed = caseControlSchema.safeParse(coerced);
-            if (!parsed.success) throw parsed.error;
-            const { alpha, power, ratio, p0, p1 } = parsed.data;
-            const sampleSize = calculateCaseControlSampleSize(
-              1 - alpha / 100,
-              power / 100,
-              ratio,
-              p0 / 100,
-              p1 / 100
-            );
-            results = {
-              type: 'case-control',
-              sampleSize,
-              parameters: { ...parsed.data, confidenceLevel: 100 - alpha },
-              interpretation: {
-                nCases: sampleSize.n_cases,
-                nControls: sampleSize.n_controls,
-                totalSample: sampleSize.n_cases + sampleSize.n_controls,
-                oddsRatio: (p1 / (1 - p1)) / (p0 / (1 - p0)),
-              },
-            };
-          } else {
-            const parsed = cohortSchema.safeParse(coerced);
-            if (!parsed.success) throw parsed.error;
-            const { alpha, power, ratio, p1, p2 } = parsed.data;
-            const sampleSize = calculateCohortSampleSize(
-              1 - alpha / 100,
-              power / 100,
-              ratio,
-              p1 / 100,
-              p2 / 100
-            );
-            results = {
-              type: 'cohort',
-              sampleSize,
-              parameters: { ...parsed.data, confidenceLevel: 100 - alpha },
-              interpretation: {
-                nExposed: sampleSize.n_exposed,
-                nUnexposed: sampleSize.n_unexposed,
-                totalSample: sampleSize.n_exposed + sampleSize.n_unexposed,
-                relativeRisk: p1 / p2,
-              },
-            };
-          }
-          onError(null);
-          onResults(results, coerced);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            onError(error.issues.map((i) => i.message).join(', '));
-          }
-        }
+      onChange: async ({ value }) => {
+        const computed = await computeComparative(tab, value as RawValues);
+        onResults(computed);
       },
     },
     layout: { type: 'grid', columns: 2, gap: '6', responsive: true },

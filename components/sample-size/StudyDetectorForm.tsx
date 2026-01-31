@@ -40,26 +40,7 @@ export function StudyDetectorForm({ onAnalysisComplete, setIsLoading, isLoading 
         }
     };
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const { extractTextFromPDF } = await import('@/lib/pdf-utils');
-                const textContent = await extractTextFromPDF(e.target?.result as ArrayBuffer);
-
-                // Extract research description from PDF
-                const researchDescription = textContent.substring(0, 2000); // Limit to first 2000 characters
-                setResearchText(researchDescription);
-                setError(null);
-            } catch (err: any) {
-                setError(`Failed to process PDF: ${err.message}`);
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    };
+    // PDF import removed for MVP
 
     return (
         <Card className="shadow-lg border-border bg-card/80 backdrop-blur-sm">
@@ -74,41 +55,7 @@ export function StudyDetectorForm({ onAnalysisComplete, setIsLoading, isLoading 
                     </Alert>
                 )}
 
-                {/* PDF Upload Widget */}
-                <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <FileUp className="h-5 w-5 text-primary" />
-                            <span>Import from PDF (Optional)</span>
-                        </CardTitle>
-                        <CardDescription>
-                            Upload research protocol or grant proposal to auto-extract study description
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div
-                            className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:bg-muted/50 transition-colors cursor-pointer"
-                            onClick={() => document.getElementById('pdf-upload-detector')?.click()}
-                        >
-                            <div className="space-y-2">
-                                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                                    <span className="text-2xl">📁</span>
-                                </div>
-                                <div>
-                                    <p className="font-medium">Click to upload or drag and drop</p>
-                                    <p className="text-sm text-muted-foreground">PDF files only, max 10MB</p>
-                                </div>
-                            </div>
-                            <Input
-                                id="pdf-upload-detector"
-                                type="file"
-                                accept=".pdf"
-                                onChange={handleFileUpload}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
+                {/* PDF upload removed */}
 
                 {/* Research Description Form */}
                 <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">

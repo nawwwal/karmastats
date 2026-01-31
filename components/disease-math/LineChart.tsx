@@ -2,7 +2,7 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import { DiseaseModelResult } from "@/lib/infectious";
+import { DiseaseModelResult } from "@/backend/disease-math.seir";
 
 // Dynamically import Chart.js to prevent SSR issues
 const Line = dynamic(

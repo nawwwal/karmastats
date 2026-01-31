@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { linearRegression, LinearRegressionResult } from "@/lib/regression";
+import { linearRegression, LinearRegressionResult } from "@/backend/regression.linear";
 import { Button, NeuomorphicButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -256,7 +256,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
       }
     } catch (err: any) {
       if (err instanceof z.ZodError) {
-        err.errors.forEach((error) => {
+        err.issues.forEach((error) => {
           if (error.path.length > 0) {
             form.setError(error.path[0] as any, {
               type: 'validation',
@@ -264,7 +264,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
             });
           }
         });
-        setError(`Please check the highlighted fields: ${err.errors.map(e => e.message).join(', ')}`);
+        setError(`Please check the highlighted fields: ${err.issues.map(e => e.message).join(', ')}`);
       } else {
         setError(err.message || "An error occurred during calculation");
       }
@@ -373,7 +373,7 @@ export function LinearRegressionForm({ onResultsChange }: LinearRegressionFormPr
           </CardContent>
         </Card>
 
-        <Form {...form}>
+        <Form {...(form as any)}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Sample Data Section */}
             <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">

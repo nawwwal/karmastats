@@ -91,7 +91,7 @@ export interface CohortParams {
     lossToFollowUp?: number;
 }
 
-import { Z_SCORES_ALPHA, Z_SCORES_BETA } from './statistical-constants';
+import { Z_SCORES_ALPHA, Z_SCORES_BETA } from '@/lib/statistical-constants';
 
 const z_alpha = Z_SCORES_ALPHA;
 const z_beta = Z_SCORES_BETA;

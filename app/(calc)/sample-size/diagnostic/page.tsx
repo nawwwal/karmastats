@@ -5,7 +5,7 @@ import {
   SingleTestOutput,
   ComparativeTestOutput,
   ROCAnalysisOutput,
-} from '@/lib/diagnosticTest';
+} from '@/backend/sample-size.diagnostic';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -25,7 +25,7 @@ import { ToolPageWrapper } from '@/components/ui/tool-page-wrapper';
 import { EnhancedResultsDisplay } from '@/components/ui/enhanced-results-display';
 import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import DiagnosticTestFormFormedible from '@/components/sample-size/DiagnosticTestFormFormedible';
-import { Target, AlertCircle, Download } from 'lucide-react';
+import { Target, AlertCircle } from 'lucide-react';
 
 type Results = SingleTestOutput | ComparativeTestOutput | ROCAnalysisOutput;
 
@@ -53,210 +53,7 @@ export default function DiagnosticTestPage() {
     [],
   );
 
-    const generatePdf = async () => {
-    if (!results || !lastValues) return;
-
-        try {
-            const { generateModernPDF } = await import('@/lib/pdf-utils');
-      const formData = lastValues;
-
-            let config: any = {
-        calculatorType: `Diagnostic Test ${
-          activeTab.charAt(0).toUpperCase() + activeTab.slice(1)
-        }`,
-                inputs: [],
-                results: [],
-                interpretation: {
-                    recommendations: [
-                        'Ensure proper randomization and blinding in diagnostic test evaluation',
-                        'Consider spectrum bias when selecting patient populations',
-                        'Account for verification bias in test result interpretation',
-            'Plan for adequate reference standard procedures',
-                    ],
-                    assumptions: [
-                        'Reference standard has perfect sensitivity and specificity',
-                        'Test results are independent conditional on disease status',
-                        'Study population is representative of intended use population',
-            'No spectrum or verification bias present',
-          ],
-        },
-            };
-
-            if ('nSensitivity' in results) {
-        config.title = 'Single Diagnostic Test Evaluation';
-        config.subtitle = 'Sensitivity and Specificity Analysis';
-                config.inputs = [
-          {
-            label: 'Expected Sensitivity',
-            value: formData.expectedSensitivity,
-            unit: '%',
-          },
-          {
-            label: 'Expected Specificity',
-            value: formData.expectedSpecificity,
-            unit: '%',
-          },
-          {
-            label: 'Disease Prevalence',
-            value: formData.diseasePrevalence,
-            unit: '%',
-          },
-          {
-            label: 'Margin of Error',
-            value: formData.marginOfError,
-            unit: '%',
-          },
-          {
-            label: 'Confidence Level',
-            value: formData.confidenceLevel,
-            unit: '%',
-          },
-                ];
-                config.results = [
-          {
-            label: 'Total Required Sample Size',
-            value: results.totalSize,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-          {
-            label: 'Disease Positive Cases Needed',
-            value: results.diseasePositive,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-          {
-            label: 'Disease Negative Cases Needed',
-            value: results.diseaseNegative,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-          {
-            label: 'Sample Size for Sensitivity',
-            value: results.nSensitivity,
-            category: 'secondary',
-            format: 'integer',
-          },
-          {
-            label: 'Sample Size for Specificity',
-            value: results.nSpecificity,
-            category: 'secondary',
-            format: 'integer',
-          },
-        ];
-        config.interpretation.summary = `This single test evaluation requires ${
-          results.totalSize
-        } total participants to adequately assess both sensitivity and specificity. The study will need ${
-          results.diseasePositive
-        } disease-positive and ${
-          results.diseaseNegative
-        } disease-negative cases based on the expected ${
-          formData.diseasePrevalence
-        }% prevalence.`;
-            } else if ('sampleSize' in results) {
-        config.title = 'Comparative Diagnostic Test Study';
-        config.subtitle = 'Two-Test Comparison Analysis';
-                config.inputs = [
-          { label: 'Study Design', value: formData.studyDesign },
-          {
-            label: 'Test 1 Performance',
-            value: formData.test1Performance,
-            unit: '%',
-          },
-          {
-            label: 'Test 2 Performance',
-            value: formData.test2Performance,
-            unit: '%',
-          },
-          { label: 'Test Correlation', value: formData.testCorrelation },
-          {
-            label: 'Significance Level',
-            value: formData.significanceLevel,
-            unit: '%',
-          },
-          { label: 'Statistical Power', value: formData.power, unit: '%' },
-                ];
-                config.results = [
-          {
-            label: 'Required Sample Size per Group',
-            value: results.sampleSize,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-          {
-            label: 'Total Subjects to Screen',
-            value: results.totalSize,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-        ];
-        config.interpretation.summary = `This comparative study requires ${
-          results.sampleSize
-        } participants per group (if unpaired design) to detect differences between the two diagnostic tests. A total of ${
-          results.totalSize
-        } subjects need to be screened.`;
-            } else if ('positiveSize' in results) {
-        config.title = 'ROC Curve Analysis Study';
-        config.subtitle = 'Area Under Curve Evaluation';
-                config.inputs = [
-          { label: 'Expected AUC', value: formData.expectedAUC },
-          { label: 'Null Hypothesis AUC', value: formData.nullAUC },
-          {
-            label: 'Disease Prevalence',
-            value: formData.diseasePrevalence,
-            unit: '%',
-          },
-          {
-            label: 'Significance Level',
-            value: formData.significanceLevel,
-            unit: '%',
-          },
-          { label: 'Statistical Power', value: formData.power, unit: '%' },
-                ];
-                config.results = [
-          {
-            label: 'Total Required Sample Size',
-            value: results.totalSize,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-          {
-            label: 'Disease-Positive Cases',
-            value: results.positiveSize,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-          {
-            label: 'Disease-Negative Cases',
-            value: results.negativeSize,
-            highlight: true,
-            category: 'primary',
-            format: 'integer',
-          },
-        ];
-        config.interpretation.summary = `This ROC analysis requires ${
-          results.totalSize
-        } total participants to detect an AUC of ${
-          formData.expectedAUC
-        } versus the null hypothesis of ${
-          formData.nullAUC
-        }. The study needs ${results.positiveSize} disease-positive and ${
-          results.negativeSize
-        } disease-negative cases.`;
-            }
-
-            await generateModernPDF(config);
-        } catch (err: any) {
-            setError(`Failed to generate PDF: ${err.message}`);
-        }
-  };
+  // PDF export removed for MVP
 
     const renderResults = () => {
         if (!results) return null;
@@ -469,27 +266,7 @@ export default function DiagnosticTestPage() {
                     }
                 />
 
-                <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-                    <CardContent className="py-6">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="space-y-2 text-center sm:text-left">
-                                <h3 className="font-semibold text-lg">Export Your Results</h3>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Download comprehensive PDF report with diagnostic test
-                  calculations
-                                </p>
-                            </div>
-                            <Button
-                                onClick={generatePdf}
-                                size="lg"
-                                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
-                            >
-                                <Download className="h-5 w-5 mr-3" />
-                                Download PDF Report
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                {/* PDF export removed */}
             </div>
         );
     };

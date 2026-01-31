@@ -1,13 +1,13 @@
 "use client";
 
 import React from 'react';
-import { StudyRecommendation } from "@/lib/studyDetector";
+import { StudyRecommendation } from "@/backend/sample-size.intelligent-detector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EnhancedResultsDisplay } from "@/components/ui/enhanced-results-display";
 import { AdvancedVisualization } from "@/components/ui/advanced-visualization";
-import { CheckCircle, AlertCircle, Clock, Brain, Download, RotateCcw, Target, TrendingUp, Users } from "lucide-react";
+import { CheckCircle, AlertCircle, Clock, Brain, RotateCcw, Target, TrendingUp, Users } from "lucide-react";
 
 interface StudyResultsProps {
     recommendations: StudyRecommendation[];
@@ -30,50 +30,7 @@ export function StudyResults({ recommendations, onReset }: StudyResultsProps) {
         return Brain;
     };
 
-    const generatePdf = async () => {
-        try {
-            const { generateModernPDF } = await import('@/lib/pdf-utils');
-
-            const config = {
-                calculatorType: "Intelligent Study Detector",
-                title: "AI-Powered Study Design Recommendations",
-                subtitle: "Personalized study design analysis and recommendations",
-                inputs: [
-                    { label: "Research Description", value: "Custom research scenario provided by user" },
-                    { label: "Number of Recommendations", value: recommendations.length },
-                    { label: "Analysis Method", value: "AI-powered pattern matching and design optimization" }
-                ],
-                results: recommendations.map((rec, index) => ({
-                    label: rec.title,
-                    value: `${rec.confidence}% confidence`,
-                    category: index === 0 ? "primary" as const : "secondary" as const,
-                    highlight: index === 0,
-                    format: "text" as const,
-                    interpretation: rec.reasoning
-                })),
-                interpretation: {
-                    summary: `Based on your research description, our AI analysis identified ${recommendations.length} potential study designs. The top recommendation is "${recommendations[0]?.title}" with ${recommendations[0]?.confidence}% confidence.`,
-                    recommendations: [
-                        "Consider the recommended study design as your primary approach",
-                        "Review alternative designs for comparison and validation",
-                        "Ensure your chosen design aligns with available resources",
-                        "Validate assumptions with statistical consultation if needed",
-                        "Plan for appropriate sample size based on the selected design"
-                    ],
-                    assumptions: [
-                        "AI recommendations based on pattern matching from research literature",
-                        "Confidence scores reflect design-objective alignment",
-                        "Multiple designs may be appropriate for complex research questions",
-                        "Final design choice should consider practical constraints"
-                    ]
-                }
-            };
-
-            await generateModernPDF(config);
-        } catch (err: any) {
-            console.error('Failed to generate PDF:', err.message);
-        }
-    };
+    // PDF export removed for MVP
 
     // Prepare data for enhanced results display
     const enhancedResults = recommendations.map((rec, index) => ({
@@ -261,26 +218,7 @@ export function StudyResults({ recommendations, onReset }: StudyResultsProps) {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 flex-1">
-                    <CardContent className="py-6">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="space-y-2 text-center sm:text-left">
-                                <h3 className="font-semibold text-lg">Export Your Analysis</h3>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                    Download comprehensive PDF report with all recommendations
-                                </p>
-                            </div>
-                            <Button
-                                onClick={generatePdf}
-                                size="lg"
-                                className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0"
-                            >
-                                <Download className="h-5 w-5 mr-3" />
-                                Download PDF Report
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                {/* PDF export removed */}
 
                 <div className="flex justify-center sm:justify-end">
                     <Button

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { polynomialRegression, MultipleRegressionResult } from "@/lib/regression";
+import { polynomialRegression, MultipleRegressionResult } from "@/backend/regression.polynomial";
 import { Button, NeuomorphicButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

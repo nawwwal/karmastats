@@ -8,100 +8,60 @@ import { AdvancedVisualization } from '@/components/ui/advanced-visualization';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, Calculator, Info, Microscope, Download } from 'lucide-react';
+import { Users, Calculator, Info, Microscope } from 'lucide-react';
+import { CoercedValues, ComputeResult } from "@/common/backend";
+import { AnyComparativeResult } from "@/backend/sample-size.comparative";
 
 export default function ComparativeStudyPage() {
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<AnyComparativeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [lastValues, setLastValues] = useState<CoercedValues | null>(null);
+  const [activeTab, setActiveTab] = useState<'case-control' | 'cohort'>('case-control');
+
 
   const handleReset = () => {
     setResults(null);
     setError(null);
+    setLastValues(null);
   };
 
-  const generatePdf = async () => {
-    if (!results) return;
-
-    try {
-      const { generateModernPDF } = await import('@/lib/pdf-utils');
-      const isCaseControl = results.type === 'case-control';
-      const interpretation = results.interpretation;
-
-      const config = {
-        calculatorType: `${isCaseControl ? 'Case-Control' : 'Cohort'} Study Sample Size`,
-        title: `${isCaseControl ? 'Case-Control' : 'Cohort'} Study Design`,
-        subtitle: `${isCaseControl ? 'Retrospective' : 'Prospective'} Study Sample Size Analysis`,
-        inputs: [
-          { label: "Confidence Level", value: results.parameters.confidenceLevel, unit: "%" },
-          { label: "Statistical Power", value: results.parameters.power, unit: "%" },
-          {
-            label: isCaseControl ? "Controls to Cases Ratio" : "Unexposed to Exposed Ratio",
-            value: results.parameters.ratio
-          },
-          {
-            label: isCaseControl ? "Exposure Rate in Controls" : "Disease Rate in Unexposed",
-            value: (isCaseControl ? results.parameters.p0 : results.parameters.p2) * 100,
-            unit: "%"
-          },
-          {
-            label: isCaseControl ? "Exposure Rate in Cases" : "Disease Rate in Exposed",
-            value: (isCaseControl ? results.parameters.p1 : results.parameters.p1) * 100,
-            unit: "%"
-          }
-        ],
-        results: [
-          { label: "Total Sample Size", value: interpretation.totalSample, highlight: true, category: "primary", format: "integer" },
-          { label: isCaseControl ? "Cases Required" : "Exposed Group Size", value: isCaseControl ? interpretation.nCases : interpretation.nExposed, category: "secondary", format: "integer" },
-          { label: isCaseControl ? "Controls Required" : "Unexposed Group Size", value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed, category: "secondary", format: "integer" },
-          { label: isCaseControl ? "Odds Ratio" : "Relative Risk", value: isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk, category: "statistical", format: "decimal", precision: 2 }
-        ],
-        interpretation: {
-          summary: `This ${isCaseControl ? 'case-control' : 'cohort'} study requires ${interpretation.totalSample.toLocaleString()} participants total to detect the expected effect size with adequate statistical power.`,
-          recommendations: [
-            `Recruit ${interpretation.totalSample.toLocaleString()} participants total`,
-            `Maintain ${results.parameters.ratio}:1 ratio between groups`,
-            'Consider potential dropouts and increase sample by 10-20%',
-            'Ensure balanced recruitment across study sites',
-            isCaseControl ? 'Ensure representative case and control selection' : 'Plan for adequate follow-up duration'
-          ],
-          assumptions: [
-            `Two-sided significance test at α = ${((100 - results.parameters.confidenceLevel) / 100).toFixed(3)}`,
-            `Statistical power = ${results.parameters.power}%`,
-            `Group allocation ratio = 1:${results.parameters.ratio}`,
-            'Expected effect size as specified',
-            'Independent observations within and between groups'
-          ]
-        }
-      };
-
-      await generateModernPDF(config);
-    } catch (err: any) {
-      setError(`Failed to generate PDF: ${err.message}`);
+  const handleResults = (res: ComputeResult<any, 'case-control' | 'cohort'>) => {
+    if (res.ok) {
+        setResults(res);
+        setLastValues(res.values);
+        setError(null);
+        if(res.tab) setActiveTab(res.tab);
+    } else {
+        setError(res.message);
+        setResults(null);
     }
-  };
+  }
+
+  // PDF export removed for MVP
 
   const renderContent = () => (
     <div className="space-y-8">
-      <ComparativeFormFormedible onResults={setResults} onError={setError} />
+      <ComparativeFormFormedible onResults={handleResults} onError={setError} />
     </div>
   );
 
   const renderResults = () => {
-    if (!results) return null;
-    const isCaseControl = results.type === 'case-control';
-    const interpretation = results.interpretation;
+    if (!results || !results.ok) return null;
+
+    const isCaseControl = activeTab === 'case-control';
+    const interpretation = (results.result as any);
     const safeToFixed = (value: any, decimals: number): string => (typeof value === 'number' && !isNaN(value) ? value.toFixed(decimals) : 'N/A');
 
     const keyMetrics = [
       { label: isCaseControl ? 'Cases Required' : 'Exposed Group', value: isCaseControl ? interpretation.nCases : interpretation.nExposed, category: 'primary' as const },
       { label: isCaseControl ? 'Controls Required' : 'Unexposed Group', value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed, category: 'secondary' as const },
-      { label: 'Total Sample Size', value: interpretation.totalSample, category: 'statistical' as const, highlight: true },
+      { label: 'Total Sample Size', value: interpretation.totalSize, category: 'statistical' as const, highlight: true },
       { label: isCaseControl ? 'Odds Ratio' : 'Relative Risk', value: typeof (isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk) === 'number' ? (isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk) : 0, category: 'success' as const, format: 'decimal' as const }
     ];
 
     const sampleSizeData = [
-      { name: isCaseControl ? 'Cases' : 'Exposed', value: isCaseControl ? interpretation.nCases : interpretation.nExposed, percentage: safeToFixed((isCaseControl ? interpretation.nCases : interpretation.nExposed) / interpretation.totalSample * 100, 1) },
-      { name: isCaseControl ? 'Controls' : 'Unexposed', value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed, percentage: safeToFixed((isCaseControl ? interpretation.nControls : interpretation.nUnexposed) / interpretation.totalSample * 100, 1) }
+      { name: isCaseControl ? 'Cases' : 'Exposed', value: isCaseControl ? interpretation.nCases : interpretation.nExposed, percentage: safeToFixed((isCaseControl ? interpretation.nCases : interpretation.nExposed) / interpretation.totalSize * 100, 1) },
+      { name: isCaseControl ? 'Controls' : 'Unexposed', value: isCaseControl ? interpretation.nControls : interpretation.nUnexposed, percentage: safeToFixed((isCaseControl ? interpretation.nControls : interpretation.nUnexposed) / interpretation.totalSize * 100, 1) }
     ];
 
     const effectSizeValue = isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk;
@@ -113,18 +73,18 @@ export default function ComparativeStudyPage() {
 
     const interpretationData = {
       effectSize: `${isCaseControl ? 'Odds ratio' : 'Relative risk'} of ${safeToFixed(isCaseControl ? interpretation.oddsRatio : interpretation.relativeRisk, 2)}`,
-      statisticalSignificance: `Power ${results.parameters.power}% at α = ${safeToFixed(1 - results.parameters.confidenceLevel/100, 3)}`,
+      statisticalSignificance: `Power ${lastValues?.power}% at α = ${safeToFixed(1 - (lastValues?.confidenceLevel as number)/100, 3)}`,
       recommendations: [
-        `Recruit ${interpretation.totalSample.toLocaleString()} participants total`,
-        `Maintain ${results.parameters.ratio}:1 ratio between groups`,
+        `Recruit ${interpretation.totalSize.toLocaleString()} participants total`,
+        `Maintain ${lastValues?.ratio}:1 ratio between groups`,
         'Consider potential dropouts and increase sample by 10-20%',
         'Ensure balanced recruitment across study sites',
         'Plan for adequate follow-up period if applicable'
       ],
       assumptions: [
-        `Two-sided significance test at α = ${(1 - results.parameters.confidenceLevel/100).toFixed(3)}`,
-        `Statistical power = ${results.parameters.power}%`,
-        `Group allocation ratio = 1:${results.parameters.ratio}`,
+        `Two-sided significance test at α = ${(1 - (lastValues?.confidenceLevel as number)/100).toFixed(3)}`,
+        `Statistical power = ${lastValues?.power}%`,
+        `Group allocation ratio = 1:${lastValues?.ratio}`,
         'Expected effect size as specified',
         'Independent observations within and between groups'
       ]
@@ -151,9 +111,9 @@ export default function ComparativeStudyPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {[
                 { parameter: 'Study Design', value: isCaseControl ? 'Case-Control (Retrospective)' : 'Cohort (Prospective)' },
-                { parameter: 'Confidence Level', value: `${results.parameters.confidenceLevel}%` },
-                { parameter: 'Statistical Power', value: `${results.parameters.power}%` },
-                { parameter: 'Group Ratio', value: `1:${results.parameters.ratio}` },
+                { parameter: 'Confidence Level', value: `${lastValues?.confidenceLevel}%` },
+                { parameter: 'Statistical Power', value: `${lastValues?.power}%` },
+                { parameter: 'Group Ratio', value: `1:${lastValues?.ratio}` },
               ].map((param, index) => (
                 <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-background/50">
                   <span className="font-medium text-foreground">{param.parameter}</span>
@@ -163,20 +123,7 @@ export default function ComparativeStudyPage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-          <CardContent className="py-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-2 text-center sm:text-left">
-                <h3 className="font-semibold text-lg">Export Your Results</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">Download comprehensive PDF report with calculations and interpretations</p>
-              </div>
-              <Button onClick={generatePdf} size="lg" className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8 py-3 text-base font-semibold shrink-0">
-                <Download className="h-5 w-5 mr-3" />
-                Download PDF Report
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* PDF export removed */}
       </div>
     );
   };
