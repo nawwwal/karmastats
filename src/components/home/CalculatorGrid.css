@@ -1,0 +1,119 @@
+/* Calculator Grid */
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.75rem;
+}
+
+/* Calculator Card */
+.calc-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  border: 1px solid var(--border-color);
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.calc-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-accent, var(--gradient-primary));
+}
+
+.calc-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+}
+
+.calc-card:hover .calc-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Card Content */
+.calc-content {
+  padding: 2rem 1.75rem 1.75rem;
+}
+
+.calc-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--card-accent, var(--gradient-primary));
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1.25rem;
+  transition: var(--transition);
+}
+
+.calc-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.calc-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+
+/* Tags */
+.calc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.calc-tag {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Staggered animation delays */
+.calc-card:nth-child(1) { animation-delay: 0.05s; }
+.calc-card:nth-child(2) { animation-delay: 0.1s; }
+.calc-card:nth-child(3) { animation-delay: 0.15s; }
+.calc-card:nth-child(4) { animation-delay: 0.2s; }
+.calc-card:nth-child(5) { animation-delay: 0.25s; }
+.calc-card:nth-child(6) { animation-delay: 0.3s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calc-content {
+    padding: 1.5rem;
+  }
+
+  .calc-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .calc-title {
+    font-size: 1.1rem;
+  }
+}

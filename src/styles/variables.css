@@ -1,0 +1,270 @@
+/* KARMASTAT CSS Variables - Light Theme (Default) */
+:root {
+  /* Primary Colors - Teal */
+  --primary: #0F766E;
+  --primary-dark: #115E59;
+  --primary-light: #14B8A6;
+  --primary-lighter: #5EEAD4;
+
+  /* Accent Colors - Amber */
+  --accent: #F59E0B;
+  --accent-light: #FCD34D;
+  --accent-dark: #D97706;
+
+  /* Background Colors */
+  --bg-body: #F0FDFA;
+  --bg-card: #FFFFFF;
+  --bg-secondary: #CCFBF1;
+  --bg-gradient-start: #ECFDF5;
+  --bg-gradient-mid: #D1FAE5;
+  --bg-gradient-end: #A7F3D0;
+
+  /* Text Colors */
+  --text-primary: #134E4A;
+  --text-secondary: #115E59;
+  --text-muted: #0D9488;
+  --text-on-primary: #FFFFFF;
+  --text-on-accent: #78350F;
+
+  /* Border Colors */
+  --border-color: #99F6E4;
+  --border-light: #f1f5f9;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 20px rgba(15, 118, 110, 0.12);
+  --shadow-hover: 0 12px 35px rgba(15, 118, 110, 0.2);
+  --shadow-lg: 0 20px 40px rgba(15, 118, 110, 0.15);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Gradients */
+  --gradient-header: linear-gradient(135deg, #134E4A 0%, #0F766E 50%, #14B8A6 100%);
+  --gradient-primary: linear-gradient(135deg, #0F766E, #14B8A6);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --radius-full: 50px;
+
+  /* Transitions */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease;
+
+  /* Modal */
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Input */
+  --input-bg: #ffffff;
+  --card-bg-solid: #ffffff;
+
+  /* Result cards */
+  --result-bg: #F0FDFA;
+  --result-text: #115E59;
+  --result-label: #0F766E;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  /* Primary Colors - Brighter for dark mode */
+  --primary: #14B8A6;
+  --primary-dark: #0D9488;
+  --primary-light: #5EEAD4;
+  --primary-lighter: #99F6E4;
+
+  /* Accent Colors - Brighter */
+  --accent: #FBBF24;
+  --accent-light: #FDE68A;
+  --accent-dark: #F59E0B;
+
+  /* Background Colors */
+  --bg-body: #0F172A;
+  --bg-card: #1E293B;
+  --bg-secondary: #334155;
+  --bg-gradient-start: #0f172a;
+  --bg-gradient-mid: #1e293b;
+  --bg-gradient-end: #0f172a;
+
+  /* Text Colors - High contrast */
+  --text-primary: #F1F5F9;
+  --text-secondary: #E2E8F0;
+  --text-muted: #94A3B8;
+  --text-on-primary: #FFFFFF;
+  --text-on-accent: #1E293B;
+
+  /* Border Colors */
+  --border-color: #475569;
+  --border-light: #334155;
+
+  /* Shadows */
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 12px 35px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+  /* Gradients - Adjusted for dark mode */
+  --gradient-header: linear-gradient(135deg, #134E4A 0%, #0F766E 50%, #14B8A6 100%);
+  --gradient-primary: linear-gradient(135deg, #0F766E, #14B8A6);
+
+  /* Accent adjustments */
+  --accent-bg: #064e3b;
+
+  /* Input */
+  --input-bg: #1E293B;
+  --card-bg-solid: #1E293B;
+
+  /* Modal */
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Result cards */
+  --result-bg: #334155;
+  --result-text: #5EEAD4;
+  --result-label: #99F6E4;
+}
+
+/* Calculator-specific theme colors - Light Mode */
+.theme-green {
+  --calc-primary: #10B981;
+  --calc-primary-dark: #059669;
+  --calc-accent: #D1FAE5;
+  --calc-text: #065F46;
+}
+.theme-blue {
+  --calc-primary: #3B82F6;
+  --calc-primary-dark: #2563EB;
+  --calc-accent: #DBEAFE;
+  --calc-text: #1E40AF;
+}
+.theme-purple {
+  --calc-primary: #8B5CF6;
+  --calc-primary-dark: #7C3AED;
+  --calc-accent: #EDE9FE;
+  --calc-text: #5B21B6;
+}
+.theme-pink {
+  --calc-primary: #EC4899;
+  --calc-primary-dark: #DB2777;
+  --calc-accent: #FCE7F3;
+  --calc-text: #9D174D;
+}
+.theme-amber {
+  --calc-primary: #F59E0B;
+  --calc-primary-dark: #D97706;
+  --calc-accent: #FEF3C7;
+  --calc-text: #92400E;
+}
+.theme-red {
+  --calc-primary: #EF4444;
+  --calc-primary-dark: #DC2626;
+  --calc-accent: #FEE2E2;
+  --calc-text: #991B1B;
+}
+.theme-teal {
+  --calc-primary: #14B8A6;
+  --calc-primary-dark: #0D9488;
+  --calc-accent: #CCFBF1;
+  --calc-text: #115E59;
+}
+.theme-indigo {
+  --calc-primary: #6366F1;
+  --calc-primary-dark: #4F46E5;
+  --calc-accent: #E0E7FF;
+  --calc-text: #3730A3;
+}
+.theme-orange {
+  --calc-primary: #F97316;
+  --calc-primary-dark: #EA580C;
+  --calc-accent: #FED7AA;
+  --calc-text: #9A3412;
+}
+.theme-rose {
+  --calc-primary: #F43F5E;
+  --calc-primary-dark: #E11D48;
+  --calc-accent: #FFE4E6;
+  --calc-text: #9F1239;
+}
+.theme-cyan {
+  --calc-primary: #06B6D4;
+  --calc-primary-dark: #0891B2;
+  --calc-accent: #CFFAFE;
+  --calc-text: #155E75;
+}
+.theme-gray {
+  --calc-primary: #64748B;
+  --calc-primary-dark: #475569;
+  --calc-accent: #F1F5F9;
+  --calc-text: #334155;
+}
+
+/* Calculator theme colors - Dark Mode Overrides */
+[data-theme="dark"] .theme-green {
+  --calc-primary: #34D399;
+  --calc-primary-dark: #10B981;
+  --calc-accent: #064E3B;
+  --calc-text: #6EE7B7;
+}
+[data-theme="dark"] .theme-blue {
+  --calc-primary: #60A5FA;
+  --calc-primary-dark: #3B82F6;
+  --calc-accent: #1E3A8A;
+  --calc-text: #93C5FD;
+}
+[data-theme="dark"] .theme-purple {
+  --calc-primary: #A78BFA;
+  --calc-primary-dark: #8B5CF6;
+  --calc-accent: #4C1D95;
+  --calc-text: #C4B5FD;
+}
+[data-theme="dark"] .theme-pink {
+  --calc-primary: #F472B6;
+  --calc-primary-dark: #EC4899;
+  --calc-accent: #831843;
+  --calc-text: #F9A8D4;
+}
+[data-theme="dark"] .theme-amber {
+  --calc-primary: #FBBF24;
+  --calc-primary-dark: #F59E0B;
+  --calc-accent: #78350F;
+  --calc-text: #FCD34D;
+}
+[data-theme="dark"] .theme-red {
+  --calc-primary: #F87171;
+  --calc-primary-dark: #EF4444;
+  --calc-accent: #7F1D1D;
+  --calc-text: #FCA5A5;
+}
+[data-theme="dark"] .theme-teal {
+  --calc-primary: #2DD4BF;
+  --calc-primary-dark: #14B8A6;
+  --calc-accent: #134E4A;
+  --calc-text: #5EEAD4;
+}
+[data-theme="dark"] .theme-indigo {
+  --calc-primary: #818CF8;
+  --calc-primary-dark: #6366F1;
+  --calc-accent: #312E81;
+  --calc-text: #A5B4FC;
+}
+[data-theme="dark"] .theme-orange {
+  --calc-primary: #FB923C;
+  --calc-primary-dark: #F97316;
+  --calc-accent: #7C2D12;
+  --calc-text: #FDBA74;
+}
+[data-theme="dark"] .theme-rose {
+  --calc-primary: #FB7185;
+  --calc-primary-dark: #F43F5E;
+  --calc-accent: #881337;
+  --calc-text: #FDA4AF;
+}
+[data-theme="dark"] .theme-cyan {
+  --calc-primary: #22D3EE;
+  --calc-primary-dark: #06B6D4;
+  --calc-accent: #164E63;
+  --calc-text: #67E8F9;
+}
+[data-theme="dark"] .theme-gray {
+  --calc-primary: #94A3B8;
+  --calc-primary-dark: #64748B;
+  --calc-accent: #334155;
+  --calc-text: #CBD5E1;
+}

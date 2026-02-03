@@ -1,0 +1,74 @@
+/* Quick Access Section */
+.quick-access {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  margin-top: 2rem;
+}
+
+.quick-access h3 {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.bolt-icon {
+  font-size: 1.1rem;
+}
+
+.quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 0.625rem 1.25rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  border: 1px solid var(--border-color);
+}
+
+.quick-link:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.link-icon {
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .quick-access {
+    padding: 1.5rem;
+  }
+
+  .quick-links {
+    gap: 0.5rem;
+  }
+
+  .quick-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}

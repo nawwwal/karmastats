@@ -1,0 +1,174 @@
+/* Results Section Styles - additional to global.css */
+
+/* Results Header with Export */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.results-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.results-header h3 {
+  color: var(--primary);
+  margin: 0;
+}
+
+.results-header .btn-export {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* Recommendations Section */
+.recommendations-section {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.recommendations-section h4 {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.recommendations-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recommendations-section li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: var(--text-secondary);
+}
+
+.recommendations-section li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+/* Reference Section */
+.reference-section {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-left: 4px solid var(--primary);
+}
+
+[data-theme="dark"] .reference-section {
+  background: var(--bg-card);
+}
+
+.reference-section h4 {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.reference-text {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .recommendations-section {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .recommendations-section li {
+  color: var(--text-primary);
+}
+
+/* Export Card */
+.export-card {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+  border: 2px dashed var(--primary);
+}
+
+.export-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* Theme Options for PDF Export */
+.theme-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.theme-option {
+  padding: 1.5rem;
+  border: 3px solid var(--border-color);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  background: var(--bg-card);
+}
+
+.theme-option:hover {
+  border-color: var(--primary-light);
+}
+
+.theme-option.selected {
+  border-color: var(--primary);
+  background: var(--bg-secondary);
+}
+
+.theme-option-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-option-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.theme-option-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Results icon animation */
+.results-icon {
+  font-size: 1.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .theme-options {
+    grid-template-columns: 1fr;
+  }
+
+  .export-options {
+    flex-direction: column;
+  }
+
+  .export-options .btn {
+    width: 100%;
+  }
+}

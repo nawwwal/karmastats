@@ -1,0 +1,50 @@
+/* Export Modal Styles */
+.modal-description {
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+/* Theme Options */
+.theme-options {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.theme-option {
+  flex: 1;
+  padding: 1.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition);
+  background: var(--bg-secondary);
+}
+
+.theme-option:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.theme-option.selected {
+  border-color: var(--primary);
+  background: var(--bg-card);
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
+}
+
+.theme-option-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-option-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.theme-option-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

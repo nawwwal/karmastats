@@ -1,0 +1,199 @@
+/* KARMASTAT Page Loader */
+.karma-page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #134E4A 0%, #0F766E 50%, #14B8A6 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.karma-page-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.karma-page-loader .loader-content {
+  text-align: center;
+}
+
+.karma-page-loader .loader-text {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-top: 2rem;
+}
+
+.karma-page-loader .loader-tagline {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  letter-spacing: 1px;
+}
+
+/* Karma Infinity Animation */
+.karma-infinity {
+  width: 140px;
+  height: 70px;
+}
+
+.karma-path {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: karmaFlow 2s ease-in-out infinite;
+}
+
+.karma-point {
+  animation: karmaPulse 1.2s ease-in-out infinite;
+}
+
+.karma-point:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.karma-point:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Keyframe animations */
+@keyframes karmaFlow {
+  0% {
+    stroke-dashoffset: 300;
+    opacity: 0.4;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -300;
+    opacity: 0.4;
+  }
+}
+
+@keyframes karmaPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes spinnerRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinnerDash {
+  0% { stroke-dashoffset: 60; }
+  50% { stroke-dashoffset: 15; }
+  100% { stroke-dashoffset: 60; }
+}
+
+/* Button Loading State */
+.btn.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.btn.loading .btn-text {
+  visibility: hidden;
+}
+
+.btn.loading .karma-spinner {
+  display: block;
+}
+
+.karma-spinner {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+}
+
+.karma-spinner svg {
+  width: 100%;
+  height: 100%;
+  animation: spinnerRotate 1.5s linear infinite;
+}
+
+.spinner-path {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 15;
+  animation: spinnerDash 1.2s ease-in-out infinite;
+}
+
+/* Loading Spinner Component */
+.loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner svg {
+  animation: spinnerRotate 1s linear infinite;
+}
+
+.loading-spinner .spinner-circle {
+  stroke-dasharray: 45;
+  stroke-dashoffset: 35;
+  animation: spinnerDash 1.2s ease-in-out infinite;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+}
+
+.spinner-medium {
+  width: 24px;
+  height: 24px;
+}
+
+.spinner-large {
+  width: 40px;
+  height: 40px;
+}
+
+/* Results Loading State */
+.results-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-muted);
+}
+
+.results-loading .karma-infinity {
+  width: 80px;
+  height: 40px;
+}
+
+.results-loading .karma-path {
+  stroke: var(--primary);
+}
+
+.results-loading .karma-point {
+  fill: var(--primary-light);
+}
+
+.results-loading p {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
