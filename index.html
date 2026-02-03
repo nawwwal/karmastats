@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QELCKCT88E"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QELCKCT88E');
+    </script>
     <meta charset="UTF-8" />
     <!-- Theme initialization to prevent FOUC (Flash of Unstyled Content) -->
     <script>
@@ -11,22 +20,14 @@
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="KARMASTAT 2.0 - Advanced Medical Sample Size Calculator Suite. Where Selfless Work Meets Calculated Precision." />
-    <meta name="keywords" content="sample size calculator, power analysis, clinical trials, statistical calculator, medical research" />
-    <meta name="author" content="Karmayogi" />
-    <title>KARMASTAT 2.0 - Advanced Medical Sample Size Calculator Suite</title>
-
-    <!-- Open Graph / Social -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="KARMASTAT 2.0 - Advanced Medical Sample Size Calculator Suite" />
-    <meta property="og:description" content="Where Selfless Work Meets Calculated Precision. Professional statistical tools for medical research." />
+    <!--app-head-->
 
     <!-- Preconnect to Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/entry-client.jsx"></script>
   </body>
 </html>

@@ -112,6 +112,14 @@ a:hover {
   background: var(--bg-secondary);
 }
 
+/* SSR chart placeholders */
+.chart-placeholder {
+  width: 100%;
+  min-height: 280px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.15), rgba(59, 130, 246, 0.1));
+}
+
 .btn-export {
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;

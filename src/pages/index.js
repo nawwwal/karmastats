@@ -4,6 +4,8 @@ export { Contact } from './Contact';
 export { Support } from './Support';
 export { References } from './References';
 export { PlaceholderCalculator } from './PlaceholderCalculator';
+export { NotFound } from './NotFound';
+export { Test } from './Test';
 
 // Core Calculators
 export { DescriptiveCalculator } from './DescriptiveCalculator';
