@@ -4,15 +4,10 @@
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist/client" }
+      "config": { "distDir": "dist/client", "buildCommand": "npm run build" }
     },
-    { "src": "api/ssr.js", "use": "@vercel/node" }
+    { "src": "api/ssr.js", "use": "@vercel/node", "config": { "includeFiles": "dist/**" } }
   ],
-  "functions": {
-    "api/ssr.js": {
-      "includeFiles": "dist/**"
-    }
-  },
   "routes": [
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
     {
