@@ -1,12 +1,28 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/ssr.js", "use": "@vercel/node" },
-    { "src": "dist/client/**", "use": "@vercel/static" }
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist/client" }
+    },
+    { "src": "api/ssr.js", "use": "@vercel/node" }
   ],
+  "functions": {
+    "api/ssr.js": {
+      "includeFiles": "dist/**"
+    }
+  },
   "routes": [
-    { "src": "/assets/(.*)", "dest": "/dist/client/assets/$1" },
-    { "src": "/(favicon\\.svg|og-default\\.png|robots\\.txt|sitemap\\.xml|llms\\.txt)", "dest": "/dist/client/$1" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    {
+      "src": "/(favicon\\.svg|og-default\\.png|robots\\.txt|sitemap\\.xml|llms\\.txt|qr-code-coffee\\.jpeg|qr-code-tea\\.jpeg)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.(?:css|js|map|json|png|jpg|jpeg|webp|gif|svg|ico|txt|xml))",
+      "dest": "/$1"
+    },
     { "src": "/(.*)", "dest": "/api/ssr" }
   ]
 }
