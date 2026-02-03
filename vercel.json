@@ -1,23 +1,26 @@
 {
   "version": 2,
-  "builds": [
+  "functions": {
+    "api/ssr.js": {
+      "includeFiles": "dist/**"
+    }
+  },
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist/client", "buildCommand": "npm run build" }
-    },
-    { "src": "api/ssr.js", "use": "@vercel/node", "config": { "includeFiles": "dist/**" } }
-  ],
-  "routes": [
-    { "src": "/assets/(.*)", "dest": "/assets/$1" },
-    {
-      "src": "/(favicon\\.svg|og-default\\.png|robots\\.txt|sitemap\\.xml|llms\\.txt|qr-code-coffee\\.jpeg|qr-code-tea\\.jpeg)",
-      "dest": "/$1"
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
     },
     {
-      "src": "/(.*\\.(?:css|js|map|json|png|jpg|jpeg|webp|gif|svg|ico|txt|xml))",
-      "dest": "/$1"
+      "source": "/(favicon\\.svg|og-default\\.png|robots\\.txt|sitemap\\.xml|llms\\.txt|qr-code-coffee\\.jpeg|qr-code-tea\\.jpeg)",
+      "destination": "/$1"
     },
-    { "src": "/(.*)", "dest": "/api/ssr" }
+    {
+      "source": "/(.*\\.(?:css|js|map|json|png|jpg|jpeg|webp|gif|svg|ico|txt|xml))",
+      "destination": "/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/ssr"
+    }
   ]
 }
