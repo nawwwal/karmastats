@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     // In Vercel serverless functions, process.cwd() is usually the root of the project
     // when 'includeFiles' is used correctly.
     const projectRoot = process.cwd();
-    const templatePath = path.resolve(projectRoot, 'dist/client/index.html');
+    const templatePath = path.resolve(projectRoot, 'dist/index.html');
     const ssrEntryPath = path.resolve(projectRoot, 'dist/server/entry-server.js');
 
     // Debug logging to help identify path issues in Vercel logs

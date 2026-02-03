@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ ssrBuild }) => ({
   plugins: [react()],
   build: {
-    outDir: ssrBuild ? 'dist/server' : 'dist/client',
+    outDir: ssrBuild ? 'dist/server' : 'dist',
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       input: ssrBuild ? undefined : 'index.html',
