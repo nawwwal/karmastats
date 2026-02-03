@@ -1,31 +1,23 @@
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
-import { HelmetProvider } from 'react-helmet-async';
 import { matchRoutes } from 'react-router-dom';
 import App from './App.jsx';
 import routes from './routes.jsx';
+import { buildHeadTags } from './seo';
 
 export function render(url) {
-  const helmetContext = {};
   const matches = matchRoutes(routes, url);
   const lastMatch = matches?.[matches.length - 1];
+  const matchedMeta = lastMatch?.route?.meta;
   const isNotFound = !matches || lastMatch?.route?.path === '*';
 
   const appHtml = renderToString(
-    <HelmetProvider context={helmetContext}>
-      <StaticRouter location={url}>
-        <App />
-      </StaticRouter>
-    </HelmetProvider>
+    <StaticRouter location={url}>
+      <App />
+    </StaticRouter>
   );
 
-  const { helmet } = helmetContext;
-  const head = [
-    helmet?.title?.toString?.() || '',
-    helmet?.meta?.toString?.() || '',
-    helmet?.link?.toString?.() || '',
-    helmet?.script?.toString?.() || ''
-  ].join('');
+  const head = buildHeadTags(matchedMeta || {});
 
   return {
     html: appHtml,

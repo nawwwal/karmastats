@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import SEO from './components/SEO';
+import HeadManager from './components/HeadManager';
 import { routesMeta } from './routeMeta';
 import {
   Home,
@@ -28,7 +28,7 @@ import {
 function RouteLayout({ element, meta }) {
   return (
     <Fragment>
-      <SEO meta={meta} />
+      <HeadManager meta={meta} />
       {element}
     </Fragment>
   );
