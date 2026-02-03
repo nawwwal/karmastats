@@ -1,0 +1,36 @@
+# KARMASTAT
+
+Summary:
+KARMASTAT provides advanced medical sample size calculators, power analysis, reporting tools, and statistical references for clinical and epidemiological research.
+
+Audience:
+Researchers, clinicians, biostatisticians, and study designers.
+
+Base URL:
+https://karmastat.in
+
+Policies:
+- Calculators and tools are informational and educational.
+- No patient data is stored or processed.
+- Content is not medical advice.
+
+Pages:
+https://karmastat.in/
+https://karmastat.in/calculator/descriptive
+https://karmastat.in/calculator/ttest
+https://karmastat.in/calculator/comparative
+https://karmastat.in/calculator/diagnostic
+https://karmastat.in/calculator/clinical-trials
+https://karmastat.in/calculator/survival
+https://karmastat.in/calculator/power-analysis
+https://karmastat.in/calculator/effect-size
+https://karmastat.in/calculator/meta-analysis
+https://karmastat.in/calculator/cluster-multilevel
+https://karmastat.in/calculator/bayesian
+https://karmastat.in/calculator/agreement
+https://karmastat.in/tools/report-generator
+https://karmastat.in/tools/sensitivity-analysis
+https://karmastat.in/tools/checklists
+https://karmastat.in/references
+https://karmastat.in/contact
+https://karmastat.in/support

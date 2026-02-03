@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/ssr.js", "use": "@vercel/node" },
+    { "src": "dist/client/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/assets/(.*)", "dest": "/dist/client/assets/$1" },
+    { "src": "/(favicon\\.svg|og-default\\.png|robots\\.txt|sitemap\\.xml|llms\\.txt)", "dest": "/dist/client/$1" },
+    { "src": "/(.*)", "dest": "/api/ssr" }
+  ]
+}
