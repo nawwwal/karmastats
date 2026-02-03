@@ -6,8 +6,19 @@ export default defineConfig(({ ssrBuild }) => ({
   plugins: [react()],
   build: {
     outDir: ssrBuild ? 'dist/server' : 'dist/client',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
-      input: ssrBuild ? undefined : 'index.html'
+      input: ssrBuild ? undefined : 'index.html',
+      output: ssrBuild ? undefined : {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('jspdf')) return 'jspdf';
+            if (id.includes('chart.js') || id.includes('react-chartjs-2')) return 'charts';
+            if (id.includes('react-dom')) return 'react-dom';
+            return 'vendor';
+          }
+        }
+      }
     }
   }
 }))
