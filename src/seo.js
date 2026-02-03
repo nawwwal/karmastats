@@ -96,8 +96,9 @@ export const buildHeadTags = (meta = {}) => {
     `<meta data-seo=\"true\" name=\"twitter:image\" content=\"${escapeHtml(ogImage)}\">`
   );
 
+  const schemaJson = JSON.stringify(schema).replace(/</g, '\\u003c');
   tags.push(
-    `<script data-seo=\"true\" type=\"application/ld+json\">${escapeHtml(JSON.stringify(schema))}</script>`
+    `<script data-seo=\"true\" type=\"application/ld+json\">${schemaJson}</script>`
   );
 
   return tags.join('');

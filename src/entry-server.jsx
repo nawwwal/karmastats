@@ -8,7 +8,8 @@ import { buildHeadTags } from './seo';
 export function render(url) {
   const matches = matchRoutes(routes, url);
   const lastMatch = matches?.[matches.length - 1];
-  const matchedMeta = lastMatch?.route?.meta;
+  const fallbackMeta = routes.find((route) => route.path === '*')?.meta || {};
+  const matchedMeta = lastMatch?.route?.meta || fallbackMeta;
   const isNotFound = !matches || lastMatch?.route?.path === '*';
 
   const appHtml = renderToString(

@@ -9,8 +9,5 @@ export default defineConfig(({ ssrBuild }) => ({
     rollupOptions: {
       input: ssrBuild ? undefined : 'index.html'
     }
-  },
-  ssr: {
-    noExternal: ['react-helmet-async']
   }
 }))
