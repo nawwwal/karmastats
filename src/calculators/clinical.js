@@ -93,18 +93,27 @@ export function calculateNonInferiority(inputs) {
   const zAlpha = normalInv(1 - parseFloat(alpha));
   const zBeta = normalInv(parseFloat(power));
 
-  // Sample size for non-inferiority
-  const pBar = (pTVal + k * pCVal) / (1 + k);
-  const term1 = zAlpha * Math.sqrt((1 + 1/k) * pBar * (1 - pBar));
-  const term2 = zBeta * Math.sqrt((pTVal * (1 - pTVal)) + (pCVal * (1 - pCVal)) / k);
-
-  const nT = roundUp(Math.pow(term1 + term2, 2) / Math.pow(deltaVal, 2));
-  const nC = roundUp(nT * k);
+  // Non-inferiority uses the UNPOOLED variance (the two proportions differ under
+  // both H0 and H1) and the detectable effect is the distance from the NI boundary.
+  // Convention: higher response = better; margin δ > 0 means the treatment may be
+  // up to δ worse than control and still declared non-inferior, so the effect the
+  // study must detect is (pT − pC) + δ, NOT δ alone.
+  // Ref: Chow, Shao, Wang & Lokhnygina (2017), Sample Size Calculations in Clinical
+  // Research, 3rd ed., §4.2 (verified against the book's worked example: pT=0.85,
+  // pC=0.65, δ=0.10, α=0.05, power=0.80 → 25/group).
+  const variance = pTVal * (1 - pTVal) + (pCVal * (1 - pCVal)) / k;
+  const effect = (pTVal - pCVal) + deltaVal;
+  if (effect <= 0) {
+    throw new Error('(pT − pC) + δ must be positive. With these inputs the treatment is assumed to be inferior by more than the margin, so non-inferiority cannot be demonstrated. Check the response rates and the margin δ.');
+  }
+  const nTraw = Math.pow(zAlpha + zBeta, 2) * variance / Math.pow(effect, 2);
+  const nT = roundUp(nTraw);
+  const nC = roundUp(nTraw * k);
   const nTAdj = roundUp(nT / (1 - dropout / 100));
   const nCAdj = roundUp(nC / (1 - dropout / 100));
   const totalN = nTAdj + nCAdj;
 
-  const interpretation = `To demonstrate non-inferiority with margin δ = ${(deltaVal * 100).toFixed(0)}%, expecting treatment rate of ${(pTVal * 100).toFixed(0)}% vs control ${(pCVal * 100).toFixed(0)}%, with ${(parseFloat(power) * 100).toFixed(0)}% power at one-sided α = ${parseFloat(alpha)}, you need ${nTAdj} treatment and ${nCAdj} control participants (total N = ${totalN}).`;
+  const interpretation = `To demonstrate non-inferiority with margin δ = ${(deltaVal * 100).toFixed(0)}%, expecting treatment rate of ${(pTVal * 100).toFixed(0)}% vs control ${(pCVal * 100).toFixed(0)}%, with ${(parseFloat(power) * 100).toFixed(0)}% power at one-sided α = ${parseFloat(alpha)}, you need ${nTAdj} treatment and ${nCAdj} control participants (total N = ${totalN}). The study is powered to detect a distance of ${((pTVal - pCVal + deltaVal) * 100).toFixed(1)}% from the non-inferiority boundary.`;
 
   return {
     type: 'non-inferiority',
@@ -118,12 +127,13 @@ export function calculateNonInferiority(inputs) {
       'Power (1-β)': `${(parseFloat(power) * 100).toFixed(0)}%`,
       'Dropout Rate': `${dropout}%`
     },
-    formula: 'n = [Zα√((1+1/k)P̄Q̄) + Zβ√(P_T×Q_T + P_C×Q_C/k)]² / δ²',
-    formulaExplanation: 'δ = non-inferiority margin | One-sided test',
+    formula: 'n_T = (Z₁₋α + Z₁₋β)² × [P_T(1−P_T) + P_C(1−P_C)/k] / (P_T − P_C + δ)²',
+    formulaExplanation: 'Unpooled variance | effect = (P_T − P_C) + δ = distance from the non-inferiority boundary | one-sided α | higher response assumed better',
     steps: [
-      { title: 'Calculate pooled proportion', calc: `P̄ = ${pBar.toFixed(4)}` },
-      { title: 'Get Z-scores (one-sided)', calc: `Zα = ${zAlpha.toFixed(4)}, Zβ = ${zBeta.toFixed(4)}` },
-      { title: 'Calculate sample sizes', calc: `n_T = ${nT}, n_C = ${nC}` },
+      { title: 'Compute the unpooled variance term', calc: `V = P_T(1−P_T) + P_C(1−P_C)/k = ${(pTVal*(1-pTVal)).toFixed(4)} + ${(pCVal*(1-pCVal)).toFixed(4)}/${k} = ${variance.toFixed(4)}` },
+      { title: 'Compute the detectable effect (distance from NI boundary)', calc: `(P_T − P_C) + δ = (${pTVal} − ${pCVal}) + ${deltaVal} = ${effect.toFixed(4)}` },
+      { title: 'Get Z-scores (one-sided α)', calc: `Z₁₋α = ${zAlpha.toFixed(4)}, Z₁₋β = ${zBeta.toFixed(4)}` },
+      { title: 'Calculate sample sizes', calc: `n_T = (${zAlpha.toFixed(3)}+${zBeta.toFixed(3)})² × ${variance.toFixed(4)} / ${effect.toFixed(4)}² = ${nT}, n_C = ${nC}` },
       { title: 'Adjust for dropout', calc: `n_T_adj = ${nTAdj}, n_C_adj = ${nCAdj}` },
       { title: 'Total sample size', calc: `N = ${totalN}` }
     ],
@@ -139,7 +149,7 @@ export function calculateNonInferiority(inputs) {
       'Pre-specify margin in protocol',
       'Avoid switching from superiority to non-inferiority post-hoc'
     ],
-    reference: 'Blackwelder, W. C. (1982). "Proving the Null Hypothesis" in Clinical Trials. Controlled Clinical Trials, 3(4), 345-353.'
+    reference: 'Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.), §4.2. Chapman and Hall/CRC. Conceptual basis: Blackwelder, W. C. (1982), Controlled Clinical Trials, 3(4), 345-353.'
   };
 }
 
@@ -152,17 +162,23 @@ export function calculateEquivalence(inputs) {
   const k = parseFloat(ratio) || 1;
   const dropout = parseFloat(dropoutRate) || 0;
 
-  // Two one-sided tests (TOST)
+  // Two one-sided tests (TOST). One-sided α, but the power is split across the two
+  // bounds, so the β term uses Z_{1−β/2} (not Z_{1−β}). Unpooled variance; the
+  // detectable effect is the margin minus the expected true difference: δ − |pT − pC|.
+  // The old "× 2" multiplier is an invented factor and is removed.
+  // Ref: Chow, Shao, Wang & Lokhnygina (2017), 3rd ed., §4.3 (equivalence, two
+  // proportions); matches CRAN TrialSize::TwoSampleProportion.Equivalence.
   const zAlpha = normalInv(1 - parseFloat(alpha));
-  const zBeta = normalInv(parseFloat(power));
+  const zBeta = normalInv(1 - (1 - parseFloat(power)) / 2); // Z_{1−β/2}
 
-  const pBar = (pTVal + k * pCVal) / (1 + k);
-  const term1 = zAlpha * Math.sqrt((1 + 1/k) * pBar * (1 - pBar));
-  const term2 = zBeta * Math.sqrt((pTVal * (1 - pTVal)) + (pCVal * (1 - pCVal)) / k);
-
-  // Equivalence requires larger sample (both bounds must be within margin)
-  const nT = roundUp(2 * Math.pow(term1 + term2, 2) / Math.pow(deltaVal, 2));
-  const nC = roundUp(nT * k);
+  const variance = pTVal * (1 - pTVal) + (pCVal * (1 - pCVal)) / k;
+  const effect = deltaVal - Math.abs(pTVal - pCVal);
+  if (effect <= 0) {
+    throw new Error('The equivalence margin δ must be larger than the expected absolute difference |pT − pC|; otherwise equivalence cannot be demonstrated. Increase δ or bring the expected rates closer.');
+  }
+  const nTraw = Math.pow(zAlpha + zBeta, 2) * variance / Math.pow(effect, 2);
+  const nT = roundUp(nTraw);
+  const nC = roundUp(nTraw * k);
   const nTAdj = roundUp(nT / (1 - dropout / 100));
   const nCAdj = roundUp(nC / (1 - dropout / 100));
   const totalN = nTAdj + nCAdj;
@@ -181,12 +197,13 @@ export function calculateEquivalence(inputs) {
       'Power (1-β)': `${(parseFloat(power) * 100).toFixed(0)}%`,
       'Dropout Rate': `${dropout}%`
     },
-    formula: 'n = 2 × [Zα√((1+1/k)P̄Q̄) + Zβ√(P_T×Q_T + P_C×Q_C/k)]² / δ²',
-    formulaExplanation: 'TOST approach | δ = equivalence margin',
+    formula: 'n_T = (Z₁₋α + Z₁₋β/₂)² × [P_T(1−P_T) + P_C(1−P_C)/k] / (δ − |P_T − P_C|)²',
+    formulaExplanation: 'TOST | one-sided α, power split as β/2 | unpooled variance | effect = δ − |P_T − P_C|',
     steps: [
-      { title: 'Calculate pooled proportion', calc: `P̄ = ${pBar.toFixed(4)}` },
-      { title: 'Get Z-scores', calc: `Zα = ${zAlpha.toFixed(4)}, Zβ = ${zBeta.toFixed(4)}` },
-      { title: 'Calculate sample sizes (×2 for TOST)', calc: `n_T = ${nT}, n_C = ${nC}` },
+      { title: 'Compute the unpooled variance term', calc: `V = P_T(1−P_T) + P_C(1−P_C)/k = ${variance.toFixed(4)}` },
+      { title: 'Compute the detectable effect', calc: `δ − |P_T − P_C| = ${deltaVal} − ${Math.abs(pTVal-pCVal).toFixed(4)} = ${effect.toFixed(4)}` },
+      { title: 'Get Z-scores', calc: `Z₁₋α = ${zAlpha.toFixed(4)} (one-sided), Z₁₋β/₂ = ${zBeta.toFixed(4)}` },
+      { title: 'Calculate sample sizes', calc: `n_T = ${nT}, n_C = ${nC}` },
       { title: 'Adjust for dropout', calc: `n_T_adj = ${nTAdj}, n_C_adj = ${nCAdj}` },
       { title: 'Total sample size', calc: `N = ${totalN}` }
     ],

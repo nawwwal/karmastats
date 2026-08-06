@@ -3,6 +3,17 @@
 
 import { roundUp } from '../hooks/useCalculator';
 
+// Standard normal CDF (Abramowitz & Stegun 7.1.26 via erf approximation)
+function normalCDF(x) {
+  const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741,
+        a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+  const sign = x < 0 ? -1 : 1;
+  const z = Math.abs(x) / Math.sqrt(2);
+  const t = 1.0 / (1.0 + p * z);
+  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-z * z);
+  return 0.5 * (1.0 + sign * y);
+}
+
 // Cohen's d - Standardized Mean Difference
 export function calculateCohensD(inputs) {
   const { mean1, mean2, sd1, sd2, n1, n2 } = inputs;
@@ -36,8 +47,11 @@ export function calculateCohensD(inputs) {
   // Convert to r
   const r = d / Math.sqrt(d * d + 4);
 
-  // Convert to Common Language Effect Size
-  const cles = Math.round(100 * (1 / (1 + Math.exp(-d * 1.7))));
+  // Common Language Effect Size = probability a random group-1 score exceeds a random
+  // group-2 score = Φ(d/√2) for two independent normal groups (McGraw & Wong 1992).
+  // The previous 1/(1+e^{−1.7d}) is a logistic approximation to Φ(d) = Cohen's U3, a
+  // DIFFERENT statistic (proportion of group 2 below group 1's mean).
+  const cles = Math.round(100 * normalCDF(d / Math.SQRT2));
 
   return {
     studyType: 'Effect Size',
@@ -164,12 +178,25 @@ export function calculateOddsRatioES(inputs) {
   const cellC = parseInt(c); // Not Exposed + Outcome
   const cellDD = parseInt(cellD); // Not Exposed + No Outcome
 
+  if ([cellA, cellB, cellC, cellDD].some(x => !Number.isFinite(x) || x < 0)) {
+    throw new Error('All four 2×2 cell counts (a, b, c, d) must be non-negative numbers.');
+  }
+
+  // Haldane–Anscombe correction: if any cell is zero, add 0.5 to every cell so the OR,
+  // its SE and CI stay finite instead of returning Infinity/NaN (Cochrane Handbook
+  // §10.4.4.1). Point estimate/CI are computed on the corrected cells when needed.
+  const zeroCell = (cellA === 0 || cellB === 0 || cellC === 0 || cellDD === 0);
+  const A = zeroCell ? cellA + 0.5 : cellA;
+  const B = zeroCell ? cellB + 0.5 : cellB;
+  const C = zeroCell ? cellC + 0.5 : cellC;
+  const D = zeroCell ? cellDD + 0.5 : cellDD;
+
   // Odds Ratio
-  const or = (cellA * cellDD) / (cellB * cellC);
+  const or = (A * D) / (B * C);
   const logOR = Math.log(or);
 
   // Standard Error of log(OR)
-  const seLogOR = Math.sqrt(1/cellA + 1/cellB + 1/cellC + 1/cellDD);
+  const seLogOR = Math.sqrt(1 / A + 1 / B + 1 / C + 1 / D);
 
   // 95% CI for OR
   const ciLowerLog = logOR - 1.96 * seLogOR;

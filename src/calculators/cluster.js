@@ -193,7 +193,11 @@ export function calculateNumberOfClusters(inputs) {
   const DEFF = 1 + (m - 1) * rho;
 
   // Adjustment for varying cluster sizes
-  const DEFFadj = DEFF * (1 + cvVal * cvVal);
+  // Eldridge, Ashby & Kerry (2006): with unequal cluster sizes the design effect is
+  // 1 + [(cv² + 1)·m − 1]·ρ (m = mean cluster size, cv = SD/mean of cluster sizes).
+  // Correctly reduces to Kish 1 + (m−1)ρ when cv=0, and to 1 (no inflation) when ρ=0.
+  // The previous DEFF·(1+cv²) wrongly inflated even the independent baseline.
+  const DEFFadj = 1 + ((cvVal * cvVal + 1) * m - 1) * rho;
 
   // Number of clusters per arm
   // k = (Zα + Zβ)² × 2 × (1 + (m-1)ρ) / (m × d²)
@@ -225,7 +229,7 @@ export function calculateNumberOfClusters(inputs) {
     formulaExplanation: 'Number of clusters per arm for standardized effect size',
     steps: [
       { title: 'Calculate Base DEFF', calc: `DEFF = 1 + (${m} - 1) × ${rho} = ${roundUp(DEFF, 3)}` },
-      { title: 'Adjust for Varying Sizes', calc: `DEFF_adj = ${roundUp(DEFF, 3)} × (1 + ${cvVal}²) = ${roundUp(DEFFadj, 3)}` },
+      { title: 'Adjust for Varying Sizes (Eldridge 2006)', calc: `DEFF_adj = 1 + [(${cvVal}²+1)×${m} − 1]×${rho} = ${roundUp(DEFFadj, 3)}` },
       { title: 'Calculate Clusters per Arm', calc: `k = (${roundUp(zAlpha, 2)} + ${roundUp(zBeta, 2)})² × 2 × ${roundUp(DEFFadj, 2)} / (${m} × ${d}²) = ${kPerArm}` },
       { title: 'Total Clusters', calc: `total = ${kPerArm} × 2 = ${totalClusters}` },
       { title: 'Total Individuals', calc: `N = ${totalClusters} × ${m} = ${totalIndividuals}` }
@@ -261,7 +265,11 @@ export function calculateDesignEffect(inputs) {
   const DEFF = 1 + (m - 1) * rho;
 
   // Adjusted for varying cluster sizes
-  const DEFFadj = DEFF * (1 + cvVal * cvVal);
+  // Eldridge, Ashby & Kerry (2006): with unequal cluster sizes the design effect is
+  // 1 + [(cv² + 1)·m − 1]·ρ (m = mean cluster size, cv = SD/mean of cluster sizes).
+  // Correctly reduces to Kish 1 + (m−1)ρ when cv=0, and to 1 (no inflation) when ρ=0.
+  // The previous DEFF·(1+cv²) wrongly inflated even the independent baseline.
+  const DEFFadj = 1 + ((cvVal * cvVal + 1) * m - 1) * rho;
 
   // Effective sample size
   const totalN = k * m;
@@ -289,7 +297,7 @@ export function calculateDesignEffect(inputs) {
     formulaExplanation: 'Design effect measures variance inflation due to clustering',
     steps: [
       { title: 'Calculate Basic DEFF', calc: `DEFF = 1 + (${m} - 1) × ${rho} = ${roundUp(DEFF, 4)}` },
-      { title: 'Adjust for Varying Sizes', calc: `DEFF_adj = ${roundUp(DEFF, 3)} × (1 + ${cvVal}²) = ${roundUp(DEFFadj, 4)}` },
+      { title: 'Adjust for Varying Sizes (Eldridge 2006)', calc: `DEFF_adj = 1 + [(${cvVal}²+1)×${m} − 1]×${rho} = ${roundUp(DEFFadj, 4)}` },
       { title: 'Calculate Total N', calc: `N = ${k} × ${m} = ${totalN}` },
       { title: 'Calculate Effective N', calc: `N_eff = ${totalN} / ${roundUp(DEFF, 2)} = ${roundUp(effectiveN, 1)}` },
       { title: 'Sample Size Inflation', calc: `Inflation = (${roundUp(DEFF, 2)} - 1) × 100 = ${roundUp(inflation, 1)}%` }

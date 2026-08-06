@@ -54,6 +54,10 @@ export function calculateCaseControl(inputs) {
   // Calculate exposure proportion in cases from OR
   const p1 = (p0Val * orVal) / (1 - p0Val + p0Val * orVal);
 
+  if (Math.abs(p1 - p0Val) < 1e-9) {
+    throw new Error('An odds ratio of 1 implies equal exposure in cases and controls (P₁ = P₀), so no sample size can be computed. Enter an odds ratio ≠ 1.');
+  }
+
   // Z-scores
   const zAlpha = normalInv(1 - parseFloat(alpha) / 2);
   const zBeta = normalInv(parseFloat(power));
@@ -119,6 +123,9 @@ export function calculateCohort(inputs) {
   if (p1 > 1) {
     throw new Error('Calculated incidence in exposed group exceeds 100%. Please check your inputs.');
   }
+  if (Math.abs(p1 - p0Val) < 1e-9) {
+    throw new Error('A relative risk of 1 implies equal incidence in both groups (P₁ = P₀), so no sample size can be computed. Enter a relative risk ≠ 1.');
+  }
 
   const zAlpha = normalInv(1 - parseFloat(alpha) / 2);
   const zBeta = normalInv(parseFloat(power));
@@ -178,6 +185,10 @@ export function calculateCrossSectional(inputs) {
 
   const p1Val = parseFloat(p1);
   const p2Val = parseFloat(p2);
+
+  if (Math.abs(p1Val - p2Val) < 1e-9) {
+    throw new Error('The two proportions are equal (P₁ = P₂), so there is no difference to detect and no sample size can be computed. Enter different proportions.');
+  }
 
   const zAlpha = normalInv(1 - parseFloat(alpha) / 2);
   const zBeta = normalInv(parseFloat(power));

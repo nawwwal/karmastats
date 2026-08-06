@@ -6,15 +6,13 @@ const THEME_KEY = 'karmastat-theme';
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    if (typeof window === 'undefined') return 'light';
-    const saved = window.localStorage.getItem(THEME_KEY);
+    const saved = localStorage.getItem(THEME_KEY);
     return saved || 'light';
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
     document.documentElement.setAttribute('data-theme', theme);
-    window.localStorage.setItem(THEME_KEY, theme);
+    localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
   const toggleTheme = () => {

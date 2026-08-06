@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { CalculatorHeader, SimpleFooter, ThemeToggle } from '../components/common';
 import { FormInput, FormSelect, CalculatorButtons, ResultsSection, ResultGrid, ResultCard, FormulaSection, StepsSection, InterpretationBox, RecommendationsSection, ReferenceSection, ExportModal } from '../components/calculators';
-import { ForestPlotChart } from '../components/charts';
+import { ForestPlot } from '../components/charts';
 import { useCalculator } from '../hooks/useCalculator';
 import { calculateFixedEffects, calculateRandomEffects, calculateMetaAnalysisSampleSize } from '../calculators/metaAnalysis';
 import { exportToPDF, copyToClipboard } from '../utils/pdfExport';
@@ -20,9 +20,9 @@ const POWER_OPTIONS = [
 ];
 
 const ANALYSIS_TYPES = [
-  { value: 'fixed', label: 'Fixed Effects Model' },
-  { value: 'random', label: 'Random Effects (DerSimonian-Laird)' },
-  { value: 'sample-size', label: 'Sample Size Planning' }
+  { value: 'sample-size', label: 'Sample Size Planning (how many studies?)' },
+  { value: 'fixed', label: 'Pooled Analysis — Fixed Effects' },
+  { value: 'random', label: 'Pooled Analysis — Random Effects (DerSimonian-Laird)' }
 ];
 
 const NAV_LINKS = [
@@ -32,8 +32,9 @@ const NAV_LINKS = [
 ];
 
 export function MetaAnalysisCalculator() {
-  const [analysisType, setAnalysisType] = useState('fixed');
+  const [analysisType, setAnalysisType] = useState('sample-size');
   const [showExportModal, setShowExportModal] = useState(false);
+  const [calcError, setCalcError] = useState('');
   const { calculation, setCalculation, theme, clearCalculation } = useCalculator();
 
   // Effect size inputs (comma-separated)
@@ -66,11 +67,22 @@ export function MetaAnalysisCalculator() {
       default:
         return;
     }
+    // on error, also drop any previous result — leaving it rendered (and
+    // exportable) under the error banner reads as if it matched these inputs
+    if (result.error) { setCalcError(result.error); clearCalculation(); return; }
+    setCalcError('');
     setCalculation(result);
+  };
+
+  const handleTypeChange = (value) => {
+    setAnalysisType(value);
+    setCalcError('');
+    clearCalculation();
   };
 
   const handleClear = () => {
     clearCalculation();
+    setCalcError('');
     setEffects('0.45, 0.52, 0.38, 0.61, 0.49');
     setVariances('0.04, 0.05, 0.03, 0.06, 0.04');
     setStudyNames('Study A, Study B, Study C, Study D, Study E');
@@ -81,38 +93,6 @@ export function MetaAnalysisCalculator() {
     setPower('80');
     setPrecision('0.1');
   };
-
-  // Generate forest plot data from inputs
-  const forestPlotData = useMemo(() => {
-    if (!calculation || analysisType === 'sample-size') return null;
-
-    const effectArray = effects.split(',').map(e => parseFloat(e.trim())).filter(e => !isNaN(e));
-    const varianceArray = variances.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
-    const nameArray = studyNames.split(',').map(n => n.trim());
-
-    if (effectArray.length === 0) return null;
-
-    const studies = effectArray.map((effect, i) => {
-      const variance = varianceArray[i] || 0.04;
-      const se = Math.sqrt(variance);
-      return {
-        name: nameArray[i] || `Study ${i + 1}`,
-        effect: effect,
-        lower: effect - 1.96 * se,
-        upper: effect + 1.96 * se,
-        weight: 1 / variance
-      };
-    });
-
-    // Normalize weights
-    const totalWeight = studies.reduce((sum, s) => sum + s.weight, 0);
-    studies.forEach(s => s.weight = (s.weight / totalWeight) * 100);
-
-    // Extract pooled effect from calculation
-    const pooledEffect = parseFloat(calculation.results['Pooled Effect']) || 0.5;
-
-    return { studies, overallEffect: pooledEffect };
-  }, [calculation, effects, variances, studyNames, analysisType]);
 
   const renderInputs = () => {
     switch (analysisType) {
@@ -151,6 +131,7 @@ export function MetaAnalysisCalculator() {
                 placeholder="e.g., Study A, Study B, Study C"
                 className="form-input"
               />
+              <span className="help-text">If names themselves contain commas (e.g., "Smith et al., 2020"), separate the studies with semicolons instead</span>
             </div>
           </>
         );
@@ -241,13 +222,19 @@ export function MetaAnalysisCalculator() {
                 <FormSelect
                   label="Analysis Type"
                   value={analysisType}
-                  onChange={setAnalysisType}
+                  onChange={handleTypeChange}
                   options={ANALYSIS_TYPES}
                   tooltip="Select the meta-analysis model"
                 />
               </div>
 
               {renderInputs()}
+
+              {calcError && (
+                <div style={{ color: '#dc2626', fontWeight: 600, fontSize: '0.9rem', margin: '0.5rem 0' }}>
+                  ⚠ {calcError}
+                </div>
+              )}
 
               <CalculatorButtons
                 onCalculate={handleCalculate}
@@ -258,9 +245,10 @@ export function MetaAnalysisCalculator() {
             <div className="info-card">
               <h4>Heterogeneity Interpretation (I²)</h4>
               <ul className="info-list">
-                <li><strong>0-25%:</strong> Low heterogeneity</li>
-                <li><strong>25-75%:</strong> Moderate heterogeneity</li>
-                <li><strong>75%+:</strong> Substantial heterogeneity</li>
+                <li><strong>0–25%:</strong> Low heterogeneity</li>
+                <li><strong>25–50%:</strong> Moderate heterogeneity</li>
+                <li><strong>50–75%:</strong> Substantial heterogeneity</li>
+                <li><strong>75%+:</strong> Considerable heterogeneity</li>
               </ul>
               <p className="info-note">High I² suggests random effects model may be more appropriate.</p>
             </div>
@@ -283,15 +271,11 @@ export function MetaAnalysisCalculator() {
                   ))}
                 </ResultGrid>
 
-                {/* Forest Plot Visualization */}
-                {forestPlotData && (
+                {/* Forest plot, built from the same numbers as the results above */}
+                {calculation.forest && (
                   <div className="chart-section" style={{ marginTop: '1.5rem' }}>
                     <h4 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>Forest Plot</h4>
-                    <ForestPlotChart
-                      studies={forestPlotData.studies}
-                      overallEffect={forestPlotData.overallEffect}
-                      theme={theme}
-                    />
+                    <ForestPlot data={calculation.forest} />
                   </div>
                 )}
 

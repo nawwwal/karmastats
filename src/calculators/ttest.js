@@ -66,11 +66,16 @@ export function calculateTwoSample(inputs) {
   // Effect size
   const effectSize = Math.abs(mean1 - mean2) / pooledSd;
 
-  // Sample size per group (with allocation ratio)
+  // Sample size with allocation ratio k = n2/n1, allowing UNEQUAL variances.
+  // Var(x̄₁ − x̄₂) = σ₁²/n₁ + σ₂²/n₂ = (σ₁² + σ₂²/k)/n₁, so
+  //   n₁ = (Zα + Zβ)² (σ₁² + σ₂²/k) / (μ₁ − μ₂)².
+  // This reduces to the equal-variance (1 + 1/k)σ² form when σ₁ = σ₂ (Schouten 1999,
+  // Stat Med 18:87-91). The previous code averaged the variances, which is only valid
+  // when σ₁ = σ₂ or k = 1 and could under-power a study by ~25% otherwise.
   const k = ratio || 1;
-  const nPerGroup = roundUp((Math.pow(zAlpha + zBeta, 2) * (1 + 1/k) * pooledSd * pooledSd) / Math.pow(mean1 - mean2, 2));
-  const n1 = nPerGroup;
-  const n2 = roundUp(nPerGroup * k);
+  const n1raw = (Math.pow(zAlpha + zBeta, 2) * (sd1 * sd1 + (sd2 * sd2) / k)) / Math.pow(mean1 - mean2, 2);
+  const n1 = roundUp(n1raw);
+  const n2 = roundUp(n1raw * k);
   const totalN = n1 + n2;
 
   const interpretation = `To detect a difference of ${Math.abs(mean1 - mean2).toFixed(2)} between two groups (effect size d = ${effectSize.toFixed(3)}), with ${(power * 100).toFixed(0)}% power at a ${(alpha * 100).toFixed(0)}% significance level (two-sided), you need ${n1} participants in group 1 and ${n2} in group 2, for a total of ${totalN} participants.`;
@@ -78,7 +83,7 @@ export function calculateTwoSample(inputs) {
   return {
     type: 'two-sample',
     studyType: 'T-Test - Two Independent Samples',
-    method: 'Two-sample t-test sample size (equal variances)',
+    method: 'Two-sample t-test sample size (allows unequal variances; normal approximation)',
     inputs: {
       'Mean Group 1': mean1,
       'Mean Group 2': mean2,
@@ -88,11 +93,11 @@ export function calculateTwoSample(inputs) {
       'Power (1-β)': power,
       'Allocation Ratio': `1:${k}`
     },
-    formula: 'n₁ = (Zα + Zβ)² × (1 + 1/k) × σ² / (μ₁ - μ₂)²',
-    formulaExplanation: 'Zα = Z-score for alpha | Zβ = Z-score for power | k = allocation ratio | σ = pooled SD',
+    formula: 'n₁ = (Zα + Zβ)² × (σ₁² + σ₂²/k) / (μ₁ − μ₂)²,  n₂ = k·n₁',
+    formulaExplanation: 'Zα = Z-score for alpha (two-sided) | Zβ = Z-score for power | k = allocation ratio n₂/n₁ | σ₁, σ₂ = group SDs',
     steps: [
-      { title: 'Calculate pooled standard deviation', calc: `σ = √((${sd1}² + ${sd2}²) / 2) = ${pooledSd.toFixed(4)}` },
-      { title: 'Calculate effect size', calc: `d = |${mean1} - ${mean2}| / ${pooledSd.toFixed(4)} = ${effectSize.toFixed(4)}` },
+      { title: 'Variance term (unequal variances allowed)', calc: `σ₁² + σ₂²/k = ${(sd1*sd1).toFixed(3)} + ${(sd2*sd2).toFixed(3)}/${k} = ${(sd1*sd1 + (sd2*sd2)/k).toFixed(4)}` },
+      { title: 'Effect size (Cohen\'s d, pooled SD)', calc: `d = |${mean1} − ${mean2}| / ${pooledSd.toFixed(4)} = ${effectSize.toFixed(4)}` },
       { title: 'Get Z-scores', calc: `Zα = ${zAlpha.toFixed(4)}, Zβ = ${zBeta.toFixed(4)}` },
       { title: 'Calculate n per group', calc: `n₁ = ${n1}, n₂ = ${n2}` },
       { title: 'Total sample size', calc: `N = ${n1} + ${n2} = ${totalN}` }

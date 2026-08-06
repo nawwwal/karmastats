@@ -51,12 +51,23 @@ export function calculateLogRank(inputs) {
   const d = Math.pow((zAlpha + zBeta) / logHR, 2) * Math.pow(1 + r, 2) / r;
   const events = Math.ceil(d);
 
-  // Estimate total sample size based on expected events
-  const avgSurvival = (s1 + s2) / 2;
-  const eventRate = 1 - avgSurvival;
-  const totalN = Math.ceil(events / eventRate);
+  // Convert required events to participants using the probability that a subject has
+  // an event during the study. Under an exponential model with hazard λ_i and subjects
+  // accrued uniformly over [0, ta] then followed to time ta+tf, that probability is
+  //   P_i = 1 − (e^{−λ_i·tf} − e^{−λ_i·(ta+tf)}) / (λ_i·ta)     (ta > 0)
+  // (Collett, Modelling Survival Data, ch. 10). This makes accrual and follow-up time
+  // actually affect the sample size; previously ta and tf cancelled out and were inert.
+  const pEvent = (lam) => (ta > 0)
+    ? 1 - (Math.exp(-lam * tf) - Math.exp(-lam * (ta + tf))) / (lam * ta)
+    : 1 - Math.exp(-lam * tf);
+  const pE1 = pEvent(lambda1); // control arm
+  const pE2 = pEvent(lambda2); // treatment arm
+  // allocation control:treatment = 1 : r  → control fraction 1/(1+r)
+  const overallEventRate = (pE1 + r * pE2) / (1 + r);
+  const eventRate = overallEventRate; // kept name for the step display below
+  const totalN = Math.ceil(events / overallEventRate);
   const n1 = Math.ceil(totalN / (1 + r));
-  const n2 = Math.ceil(totalN - n1);
+  const n2 = totalN - n1;
 
   return {
     studyType: 'Survival Analysis',
@@ -113,7 +124,10 @@ export function calculateKaplanMeier(inputs) {
   // Point estimate of survival
   const survivalEst = (n - d) / n;
 
-  // Greenwood's formula for variance
+  // Single-interval binomial variance S(1−S)/n. NOTE: this is NOT the full Greenwood
+  // formula (which sums d_i / [n_i(n_i−d_i)] over all event times and is needed once
+  // there is censoring or multiple event times). For a single proportion-at-risk with
+  // no interim censoring the two coincide; the label is corrected accordingly.
   const variance = (survivalEst * (1 - survivalEst)) / n;
   const se = Math.sqrt(variance);
 
@@ -136,7 +150,7 @@ export function calculateKaplanMeier(inputs) {
       'Confidence Level': `${confLevel * 100}%`
     },
     formula: 'S(t) = (n - d) / n; SE = sqrt(S(t)(1-S(t))/n)',
-    formulaExplanation: 'Kaplan-Meier estimator with Greenwood variance formula',
+    formulaExplanation: 'Single-interval survival proportion with binomial SE (full Greenwood applies once there is censoring / multiple event times)',
     steps: [
       { title: 'Calculate Survival Estimate', calc: `S(t) = (${n} - ${d}) / ${n} = ${roundUp(survivalEst, 4)}` },
       { title: 'Calculate Standard Error', calc: `SE = sqrt(${roundUp(survivalEst, 3)} × ${roundUp(1-survivalEst, 3)} / ${n}) = ${roundUp(se, 4)}` },

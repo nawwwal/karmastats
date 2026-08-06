@@ -41,6 +41,85 @@ function normalCDF(x) {
   return 0.5 * (1.0 + sign * y);
 }
 
+// ---- Numerical helpers for the (non-central) F distribution ----
+// Lanczos log-gamma
+function logGamma(x) {
+  const g = 7;
+  const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - logGamma(1 - x);
+  x -= 1;
+  let a = c[0];
+  const t = x + g + 0.5;
+  for (let i = 1; i < g + 2; i++) a += c[i] / (x + i);
+  return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+}
+
+// Continued fraction for the incomplete beta function (Numerical Recipes)
+function betacf(a, b, x) {
+  const FPMIN = 1e-300;
+  const qab = a + b, qap = a + 1, qam = a - 1;
+  let c = 1, d = 1 - qab * x / qap;
+  if (Math.abs(d) < FPMIN) d = FPMIN;
+  d = 1 / d;
+  let h = d;
+  for (let m = 1; m <= 300; m++) {
+    const m2 = 2 * m;
+    let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+    d = 1 + aa * d; if (Math.abs(d) < FPMIN) d = FPMIN;
+    c = 1 + aa / c; if (Math.abs(c) < FPMIN) c = FPMIN;
+    d = 1 / d; h *= d * c;
+    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+    d = 1 + aa * d; if (Math.abs(d) < FPMIN) d = FPMIN;
+    c = 1 + aa / c; if (Math.abs(c) < FPMIN) c = FPMIN;
+    d = 1 / d; const del = d * c; h *= del;
+    if (Math.abs(del - 1) < 1e-13) break;
+  }
+  return h;
+}
+
+// Regularized incomplete beta I_x(a,b)
+function betai(a, b, x) {
+  if (x <= 0) return 0;
+  if (x >= 1) return 1;
+  const bt = Math.exp(logGamma(a + b) - logGamma(a) - logGamma(b) +
+    a * Math.log(x) + b * Math.log(1 - x));
+  if (x < (a + 1) / (a + b + 2)) return bt * betacf(a, b, x) / a;
+  return 1 - bt * betacf(b, a, 1 - x) / b;
+}
+
+// Central F CDF: P(F_{df1,df2} <= x)
+function fCDF(x, df1, df2) {
+  if (x <= 0) return 0;
+  return betai(df1 / 2, df2 / 2, (df1 * x) / (df1 * x + df2));
+}
+
+// Inverse central F (critical value) via bisection: F such that P(F_{df1,df2} <= F) = p
+function fInv(p, df1, df2) {
+  let lo = 0, hi = 1e6;
+  for (let i = 0; i < 200; i++) {
+    const mid = (lo + hi) / 2;
+    if (fCDF(mid, df1, df2) < p) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+// Non-central F CDF via Poisson-weighted mixture of central incomplete-beta terms
+function ncFCDF(x, df1, df2, lambda) {
+  if (x <= 0) return 0;
+  const y = (df1 * x) / (df1 * x + df2);
+  const halfL = lambda / 2;
+  let sum = 0;
+  let term = Math.exp(-halfL); // Poisson weight for j=0
+  for (let j = 0; j < 2000; j++) {
+    sum += term * betai(df1 / 2 + j, df2 / 2, y);
+    term *= halfL / (j + 1); // update Poisson weight
+    if (j > halfL && term < 1e-12) break;
+  }
+  return sum;
+}
+
 // Post-hoc Power Analysis for Two-Sample t-test
 export function calculatePostHocPower(inputs) {
   const { n1, n2, effectSize, alpha } = inputs;
@@ -232,14 +311,15 @@ export function calculateANOVAPower(inputs) {
   const df1 = k - 1;
   const df2 = totalN - k;
 
-  // Non-centrality parameter for F distribution
+  // Non-centrality parameter for the F test: λ = N · f²  (Cohen 1988)
   const lambda = totalN * f * f;
 
-  // Approximate power using normal approximation to non-central F
-  // This is a simplified approximation
-  const zAlpha = normalInv(1 - alphaVal);
-  const ncp = Math.sqrt(2 * lambda) - Math.sqrt(2 * df1 - 1);
-  const power = normalCDF(ncp - zAlpha) * 100;
+  // Exact power from the non-central F distribution:
+  //   power = P(F' > F_crit) = 1 − CDF_{ncF}(F_crit; df1, df2, λ)
+  // where F_crit is the (1−α) quantile of the central F_{df1,df2}. This replaces the
+  // previous normal approximation, which dropped df1 from the mean term and ignored df2.
+  const fCrit = fInv(1 - alphaVal, df1, df2);
+  const power = (1 - ncFCDF(fCrit, df1, df2, lambda)) * 100;
 
   // Cohen's f to eta-squared conversion
   const etaSquared = (f * f) / (1 + f * f);
@@ -254,22 +334,22 @@ export function calculateANOVAPower(inputs) {
       'Effect Size (Cohen\'s f)': f,
       'Significance Level (alpha)': alphaVal
     },
-    formula: 'lambda = N × f²; Power approx from non-central F',
-    formulaExplanation: 'Non-centrality parameter based power calculation',
+    formula: 'λ = N × f²;  Power = 1 − F′_CDF(F_crit; df₁, df₂, λ)',
+    formulaExplanation: 'Exact power from the non-central F distribution; F_crit = (1−α) quantile of central F',
     steps: [
       { title: 'Calculate Total N', calc: `N = ${k} × ${n} = ${totalN}` },
       { title: 'Calculate Degrees of Freedom', calc: `df1 = ${k} - 1 = ${df1}, df2 = ${totalN} - ${k} = ${df2}` },
-      { title: 'Calculate Non-centrality', calc: `lambda = ${totalN} × ${f}² = ${roundUp(lambda, 2)}` },
-      { title: 'Convert to Eta-squared', calc: `eta² = ${f}² / (1 + ${f}²) = ${roundUp(etaSquared, 4)}` },
-      { title: 'Approximate Power', calc: `Power ≈ ${roundUp(power, 1)}%` }
+      { title: 'Calculate Non-centrality', calc: `λ = ${totalN} × ${f}² = ${roundUp(lambda, 2)}` },
+      { title: 'Critical F value', calc: `F_crit(${df1}, ${df2}) at α=${alphaVal} = ${roundUp(fCrit, 3)}` },
+      { title: 'Exact Power (non-central F)', calc: `Power = 1 − F′_CDF(${roundUp(fCrit, 2)}) = ${roundUp(power, 1)}%` }
     ],
     results: {
-      'Approximate Power': `${roundUp(Math.min(99, power), 1)}%`,
+      'Power': `${roundUp(power, 1)}%`,
       'Total Sample Size': totalN,
       'Non-centrality (lambda)': roundUp(lambda, 2),
       'Eta-squared': roundUp(etaSquared, 4)
     },
-    interpretation: `A one-way ANOVA with ${k} groups of ${n} participants each (total N=${totalN}) has approximately ${roundUp(Math.min(99, power), 1)}% power to detect an effect size of f=${f} (eta²=${roundUp(etaSquared, 4)}) at alpha=${alphaVal}.`,
+    interpretation: `A one-way ANOVA with ${k} groups of ${n} participants each (total N=${totalN}) has ${roundUp(power, 1)}% power to detect an effect size of f=${f} (eta²=${roundUp(etaSquared, 4)}) at alpha=${alphaVal}.`,
     recommendations: [
       `f = 0.10 (small), 0.25 (medium), 0.40 (large) per Cohen`,
       'Consider post-hoc tests and their power implications',

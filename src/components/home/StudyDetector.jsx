@@ -1,74 +1,36 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { detectStudyDesign } from '../../utils/studyDetector';
 import './StudyDetector.css';
 
-const STUDY_PATTERNS = {
-  'clinical-trials': {
-    regex: /randomized|rct|placebo|intervention|treatment.*comparison|drug.*trial|superiority|non-inferiority/i,
-    name: 'Clinical Trials',
-    url: '/calculator/clinical-trials'
-  },
-  'observational': {
-    regex: /case.*control|cohort|risk.*factor|exposure|retrospective|prospective|odds.*ratio/i,
-    name: 'Comparative Studies',
-    url: '/calculator/comparative'
-  },
-  'diagnostic': {
-    regex: /diagnostic|sensitivity|specificity|screening|biomarker|roc|predictive.*value/i,
-    name: 'Diagnostic Accuracy',
-    url: '/calculator/diagnostic'
-  },
-  'ttest': {
-    regex: /compare.*mean|t.*test|before.*after|pre.*post|paired|continuous.*outcome/i,
-    name: 'T-Test & Mean Comparisons',
-    url: '/calculator/ttest'
-  },
-  'survival': {
-    regex: /survival|time.*event|kaplan|cox|hazard|follow.*up|mortality/i,
-    name: 'Survival Analysis',
-    url: '/calculator/survival'
-  },
-  'descriptive': {
-    regex: /prevalence|cross.*sectional|survey|descriptive|proportion/i,
-    name: 'Descriptive Studies',
-    url: '/calculator/descriptive'
-  }
-};
+const EXAMPLES = [
+  'Randomly assign patients to a new drug or placebo and compare response rates at 6 months.',
+  'Follow smokers and non-smokers over 10 years to compare lung-cancer incidence.',
+  'Estimate the prevalence of hypertension among adults in a cross-sectional survey.',
+  'Evaluate the sensitivity and specificity of a rapid test against PCR.',
+];
 
 export function StudyDetector() {
   const [description, setDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [result, setResult] = useState(null);
   const navigate = useNavigate();
 
-  const analyzeStudy = (desc) => {
-    for (const [type, config] of Object.entries(STUDY_PATTERNS)) {
-      if (config.regex.test(desc)) {
-        return { type, ...config };
-      }
-    }
-    return {
-      type: 'descriptive',
-      ...STUDY_PATTERNS['descriptive']
-    };
-  };
-
   const handleDetect = () => {
-    if (!description.trim()) {
-      alert('Please describe your research study first.');
+    if (description.trim().length < 15) {
+      setResult({ tooShort: true });
       return;
     }
-
     setIsAnalyzing(true);
-
+    // brief delay purely for the spinner; the analysis itself is synchronous
     setTimeout(() => {
-      const result = analyzeStudy(description);
+      setResult(detectStudyDesign(description));
       setIsAnalyzing(false);
-
-      if (window.confirm(`Recommended Calculator: ${result.name}\n\nWould you like to proceed?`)) {
-        navigate(result.url);
-      }
-    }, 1500);
+    }, 350);
   };
+
+  const confidenceColor = (c) =>
+    c >= 70 ? '#16a34a' : c >= 50 ? '#0F766E' : c >= 35 ? '#d97706' : '#dc2626';
 
   return (
     <section className="detector">
@@ -77,14 +39,22 @@ export function StudyDetector() {
           <span className="detector-icon">🧠</span>
           Intelligent Study Detector
         </h2>
-        <p>Describe your research and get personalized calculator recommendations</p>
+        <p>Describe your research question and get a ranked, explained calculator recommendation</p>
       </div>
 
       <textarea
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Example: I want to compare the effectiveness of two treatments for diabetes in a randomized controlled trial with 200 patients..."
+        onChange={(e) => { setDescription(e.target.value); setResult(null); }}
+        placeholder="Example: I want to compare the mean HbA1c between a diet group and an exercise group in a randomized trial of 200 patients..."
       />
+
+      <div className="detector-examples">
+        {EXAMPLES.map((ex, i) => (
+          <button key={i} type="button" className="example-chip" onClick={() => { setDescription(ex); setResult(null); }}>
+            {ex.length > 52 ? ex.slice(0, 50) + '…' : ex}
+          </button>
+        ))}
+      </div>
 
       <div className="btn-center">
         <button
@@ -93,18 +63,56 @@ export function StudyDetector() {
           disabled={isAnalyzing}
         >
           {isAnalyzing ? (
-            <>
-              <span className="spinner"></span>
-              <span>Analyzing...</span>
-            </>
+            <><span className="spinner"></span><span>Analyzing…</span></>
           ) : (
-            <>
-              <span className="search-icon">🔍</span>
-              <span>Analyze Study</span>
-            </>
+            <><span className="search-icon">🔍</span><span>Analyze Study</span></>
           )}
         </button>
       </div>
+
+      {result && result.tooShort && (
+        <p className="detector-hint">Please describe your study in a sentence or two (at least 15 characters).</p>
+      )}
+
+      {result && !result.tooShort && (
+        <div className="detector-results">
+          {result.recommendations.length === 0 ? (
+            <div className="detector-ambiguous">
+              <strong>Not enough signal to recommend a design.</strong>
+              <ul>{result.clarifyingQuestions.map((q, i) => <li key={i}>{q}</li>)}</ul>
+            </div>
+          ) : (
+            <>
+              {result.ambiguous && (
+                <div className="detector-ambiguous">
+                  <strong>⚠️ Ambiguous description</strong> — the best match is shown, but please confirm:
+                  <ul>{result.clarifyingQuestions.map((q, i) => <li key={i}>{q}</li>)}</ul>
+                </div>
+              )}
+
+              {result.recommendations.map((rec, i) => (
+                <div key={rec.key} className={`rec-card ${i === 0 ? 'rec-primary' : ''}`}>
+                  <div className="rec-head">
+                    <span className="rec-name">{i === 0 ? '⭐ ' : ''}{rec.name}</span>
+                    <span className="rec-conf" style={{ background: confidenceColor(rec.confidence) }}>
+                      {rec.confidence}% match
+                    </span>
+                  </div>
+                  <p className="rec-blurb">{rec.blurb}</p>
+                  {rec.why.length > 0 && (
+                    <div className="rec-why">
+                      {rec.why.slice(0, 5).map((w, j) => <span key={j} className="why-chip">{w}</span>)}
+                    </div>
+                  )}
+                  <button className="btn btn-outline rec-go" onClick={() => navigate(rec.route)}>
+                    Open the {rec.name} calculator →
+                  </button>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      )}
     </section>
   );
 }

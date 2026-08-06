@@ -107,15 +107,16 @@ export function calculateICCSampleSize(inputs) {
   const zAlpha = normalInv(1 - alphaVal / 2);
   const zBeta = normalInv(powerVal);
 
-  // Fisher's z transformation
-  const z0 = 0.5 * Math.log((1 + rho0) / (1 - rho0));
-  const z1 = 0.5 * Math.log((1 + rho1) / (1 - rho1));
-
-  // Sample size for ICC
-  const n = Math.ceil(Math.pow((zAlpha + zBeta) / (z1 - z0), 2) + 3);
-
-  // Adjust for number of raters
-  const nAdjusted = Math.ceil(n / Math.sqrt(k));
+  // Walter, Eliasziw & Donner (1998) sample size for a reliability study with k
+  // replicates/raters per subject. The variance-stabilising transform for the ICC is
+  //   C(ρ) = [1 + (k−1)ρ] / (1 − ρ),   with ln C(ρ) having large-sample variance 2k/[n(k−1)].
+  // This is NOT the Pearson-correlation Fisher-z used before (which had the wrong
+  // variance and an invented /√k rater adjustment).
+  const C = (rho) => (1 + (k - 1) * rho) / (1 - rho);
+  const z0 = Math.log(C(rho0));
+  const z1 = Math.log(C(rho1));
+  const n = Math.ceil(1 + (2 * k * Math.pow(zAlpha + zBeta, 2)) / ((k - 1) * Math.pow(z1 - z0, 2)));
+  const nAdjusted = n; // the WED formula already accounts for k; no extra adjustment
 
   // ICC interpretation
   let iccInterp;
@@ -135,14 +136,13 @@ export function calculateICCSampleSize(inputs) {
       'Power': `${power}%`,
       'Number of Raters': k
     },
-    formula: 'n = ((Z_alpha + Z_beta) / (Fisher_z1 - Fisher_z0))² + 3',
-    formulaExplanation: "Sample size using Fisher's z transformation for ICC",
+    formula: 'n = 1 + 2k(Z_α + Z_β)² / [(k−1)(ln C(ρ₁) − ln C(ρ₀))²],  C(ρ) = [1+(k−1)ρ]/(1−ρ)',
+    formulaExplanation: 'Walter–Eliasziw–Donner (1998) reliability-study sample size; k = raters/replicates per subject',
     steps: [
       { title: 'Get Z-scores', calc: `Z_alpha = ${roundUp(zAlpha, 3)}, Z_beta = ${roundUp(zBeta, 3)}` },
-      { title: "Fisher's z (H0)", calc: `z0 = 0.5 × ln((1+${rho0})/(1-${rho0})) = ${roundUp(z0, 4)}` },
-      { title: "Fisher's z (H1)", calc: `z1 = 0.5 × ln((1+${rho1})/(1-${rho1})) = ${roundUp(z1, 4)}` },
-      { title: 'Calculate Base Sample Size', calc: `n = ((${roundUp(zAlpha, 2)} + ${roundUp(zBeta, 2)}) / (${roundUp(z1, 3)} - ${roundUp(z0, 3)}))² + 3 = ${n}` },
-      { title: 'Adjust for Raters', calc: `n_adj = ${n} / sqrt(${k}) = ${nAdjusted}` }
+      { title: 'Transform under H0', calc: `ln C(${rho0}) = ln([1+(${k}−1)·${rho0}]/(1−${rho0})) = ${roundUp(z0, 4)}` },
+      { title: 'Transform under H1', calc: `ln C(${rho1}) = ln([1+(${k}−1)·${rho1}]/(1−${rho1})) = ${roundUp(z1, 4)}` },
+      { title: 'Calculate Sample Size', calc: `n = 1 + 2·${k}·(${roundUp(zAlpha, 2)}+${roundUp(zBeta, 2)})² / [(${k}−1)·(${roundUp(z1-z0, 3)})²] = ${n}` }
     ],
     results: {
       'Required Subjects': nAdjusted,
@@ -252,8 +252,24 @@ export function calculateKappaFromTable(inputs) {
   // Cohen's Kappa
   const kappa = (pO - pE) / (1 - pE);
 
-  // Standard error (Fleiss)
-  const seKappa = Math.sqrt((pO * (1 - pO)) / (n * Math.pow(1 - pE, 2)));
+  // Fleiss–Cohen–Everitt (1969) large-sample variance of Cohen's kappa (general R×R,
+  // here 2×2). The previous SE √(pO(1−pO)/(n(1−pE)²)) is the crude "Cohen-simplified"
+  // form (mislabeled Fleiss); it drops the marginal-probability terms and is known to
+  // be unreliable, especially for asymmetric tables.
+  const pi = [[cellA / n, cellB / n], [cellC / n, cellD / n]];
+  const rowM = [pi[0][0] + pi[0][1], pi[1][0] + pi[1][1]]; // πᵢ₊ (rater 1)
+  const colM = [pi[0][0] + pi[1][0], pi[0][1] + pi[1][1]]; // π₊ⱼ (rater 2)
+  let termA = 0, termB = 0;
+  for (let i = 0; i < 2; i++) {
+    termA += pi[i][i] * Math.pow((1 - pE) - (rowM[i] + colM[i]) * (1 - pO), 2);
+    for (let j = 0; j < 2; j++) {
+      if (i !== j) termB += pi[i][j] * Math.pow(colM[i] + rowM[j], 2);
+    }
+  }
+  termB *= Math.pow(1 - pO, 2);
+  const termC = Math.pow(pO * pE - 2 * pE + pO, 2);
+  const varKappa = (termA + termB - termC) / (n * Math.pow(1 - pE, 4));
+  const seKappa = Math.sqrt(Math.max(0, varKappa));
 
   // 95% CI
   const ciLower = kappa - 1.96 * seKappa;

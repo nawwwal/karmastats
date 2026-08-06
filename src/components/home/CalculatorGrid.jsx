@@ -7,7 +7,15 @@ const CORE_CALCULATORS = [
     id: 'descriptive',
     title: 'Descriptive Studies',
     description: 'Cross-sectional surveys, prevalence studies, and population parameter estimation with precision calculations.',
-    icon: '📊',
+    icon: (
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <rect x="3.5" y="13" width="4.4" height="9" rx="1.2" fill="rgba(255,255,255,0.95)" />
+        <rect x="10.8" y="7.5" width="4.4" height="14.5" rx="1.2" fill="rgba(255,255,255,0.75)" />
+        <rect x="18.1" y="10.5" width="4.4" height="11.5" rx="1.2" fill="rgba(255,255,255,0.95)" />
+        <path d="M3.5 5.5 L10 9 L16 4.5 L22.5 7.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="16" cy="4.5" r="1.7" fill="white" />
+      </svg>
+    ),
     tags: ['Prevalence', 'CI Estimation', 'Surveys'],
     gradient: 'linear-gradient(135deg, #10B981, #059669)',
     url: '/calculator/descriptive'
@@ -117,6 +125,23 @@ const ADVANCED_CALCULATORS = [
 ];
 
 const TOOLS = [
+  {
+    id: 'descriptive-stats',
+    title: 'Descriptive Stats & Normality',
+    description: 'Upload an Excel/CSV sheet: normality assessment first (Shapiro–Wilk), then descriptives, charts, the right test, and R/Python code.',
+    icon: (
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <path d="M2.5 21.5 C8 21.5 8.5 5.5 13 5.5 C17.5 5.5 18 21.5 23.5 21.5"
+          stroke="white" strokeWidth="2" strokeLinecap="round" fill="none" />
+        <line x1="13" y1="9.5" x2="13" y2="21" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeDasharray="2.5 2.5" strokeLinecap="round" />
+        <circle cx="7.8" cy="16.4" r="1.4" fill="rgba(255,255,255,0.85)" />
+        <circle cx="18.2" cy="16.4" r="1.4" fill="rgba(255,255,255,0.85)" />
+      </svg>
+    ),
+    tags: ['Excel/CSV', 'Shapiro–Wilk', 'Q–Q + Export'],
+    gradient: 'linear-gradient(135deg, #0EA5E9, #0284C7)',
+    url: '/tools/descriptive-stats'
+  },
   {
     id: 'report-generator',
     title: 'Report Generator',

@@ -64,11 +64,11 @@ export function calculateBayesianProportion(inputs) {
   // Z for credible interval
   const zCred = normalInv((1 + credLevel) / 2);
 
-  // Required posterior variance for target precision
-  // Posterior variance ≈ p(1-p)/(n + prior ESS)
-  // For CI width = 2 * z * SD = precision
-  // SD = precision / (2 * z)
-  const targetSD = precision / (2 * zCred);
+  // Required posterior SD for the target precision. The input is the credible-interval
+  // HALF-width (labeled "±precision"), so E = z·SD ⇒ SD = E / z. (The previous
+  // precision/(2z) treated it as the FULL width, making the interval twice as tight as
+  // requested and inflating n.)
+  const targetSD = precision / zCred;
   const targetVar = targetSD * targetSD;
 
   // Solve for n: p(1-p)/(n + priorESS) = targetVar
@@ -103,7 +103,7 @@ export function calculateBayesianProportion(inputs) {
     formulaExplanation: 'Sample size to achieve target posterior credible interval width',
     steps: [
       { title: 'Calculate Prior Parameters', calc: `Prior mean = ${alpha}/(${alpha}+${betaParam}) = ${roundUp(priorMean, 4)}, Prior ESS = ${priorESS}` },
-      { title: 'Calculate Target Variance', calc: `Target SD = ${precision}/(2×${roundUp(zCred, 2)}) = ${roundUp(targetSD, 4)}, Target Var = ${roundUp(targetVar, 6)}` },
+      { title: 'Calculate Target Variance', calc: `Target SD = ±${precision}/${roundUp(zCred, 2)} = ${roundUp(targetSD, 4)}, Target Var = ${roundUp(targetVar, 6)}` },
       { title: 'Calculate Required n', calc: `n = ${pExpected}×${1-pExpected}/${roundUp(targetVar, 6)} - ${priorESS} = ${nRequired}` },
       { title: 'Expected Posterior', calc: `Post alpha = ${postAlpha}, Post beta = ${postBeta}, Post mean = ${roundUp(postMean, 4)}` },
       { title: 'Expected CI Width', calc: `CI width = 2×${roundUp(zCred, 2)}×${roundUp(postSD, 4)} = ${roundUp(ciWidth, 4)}` }
@@ -144,8 +144,8 @@ export function calculateBayesianMean(inputs) {
   // Z for credible interval
   const zCred = normalInv((1 + credLevel) / 2);
 
-  // Target posterior SD
-  const targetPostSD = precision / (2 * zCred);
+  // Target posterior SD from the credible-interval HALF-width (±precision): SD = E / z.
+  const targetPostSD = precision / zCred;
   const targetPostVar = targetPostSD * targetPostSD;
 
   // Posterior variance: 1/tau_post = 1/(tau_prior + n/sigma²)
@@ -189,7 +189,7 @@ export function calculateBayesianMean(inputs) {
     formulaExplanation: 'Sample size for target posterior variance with conjugate normal prior',
     steps: [
       { title: 'Calculate Prior Precision', calc: `tau_prior = 1/${sigma0}² = ${roundUp(priorPrecision, 4)}` },
-      { title: 'Calculate Target Posterior SD', calc: `Target SD = ${precision}/(2×${roundUp(zCred, 2)}) = ${roundUp(targetPostSD, 4)}` },
+      { title: 'Calculate Target Posterior SD', calc: `Target SD = ±${precision}/${roundUp(zCred, 2)} = ${roundUp(targetPostSD, 4)}` },
       { title: 'Calculate Required n', calc: `n = ${sigmaData}² × (1/${roundUp(targetPostVar, 6)} - ${roundUp(priorPrecision, 4)}) = ${nRequired}` },
       { title: 'Calculate Posterior Mean', calc: `Post mean = ${roundUp(postMean, 4)}` },
       { title: 'Calculate CI', calc: `${credibleLevel}% CI = [${roundUp(ciLower, 3)}, ${roundUp(ciUpper, 3)}]` }
@@ -228,8 +228,10 @@ export function calculateAssurance(inputs) {
   // Frequentist critical value
   const zAlpha = normalInv(1 - alphaVal / 2);
 
-  // SE of sample mean
-  const seMean = sigmaData / Math.sqrt(n);
+  // SE of the estimated treatment EFFECT (difference in means) for a two-arm trial with
+  // n per arm: SE = σ·√(1/n + 1/n) = σ·√(2/n). The input is labeled "per arm" and the
+  // prior is on the effect, so the single-arm σ/√n understated the SE.
+  const seMean = sigmaData * Math.sqrt(2 / n);
 
   // For a given true effect theta, probability of significance:
   // P(reject H0 | theta) = P(|X_bar| > z_alpha * SE | theta)
@@ -268,7 +270,7 @@ export function calculateAssurance(inputs) {
     formula: 'Assurance = Phi((mu_prior - z_alpha × SE) / sqrt(sigma_prior² + SE²))',
     formulaExplanation: 'Average probability of success weighted by prior uncertainty',
     steps: [
-      { title: 'Calculate SE of Mean', calc: `SE = ${sigmaData}/sqrt(${n}) = ${roundUp(seMean, 4)}` },
+      { title: 'Calculate SE of Effect', calc: `SE = ${sigmaData}×√(2/${n}) = ${roundUp(seMean, 4)}` },
       { title: 'Calculate Combined SD', calc: `SD_combined = sqrt(${sigma0}² + ${roundUp(seMean, 4)}²) = ${roundUp(combinedSD, 4)}` },
       { title: 'Calculate Assurance', calc: `Assurance = Phi((${mu0} - ${roundUp(zAlpha, 2)}×${roundUp(seMean, 3)}) / ${roundUp(combinedSD, 4)}) = ${roundUp(assurancePercent, 1)}%` },
       { title: 'Frequentist Power at Prior Mean', calc: `Power = ${roundUp(powerPercent, 1)}%` },
@@ -314,8 +316,12 @@ export function calculateAdaptiveDesign(inputs) {
   const remainingN = nMax - nInterim;
 
   // Approximate predictive probability using normal approximation
+  // Beta-binomial predictive variance of the future success proportion X/m among the
+  // m = remainingN remaining subjects: Var(X/m) = p̂(1−p̂)·(M+m)/(m·(M+1)), M = post α+β.
+  // (Previously the denominator used M instead of M+1.)
   const predictiveMean = postMean;
-  const predictiveVar = postMean * (1 - postMean) * (postAlpha + postBeta + remainingN) / ((postAlpha + postBeta) * remainingN);
+  const M = postAlpha + postBeta;
+  const predictiveVar = postMean * (1 - postMean) * (M + remainingN) / (remainingN * (M + 1));
   const predictiveSD = Math.sqrt(predictiveVar);
 
   // Probability of reaching target at final

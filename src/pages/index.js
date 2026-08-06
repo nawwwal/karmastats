@@ -4,8 +4,6 @@ export { Contact } from './Contact';
 export { Support } from './Support';
 export { References } from './References';
 export { PlaceholderCalculator } from './PlaceholderCalculator';
-export { NotFound } from './NotFound';
-export { Test } from './Test';
 
 // Core Calculators
 export { DescriptiveCalculator } from './DescriptiveCalculator';
@@ -27,3 +25,5 @@ export { AgreementCalculator } from './AgreementCalculator';
 export { ReportGenerator } from './ReportGenerator';
 export { SensitivityAnalysis } from './SensitivityAnalysis';
 export { Checklists } from './Checklists';
+// DescriptiveStats is intentionally NOT re-exported here — it is lazy-loaded in
+// App.jsx so the heavy xlsx parser stays out of the initial bundle.

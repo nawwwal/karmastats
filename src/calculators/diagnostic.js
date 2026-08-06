@@ -147,23 +147,35 @@ export function calculateAUC(inputs) {
   const auc0Val = parseFloat(auc0); // Null hypothesis AUC
   const auc1Val = parseFloat(auc1); // Alternative hypothesis AUC
 
+  if (!(auc1Val > auc0Val)) {
+    throw new Error('The alternative AUC must be greater than the null AUC (AUC₁ > AUC₀).');
+  }
+  if (auc0Val < 0.5 || auc1Val >= 1) {
+    throw new Error('AUC values must satisfy 0.5 ≤ AUC₀ < AUC₁ < 1.');
+  }
+
   const zAlpha = normalInv(1 - parseFloat(alpha) / 2);
   const zBeta = normalInv(parseFloat(power));
 
-  const k = parseFloat(ratio) || 1;
+  const k = parseFloat(ratio) || 1; // non-diseased : diseased allocation ratio (κ)
 
-  // Hanley & McNeil variance approximation
-  const q0 = auc0Val / (2 - auc0Val);
-  const q1 = auc1Val / (2 - auc1Val);
-  const q2_0 = 2 * auc0Val * auc0Val / (1 + auc0Val);
-  const q2_1 = 2 * auc1Val * auc1Val / (1 + auc1Val);
-
-  const var0 = (auc0Val * (1 - auc0Val) + (1 - 1) * (q0 - auc0Val * auc0Val) + (k - 1) * (q2_0 - auc0Val * auc0Val)) / k;
-  const var1 = (auc1Val * (1 - auc1Val) + (1 - 1) * (q1 - auc1Val * auc1Val) + (k - 1) * (q2_1 - auc1Val * auc1Val)) / k;
-
-  // Simplified Obuchowski formula
-  const se0 = Math.sqrt(auc0Val * (1 - auc0Val) * (1 + (k - 1) / 2));
-  const se1 = Math.sqrt(auc1Val * (1 - auc1Val) * (1 + (k - 1) / 2));
+  // Hanley & McNeil (1982) large-sample variance of the AUC (Wilcoxon statistic).
+  //   Q₁ = Pr(two diseased both rank above one non-diseased) = AUC/(2 − AUC)
+  //   Q₂ = Pr(one diseased ranks above two non-diseased)      = 2·AUC²/(1 + AUC)
+  // Writing the variance per diseased case with κ = n_nonDiseased / n_diseased and
+  // taking the large-sample limit of the full HM variance gives the variance
+  // FUNCTION  V(AUC) = (Q₁ − AUC²)/κ + (Q₂ − AUC²),  so Var(AUC) = V(AUC)/n_diseased.
+  // (This replaces the previous code, which discarded the Q-based variance and used
+  //  an invented SE = √(AUC(1−AUC)(1+(k−1)/2)) that treats AUC like a raw proportion.)
+  const varFunction = (auc) => {
+    const q1 = auc / (2 - auc);
+    const q2 = (2 * auc * auc) / (1 + auc);
+    return (q1 - auc * auc) / k + (q2 - auc * auc);
+  };
+  const v0 = varFunction(auc0Val); // variance function under H0
+  const v1 = varFunction(auc1Val); // variance function under H1
+  const se0 = Math.sqrt(v0);
+  const se1 = Math.sqrt(v1);
 
   const nDiseased = roundUp(Math.pow((zAlpha * se0 + zBeta * se1) / (auc1Val - auc0Val), 2));
   const nNonDiseased = roundUp(nDiseased * k);
@@ -174,7 +186,7 @@ export function calculateAUC(inputs) {
   return {
     type: 'auc',
     studyType: 'Diagnostic Study - ROC Analysis',
-    method: 'Obuchowski formula for AUC comparison',
+    method: 'Hanley–McNeil variance-function method for a single AUC vs a null value',
     inputs: {
       'Null AUC': auc0Val.toFixed(2),
       'Alternative AUC': auc1Val.toFixed(2),
@@ -183,14 +195,14 @@ export function calculateAUC(inputs) {
       'Power (1-β)': `${(parseFloat(power) * 100).toFixed(0)}%`,
       'Non-diseased:Diseased Ratio': `${k}:1`
     },
-    formula: 'n = [(Zα × SE₀ + Zβ × SE₁) / (AUC₁ - AUC₀)]²',
-    formulaExplanation: 'AUC₀ = null hypothesis AUC | AUC₁ = alternative AUC | SE = standard error',
+    formula: 'n_D = [(Z₁₋α/₂·√V₀ + Z₁₋β·√V₁) / (AUC₁ − AUC₀)]²,  V(AUC) = (Q₁−AUC²)/κ + (Q₂−AUC²)',
+    formulaExplanation: 'Q₁ = AUC/(2−AUC), Q₂ = 2·AUC²/(1+AUC) | V₀, V₁ = HM variance functions at AUC₀, AUC₁ | κ = non-diseased:diseased ratio | n_D = diseased cases',
     steps: [
-      { title: 'Calculate AUC difference', calc: `ΔAUC = ${auc1Val} - ${auc0Val} = ${(auc1Val - auc0Val).toFixed(4)}` },
-      { title: 'Get Z-scores', calc: `Zα = ${zAlpha.toFixed(4)}, Zβ = ${zBeta.toFixed(4)}` },
-      { title: 'Calculate standard errors', calc: `SE₀ = ${se0.toFixed(4)}, SE₁ = ${se1.toFixed(4)}` },
-      { title: 'Calculate diseased subjects', calc: `n_diseased = ${nDiseased}` },
-      { title: 'Calculate total sample', calc: `N = ${nDiseased} + ${nNonDiseased} = ${totalN}` }
+      { title: 'Calculate AUC difference', calc: `ΔAUC = ${auc1Val} − ${auc0Val} = ${(auc1Val - auc0Val).toFixed(4)}` },
+      { title: 'Get Z-scores', calc: `Z₁₋α/₂ = ${zAlpha.toFixed(4)}, Z₁₋β = ${zBeta.toFixed(4)}` },
+      { title: 'Hanley–McNeil variance function under H₀ and H₁', calc: `V₀ = (Q₁−AUC₀²)/κ + (Q₂−AUC₀²) = ${v0.toFixed(4)}; V₁ = ${v1.toFixed(4)}` },
+      { title: 'Diseased cases required', calc: `n_D = [(${zAlpha.toFixed(3)}·√${v0.toFixed(3)} + ${zBeta.toFixed(3)}·√${v1.toFixed(3)}) / ${(auc1Val - auc0Val).toFixed(3)}]² = ${nDiseased}` },
+      { title: 'Non-diseased and total', calc: `n_ND = κ·n_D = ${nNonDiseased}; N = ${nDiseased} + ${nNonDiseased} = ${totalN}` }
     ],
     results: {
       'Diseased Subjects': nDiseased,
@@ -204,7 +216,7 @@ export function calculateAUC(inputs) {
       'Report AUC with confidence intervals',
       'Consider DeLong method for comparing correlated AUCs'
     ],
-    reference: 'Obuchowski, N. A. (1998). Sample size calculations in studies of test accuracy. Stat Methods Med Res, 7(4), 371-392.'
+    reference: 'Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36. Variance function per Obuchowski, N. A. (1998), Stat Methods Med Res, 7(4), 371-392.'
   };
 }
 
