@@ -69,7 +69,7 @@ function sanitizeText(text) {
     .replace(/Q̄/g, 'Q-bar')
     .replace(/x̄/g, 'x-bar')
     // Clean up any remaining problematic characters
-    .replace(/[^\x00-\x7F]/g, '');
+    .replace(/[^\p{ASCII}]/gu, '');
 }
 
 export function exportToPDF(theme, calculation) {

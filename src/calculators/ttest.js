@@ -1,6 +1,6 @@
 // T-Test Calculator Logic
 
-import { getConfidenceLevel, roundUp } from '../hooks/useCalculator';
+import { roundUp } from '../hooks/useCalculator';
 
 // One-sample t-test
 export function calculateOneSample(inputs) {

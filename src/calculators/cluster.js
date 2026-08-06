@@ -208,11 +208,6 @@ export function calculateNumberOfClusters(inputs) {
   const totalClusters = kPerArm * 2;
   const totalIndividuals = totalClusters * m;
 
-  // Power achieved with this number of clusters
-  const achievedVar = 2 * DEFFadj / (kPerArm * m);
-  const achievedSE = Math.sqrt(achievedVar);
-  const achievedPower = 100; // Already calculated for target power
-
   return {
     studyType: 'Cluster Randomized Trial',
     type: 'number-of-clusters',
@@ -274,11 +269,9 @@ export function calculateDesignEffect(inputs) {
   // Effective sample size
   const totalN = k * m;
   const effectiveN = totalN / DEFF;
-  const effectiveNadj = totalN / DEFFadj;
 
   // Inflation factor (percentage increase needed)
   const inflation = (DEFF - 1) * 100;
-  const inflationAdj = (DEFFadj - 1) * 100;
 
   // Variance inflation factor
   const VIF = DEFF;

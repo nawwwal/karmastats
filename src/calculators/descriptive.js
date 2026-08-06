@@ -1,6 +1,6 @@
 // Descriptive Studies Calculator Logic
 
-import { getConfidenceLevel, roundUp, formatNumber } from '../hooks/useCalculator';
+import { getConfidenceLevel, roundUp } from '../hooks/useCalculator';
 
 // Prevalence Estimation
 export function calculatePrevalence(inputs) {

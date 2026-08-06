@@ -33,16 +33,11 @@ function phrase(p, { plural = true } = {}) {
   return new RegExp(`\\b${body}${tail}\\b`, 'i');
 }
 
-function anyMatch(text, regexes) {
-  return regexes.some((re) => re.test(text));
-}
-
 // --- slot extraction -------------------------------------------------------
 // Slots are high-level features that strongly discriminate designs and drive
 // both scoring bonuses and clarifying questions.
 
 function extractSlots(text) {
-  const has = (p) => phrase(p).test(text);
   const hasAny = (arr) => arr.some((p) => phrase(p).test(text));
 
   const outcome = {

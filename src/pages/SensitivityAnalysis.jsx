@@ -3,7 +3,7 @@ import { CalculatorHeader, SimpleFooter, ThemeToggle } from '../components/commo
 import { FormInput, FormSelect, CalculatorButtons, ResultsSection, ResultGrid, ResultCard, FormulaSection, InterpretationBox, RecommendationsSection } from '../components/calculators';
 import { PowerCurveChart, EffectSizeBarChart } from '../components/charts';
 import { useCalculator } from '../hooks/useCalculator';
-import { exportToPDF, copyToClipboard } from '../utils/pdfExport';
+import { exportToPDF } from '../utils/pdfExport';
 import '../components/calculators/CalculatorForm.css';
 
 const ANALYSIS_TYPES = [
@@ -21,7 +21,6 @@ const NAV_LINKS = [
 
 export function SensitivityAnalysis() {
   const [analysisType, setAnalysisType] = useState('sample-size');
-  const [showExportModal, setShowExportModal] = useState(false);
   const { calculation, setCalculation, theme, clearCalculation } = useCalculator();
 
   // Base parameters
@@ -80,7 +79,6 @@ export function SensitivityAnalysis() {
     const dropout = parseFloat(baseDropout);
     const steps = parseInt(rangeSteps);
 
-    let results = [];
     let sensitivityData = [];
     let paramName = '';
     let baseValue = 0;

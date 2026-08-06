@@ -28,21 +28,6 @@ function normalCDF(x) {
   return 0.5 * (1.0 + sign * y);
 }
 
-// Beta function approximation
-function lnGamma(x) {
-  const c = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
-  let y = x;
-  let tmp = x + 5.5;
-  tmp -= (x + 0.5) * Math.log(tmp);
-  let ser = 1.000000000190015;
-  for (let j = 0; j < 6; j++) ser += c[j] / ++y;
-  return -tmp + Math.log(2.5066282746310005 * ser / x);
-}
-
-function beta(a, b) {
-  return Math.exp(lnGamma(a) + lnGamma(b) - lnGamma(a + b));
-}
-
 // Bayesian Sample Size for Proportion (Beta-Binomial)
 export function calculateBayesianProportion(inputs) {
   const { priorAlpha, priorBeta, targetPrecision, credibleLevel, expectedP } = inputs;
@@ -55,9 +40,6 @@ export function calculateBayesianProportion(inputs) {
 
   // Prior mean and variance
   const priorMean = alpha / (alpha + betaParam);
-  const priorVar = (alpha * betaParam) / (Math.pow(alpha + betaParam, 2) * (alpha + betaParam + 1));
-  const priorSD = Math.sqrt(priorVar);
-
   // Prior effective sample size
   const priorESS = alpha + betaParam;
 
@@ -251,9 +233,6 @@ export function calculateAssurance(inputs) {
 
   // Probability effect is clinically meaningful
   const probMeaningful = normalCDF((mu0 - threshold) / sigma0);
-
-  // Predictive probability of success
-  const predictiveSD = Math.sqrt(sigma0 * sigma0 + sigmaData * sigmaData / n);
 
   return {
     studyType: 'Bayesian Analysis',
