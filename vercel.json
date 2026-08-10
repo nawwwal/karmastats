@@ -1,9 +1,76 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/sample-size/survival",
+      "destination": "/calculator/survival",
+      "permanent": true
+    },
+    {
+      "source": "/sample-size/cross-sectional",
+      "destination": "/calculator/descriptive",
+      "permanent": true
+    },
+    {
+      "source": "/sample-size/comparative",
+      "destination": "/calculator/comparative",
+      "permanent": true
+    },
+    {
+      "source": "/karmastat_sensitivity_analysis.html",
+      "destination": "/tools/sensitivity-analysis",
+      "permanent": true
+    },
+    {
+      "source": "/sample-size/intelligent-detector",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/sample-size/t-test",
+      "destination": "/calculator/ttest",
+      "permanent": true
+    },
+    {
+      "source": "/sample-size/diagnostic",
+      "destination": "/calculator/diagnostic",
+      "permanent": true
+    },
+    {
+      "source": "/karmastat_bayesian.html",
+      "destination": "/calculator/bayesian",
+      "permanent": true
+    },
+    {
+      "source": "/sample-size/clinical-trials",
+      "destination": "/calculator/clinical-trials",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/calculator/:slug",
+      "destination": "/calculator/:slug/index.html"
+    },
+    {
+      "source": "/tools/:slug",
+      "destination": "/tools/:slug/index.html"
+    },
+    {
+      "source": "/references",
+      "destination": "/references/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact/index.html"
+    },
+    {
+      "source": "/support",
+      "destination": "/support/index.html"
+    },
+    {
+      "source": "/test",
+      "destination": "/test/index.html"
     }
   ]
 }

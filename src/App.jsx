@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { PageLoader } from './components/common';
+import { HeadManager } from './components/HeadManager';
 
 // Lazy-loaded so the heavy Excel parser (xlsx) is only fetched when this data-
 // analysis page is actually opened — it stays out of the initial bundle.
@@ -29,7 +30,8 @@ import {
   // Tools
   ReportGenerator,
   SensitivityAnalysis,
-  Checklists
+  Checklists,
+  PlaceholderCalculator
 } from './pages';
 import './styles/global.css';
 
@@ -48,6 +50,7 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
+        <HeadManager />
         <PageLoader minDuration={1000} />
         <Routes>
           {/* Test route */}
@@ -88,7 +91,7 @@ function App() {
           <Route path="/support" element={<Support />} />
 
           {/* Catch-all */}
-          <Route path="*" element={<Home />} />
+          <Route path="*" element={<PlaceholderCalculator />} />
         </Routes>
       </Router>
     </ThemeProvider>
